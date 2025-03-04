@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package outputs;
+
+import "google/protobuf/timestamp.proto";
+import "pointers.proto";
+
+enum OutputType {
+  COIN = 0;
+  CONTRACT = 1;
+  CHANGE = 2;
+  VARIABLE = 3;
+  CONTRACT_CREATED = 4;
+}
+
+message Output {
+  string subject = 1;
+  int64 block_height = 2;
+  bytes tx_id = 3;
+  int32 tx_index = 4;
+  int32 output_index = 5;
+  OutputType output_type = 6;
+  
+  // Specific output type
+  oneof output {
+    OutputCoin coin = 7;
+    OutputContract contract = 8;
+    OutputChange change = 9;
+    OutputVariable variable = 10;
+    OutputContractCreated contract_created = 11;
+  }
+
+  // Metadata
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp published_at = 13;
+  pointers.OutputPointer pointer = 14;
+}
+
+message OutputCoin {
+  string subject = 1;
+  bytes tx_id = 2;
+  int64 amount = 3;
+  bytes asset_id = 4;
+  bytes to_address = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp published_at = 7;
+}
+
+message OutputContract {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes balance_root = 3;
+  bytes state_root = 4;
+  int32 input_index = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp published_at = 7;
+}
+
+message OutputContractCreated {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  bytes state_root = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp published_at = 6;
+}
+
+message OutputChange {
+  string subject = 1;
+  bytes tx_id = 2;
+  int64 amount = 3;
+  bytes asset_id = 4;
+  bytes to_address = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp published_at = 7;
+}
+
+message OutputVariable {
+  string subject = 1;
+  bytes tx_id = 2;
+  int64 amount = 3;
+  bytes asset_id = 4;
+  bytes to_address = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp published_at = 7;
+}

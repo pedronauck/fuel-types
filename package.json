@@ -1,0 +1,17 @@
+{
+  "name": "fuel-migrations",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build:proto": "pbjs -t static-module -w es6 -o ts-types/proto.js --path proto proto/*.proto && pbts -o ts-types/proto.d.ts ts-types/proto.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "protobufjs": "^7.2.5",
+    "protobufjs-cli": "^1.1.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

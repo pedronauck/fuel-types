@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package blocks;
+
+import "google/protobuf/timestamp.proto";
+import "pointers.proto";
+
+enum ConsensusType {
+  GENESIS = 0;
+  POA_CONSENSUS = 1;
+}
+
+message Block {
+  string subject = 1;
+  int64 block_height = 2;
+  bytes producer_address = 3;
+  int32 block_id = 4;
+  string version = 5;
+  
+  // Relationship fields
+  BlockHeader header = 6;
+  BlockConsensus consensus = 7;
+  repeated bytes transaction_ids = 8;  // Array of tx_ids in this block
+
+  // Metadata
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp published_at = 10;
+  pointers.BlockPointer pointer = 11;
+}
+
+message BlockHeader {
+  string subject = 1;
+  int64 block_height = 2;
+  bytes application_hash = 3;
+  int32 consensus_parameters_version = 4;
+  int64 da_height = 5;
+  bytes event_inbox_root = 6;
+  bytes message_outbox_root = 7;
+  int32 message_receipt_count = 8;
+  bytes prev_root = 9;
+  int32 state_transition_bytecode_version = 10;
+  int64 time = 11;
+  int32 transactions_count = 12;
+  bytes transactions_root = 13;
+  int32 version = 14;
+  google.protobuf.Timestamp created_at = 15;
+  google.protobuf.Timestamp published_at = 16;
+}
+
+message BlockConsensus {
+  string subject = 1;
+  int64 block_height = 2;
+  ConsensusType consensus_type = 3;
+  bytes chain_config_hash = 4;
+  bytes coins_root = 5;
+  bytes contracts_root = 6;
+  bytes messages_root = 7;
+  bytes transactions_root = 8;
+  bytes signature = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp published_at = 11;
+}

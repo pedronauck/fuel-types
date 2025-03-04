@@ -1,0 +1,227 @@
+syntax = "proto3";
+
+package receipts;
+
+import "google/protobuf/timestamp.proto";
+import "pointers.proto";
+
+enum ReceiptType {
+  CALL = 0;
+  RETURN = 1;
+  RETURN_DATA = 2;
+  PANIC = 3;
+  REVERT = 4;
+  LOG = 5;
+  LOG_DATA = 6;
+  TRANSFER = 7;
+  TRANSFER_OUT = 8;
+  SCRIPT_RESULT = 9;
+  MESSAGE_OUT = 10;
+  MINT = 11;
+  BURN = 12;
+}
+
+enum ScriptResultType {
+  SUCCESS = 0;
+  FAILURE = 1;
+}
+
+message Receipt {
+  string subject = 1;
+  int64 block_height = 2;
+  bytes tx_id = 3;
+  int32 tx_index = 4;
+  int32 receipt_index = 5;
+  ReceiptType receipt_type = 6;
+
+  // Specific receipt type
+  oneof receipt {
+    ReceiptCall call = 7;
+    ReceiptReturn return = 8;
+    ReceiptReturnData return_data = 9;
+    ReceiptPanic panic = 10;
+    ReceiptRevert revert = 11;
+    ReceiptLog log = 12;
+    ReceiptLogData log_data = 13;
+    ReceiptTransfer transfer = 14;
+    ReceiptTransferOut transfer_out = 15;
+    ReceiptScriptResult script_result = 16;
+    ReceiptMessageOut message_out = 17;
+    ReceiptMint mint = 18;
+    ReceiptBurn burn = 19;
+  }
+
+  // Metadata
+  google.protobuf.Timestamp created_at = 20;
+  google.protobuf.Timestamp published_at = 21;
+  pointers.ReceiptPointer pointer = 22;
+}
+
+message ReceiptCall {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  bytes to_contract_id = 4;
+  int64 amount = 5;
+  bytes asset_id = 6;
+  int64 gas = 7;
+  int64 param1 = 8;
+  int64 param2 = 9;
+  int64 pc = 10;
+  int64 is = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp published_at = 13;
+}
+
+message ReceiptReturn {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  int64 val = 4;
+  int64 pc = 5;
+  int64 is = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp published_at = 8;
+}
+
+message ReceiptReturnData {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  int64 ptr = 4;
+  int64 len = 5;
+  bytes digest = 6;
+  int64 pc = 7;
+  int64 is = 8;
+  bytes data = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp published_at = 11;
+}
+
+message ReceiptPanic {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  int64 reason = 4;
+  int64 pc = 5;
+  int64 is = 6;
+  bytes panic_contract_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp published_at = 9;
+}
+
+message ReceiptRevert {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  int64 val = 4;
+  int64 pc = 5;
+  int64 is = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp published_at = 8;
+}
+
+message ReceiptLog {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  int64 ra = 4;
+  int64 rb = 5;
+  int64 rc = 6;
+  int64 rd = 7;
+  int64 pc = 8;
+  int64 is = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp published_at = 11;
+}
+
+message ReceiptLogData {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  int64 ra = 4;
+  int64 rb = 5;
+  int64 ptr = 6;
+  int64 len = 7;
+  bytes digest = 8;
+  int64 pc = 9;
+  int64 is = 10;
+  bytes data = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp published_at = 13;
+}
+
+message ReceiptTransfer {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  bytes to_contract_id = 4;
+  int64 amount = 5;
+  bytes asset_id = 6;
+  int64 pc = 7;
+  int64 is = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp published_at = 10;
+}
+
+message ReceiptTransferOut {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes contract_id = 3;
+  bytes to_address = 4;
+  int64 amount = 5;
+  bytes asset_id = 6;
+  int64 pc = 7;
+  int64 is = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp published_at = 10;
+}
+
+message ReceiptScriptResult {
+  string subject = 1;
+  bytes tx_id = 2;
+  ScriptResultType result = 3;
+  int64 gas_used = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp published_at = 6;
+}
+
+message ReceiptMessageOut {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes sender_address = 3;
+  bytes recipient_address = 4;
+  int64 amount = 5;
+  bytes nonce = 6;
+  int64 len = 7;
+  bytes digest = 8;
+  bytes data = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp published_at = 11;
+}
+
+message ReceiptMint {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes sub_id = 3;
+  bytes contract_id = 4;
+  bytes asset_id = 5;
+  int64 val = 6;
+  int64 pc = 7;
+  int64 is = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp published_at = 10;
+}
+
+message ReceiptBurn {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes sub_id = 3;
+  bytes contract_id = 4;
+  bytes asset_id = 5;
+  int64 val = 6;
+  int64 pc = 7;
+  int64 is = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp published_at = 10;
+}

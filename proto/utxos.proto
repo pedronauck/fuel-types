@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package utxos;
+
+import "google/protobuf/timestamp.proto";
+import "pointers.proto";
+
+enum UtxoType {
+  CONTRACT = 0;
+  COIN = 1;
+  MESSAGE = 2;
+}
+
+message Utxo {
+  string subject = 1;
+  int64 block_height = 2;
+  bytes tx_id = 3;
+  int32 tx_index = 4;
+  int32 input_index = 5;
+  UtxoType utxo_type = 6;
+  bytes utxo_id = 7;
+  bytes value = 8;
+  bytes sender_address = 9;
+  bytes recipient_address = 10;
+  bytes nonce = 11;
+  int64 amount = 12;
+  bytes data = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp published_at = 15;
+  google.protobuf.Timestamp updated_at = 16;
+  pointers.UtxoPointer pointer = 17;
+}

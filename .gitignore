@@ -1,0 +1,60 @@
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+_.log
+report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+.DS_Store
+**/target
+/script/out
+**/*.swp
+.terraform
+*.tfstate*
+*.terraform.lock.hcl*
+.envrc
+.direnv
+.cov
+lcov.info
+.env
+node_modules/
+docker/db*
+tmp
+**/**/docker/db*
+build_rs_cov.profraw
+profile.json
+.rust-version
+coverage/
+docs/
+**/**/charts/**.tgz
+values-secrets.yaml
+values-publisher-env.yaml
+.vscode
+.sqlx

@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package transactions;
+
+import "google/protobuf/timestamp.proto";
+import "pointers.proto";
+import "inputs.proto";
+import "outputs.proto";
+import "receipts.proto";
+
+enum TransactionType {
+  SCRIPT = 0;
+  CREATE = 1;
+  MINT = 2;
+  UPGRADE = 3;
+  UPLOAD = 4;
+  BLOB = 5;
+}
+
+enum TransactionStatus {
+  SUCCESS = 0;
+  FAILURE = 1;
+  SUBMITTED = 2;
+}
+
+enum PolicyType {
+  TIP = 0;
+  WITNESS_LIMIT = 1;
+  MATURITY = 2;
+  MAX_FEE = 3;
+}
+
+message Transaction {
+  string subject = 1;
+  int64 block_height = 2;
+  bytes tx_id = 3;
+  int32 tx_index = 4;
+  TransactionType type = 5;
+  TransactionStatus status = 6;
+  bytes root = 7;
+  int32 witness_index = 8;
+  bytes blob_id = 9;
+  repeated bytes input_asset_ids = 10;
+  bool is_create = 11;
+  bool is_mint = 12;
+  bool is_script = 13;
+  bool is_upgrade = 14;
+  bool is_upload = 15;
+  int32 maturity = 16;
+  int64 mint_amount = 17;
+  bytes mint_asset_id = 18;
+  int64 mint_gas_price = 19;
+  int32 policy_type = 20;
+  bytes raw_payload = 21;
+  bytes receipts_root = 22;
+  bytes salt = 23;
+  bytes script = 24;
+  int64 script_length = 25;
+  bytes script_data = 26;
+  int64 script_data_length = 27;
+  int64 script_gas_limit = 28;
+  int32 subsection_index = 29;
+  int32 subsections_number = 30;
+  int32 upgrade_purpose = 31;
+  int64 storage_slots_count = 32;
+  int32 proof_set_count = 33;
+  int32 witnesses_count = 34;
+  int32 inputs_count = 35;
+  int32 outputs_count = 36;
+
+  // Relationship fields
+  inputs.InputContract input_contract = 37;
+  repeated bytes input_contracts = 38;
+  repeated inputs.Input inputs = 39;
+  outputs.OutputContract output_contract = 40;
+  repeated outputs.Output outputs = 41;
+  repeated bytes proof_set = 42;
+  repeated receipts.Receipt receipts = 43;
+  repeated StorageSlot storage_slots = 44;
+  repeated bytes witnesses = 45;
+
+  // Metadata
+  google.protobuf.Timestamp created_at = 46;
+  google.protobuf.Timestamp published_at = 47;
+  pointers.TransactionPointer pointer = 48;
+}
+
+message StorageSlot {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes key = 3;
+  bytes value = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp published_at = 6;
+}
+
+message Witness {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes witness_data = 3;
+  int32 witness_data_length = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp published_at = 6;
+}
+
+message ProofSet {
+  string subject = 1;
+  bytes tx_id = 2;
+  bytes proof_hash = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp published_at = 5;
+}
+
+message Policy {
+  string subject = 1;
+  bytes tx_id = 2;
+  PolicyType type = 3;
+  int64 data = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp published_at = 6;
+}
