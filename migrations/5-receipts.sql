@@ -4,43 +4,18 @@ CREATE TYPE "ReceiptType" AS ENUM ('Call', 'Return', 'ReturnData', 'Panic', 'Rev
 CREATE TYPE "ScriptResultType" AS ENUM ('Success', 'Failure');
 
 -- ------------------------------------------------------------------------------
--- Lookup table
--- ------------------------------------------------------------------------------
-
-CREATE TABLE "receipts"."lookup" (
-  -- uniques
-  "_id" SERIAL PRIMARY KEY,
-  "subject" TEXT UNIQUE NOT NULL,
-  "block_height" BIGINT NOT NULL,
-  "tx_id" BYTEA NOT NULL,
-  "tx_index" INTEGER NOT NULL,
-  -- props
-  "receipt_index" INTEGER NOT NULL,
-  "receipt_type" ReceiptType NOT NULL,
-  "value" BYTEA NOT NULL,
-  -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
-  "published_at" TIMESTAMP NOT NULL
-);
-
-CREATE INDEX ON "receipts"."lookup" ("subject");
-CREATE INDEX ON "receipts"."lookup" ("block_height");
-CREATE INDEX ON "receipts"."lookup" ("tx_id");
-CREATE INDEX ON "receipts"."lookup" ("receipt_index");
-CREATE INDEX ON "receipts"."lookup" ("receipt_type");
-
-ALTER TABLE "receipts"."lookup" ADD FOREIGN KEY ("block_height") REFERENCES "blocks"."lookup" ("block_height");
-ALTER TABLE "receipts"."lookup" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."lookup" ("tx_id");
-
--- ------------------------------------------------------------------------------
 -- Call data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."call_data" (
+CREATE TABLE "receipt_calls" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "to_contract_id" BYTEA NOT NULL,
@@ -52,52 +27,68 @@ CREATE TABLE "receipts"."call_data" (
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."call_data" ("subject");
-CREATE INDEX ON "receipts"."call_data" ("contract_id");
-CREATE INDEX ON "receipts"."call_data" ("to_contract_id");
-CREATE INDEX ON "receipts"."call_data" ("asset_id");
+CREATE INDEX ON "receipt_calls" ("subject");
+CREATE INDEX ON "receipt_calls" ("tx_id");
+CREATE INDEX ON "receipt_calls" ("block_height");
+CREATE INDEX ON "receipt_calls" ("receipt_index");
+CREATE INDEX ON "receipt_calls" ("receipt_type");
+CREATE INDEX ON "receipt_calls" ("contract_id");
+CREATE INDEX ON "receipt_calls" ("to_contract_id");
+CREATE INDEX ON "receipt_calls" ("asset_id");
 
-ALTER TABLE "receipts"."call_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."call_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_calls" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_calls" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Return data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."return_data" (
+CREATE TABLE "receipt_returns" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "val" BIGINT NOT NULL,
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."return_data" ("subject");
-CREATE INDEX ON "receipts"."return_data" ("contract_id");
+CREATE INDEX ON "receipt_returns" ("subject");
+CREATE INDEX ON "receipt_returns" ("tx_id");
+CREATE INDEX ON "receipt_returns" ("block_height");
+CREATE INDEX ON "receipt_returns" ("receipt_index");
+CREATE INDEX ON "receipt_returns" ("receipt_type");
+CREATE INDEX ON "receipt_returns" ("contract_id");
 
-ALTER TABLE "receipts"."return_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."return_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_returns" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_returns" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Return data data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."return_data_data" (
+CREATE TABLE "receipt_return_data" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "ptr" BIGINT NOT NULL,
@@ -107,25 +98,33 @@ CREATE TABLE "receipts"."return_data_data" (
   "is" BIGINT NOT NULL,
   "data" BYTEA,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."return_data_data" ("subject");
-CREATE INDEX ON "receipts"."return_data_data" ("contract_id");
+CREATE INDEX ON "receipt_return_data" ("subject");
+CREATE INDEX ON "receipt_return_data" ("tx_id");
+CREATE INDEX ON "receipt_return_data" ("block_height");
+CREATE INDEX ON "receipt_return_data" ("receipt_index");
+CREATE INDEX ON "receipt_return_data" ("receipt_type");
+CREATE INDEX ON "receipt_return_data" ("contract_id");
 
-ALTER TABLE "receipts"."return_data_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."return_data_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_return_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_return_data" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Panic data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."panic_data" (
+CREATE TABLE "receipt_panics" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "reason" BIGINT NOT NULL,
@@ -133,50 +132,66 @@ CREATE TABLE "receipts"."panic_data" (
   "is" BIGINT NOT NULL,
   "panic_contract_id" BYTEA,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."panic_data" ("subject");
-CREATE INDEX ON "receipts"."panic_data" ("contract_id");
+CREATE INDEX ON "receipt_panics" ("subject");
+CREATE INDEX ON "receipt_panics" ("tx_id");
+CREATE INDEX ON "receipt_panics" ("block_height");
+CREATE INDEX ON "receipt_panics" ("receipt_index");
+CREATE INDEX ON "receipt_panics" ("receipt_type");
+CREATE INDEX ON "receipt_panics" ("contract_id");
 
-ALTER TABLE "receipts"."panic_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."panic_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_panics" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_panics" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Revert data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."revert_data" (
+CREATE TABLE "receipt_reverts" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "val" BIGINT NOT NULL,
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."revert_data" ("subject");
-CREATE INDEX ON "receipts"."revert_data" ("contract_id");
+CREATE INDEX ON "receipt_reverts" ("subject");
+CREATE INDEX ON "receipt_reverts" ("tx_id");
+CREATE INDEX ON "receipt_reverts" ("block_height");
+CREATE INDEX ON "receipt_reverts" ("receipt_index");
+CREATE INDEX ON "receipt_reverts" ("receipt_type");
+CREATE INDEX ON "receipt_reverts" ("contract_id");
 
-ALTER TABLE "receipts"."revert_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."revert_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_reverts" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_reverts" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Log data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."log_data" (
+CREATE TABLE "receipt_logs" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "ra" BIGINT NOT NULL,
@@ -186,25 +201,33 @@ CREATE TABLE "receipts"."log_data" (
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."log_data" ("subject");
-CREATE INDEX ON "receipts"."log_data" ("contract_id");
+CREATE INDEX ON "receipt_logs" ("subject");
+CREATE INDEX ON "receipt_logs" ("tx_id");
+CREATE INDEX ON "receipt_logs" ("block_height");
+CREATE INDEX ON "receipt_logs" ("receipt_index");
+CREATE INDEX ON "receipt_logs" ("receipt_type");
+CREATE INDEX ON "receipt_logs" ("contract_id");
 
-ALTER TABLE "receipts"."log_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."log_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_logs" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_logs" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Log data data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."log_data_data" (
+CREATE TABLE "receipt_log_data" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "ra" BIGINT NOT NULL,
@@ -216,25 +239,33 @@ CREATE TABLE "receipts"."log_data_data" (
   "is" BIGINT NOT NULL,
   "data" BYTEA,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."log_data_data" ("subject");
-CREATE INDEX ON "receipts"."log_data_data" ("contract_id");
+CREATE INDEX ON "receipt_log_data" ("subject");
+CREATE INDEX ON "receipt_log_data" ("tx_id");
+CREATE INDEX ON "receipt_log_data" ("block_height");
+CREATE INDEX ON "receipt_log_data" ("receipt_index");
+CREATE INDEX ON "receipt_log_data" ("receipt_type");
+CREATE INDEX ON "receipt_log_data" ("contract_id");
 
-ALTER TABLE "receipts"."log_data_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."log_data_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_log_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_log_data" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Transfer data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."transfer_data" (
+CREATE TABLE "receipt_transfers" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "to_contract_id" BYTEA NOT NULL,
@@ -243,27 +274,35 @@ CREATE TABLE "receipts"."transfer_data" (
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."transfer_data" ("subject");
-CREATE INDEX ON "receipts"."transfer_data" ("contract_id");
-CREATE INDEX ON "receipts"."transfer_data" ("to_contract_id");
-CREATE INDEX ON "receipts"."transfer_data" ("asset_id");
+CREATE INDEX ON "receipt_transfers" ("subject");
+CREATE INDEX ON "receipt_transfers" ("tx_id");
+CREATE INDEX ON "receipt_transfers" ("block_height");
+CREATE INDEX ON "receipt_transfers" ("receipt_index");
+CREATE INDEX ON "receipt_transfers" ("receipt_type");
+CREATE INDEX ON "receipt_transfers" ("contract_id");
+CREATE INDEX ON "receipt_transfers" ("to_contract_id");
+CREATE INDEX ON "receipt_transfers" ("asset_id");
 
-ALTER TABLE "receipts"."transfer_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."transfer_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_transfers" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_transfers" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Transfer out data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."transfer_out_data" (
+CREATE TABLE "receipt_transfer_outs" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "contract_id" BYTEA NOT NULL,
   "to_address" BYTEA NOT NULL,
@@ -272,51 +311,67 @@ CREATE TABLE "receipts"."transfer_out_data" (
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."transfer_out_data" ("subject");
-CREATE INDEX ON "receipts"."transfer_out_data" ("contract_id");
-CREATE INDEX ON "receipts"."transfer_out_data" ("to_address");
-CREATE INDEX ON "receipts"."transfer_out_data" ("asset_id");
+CREATE INDEX ON "receipt_transfer_outs" ("subject");
+CREATE INDEX ON "receipt_transfer_outs" ("tx_id");
+CREATE INDEX ON "receipt_transfer_outs" ("block_height");
+CREATE INDEX ON "receipt_transfer_outs" ("receipt_index");
+CREATE INDEX ON "receipt_transfer_outs" ("receipt_type");
+CREATE INDEX ON "receipt_transfer_outs" ("contract_id");
+CREATE INDEX ON "receipt_transfer_outs" ("to_address");
+CREATE INDEX ON "receipt_transfer_outs" ("asset_id");
 
-ALTER TABLE "receipts"."transfer_out_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."transfer_out_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_transfer_outs" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_transfer_outs" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Script result data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."script_result_data" (
+CREATE TABLE "receipt_script_results" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "result" ScriptResultType NOT NULL,
   "gas_used" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."script_result_data" ("subject");
-CREATE INDEX ON "receipts"."script_result_data" ("result");
-CREATE INDEX ON "receipts"."script_result_data" ("gas_used");
+CREATE INDEX ON "receipt_script_results" ("subject");
+CREATE INDEX ON "receipt_script_results" ("tx_id");
+CREATE INDEX ON "receipt_script_results" ("block_height");
+CREATE INDEX ON "receipt_script_results" ("receipt_index");
+CREATE INDEX ON "receipt_script_results" ("receipt_type");
+CREATE INDEX ON "receipt_script_results" ("result");
+CREATE INDEX ON "receipt_script_results" ("gas_used");
 
-ALTER TABLE "receipts"."script_result_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."script_result_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_script_results" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_script_results" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Message out data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."message_out_data" (
+CREATE TABLE "receipt_message_outs" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "message_id" BYTEA NOT NULL,
   "sender_address" BYTEA NOT NULL,
@@ -327,28 +382,36 @@ CREATE TABLE "receipts"."message_out_data" (
   "digest" BYTEA NOT NULL,
   "data" BYTEA,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."message_out_data" ("subject");
-CREATE INDEX ON "receipts"."message_out_data" ("message_id");
-CREATE INDEX ON "receipts"."message_out_data" ("sender_address");
-CREATE INDEX ON "receipts"."message_out_data" ("recipient_address");
-CREATE INDEX ON "receipts"."message_out_data" ("nonce");
+CREATE INDEX ON "receipt_message_outs" ("subject");
+CREATE INDEX ON "receipt_message_outs" ("tx_id");
+CREATE INDEX ON "receipt_message_outs" ("block_height");
+CREATE INDEX ON "receipt_message_outs" ("receipt_index");
+CREATE INDEX ON "receipt_message_outs" ("receipt_type");
+CREATE INDEX ON "receipt_message_outs" ("message_id");
+CREATE INDEX ON "receipt_message_outs" ("sender_address");
+CREATE INDEX ON "receipt_message_outs" ("recipient_address");
+CREATE INDEX ON "receipt_message_outs" ("nonce");
 
-ALTER TABLE "receipts"."message_out_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."message_out_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_message_outs" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_message_outs" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Mint data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."mint_data" (
+CREATE TABLE "receipt_mints" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "sub_id" BYTEA NOT NULL,
   "contract_id" BYTEA NOT NULL,
@@ -357,27 +420,35 @@ CREATE TABLE "receipts"."mint_data" (
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."mint_data" ("subject");
-CREATE INDEX ON "receipts"."mint_data" ("contract_id");
-CREATE INDEX ON "receipts"."mint_data" ("sub_id");
-CREATE INDEX ON "receipts"."mint_data" ("asset_id");
+CREATE INDEX ON "receipt_mints" ("subject");
+CREATE INDEX ON "receipt_mints" ("tx_id");
+CREATE INDEX ON "receipt_mints" ("block_height");
+CREATE INDEX ON "receipt_mints" ("receipt_index");
+CREATE INDEX ON "receipt_mints" ("receipt_type");
+CREATE INDEX ON "receipt_mints" ("contract_id");
+CREATE INDEX ON "receipt_mints" ("sub_id");
+CREATE INDEX ON "receipt_mints" ("asset_id");
 
-ALTER TABLE "receipts"."mint_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."mint_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_mints" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_mints" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Burn data table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "receipts"."burn_data" (
+CREATE TABLE "receipt_burns" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "tx_id" BYTEA NOT NULL,
+  "block_height" BIGINT NOT NULL,
+  "tx_index" INTEGER NOT NULL,
+  "receipt_index" INTEGER NOT NULL,
+  "receipt_type" ReceiptType NOT NULL,
   -- props
   "sub_id" BYTEA NOT NULL,
   "contract_id" BYTEA NOT NULL,
@@ -386,14 +457,18 @@ CREATE TABLE "receipts"."burn_data" (
   "pc" BIGINT NOT NULL,
   "is" BIGINT NOT NULL,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "receipts"."burn_data" ("subject");
-CREATE INDEX ON "receipts"."burn_data" ("contract_id");
-CREATE INDEX ON "receipts"."burn_data" ("sub_id");
-CREATE INDEX ON "receipts"."burn_data" ("asset_id");
+CREATE INDEX ON "receipt_burns" ("subject");
+CREATE INDEX ON "receipt_burns" ("tx_id");
+CREATE INDEX ON "receipt_burns" ("block_height");
+CREATE INDEX ON "receipt_burns" ("receipt_index");
+CREATE INDEX ON "receipt_burns" ("receipt_type");
+CREATE INDEX ON "receipt_burns" ("contract_id");
+CREATE INDEX ON "receipt_burns" ("sub_id");
+CREATE INDEX ON "receipt_burns" ("asset_id");
 
-ALTER TABLE "receipts"."burn_data" ADD FOREIGN KEY ("subject") REFERENCES "receipts"."lookup" ("subject");
-ALTER TABLE "receipts"."burn_data" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "receipt_burns" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
+ALTER TABLE "receipt_burns" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");

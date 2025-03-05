@@ -2,40 +2,13 @@ CREATE SCHEMA "transactions";
 
 CREATE TYPE "TransactionType" AS ENUM ('SCRIPT', 'CREATE', 'MINT', 'UPGRADE', 'UPLOAD', 'BLOB');
 CREATE TYPE "TransactionStatus" AS ENUM ('SUCCESS', 'FAILURE', 'SUBMITTED');
+CREATE TYPE "PolicyType" AS ENUM ('TIP', 'WITNESS_LIMIT', 'MATURITY', 'MAX_FEE');
 
 -- ------------------------------------------------------------------------------
--- Lookup table
+-- Transactions table (renamed from data)
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "transactions"."lookup" (
-  -- uniques
-  "_id" SERIAL PRIMARY KEY,
-  "subject" TEXT UNIQUE NOT NULL,
-  "block_height" BIGINT NOT NULL,
-  "tx_id" BYTEA UNIQUE NOT NULL,
-  "tx_index" INTEGER NOT NULL,
-  -- props
-  "type" TransactionType NOT NULL,
-  "status" TransactionStatus NOT NULL,
-  "value" BYTEA NOT NULL,
-  -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
-  "published_at" TIMESTAMP NOT NULL
-);
-
-CREATE INDEX ON "transactions"."lookup" ("subject");
-CREATE INDEX ON "transactions"."lookup" ("block_height");
-CREATE INDEX ON "transactions"."lookup" ("tx_id");
-CREATE INDEX ON "transactions"."lookup" ("type");
-CREATE INDEX ON "transactions"."lookup" ("status");
-
-ALTER TABLE "transactions"."lookup" ADD FOREIGN KEY ("block_height") REFERENCES "blocks"."lookup" ("block_height");
-
--- ------------------------------------------------------------------------------
--- Data table
--- ------------------------------------------------------------------------------
-
-CREATE TABLE "transactions"."data" (
+CREATE TABLE "transactions" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
@@ -76,29 +49,28 @@ CREATE TABLE "transactions"."data" (
   "inputs_count" INTEGER,
   "outputs_count" INTEGER,
   -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
+  "created_at" TIMESTAMP NOT NULL,
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "transactions"."data" ("subject");
-CREATE INDEX ON "transactions"."data" ("block_height");
-CREATE INDEX ON "transactions"."data" ("tx_id");
-CREATE INDEX ON "transactions"."data" ("tx_index");
-CREATE INDEX ON "transactions"."data" ("type");
-CREATE INDEX ON "transactions"."data" ("status");
-CREATE INDEX ON "transactions"."data" ("blob_id");
-CREATE INDEX ON "transactions"."data" ("script");
-CREATE INDEX ON "transactions"."data" ("is_create");
-CREATE INDEX ON "transactions"."data" ("is_mint");
-CREATE INDEX ON "transactions"."data" ("is_script");
-CREATE INDEX ON "transactions"."data" ("is_upgrade");
-CREATE INDEX ON "transactions"."data" ("is_upload");
-CREATE INDEX ON "transactions"."data" ("script_length");
-CREATE INDEX ON "transactions"."data" ("witness_index");
-CREATE INDEX ON "transactions"."data" ("root");
+CREATE INDEX ON "transactions" ("subject");
+CREATE INDEX ON "transactions" ("block_height");
+CREATE INDEX ON "transactions" ("tx_id");
+CREATE INDEX ON "transactions" ("tx_index");
+CREATE INDEX ON "transactions" ("type");
+CREATE INDEX ON "transactions" ("status");
+CREATE INDEX ON "transactions" ("blob_id");
+CREATE INDEX ON "transactions" ("script");
+CREATE INDEX ON "transactions" ("is_create");
+CREATE INDEX ON "transactions" ("is_mint");
+CREATE INDEX ON "transactions" ("is_script");
+CREATE INDEX ON "transactions" ("is_upgrade");
+CREATE INDEX ON "transactions" ("is_upload");
+CREATE INDEX ON "transactions" ("script_length");
+CREATE INDEX ON "transactions" ("witness_index");
+CREATE INDEX ON "transactions" ("root");
 
-ALTER TABLE "transactions"."data" ADD FOREIGN KEY ("subject") REFERENCES "transactions"."lookup" ("subject");
-ALTER TABLE "transactions"."data" ADD FOREIGN KEY ("block_height") REFERENCES "blocks"."data" ("block_height");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Storage slots table
@@ -123,7 +95,7 @@ CREATE INDEX ON "transactions"."storage_slots" ("key");
 CREATE INDEX ON "transactions"."storage_slots" ("value");
 
 ALTER TABLE "transactions"."storage_slots" ADD FOREIGN KEY ("subject") REFERENCES "transactions"."lookup" ("subject");
-ALTER TABLE "transactions"."storage_slots" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "transactions"."storage_slots" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
 
 -- ------------------------------------------------------------------------------
 -- Witnesses table
@@ -147,7 +119,7 @@ CREATE INDEX ON "transactions"."witnesses" ("tx_id");
 CREATE INDEX ON "transactions"."witnesses" ("witness_data");
 
 ALTER TABLE "transactions"."witnesses" ADD FOREIGN KEY ("subject") REFERENCES "transactions"."lookup" ("subject");
-ALTER TABLE "transactions"."witnesses" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "transactions"."witnesses" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
 
 -- ------------------------------------------------------------------------------
 -- Proof set table
@@ -169,13 +141,11 @@ CREATE INDEX ON "transactions"."proof_set" ("subject");
 CREATE INDEX ON "transactions"."proof_set" ("tx_id");
 
 ALTER TABLE "transactions"."proof_set" ADD FOREIGN KEY ("subject") REFERENCES "transactions"."lookup" ("subject");
-ALTER TABLE "transactions"."proof_set" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "transactions"."proof_set" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");
 
 -- ------------------------------------------------------------------------------
 -- Policies table
 -- ------------------------------------------------------------------------------
-
-CREATE TYPE "PolicyType" AS ENUM ('TIP', 'WITNESS_LIMIT', 'MATURITY', 'MAX_FEE');
 
 CREATE TABLE "transactions"."policies" (
   -- uniques
@@ -195,4 +165,4 @@ CREATE INDEX ON "transactions"."policies" ("tx_id");
 CREATE INDEX ON "transactions"."policies" ("type");
 
 ALTER TABLE "transactions"."policies" ADD FOREIGN KEY ("subject") REFERENCES "transactions"."lookup" ("subject");
-ALTER TABLE "transactions"."policies" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions"."data" ("tx_id");
+ALTER TABLE "transactions"."policies" ADD FOREIGN KEY ("tx_id") REFERENCES "transactions" ("tx_id");

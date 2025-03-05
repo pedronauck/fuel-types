@@ -3,31 +3,10 @@ CREATE SCHEMA "blocks";
 CREATE TYPE "ConsensusType" AS ENUM ('Genesis', 'PoAConsensus');
 
 -- ------------------------------------------------------------------------------
--- Lookup table
+-- Blocks table (renamed from data)
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "blocks"."lookup" (
-  -- uniques
-  "_id" SERIAL PRIMARY KEY,
-  "subject" TEXT UNIQUE NOT NULL,
-  "block_height" BIGINT UNIQUE NOT NULL,
-  -- props
-  "value" BYTEA NOT NULL,
-  -- timestamps
-  "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
-  "published_at" TIMESTAMP NOT NULL,
-  "block_propagation_ms" INTEGER NOT NULL
-);
-
-CREATE INDEX ON "blocks"."lookup" ("subject");
-CREATE INDEX ON "blocks"."lookup" ("block_height");
-CREATE INDEX ON "blocks"."lookup" ("producer_address");
-
--- ------------------------------------------------------------------------------
--- Data table
--- ------------------------------------------------------------------------------
-
-CREATE TABLE "blocks"."data" (
+CREATE TABLE "blocks" (
   -- uniques  
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
@@ -43,15 +22,12 @@ CREATE TABLE "blocks"."data" (
   "published_at" TIMESTAMP NOT NULL
 );
 
-CREATE INDEX ON "blocks"."data" ("subject");
-CREATE INDEX ON "blocks"."data" ("block_height");
-CREATE INDEX ON "blocks"."data" ("producer_address");
-CREATE INDEX ON "blocks"."data" ("block_id");
-CREATE INDEX ON "blocks"."data" ("header_id");
-CREATE INDEX ON "blocks"."data" ("consensus_id");
-ALTER TABLE "blocks"."data" ADD FOREIGN KEY ("subject") REFERENCES "blocks"."lookup" ("subject");
-ALTER TABLE "blocks"."data" ADD FOREIGN KEY ("header_id") REFERENCES "blocks"."headers" ("_id");
-ALTER TABLE "blocks"."data" ADD FOREIGN KEY ("consensus_id") REFERENCES "blocks"."consensus" ("_id");
+CREATE INDEX ON "blocks" ("subject");
+CREATE INDEX ON "blocks" ("block_height");
+CREATE INDEX ON "blocks" ("producer_address");
+CREATE INDEX ON "blocks" ("block_id");
+CREATE INDEX ON "blocks" ("header_id");
+CREATE INDEX ON "blocks" ("consensus_id");
 
 -- ------------------------------------------------------------------------------
 -- Headers table
@@ -84,8 +60,8 @@ CREATE INDEX ON "blocks"."headers" ("subject");
 CREATE INDEX ON "blocks"."headers" ("block_height");
 CREATE INDEX ON "blocks"."headers" ("da_height");
 
-ALTER TABLE "blocks"."headers" ADD FOREIGN KEY ("subject") REFERENCES "blocks"."lookup" ("subject");
-ALTER TABLE "blocks"."headers" ADD FOREIGN KEY ("block_height") REFERENCES "blocks"."data" ("block_height");
+ALTER TABLE "blocks"."headers" ADD FOREIGN KEY ("subject") REFERENCES "blocks" ("subject");
+ALTER TABLE "blocks"."headers" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
 
 -- ------------------------------------------------------------------------------
 -- Consensus table
@@ -113,5 +89,5 @@ CREATE INDEX ON "blocks"."consensus" ("subject");
 CREATE INDEX ON "blocks"."consensus" ("block_height");
 CREATE INDEX ON "blocks"."consensus" ("producer_address");
 
-ALTER TABLE "blocks"."consensus" ADD FOREIGN KEY ("subject") REFERENCES "blocks"."lookup" ("subject");
-ALTER TABLE "blocks"."consensus" ADD FOREIGN KEY ("block_height") REFERENCES "blocks"."data" ("block_height");
+ALTER TABLE "blocks"."consensus" ADD FOREIGN KEY ("subject") REFERENCES "blocks" ("subject");
+ALTER TABLE "blocks"."consensus" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
