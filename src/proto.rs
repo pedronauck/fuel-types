@@ -1,27 +1,28 @@
-pub mod blocks {
-    include!("./generated/blocks.rs");
-}
+pub mod blocks;
+pub mod common;
+pub mod inputs;
+pub mod outputs;
+pub mod pointers;
+pub mod receipts;
+pub mod transactions;
+pub mod utxos;
 
-pub mod transactions {
-    include!("./generated/transactions.rs");
-}
+pub use blocks::*;
+pub use common::*;
+pub use inputs::*;
+pub use outputs::*;
+pub use pointers::*;
+pub use receipts::*;
+pub use transactions::*;
+pub use utxos::*;
 
-pub mod inputs {
-    include!("./generated/inputs.rs");
-}
+use crate::data_parser::ProtobufSerializable;
 
-pub mod outputs {
-    include!("./generated/outputs.rs");
-}
-
-pub mod receipts {
-    include!("./generated/receipts.rs");
-}
-
-pub mod utxos {
-    include!("./generated/utxos.rs");
-}
-
-pub mod pointers {
-    include!("./generated/pointers.rs");
-}
+impl ProtobufSerializable for Block {}
+impl ProtobufSerializable for BlockConsensus {}
+impl ProtobufSerializable for BlockHeader {}
+impl ProtobufSerializable for Transaction {}
+impl ProtobufSerializable for Input {}
+impl ProtobufSerializable for Output {}
+impl ProtobufSerializable for Receipt {}
+impl ProtobufSerializable for Utxo {}

@@ -2,31 +2,50 @@ syntax = "proto3";
 
 package utxos;
 
-import "google/protobuf/timestamp.proto";
 import "pointers.proto";
+import "common.proto";
+
+enum UtxoStatus {
+  UNKNOWN_UTXO_STATUS = 0;
+  UNSPENT = 1;
+  SPENT = 2;
+}
 
 enum UtxoType {
-  CONTRACT = 0;
-  COIN = 1;
-  MESSAGE = 2;
+  UNKNOWN_UXTO_TYPE = 0;
+  CONTRACT = 1;
+  COIN = 2;
+  MESSAGE = 3;
 }
 
 message Utxo {
   string subject = 1;
-  int64 block_height = 2;
-  bytes tx_id = 3;
-  int32 tx_index = 4;
-  int32 input_index = 5;
-  UtxoType utxo_type = 6;
-  bytes utxo_id = 7;
-  bytes value = 8;
-  bytes sender_address = 9;
-  bytes recipient_address = 10;
-  bytes nonce = 11;
-  int64 amount = 12;
-  bytes data = 13;
-  google.protobuf.Timestamp created_at = 14;
-  google.protobuf.Timestamp published_at = 15;
-  google.protobuf.Timestamp updated_at = 16;
-  pointers.UtxoPointer pointer = 17;
+  bytes utxo_id = 2;
+  UtxoType type = 3;
+  UtxoStatus status = 4;
+
+  oneof utxo_data {
+    UtxoCoin coin = 5;
+    UtxoContract contract = 6;
+    UtxoMessage message = 7;
+  }
+  
+  common.Metadata metadata = 8;
+  pointers.UtxoPointer pointer = 9;
+}
+
+message UtxoCoin {
+  int64 amount = 1;
+}
+
+message UtxoContract {
+  bytes contract_id = 1;
+  bytes value = 2;
+}
+
+message UtxoMessage {
+  bytes sender_address = 1;
+  bytes recipient_address = 2;
+  bytes nonce = 3;
+  bytes data = 4;
 }

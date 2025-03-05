@@ -1,0 +1,26 @@
+---
+includes: [proto]
+files:
+  - proto/common.proto
+  - proto/blocks.proto
+  - proto/transactions.proto
+  - proto/inputs.proto
+  - proto/outputs.proto
+  - proto/receipts.proto
+  - proto/utxos.proto
+  - proto/pointers.proto
+output: src/proto
+messages:
+  - paths: []
+    attrs:
+      - derive(serde::Serialize, serde::Deserialize)
+enums:
+  - paths: []
+    attrs:
+      - derive(serde::Serialize, serde::Deserialize)
+fields:
+  - paths: []
+    attrs: []
+
+btree_map: ["."]
+bytes: ["."]

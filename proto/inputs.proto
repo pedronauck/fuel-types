@@ -2,85 +2,75 @@ syntax = "proto3";
 
 package inputs;
 
-import "google/protobuf/timestamp.proto";
 import "pointers.proto";
+import "common.proto";
 
 enum InputType {
-  CONTRACT = 0;
-  COIN = 1;
-  MESSAGE = 2;
+  UNKNOWN_INPUT_TYPE = 0;
+  CONTRACT = 1;
+  COIN = 2;
+  MESSAGE = 3;
 }
 
 message Input {
   string subject = 1;
-  int64 block_height = 2;
-  bytes tx_id = 3;
-  int32 tx_index = 4;
-  int32 input_index = 5;
-  InputType input_type = 6;
+  InputType type = 2;
   
-  // Specific input type
   oneof input {
-    InputCoin coin = 7;
-    InputContract contract = 8;
-    InputMessage message = 9;
+    InputCoin coin = 3;
+    InputContract contract = 4;
+    InputMessage message = 5;
   }
-
+  
   // Metadata
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp published_at = 11;
-  pointers.InputPointer pointer = 12;
+  common.Metadata metadata = 7;
+  pointers.InputPointer pointer = 8;
 }
 
 message InputCoin {
-  string subject = 1;
-  bytes tx_id = 2;
+  // Fields matching fuel-core
+  bytes utxo_id = 1;
+  bytes owner = 2;
   int64 amount = 3;
   bytes asset_id = 4;
-  bytes owner_address = 5;
-  int32 output_index = 6;
-  bytes predicate = 7;
-  bytes predicate_data = 8;
-  int64 predicate_gas_used = 9;
+  pointers.TxPointer tx_pointer = 5;
+  int32 witness_index = 6;
+  int64 predicate_gas_used = 7;
+  bytes predicate = 8;
+  bytes predicate_data = 9;
+
+  // Extra fields (not in fuel-core)
   int64 predicate_length = 10;
   int64 predicate_data_length = 11;
-  int64 tx_pointer_block_height = 12;
-  int32 tx_pointer_tx_index = 13;
-  bytes utxo_id = 14;
-  int32 witness_index = 15;
-  google.protobuf.Timestamp created_at = 16;
-  google.protobuf.Timestamp published_at = 17;
+  int32 output_index = 12;
 }
 
 message InputContract {
-  string subject = 1;
-  bytes tx_id = 2;
-  bytes balance_root = 3;
-  bytes contract_id = 4;
-  int32 output_index = 5;
-  bytes state_root = 6;
-  int64 tx_pointer_block_height = 7;
-  int32 tx_pointer_tx_index = 8;
-  bytes utxo_id = 9;
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp published_at = 11;
+  // Fields matching fuel-core
+  bytes utxo_id = 1;
+  bytes balance_root = 2;
+  bytes state_root = 3;
+  pointers.TxPointer tx_pointer = 4;
+  bytes contract_id = 5;
+
+  // Extra fields (not in fuel-core)
+  int32 output_index = 6;
 }
 
 message InputMessage {
-  string subject = 1;
-  bytes tx_id = 2;
+  // Fields matching fuel-core
+  bytes sender = 1;
+  bytes recipient = 2;
   int64 amount = 3;
-  bytes data = 4;
-  int32 data_length = 5;
-  bytes nonce = 6;
-  bytes predicate = 7;
-  int32 predicate_length = 8;
+  bytes nonce = 4;
+  int32 witness_index = 5;
+  int64 predicate_gas_used = 6;
+  bytes data = 7;
+  bytes predicate = 8;
   bytes predicate_data = 9;
-  int32 predicate_data_length = 10;
-  int64 predicate_gas_used = 11;
-  bytes recipient_address = 12;
-  bytes sender_address = 13;
-  int32 witness_index = 14;
-  google.protobuf.Timestamp created_at = 15;
-  google.protobuf.Timestamp published_at = 16;
+
+  // Extra fields (not in fuel-core)
+  int32 data_length = 10;
+  int32 predicate_length = 11;
+  int32 predicate_data_length = 12;
 }

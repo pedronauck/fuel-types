@@ -2,61 +2,55 @@ syntax = "proto3";
 
 package blocks;
 
-import "google/protobuf/timestamp.proto";
 import "pointers.proto";
+import "common.proto";
 
 enum ConsensusType {
-  GENESIS = 0;
-  POA_CONSENSUS = 1;
+  UNKNOWN_CONSENSUS_TYPE = 0;
+  GENESIS = 1;
+  POA_CONSENSUS = 2;
 }
 
 message Block {
-  string subject = 1;
-  int64 block_height = 2;
-  bytes producer_address = 3;
-  int32 block_id = 4;
-  string version = 5;
+  int64 block_height = 1;
+  int32 block_id = 2;
+  string version = 3;
   
   // Relationship fields
-  BlockHeader header = 6;
-  BlockConsensus consensus = 7;
-  repeated bytes transaction_ids = 8;  // Array of tx_ids in this block
+  BlockHeader header = 4;
+  BlockConsensus consensus = 5;
+  repeated bytes transaction_ids = 6;
 
   // Metadata
-  google.protobuf.Timestamp created_at = 9;
-  google.protobuf.Timestamp published_at = 10;
-  pointers.BlockPointer pointer = 11;
+  common.Metadata metadata = 7;
+  pointers.BlockPointer pointer = 8;
 }
 
 message BlockHeader {
-  string subject = 1;
-  int64 block_height = 2;
-  bytes application_hash = 3;
-  int32 consensus_parameters_version = 4;
-  int64 da_height = 5;
-  bytes event_inbox_root = 6;
-  bytes message_outbox_root = 7;
-  int32 message_receipt_count = 8;
-  bytes prev_root = 9;
-  int32 state_transition_bytecode_version = 10;
-  int64 time = 11;
-  int32 transactions_count = 12;
-  bytes transactions_root = 13;
-  int32 version = 14;
-  google.protobuf.Timestamp created_at = 15;
-  google.protobuf.Timestamp published_at = 16;
+  int64 block_height = 1;
+  bytes application_hash = 2;
+  int32 consensus_parameters_version = 3;
+  int64 da_height = 4;
+  bytes event_inbox_root = 5;
+  bytes message_outbox_root = 6;
+  int32 message_receipt_count = 7;
+  bytes prev_root = 8;
+  int32 state_transition_bytecode_version = 9;
+  int64 time = 10;
+  int32 transactions_count = 11;
+  bytes transactions_root = 12;
+  int32 version = 13;
 }
 
 message BlockConsensus {
-  string subject = 1;
-  int64 block_height = 2;
-  ConsensusType consensus_type = 3;
-  bytes chain_config_hash = 4;
-  bytes coins_root = 5;
-  bytes contracts_root = 6;
-  bytes messages_root = 7;
-  bytes transactions_root = 8;
-  bytes signature = 9;
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp published_at = 11;
+  int64 chain_id = 1;
+  bytes producer = 2;
+  int64 block_height = 3;
+  ConsensusType consensus_type = 4;
+  bytes chain_config_hash = 5;
+  bytes coins_root = 6;
+  bytes contracts_root = 7;
+  bytes messages_root = 8;
+  bytes transactions_root = 9;
+  bytes signature = 10;
 }

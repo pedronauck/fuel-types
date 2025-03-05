@@ -4,9 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-prost = "0.13"
-prost-types = "0.13"
-tonic = { version = "0.12", optional = true }
+prost = "0.13.5"
+prost-types = "0.13.5"
+prost-helper = "0.8.3"
+bytes = "1.10.0"
+thiserror = "2.0.12"
+tokio = { version = "1.43.0", features = ["full"] }
+strum = { version = "0.27.1", features = ["derive"] }
+tonic = { version = "0.12.3", optional = true }
+serde = { version = "1.0.218", features = ["derive"] }
 
 [build-dependencies]
-prost-build = "0.13"
+prost-build = "0.13.5"
+prost-build-config = "0.6.3"
+serde_yaml = "0.9.34"

@@ -6,7 +6,7 @@ message BlockPointer {
   int64 block_height = 1;
 }
 
-message TransactionPointer {
+message TxPointer {
   int64 block_height = 1;
   int32 tx_id = 2;
   int32 tx_index = 3;
@@ -38,4 +38,6 @@ message UtxoPointer {
   int32 tx_id = 2;
   int32 tx_index = 3;
   int32 utxo_id = 4;
+  int32 input_index = 5;
+  int32 output_index = 6;
 }

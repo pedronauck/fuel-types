@@ -22,8 +22,7 @@ CREATE TABLE "utxos" (
   "data" BYTEA,
   -- timestamps
   "created_at" TIMESTAMP NOT NULL,
-  "published_at" TIMESTAMP NOT NULL,
-  "updated_at" TIMESTAMP NOT NULL
+  "published_at" TIMESTAMP NOT NULL
 );
 
 CREATE INDEX ON "utxos" ("subject");
