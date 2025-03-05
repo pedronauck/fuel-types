@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package transactions;
 
-import "common.proto";
 import "pointers.proto";
 import "inputs.proto";
 import "outputs.proto";
 import "receipts.proto";
+import "common.proto";
 
 enum TransactionType {
   UNKNOWN_TRANSACTION_TYPE = 0;
@@ -36,82 +36,82 @@ enum PolicyType {
 }
 
 message Transaction {
-  string subject = 1;
+  TransactionType type = 1;
+  pointers.TxPointer pointer = 2;
+  TransactionData data = 3;
+  common.Metadata metadata = 4;
+}
 
-  // Fields matching fuel-core
-  bytes id = 2;
-  int64 script_gas_limit = 3;
-  pointers.TxPointer tx_pointer = 4;
-  repeated bytes input_asset_ids = 5;
-  repeated bytes input_contracts = 6;
-  inputs.InputContract input_contract = 7;
-  repeated inputs.Input inputs = 8;
-  bool is_script = 9;
-  bool is_create = 10;
-  bool is_mint = 11;
-  bool is_upgrade = 12;
-  bool is_upload = 13;
-  bool is_blob = 14;
-  repeated outputs.Output outputs = 15;
-  outputs.OutputContract output_contract = 16;
-  int64 mint_amount = 17;
-  bytes mint_asset_id = 18;
-  int64 mint_gas_price = 19;
-  bytes receipts_root = 20;
-  TransactionStatus status = 21;
-  repeated bytes witnesses = 22;
-  bytes script = 23;
-  bytes script_data = 24;
-  Policy policies = 25;
-  bytes salt = 26;
-  repeated bytes storage_slots = 27;
-  int32 bytecode_witness_index = 28;
-  bytes bytecode_root = 29;
-  int32 subsection_index = 30;
-  int32 subsections_number = 31;
-  repeated bytes proof_set = 32;
-  int32 upgrade_purpose = 33;
-  bytes blob_id = 34;
+message TransactionData {
+  string id = 1;
+  int64 script_gas_limit = 2;
+  repeated string input_asset_ids = 3;
+  repeated string input_contracts = 4;
+  inputs.InputContract input_contract = 5;
+  repeated inputs.Input inputs = 6;
+  bool is_script = 7;
+  bool is_create = 8;
+  bool is_mint = 9;
+  bool is_upgrade = 10;
+  bool is_upload = 11;
+  bool is_blob = 12;
+  repeated outputs.Output outputs = 13;
+  outputs.OutputContract output_contract = 14;
+  int64 mint_amount = 15;
+  string mint_asset_id = 16;
+  int64 mint_gas_price = 17;
+  string receipts_root = 18;
+  TransactionStatus status = 19;
+  repeated string witnesses = 20;
+  string script = 21;
+  string script_data = 22;
+  Policy policies = 23;
+  string salt = 24;
+  repeated string storage_slots = 25;
+  int32 bytecode_witness_index = 26;
+  string bytecode_root = 27;
+  int32 subsection_index = 28;
+  int32 subsections_number = 29;
+  repeated string proof_set = 30;
+  int32 upgrade_purpose = 31;
+  string blob_id = 32;
 
   // Extra fields (not in fuel-core)
-  int32 maturity = 35;
-  int32 policy_type = 36;
-  bytes raw_payload = 37;
-  int64 script_length = 38;
-  int64 script_data_length = 39;
-  int64 storage_slots_count = 40;
-  int32 proof_set_count = 41;
-  int32 witnesses_count = 42;
-  int32 inputs_count = 43;
-  int32 outputs_count = 44;
-
-  // Metadata
-  common.Metadata metadata = 45;
+  int32 maturity = 33;
+  int32 policy_type = 34;
+  string raw_payload = 35;
+  int64 script_length = 36;
+  int64 script_data_length = 37;
+  int64 storage_slots_count = 38;
+  int32 proof_set_count = 39;
+  int32 witnesses_count = 40;
+  int32 inputs_count = 41;
+  int32 outputs_count = 42;
 }
 
 message StorageSlot {
   string subject = 1;
-  bytes tx_id = 2;
-  bytes key = 3;
-  bytes value = 4;
+  string tx_id = 2;
+  string key = 3;
+  string value = 4;
 }
 
 message Witness {
   string subject = 1;
-  bytes tx_id = 2;
-  bytes witness_data = 3;
+  string tx_id = 2;
+  string witness_data = 3;
   int32 witness_data_length = 4;
 }
 
 message ProofSet {
   string subject = 1;
-  bytes tx_id = 2;
-  bytes proof_hash = 3;
+  string tx_id = 2;
+  string proof_hash = 3;
 }
 
 message Policy {
   string subject = 1;
-  bytes tx_id = 2;
+  string tx_id = 2;
   PolicyType type = 3;
   int64 data = 4;
 }

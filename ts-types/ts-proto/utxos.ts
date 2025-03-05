@@ -90,15 +90,13 @@ export function utxoTypeToJSON(object: UtxoType): string {
 }
 
 export interface Utxo {
-  subject: string;
-  utxoId: Uint8Array;
   type: UtxoType;
+  pointer: UtxoPointer | undefined;
   status: UtxoStatus;
   coin?: UtxoCoin | undefined;
   contract?: UtxoContract | undefined;
   message?: UtxoMessage | undefined;
   metadata: Metadata | undefined;
-  pointer: UtxoPointer | undefined;
 }
 
 export interface UtxoCoin {
@@ -119,46 +117,38 @@ export interface UtxoMessage {
 
 function createBaseUtxo(): Utxo {
   return {
-    subject: "",
-    utxoId: new Uint8Array(0),
     type: 0,
+    pointer: undefined,
     status: 0,
     coin: undefined,
     contract: undefined,
     message: undefined,
     metadata: undefined,
-    pointer: undefined,
   };
 }
 
 export const Utxo: MessageFns<Utxo> = {
   encode(message: Utxo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.utxoId.length !== 0) {
-      writer.uint32(18).bytes(message.utxoId);
-    }
     if (message.type !== 0) {
-      writer.uint32(24).int32(message.type);
-    }
-    if (message.status !== 0) {
-      writer.uint32(32).int32(message.status);
-    }
-    if (message.coin !== undefined) {
-      UtxoCoin.encode(message.coin, writer.uint32(42).fork()).join();
-    }
-    if (message.contract !== undefined) {
-      UtxoContract.encode(message.contract, writer.uint32(50).fork()).join();
-    }
-    if (message.message !== undefined) {
-      UtxoMessage.encode(message.message, writer.uint32(58).fork()).join();
-    }
-    if (message.metadata !== undefined) {
-      Metadata.encode(message.metadata, writer.uint32(66).fork()).join();
+      writer.uint32(8).int32(message.type);
     }
     if (message.pointer !== undefined) {
-      UtxoPointer.encode(message.pointer, writer.uint32(74).fork()).join();
+      UtxoPointer.encode(message.pointer, writer.uint32(18).fork()).join();
+    }
+    if (message.status !== 0) {
+      writer.uint32(24).int32(message.status);
+    }
+    if (message.coin !== undefined) {
+      UtxoCoin.encode(message.coin, writer.uint32(34).fork()).join();
+    }
+    if (message.contract !== undefined) {
+      UtxoContract.encode(message.contract, writer.uint32(42).fork()).join();
+    }
+    if (message.message !== undefined) {
+      UtxoMessage.encode(message.message, writer.uint32(50).fork()).join();
+    }
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(58).fork()).join();
     }
     return writer;
   },
@@ -171,11 +161,11 @@ export const Utxo: MessageFns<Utxo> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.subject = reader.string();
+          message.type = reader.int32() as any;
           continue;
         }
         case 2: {
@@ -183,7 +173,7 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.utxoId = reader.bytes();
+          message.pointer = UtxoPointer.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -191,15 +181,15 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.type = reader.int32() as any;
+          message.status = reader.int32() as any;
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.status = reader.int32() as any;
+          message.coin = UtxoCoin.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
@@ -207,7 +197,7 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.coin = UtxoCoin.decode(reader, reader.uint32());
+          message.contract = UtxoContract.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
@@ -215,7 +205,7 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.contract = UtxoContract.decode(reader, reader.uint32());
+          message.message = UtxoMessage.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -223,23 +213,7 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.message = UtxoMessage.decode(reader, reader.uint32());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
           message.metadata = Metadata.decode(reader, reader.uint32());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.pointer = UtxoPointer.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -253,28 +227,23 @@ export const Utxo: MessageFns<Utxo> = {
 
   fromJSON(object: any): Utxo {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
       type: isSet(object.type) ? utxoTypeFromJSON(object.type) : 0,
+      pointer: isSet(object.pointer) ? UtxoPointer.fromJSON(object.pointer) : undefined,
       status: isSet(object.status) ? utxoStatusFromJSON(object.status) : 0,
       coin: isSet(object.coin) ? UtxoCoin.fromJSON(object.coin) : undefined,
       contract: isSet(object.contract) ? UtxoContract.fromJSON(object.contract) : undefined,
       message: isSet(object.message) ? UtxoMessage.fromJSON(object.message) : undefined,
       metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
-      pointer: isSet(object.pointer) ? UtxoPointer.fromJSON(object.pointer) : undefined,
     };
   },
 
   toJSON(message: Utxo): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.utxoId.length !== 0) {
-      obj.utxoId = base64FromBytes(message.utxoId);
-    }
     if (message.type !== 0) {
       obj.type = utxoTypeToJSON(message.type);
+    }
+    if (message.pointer !== undefined) {
+      obj.pointer = UtxoPointer.toJSON(message.pointer);
     }
     if (message.status !== 0) {
       obj.status = utxoStatusToJSON(message.status);
@@ -291,9 +260,6 @@ export const Utxo: MessageFns<Utxo> = {
     if (message.metadata !== undefined) {
       obj.metadata = Metadata.toJSON(message.metadata);
     }
-    if (message.pointer !== undefined) {
-      obj.pointer = UtxoPointer.toJSON(message.pointer);
-    }
     return obj;
   },
 
@@ -302,9 +268,10 @@ export const Utxo: MessageFns<Utxo> = {
   },
   fromPartial<I extends Exact<DeepPartial<Utxo>, I>>(object: I): Utxo {
     const message = createBaseUtxo();
-    message.subject = object.subject ?? "";
-    message.utxoId = object.utxoId ?? new Uint8Array(0);
     message.type = object.type ?? 0;
+    message.pointer = (object.pointer !== undefined && object.pointer !== null)
+      ? UtxoPointer.fromPartial(object.pointer)
+      : undefined;
     message.status = object.status ?? 0;
     message.coin = (object.coin !== undefined && object.coin !== null) ? UtxoCoin.fromPartial(object.coin) : undefined;
     message.contract = (object.contract !== undefined && object.contract !== null)
@@ -315,9 +282,6 @@ export const Utxo: MessageFns<Utxo> = {
       : undefined;
     message.metadata = (object.metadata !== undefined && object.metadata !== null)
       ? Metadata.fromPartial(object.metadata)
-      : undefined;
-    message.pointer = (object.pointer !== undefined && object.pointer !== null)
-      ? UtxoPointer.fromPartial(object.pointer)
       : undefined;
     return message;
   },

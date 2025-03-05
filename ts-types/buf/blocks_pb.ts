@@ -6,7 +6,7 @@ import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1"
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
 import type { BlockPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
-import type { Metadata } from "./common_pb";
+import type { BlockMetadata } from "./common_pb";
 import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -14,55 +14,26 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file blocks.proto.
  */
 export const file_blocks: GenFile = /*@__PURE__*/
-  fileDesc("CgxibG9ja3MucHJvdG8SBmJsb2NrcyL2AQoFQmxvY2sSFAoMYmxvY2tfaGVpZ2h0GAEgASgDEhAKCGJsb2NrX2lkGAIgASgFEg8KB3ZlcnNpb24YAyABKAkSIwoGaGVhZGVyGAQgASgLMhMuYmxvY2tzLkJsb2NrSGVhZGVyEikKCWNvbnNlbnN1cxgFIAEoCzIWLmJsb2Nrcy5CbG9ja0NvbnNlbnN1cxIXCg90cmFuc2FjdGlvbl9pZHMYBiADKAwSIgoIbWV0YWRhdGEYByABKAsyEC5jb21tb24uTWV0YWRhdGESJwoHcG9pbnRlchgIIAEoCzIWLnBvaW50ZXJzLkJsb2NrUG9pbnRlciLgAgoLQmxvY2tIZWFkZXISFAoMYmxvY2tfaGVpZ2h0GAEgASgDEhgKEGFwcGxpY2F0aW9uX2hhc2gYAiABKAwSJAocY29uc2Vuc3VzX3BhcmFtZXRlcnNfdmVyc2lvbhgDIAEoBRIRCglkYV9oZWlnaHQYBCABKAMSGAoQZXZlbnRfaW5ib3hfcm9vdBgFIAEoDBIbChNtZXNzYWdlX291dGJveF9yb290GAYgASgMEh0KFW1lc3NhZ2VfcmVjZWlwdF9jb3VudBgHIAEoBRIRCglwcmV2X3Jvb3QYCCABKAwSKQohc3RhdGVfdHJhbnNpdGlvbl9ieXRlY29kZV92ZXJzaW9uGAkgASgFEgwKBHRpbWUYCiABKAMSGgoSdHJhbnNhY3Rpb25zX2NvdW50GAsgASgFEhkKEXRyYW5zYWN0aW9uc19yb290GAwgASgMEg8KB3ZlcnNpb24YDSABKAUihQIKDkJsb2NrQ29uc2Vuc3VzEhAKCGNoYWluX2lkGAEgASgDEhAKCHByb2R1Y2VyGAIgASgMEhQKDGJsb2NrX2hlaWdodBgDIAEoAxItCg5jb25zZW5zdXNfdHlwZRgEIAEoDjIVLmJsb2Nrcy5Db25zZW5zdXNUeXBlEhkKEWNoYWluX2NvbmZpZ19oYXNoGAUgASgMEhIKCmNvaW5zX3Jvb3QYBiABKAwSFgoOY29udHJhY3RzX3Jvb3QYByABKAwSFQoNbWVzc2FnZXNfcm9vdBgIIAEoDBIZChF0cmFuc2FjdGlvbnNfcm9vdBgJIAEoDBIRCglzaWduYXR1cmUYCiABKAwqSwoNQ29uc2Vuc3VzVHlwZRIaChZVTktOT1dOX0NPTlNFTlNVU19UWVBFEAASCwoHR0VORVNJUxABEhEKDVBPQV9DT05TRU5TVVMQAmIGcHJvdG8z", [file_pointers, file_common]);
+  fileDesc("CgxibG9ja3MucHJvdG8SBmJsb2NrcyJ6CgVCbG9jaxInCgdwb2ludGVyGAEgASgLMhYucG9pbnRlcnMuQmxvY2tQb2ludGVyEh8KBGRhdGEYAiABKAsyES5ibG9ja3MuQmxvY2tEYXRhEicKCG1ldGFkYXRhGAMgASgLMhUuY29tbW9uLkJsb2NrTWV0YWRhdGEi/gEKCUJsb2NrRGF0YRIPCgd2ZXJzaW9uGAEgASgJEgoKAmlkGAIgASgFEiMKBmhlYWRlchgEIAEoCzITLmJsb2Nrcy5CbG9ja0hlYWRlchItCg5jb25zZW5zdXNfdHlwZRgFIAEoDjIVLmJsb2Nrcy5Db25zZW5zdXNUeXBlEjAKB2dlbmVzaXMYBiABKAsyHS5ibG9ja3MuQmxvY2tDb25zZW5zdXNHZW5lc2lzSAASKAoDcG9hGAcgASgLMhkuYmxvY2tzLkJsb2NrQ29uc2Vuc3VzUG9hSAASFwoPdHJhbnNhY3Rpb25faWRzGAggAygJQgsKCWNvbnNlbnN1cyKKAwoLQmxvY2tIZWFkZXISDwoHdmVyc2lvbhgBIAEoCRIKCgJpZBgCIAEoCRIQCghjaGFpbl9pZBgDIAEoAxIQCghwcm9kdWNlchgEIAEoCRIOCgZoZWlnaHQYBSABKAMSEQoJZGFfaGVpZ2h0GAYgASgDEiQKHGNvbnNlbnN1c19wYXJhbWV0ZXJzX3ZlcnNpb24YByABKAUSKQohc3RhdGVfdHJhbnNpdGlvbl9ieXRlY29kZV92ZXJzaW9uGAggASgFEhoKEnRyYW5zYWN0aW9uc19jb3VudBgJIAEoBRIdChVtZXNzYWdlX3JlY2VpcHRfY291bnQYCiABKAUSGQoRdHJhbnNhY3Rpb25zX3Jvb3QYCyABKAkSGwoTbWVzc2FnZV9vdXRib3hfcm9vdBgMIAEoCRIYChBldmVudF9pbmJveF9yb290GA0gASgJEhEKCXByZXZfcm9vdBgOIAEoCRIMCgR0aW1lGA8gASgDEhgKEGFwcGxpY2F0aW9uX2hhc2gYECABKAkikAEKFUJsb2NrQ29uc2Vuc3VzR2VuZXNpcxIZChFjaGFpbl9jb25maWdfaGFzaBgBIAEoCRISCgpjb2luc19yb290GAIgASgJEhYKDmNvbnRyYWN0c19yb290GAMgASgJEhUKDW1lc3NhZ2VzX3Jvb3QYBCABKAkSGQoRdHJhbnNhY3Rpb25zX3Jvb3QYBSABKAkiJgoRQmxvY2tDb25zZW5zdXNQb2ESEQoJc2lnbmF0dXJlGAEgASgJKksKDUNvbnNlbnN1c1R5cGUSGgoWVU5LTk9XTl9DT05TRU5TVVNfVFlQRRAAEgsKB0dFTkVTSVMQARIRCg1QT0FfQ09OU0VOU1VTEAJiBnByb3RvMw", [file_pointers, file_common]);
 
 /**
  * @generated from message blocks.Block
  */
 export type Block = Message<"blocks.Block"> & {
   /**
-   * @generated from field: int64 block_height = 1;
-   */
-  blockHeight: bigint;
-
-  /**
-   * @generated from field: int32 block_id = 2;
-   */
-  blockId: number;
-
-  /**
-   * @generated from field: string version = 3;
-   */
-  version: string;
-
-  /**
-   * Relationship fields
-   *
-   * @generated from field: blocks.BlockHeader header = 4;
-   */
-  header?: BlockHeader;
-
-  /**
-   * @generated from field: blocks.BlockConsensus consensus = 5;
-   */
-  consensus?: BlockConsensus;
-
-  /**
-   * @generated from field: repeated bytes transaction_ids = 6;
-   */
-  transactionIds: Uint8Array[];
-
-  /**
-   * Metadata
-   *
-   * @generated from field: common.Metadata metadata = 7;
-   */
-  metadata?: Metadata;
-
-  /**
-   * @generated from field: pointers.BlockPointer pointer = 8;
+   * @generated from field: pointers.BlockPointer pointer = 1;
    */
   pointer?: BlockPointer;
+
+  /**
+   * @generated from field: blocks.BlockData data = 2;
+   */
+  data?: BlockData;
+
+  /**
+   * @generated from field: common.BlockMetadata metadata = 3;
+   */
+  metadata?: BlockMetadata;
 };
 
 /**
@@ -73,73 +44,142 @@ export const BlockSchema: GenMessage<Block> = /*@__PURE__*/
   messageDesc(file_blocks, 0);
 
 /**
+ * @generated from message blocks.BlockData
+ */
+export type BlockData = Message<"blocks.BlockData"> & {
+  /**
+   * @generated from field: string version = 1;
+   */
+  version: string;
+
+  /**
+   * @generated from field: int32 id = 2;
+   */
+  id: number;
+
+  /**
+   * @generated from field: blocks.BlockHeader header = 4;
+   */
+  header?: BlockHeader;
+
+  /**
+   * @generated from field: blocks.ConsensusType consensus_type = 5;
+   */
+  consensusType: ConsensusType;
+
+  /**
+   * @generated from oneof blocks.BlockData.consensus
+   */
+  consensus: {
+    /**
+     * @generated from field: blocks.BlockConsensusGenesis genesis = 6;
+     */
+    value: BlockConsensusGenesis;
+    case: "genesis";
+  } | {
+    /**
+     * @generated from field: blocks.BlockConsensusPoa poa = 7;
+     */
+    value: BlockConsensusPoa;
+    case: "poa";
+  } | { case: undefined; value?: undefined };
+
+  /**
+   * @generated from field: repeated string transaction_ids = 8;
+   */
+  transactionIds: string[];
+};
+
+/**
+ * Describes the message blocks.BlockData.
+ * Use `create(BlockDataSchema)` to create a new message.
+ */
+export const BlockDataSchema: GenMessage<BlockData> = /*@__PURE__*/
+  messageDesc(file_blocks, 1);
+
+/**
  * @generated from message blocks.BlockHeader
  */
 export type BlockHeader = Message<"blocks.BlockHeader"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string version = 1;
    */
-  blockHeight: bigint;
+  version: string;
 
   /**
-   * @generated from field: bytes application_hash = 2;
+   * @generated from field: string id = 2;
    */
-  applicationHash: Uint8Array;
+  id: string;
 
   /**
-   * @generated from field: int32 consensus_parameters_version = 3;
+   * @generated from field: int64 chain_id = 3;
    */
-  consensusParametersVersion: number;
+  chainId: bigint;
 
   /**
-   * @generated from field: int64 da_height = 4;
+   * @generated from field: string producer = 4;
+   */
+  producer: string;
+
+  /**
+   * @generated from field: int64 height = 5;
+   */
+  height: bigint;
+
+  /**
+   * @generated from field: int64 da_height = 6;
    */
   daHeight: bigint;
 
   /**
-   * @generated from field: bytes event_inbox_root = 5;
+   * @generated from field: int32 consensus_parameters_version = 7;
    */
-  eventInboxRoot: Uint8Array;
+  consensusParametersVersion: number;
 
   /**
-   * @generated from field: bytes message_outbox_root = 6;
-   */
-  messageOutboxRoot: Uint8Array;
-
-  /**
-   * @generated from field: int32 message_receipt_count = 7;
-   */
-  messageReceiptCount: number;
-
-  /**
-   * @generated from field: bytes prev_root = 8;
-   */
-  prevRoot: Uint8Array;
-
-  /**
-   * @generated from field: int32 state_transition_bytecode_version = 9;
+   * @generated from field: int32 state_transition_bytecode_version = 8;
    */
   stateTransitionBytecodeVersion: number;
 
   /**
-   * @generated from field: int64 time = 10;
-   */
-  time: bigint;
-
-  /**
-   * @generated from field: int32 transactions_count = 11;
+   * @generated from field: int32 transactions_count = 9;
    */
   transactionsCount: number;
 
   /**
-   * @generated from field: bytes transactions_root = 12;
+   * @generated from field: int32 message_receipt_count = 10;
    */
-  transactionsRoot: Uint8Array;
+  messageReceiptCount: number;
 
   /**
-   * @generated from field: int32 version = 13;
+   * @generated from field: string transactions_root = 11;
    */
-  version: number;
+  transactionsRoot: string;
+
+  /**
+   * @generated from field: string message_outbox_root = 12;
+   */
+  messageOutboxRoot: string;
+
+  /**
+   * @generated from field: string event_inbox_root = 13;
+   */
+  eventInboxRoot: string;
+
+  /**
+   * @generated from field: string prev_root = 14;
+   */
+  prevRoot: string;
+
+  /**
+   * @generated from field: int64 time = 15;
+   */
+  time: bigint;
+
+  /**
+   * @generated from field: string application_hash = 16;
+   */
+  applicationHash: string;
 };
 
 /**
@@ -147,69 +187,61 @@ export type BlockHeader = Message<"blocks.BlockHeader"> & {
  * Use `create(BlockHeaderSchema)` to create a new message.
  */
 export const BlockHeaderSchema: GenMessage<BlockHeader> = /*@__PURE__*/
-  messageDesc(file_blocks, 1);
+  messageDesc(file_blocks, 2);
 
 /**
- * @generated from message blocks.BlockConsensus
+ * @generated from message blocks.BlockConsensusGenesis
  */
-export type BlockConsensus = Message<"blocks.BlockConsensus"> & {
+export type BlockConsensusGenesis = Message<"blocks.BlockConsensusGenesis"> & {
   /**
-   * @generated from field: int64 chain_id = 1;
+   * @generated from field: string chain_config_hash = 1;
    */
-  chainId: bigint;
+  chainConfigHash: string;
 
   /**
-   * @generated from field: bytes producer = 2;
+   * @generated from field: string coins_root = 2;
    */
-  producer: Uint8Array;
+  coinsRoot: string;
 
   /**
-   * @generated from field: int64 block_height = 3;
+   * @generated from field: string contracts_root = 3;
    */
-  blockHeight: bigint;
+  contractsRoot: string;
 
   /**
-   * @generated from field: blocks.ConsensusType consensus_type = 4;
+   * @generated from field: string messages_root = 4;
    */
-  consensusType: ConsensusType;
+  messagesRoot: string;
 
   /**
-   * @generated from field: bytes chain_config_hash = 5;
+   * @generated from field: string transactions_root = 5;
    */
-  chainConfigHash: Uint8Array;
-
-  /**
-   * @generated from field: bytes coins_root = 6;
-   */
-  coinsRoot: Uint8Array;
-
-  /**
-   * @generated from field: bytes contracts_root = 7;
-   */
-  contractsRoot: Uint8Array;
-
-  /**
-   * @generated from field: bytes messages_root = 8;
-   */
-  messagesRoot: Uint8Array;
-
-  /**
-   * @generated from field: bytes transactions_root = 9;
-   */
-  transactionsRoot: Uint8Array;
-
-  /**
-   * @generated from field: bytes signature = 10;
-   */
-  signature: Uint8Array;
+  transactionsRoot: string;
 };
 
 /**
- * Describes the message blocks.BlockConsensus.
- * Use `create(BlockConsensusSchema)` to create a new message.
+ * Describes the message blocks.BlockConsensusGenesis.
+ * Use `create(BlockConsensusGenesisSchema)` to create a new message.
  */
-export const BlockConsensusSchema: GenMessage<BlockConsensus> = /*@__PURE__*/
-  messageDesc(file_blocks, 2);
+export const BlockConsensusGenesisSchema: GenMessage<BlockConsensusGenesis> = /*@__PURE__*/
+  messageDesc(file_blocks, 3);
+
+/**
+ * @generated from message blocks.BlockConsensusPoa
+ */
+export type BlockConsensusPoa = Message<"blocks.BlockConsensusPoa"> & {
+  /**
+   * @generated from field: string signature = 1;
+   */
+  signature: string;
+};
+
+/**
+ * Describes the message blocks.BlockConsensusPoa.
+ * Use `create(BlockConsensusPoaSchema)` to create a new message.
+ */
+export const BlockConsensusPoaSchema: GenMessage<BlockConsensusPoa> = /*@__PURE__*/
+  messageDesc(file_blocks, 4);
 
 /**
  * @generated from enum blocks.ConsensusType

@@ -10,53 +10,99 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 export const protobufPackage = "pointers";
 
 export interface BlockPointer {
-  blockHeight: number;
+  subject: string;
 }
 
 export interface TxPointer {
+  subject: string;
   blockHeight: number;
-  txId: number;
+  txId: string;
   txIndex: number;
+  cursor: string;
 }
 
 export interface InputPointer {
+  subject: string;
   blockHeight: number;
-  txId: number;
+  txId: string;
   txIndex: number;
   inputIndex: number;
+  cursor: string;
 }
 
 export interface OutputPointer {
+  subject: string;
   blockHeight: number;
-  txId: number;
+  txId: string;
   txIndex: number;
   outputIndex: number;
+  cursor: string;
 }
 
 export interface ReceiptPointer {
+  subject: string;
   blockHeight: number;
-  txId: number;
+  txId: string;
   txIndex: number;
   receiptIndex: number;
+  cursor: string;
 }
 
 export interface UtxoPointer {
+  subject: string;
   blockHeight: number;
-  txId: number;
+  txId: string;
   txIndex: number;
   utxoId: number;
   inputIndex: number;
   outputIndex: number;
+  cursor: string;
+}
+
+export interface PredicatePointer {
+  subject: string;
+  blockHeight: number;
+  txId: string;
+  txIndex: number;
+  inputIndex: number;
+  cursor: string;
+}
+
+export interface ContractPointer {
+  subject: string;
+  blockHeight: number;
+  txId: string;
+  txIndex: number;
+  outputIndex: number;
+  cursor: string;
+}
+
+export interface ScriptPointer {
+  subject: string;
+  blockHeight: number;
+  txId: string;
+  txIndex: number;
+  cursor: string;
+}
+
+export interface AssetPointer {
+  subject: string;
+  blockHeight: number;
+  txId: string;
+  txIndex: number;
+  contractId: string;
+  assetId: string;
+  cursor: string;
 }
 
 function createBaseBlockPointer(): BlockPointer {
-  return { blockHeight: 0 };
+  return { subject: "" };
 }
 
 export const BlockPointer: MessageFns<BlockPointer> = {
   encode(message: BlockPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
     }
     return writer;
   },
@@ -69,11 +115,11 @@ export const BlockPointer: MessageFns<BlockPointer> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.subject = reader.string();
           continue;
         }
       }
@@ -86,13 +132,13 @@ export const BlockPointer: MessageFns<BlockPointer> = {
   },
 
   fromJSON(object: any): BlockPointer {
-    return { blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0 };
+    return { subject: isSet(object.subject) ? globalThis.String(object.subject) : "" };
   },
 
   toJSON(message: BlockPointer): unknown {
     const obj: any = {};
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
+    if (message.subject !== "") {
+      obj.subject = message.subject;
     }
     return obj;
   },
@@ -102,25 +148,31 @@ export const BlockPointer: MessageFns<BlockPointer> = {
   },
   fromPartial<I extends Exact<DeepPartial<BlockPointer>, I>>(object: I): BlockPointer {
     const message = createBaseBlockPointer();
-    message.blockHeight = object.blockHeight ?? 0;
+    message.subject = object.subject ?? "";
     return message;
   },
 };
 
 function createBaseTxPointer(): TxPointer {
-  return { blockHeight: 0, txId: 0, txIndex: 0 };
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, cursor: "" };
 }
 
 export const TxPointer: MessageFns<TxPointer> = {
   encode(message: TxPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
     }
-    if (message.txId !== 0) {
-      writer.uint32(16).int32(message.txId);
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
     }
     if (message.txIndex !== 0) {
-      writer.uint32(24).int32(message.txIndex);
+      writer.uint32(32).int32(message.txIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(42).string(message.cursor);
     }
     return writer;
   },
@@ -133,11 +185,11 @@ export const TxPointer: MessageFns<TxPointer> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.subject = reader.string();
           continue;
         }
         case 2: {
@@ -145,15 +197,31 @@ export const TxPointer: MessageFns<TxPointer> = {
             break;
           }
 
-          message.txId = reader.int32();
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.txId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
             break;
           }
 
           message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.cursor = reader.string();
           continue;
         }
       }
@@ -167,22 +235,30 @@ export const TxPointer: MessageFns<TxPointer> = {
 
   fromJSON(object: any): TxPointer {
     return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
       txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
     };
   },
 
   toJSON(message: TxPointer): unknown {
     const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
     }
-    if (message.txId !== 0) {
-      obj.txId = Math.round(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
     if (message.txIndex !== 0) {
       obj.txIndex = Math.round(message.txIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
     }
     return obj;
   },
@@ -192,30 +268,38 @@ export const TxPointer: MessageFns<TxPointer> = {
   },
   fromPartial<I extends Exact<DeepPartial<TxPointer>, I>>(object: I): TxPointer {
     const message = createBaseTxPointer();
+    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? 0;
+    message.txId = object.txId ?? "";
     message.txIndex = object.txIndex ?? 0;
+    message.cursor = object.cursor ?? "";
     return message;
   },
 };
 
 function createBaseInputPointer(): InputPointer {
-  return { blockHeight: 0, txId: 0, txIndex: 0, inputIndex: 0 };
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, inputIndex: 0, cursor: "" };
 }
 
 export const InputPointer: MessageFns<InputPointer> = {
   encode(message: InputPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
     }
-    if (message.txId !== 0) {
-      writer.uint32(16).int32(message.txId);
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
     }
     if (message.txIndex !== 0) {
-      writer.uint32(24).int32(message.txIndex);
+      writer.uint32(32).int32(message.txIndex);
     }
     if (message.inputIndex !== 0) {
-      writer.uint32(32).int32(message.inputIndex);
+      writer.uint32(40).int32(message.inputIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(50).string(message.cursor);
     }
     return writer;
   },
@@ -228,11 +312,11 @@ export const InputPointer: MessageFns<InputPointer> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.subject = reader.string();
           continue;
         }
         case 2: {
@@ -240,15 +324,15 @@ export const InputPointer: MessageFns<InputPointer> = {
             break;
           }
 
-          message.txId = reader.int32();
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.txId = reader.string();
           continue;
         }
         case 4: {
@@ -256,7 +340,23 @@ export const InputPointer: MessageFns<InputPointer> = {
             break;
           }
 
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
           message.inputIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cursor = reader.string();
           continue;
         }
       }
@@ -270,26 +370,34 @@ export const InputPointer: MessageFns<InputPointer> = {
 
   fromJSON(object: any): InputPointer {
     return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
       txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
       inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
     };
   },
 
   toJSON(message: InputPointer): unknown {
     const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
     }
-    if (message.txId !== 0) {
-      obj.txId = Math.round(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
     if (message.txIndex !== 0) {
       obj.txIndex = Math.round(message.txIndex);
     }
     if (message.inputIndex !== 0) {
       obj.inputIndex = Math.round(message.inputIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
     }
     return obj;
   },
@@ -299,31 +407,39 @@ export const InputPointer: MessageFns<InputPointer> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputPointer>, I>>(object: I): InputPointer {
     const message = createBaseInputPointer();
+    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? 0;
+    message.txId = object.txId ?? "";
     message.txIndex = object.txIndex ?? 0;
     message.inputIndex = object.inputIndex ?? 0;
+    message.cursor = object.cursor ?? "";
     return message;
   },
 };
 
 function createBaseOutputPointer(): OutputPointer {
-  return { blockHeight: 0, txId: 0, txIndex: 0, outputIndex: 0 };
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, outputIndex: 0, cursor: "" };
 }
 
 export const OutputPointer: MessageFns<OutputPointer> = {
   encode(message: OutputPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
     }
-    if (message.txId !== 0) {
-      writer.uint32(16).int32(message.txId);
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
     }
     if (message.txIndex !== 0) {
-      writer.uint32(24).int32(message.txIndex);
+      writer.uint32(32).int32(message.txIndex);
     }
     if (message.outputIndex !== 0) {
-      writer.uint32(32).int32(message.outputIndex);
+      writer.uint32(40).int32(message.outputIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(50).string(message.cursor);
     }
     return writer;
   },
@@ -336,11 +452,11 @@ export const OutputPointer: MessageFns<OutputPointer> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.subject = reader.string();
           continue;
         }
         case 2: {
@@ -348,15 +464,15 @@ export const OutputPointer: MessageFns<OutputPointer> = {
             break;
           }
 
-          message.txId = reader.int32();
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.txId = reader.string();
           continue;
         }
         case 4: {
@@ -364,7 +480,23 @@ export const OutputPointer: MessageFns<OutputPointer> = {
             break;
           }
 
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
           message.outputIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cursor = reader.string();
           continue;
         }
       }
@@ -378,26 +510,34 @@ export const OutputPointer: MessageFns<OutputPointer> = {
 
   fromJSON(object: any): OutputPointer {
     return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
       txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
       outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
     };
   },
 
   toJSON(message: OutputPointer): unknown {
     const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
     }
-    if (message.txId !== 0) {
-      obj.txId = Math.round(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
     if (message.txIndex !== 0) {
       obj.txIndex = Math.round(message.txIndex);
     }
     if (message.outputIndex !== 0) {
       obj.outputIndex = Math.round(message.outputIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
     }
     return obj;
   },
@@ -407,31 +547,39 @@ export const OutputPointer: MessageFns<OutputPointer> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputPointer>, I>>(object: I): OutputPointer {
     const message = createBaseOutputPointer();
+    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? 0;
+    message.txId = object.txId ?? "";
     message.txIndex = object.txIndex ?? 0;
     message.outputIndex = object.outputIndex ?? 0;
+    message.cursor = object.cursor ?? "";
     return message;
   },
 };
 
 function createBaseReceiptPointer(): ReceiptPointer {
-  return { blockHeight: 0, txId: 0, txIndex: 0, receiptIndex: 0 };
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, receiptIndex: 0, cursor: "" };
 }
 
 export const ReceiptPointer: MessageFns<ReceiptPointer> = {
   encode(message: ReceiptPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
     }
-    if (message.txId !== 0) {
-      writer.uint32(16).int32(message.txId);
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
     }
     if (message.txIndex !== 0) {
-      writer.uint32(24).int32(message.txIndex);
+      writer.uint32(32).int32(message.txIndex);
     }
     if (message.receiptIndex !== 0) {
-      writer.uint32(32).int32(message.receiptIndex);
+      writer.uint32(40).int32(message.receiptIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(50).string(message.cursor);
     }
     return writer;
   },
@@ -444,11 +592,11 @@ export const ReceiptPointer: MessageFns<ReceiptPointer> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.subject = reader.string();
           continue;
         }
         case 2: {
@@ -456,15 +604,15 @@ export const ReceiptPointer: MessageFns<ReceiptPointer> = {
             break;
           }
 
-          message.txId = reader.int32();
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.txId = reader.string();
           continue;
         }
         case 4: {
@@ -472,7 +620,23 @@ export const ReceiptPointer: MessageFns<ReceiptPointer> = {
             break;
           }
 
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
           message.receiptIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cursor = reader.string();
           continue;
         }
       }
@@ -486,26 +650,34 @@ export const ReceiptPointer: MessageFns<ReceiptPointer> = {
 
   fromJSON(object: any): ReceiptPointer {
     return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
       txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
       receiptIndex: isSet(object.receiptIndex) ? globalThis.Number(object.receiptIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
     };
   },
 
   toJSON(message: ReceiptPointer): unknown {
     const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
     }
-    if (message.txId !== 0) {
-      obj.txId = Math.round(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
     if (message.txIndex !== 0) {
       obj.txIndex = Math.round(message.txIndex);
     }
     if (message.receiptIndex !== 0) {
       obj.receiptIndex = Math.round(message.receiptIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
     }
     return obj;
   },
@@ -515,37 +687,45 @@ export const ReceiptPointer: MessageFns<ReceiptPointer> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptPointer>, I>>(object: I): ReceiptPointer {
     const message = createBaseReceiptPointer();
+    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? 0;
+    message.txId = object.txId ?? "";
     message.txIndex = object.txIndex ?? 0;
     message.receiptIndex = object.receiptIndex ?? 0;
+    message.cursor = object.cursor ?? "";
     return message;
   },
 };
 
 function createBaseUtxoPointer(): UtxoPointer {
-  return { blockHeight: 0, txId: 0, txIndex: 0, utxoId: 0, inputIndex: 0, outputIndex: 0 };
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, utxoId: 0, inputIndex: 0, outputIndex: 0, cursor: "" };
 }
 
 export const UtxoPointer: MessageFns<UtxoPointer> = {
   encode(message: UtxoPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
     }
-    if (message.txId !== 0) {
-      writer.uint32(16).int32(message.txId);
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
     }
     if (message.txIndex !== 0) {
-      writer.uint32(24).int32(message.txIndex);
+      writer.uint32(32).int32(message.txIndex);
     }
     if (message.utxoId !== 0) {
-      writer.uint32(32).int32(message.utxoId);
+      writer.uint32(40).int32(message.utxoId);
     }
     if (message.inputIndex !== 0) {
-      writer.uint32(40).int32(message.inputIndex);
+      writer.uint32(48).int32(message.inputIndex);
     }
     if (message.outputIndex !== 0) {
-      writer.uint32(48).int32(message.outputIndex);
+      writer.uint32(56).int32(message.outputIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(66).string(message.cursor);
     }
     return writer;
   },
@@ -558,11 +738,11 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.subject = reader.string();
           continue;
         }
         case 2: {
@@ -570,15 +750,15 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
             break;
           }
 
-          message.txId = reader.int32();
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.txId = reader.string();
           continue;
         }
         case 4: {
@@ -586,7 +766,7 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
             break;
           }
 
-          message.utxoId = reader.int32();
+          message.txIndex = reader.int32();
           continue;
         }
         case 5: {
@@ -594,7 +774,7 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
             break;
           }
 
-          message.inputIndex = reader.int32();
+          message.utxoId = reader.int32();
           continue;
         }
         case 6: {
@@ -602,7 +782,23 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
             break;
           }
 
+          message.inputIndex = reader.int32();
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
           message.outputIndex = reader.int32();
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.cursor = reader.string();
           continue;
         }
       }
@@ -616,22 +812,27 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
 
   fromJSON(object: any): UtxoPointer {
     return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
       txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
       utxoId: isSet(object.utxoId) ? globalThis.Number(object.utxoId) : 0,
       inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
       outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
     };
   },
 
   toJSON(message: UtxoPointer): unknown {
     const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
     }
-    if (message.txId !== 0) {
-      obj.txId = Math.round(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
     if (message.txIndex !== 0) {
       obj.txIndex = Math.round(message.txIndex);
@@ -645,6 +846,9 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
     if (message.outputIndex !== 0) {
       obj.outputIndex = Math.round(message.outputIndex);
     }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
+    }
     return obj;
   },
 
@@ -653,12 +857,574 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
   },
   fromPartial<I extends Exact<DeepPartial<UtxoPointer>, I>>(object: I): UtxoPointer {
     const message = createBaseUtxoPointer();
+    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? 0;
+    message.txId = object.txId ?? "";
     message.txIndex = object.txIndex ?? 0;
     message.utxoId = object.utxoId ?? 0;
     message.inputIndex = object.inputIndex ?? 0;
     message.outputIndex = object.outputIndex ?? 0;
+    message.cursor = object.cursor ?? "";
+    return message;
+  },
+};
+
+function createBasePredicatePointer(): PredicatePointer {
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, inputIndex: 0, cursor: "" };
+}
+
+export const PredicatePointer: MessageFns<PredicatePointer> = {
+  encode(message: PredicatePointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
+    }
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
+    }
+    if (message.txIndex !== 0) {
+      writer.uint32(32).int32(message.txIndex);
+    }
+    if (message.inputIndex !== 0) {
+      writer.uint32(40).int32(message.inputIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(50).string(message.cursor);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PredicatePointer {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePredicatePointer();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.subject = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.blockHeight = longToNumber(reader.int64());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.txId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.inputIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cursor = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PredicatePointer {
+    return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
+      inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
+    };
+  },
+
+  toJSON(message: PredicatePointer): unknown {
+    const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
+    if (message.blockHeight !== 0) {
+      obj.blockHeight = Math.round(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      obj.txId = message.txId;
+    }
+    if (message.txIndex !== 0) {
+      obj.txIndex = Math.round(message.txIndex);
+    }
+    if (message.inputIndex !== 0) {
+      obj.inputIndex = Math.round(message.inputIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PredicatePointer>, I>>(base?: I): PredicatePointer {
+    return PredicatePointer.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PredicatePointer>, I>>(object: I): PredicatePointer {
+    const message = createBasePredicatePointer();
+    message.subject = object.subject ?? "";
+    message.blockHeight = object.blockHeight ?? 0;
+    message.txId = object.txId ?? "";
+    message.txIndex = object.txIndex ?? 0;
+    message.inputIndex = object.inputIndex ?? 0;
+    message.cursor = object.cursor ?? "";
+    return message;
+  },
+};
+
+function createBaseContractPointer(): ContractPointer {
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, outputIndex: 0, cursor: "" };
+}
+
+export const ContractPointer: MessageFns<ContractPointer> = {
+  encode(message: ContractPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
+    }
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
+    }
+    if (message.txIndex !== 0) {
+      writer.uint32(32).int32(message.txIndex);
+    }
+    if (message.outputIndex !== 0) {
+      writer.uint32(40).int32(message.outputIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(50).string(message.cursor);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ContractPointer {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseContractPointer();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.subject = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.blockHeight = longToNumber(reader.int64());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.txId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.outputIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cursor = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ContractPointer {
+    return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
+      outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
+    };
+  },
+
+  toJSON(message: ContractPointer): unknown {
+    const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
+    if (message.blockHeight !== 0) {
+      obj.blockHeight = Math.round(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      obj.txId = message.txId;
+    }
+    if (message.txIndex !== 0) {
+      obj.txIndex = Math.round(message.txIndex);
+    }
+    if (message.outputIndex !== 0) {
+      obj.outputIndex = Math.round(message.outputIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ContractPointer>, I>>(base?: I): ContractPointer {
+    return ContractPointer.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ContractPointer>, I>>(object: I): ContractPointer {
+    const message = createBaseContractPointer();
+    message.subject = object.subject ?? "";
+    message.blockHeight = object.blockHeight ?? 0;
+    message.txId = object.txId ?? "";
+    message.txIndex = object.txIndex ?? 0;
+    message.outputIndex = object.outputIndex ?? 0;
+    message.cursor = object.cursor ?? "";
+    return message;
+  },
+};
+
+function createBaseScriptPointer(): ScriptPointer {
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, cursor: "" };
+}
+
+export const ScriptPointer: MessageFns<ScriptPointer> = {
+  encode(message: ScriptPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
+    }
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
+    }
+    if (message.txIndex !== 0) {
+      writer.uint32(32).int32(message.txIndex);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(50).string(message.cursor);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ScriptPointer {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseScriptPointer();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.subject = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.blockHeight = longToNumber(reader.int64());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.txId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.cursor = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ScriptPointer {
+    return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
+    };
+  },
+
+  toJSON(message: ScriptPointer): unknown {
+    const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
+    if (message.blockHeight !== 0) {
+      obj.blockHeight = Math.round(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      obj.txId = message.txId;
+    }
+    if (message.txIndex !== 0) {
+      obj.txIndex = Math.round(message.txIndex);
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ScriptPointer>, I>>(base?: I): ScriptPointer {
+    return ScriptPointer.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ScriptPointer>, I>>(object: I): ScriptPointer {
+    const message = createBaseScriptPointer();
+    message.subject = object.subject ?? "";
+    message.blockHeight = object.blockHeight ?? 0;
+    message.txId = object.txId ?? "";
+    message.txIndex = object.txIndex ?? 0;
+    message.cursor = object.cursor ?? "";
+    return message;
+  },
+};
+
+function createBaseAssetPointer(): AssetPointer {
+  return { subject: "", blockHeight: 0, txId: "", txIndex: 0, contractId: "", assetId: "", cursor: "" };
+}
+
+export const AssetPointer: MessageFns<AssetPointer> = {
+  encode(message: AssetPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.subject !== "") {
+      writer.uint32(10).string(message.subject);
+    }
+    if (message.blockHeight !== 0) {
+      writer.uint32(16).int64(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      writer.uint32(26).string(message.txId);
+    }
+    if (message.txIndex !== 0) {
+      writer.uint32(32).int32(message.txIndex);
+    }
+    if (message.contractId !== "") {
+      writer.uint32(42).string(message.contractId);
+    }
+    if (message.assetId !== "") {
+      writer.uint32(50).string(message.assetId);
+    }
+    if (message.cursor !== "") {
+      writer.uint32(58).string(message.cursor);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AssetPointer {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAssetPointer();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.subject = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.blockHeight = longToNumber(reader.int64());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.txId = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.txIndex = reader.int32();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.contractId = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.assetId = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.cursor = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AssetPointer {
+    return {
+      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
+      contractId: isSet(object.contractId) ? globalThis.String(object.contractId) : "",
+      assetId: isSet(object.assetId) ? globalThis.String(object.assetId) : "",
+      cursor: isSet(object.cursor) ? globalThis.String(object.cursor) : "",
+    };
+  },
+
+  toJSON(message: AssetPointer): unknown {
+    const obj: any = {};
+    if (message.subject !== "") {
+      obj.subject = message.subject;
+    }
+    if (message.blockHeight !== 0) {
+      obj.blockHeight = Math.round(message.blockHeight);
+    }
+    if (message.txId !== "") {
+      obj.txId = message.txId;
+    }
+    if (message.txIndex !== 0) {
+      obj.txIndex = Math.round(message.txIndex);
+    }
+    if (message.contractId !== "") {
+      obj.contractId = message.contractId;
+    }
+    if (message.assetId !== "") {
+      obj.assetId = message.assetId;
+    }
+    if (message.cursor !== "") {
+      obj.cursor = message.cursor;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AssetPointer>, I>>(base?: I): AssetPointer {
+    return AssetPointer.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AssetPointer>, I>>(object: I): AssetPointer {
+    const message = createBaseAssetPointer();
+    message.subject = object.subject ?? "";
+    message.blockHeight = object.blockHeight ?? 0;
+    message.txId = object.txId ?? "";
+    message.txIndex = object.txIndex ?? 0;
+    message.contractId = object.contractId ?? "";
+    message.assetId = object.assetId ?? "";
+    message.cursor = object.cursor ?? "";
     return message;
   },
 };

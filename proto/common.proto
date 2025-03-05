@@ -2,9 +2,13 @@ syntax = "proto3";
 
 package common;
 
-import "google/protobuf/timestamp.proto";
-
 message Metadata {
-  google.protobuf.Timestamp block_time = 1;
-  google.protobuf.Timestamp published_at = 2;
+  string block_time = 1;
+  string published_at = 2;
+}
+
+message BlockMetadata {
+  string block_time = 1;
+  string published_at = 2;
+  string block_propagation_ms = 3;
 }

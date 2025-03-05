@@ -1,7 +1,9 @@
 ---
 includes: [proto]
 files:
+  - proto/accounts.proto
   - proto/common.proto
+  - proto/assets.proto
   - proto/blocks.proto
   - proto/transactions.proto
   - proto/inputs.proto
@@ -12,12 +14,10 @@ files:
 output: src/proto
 messages:
   - paths: []
-    attrs:
-      - derive(serde::Serialize, serde::Deserialize)
+    attrs: []
 enums:
   - paths: []
-    attrs:
-      - derive(serde::Serialize, serde::Deserialize)
+    attrs: []
 fields:
   - paths: []
     attrs: []

@@ -57,9 +57,6 @@ CREATE TABLE "block_headers" (
     "transactions_count" SMALLINT NOT NULL,
     "transactions_root" TEXT NOT NULL,
     "version" INTEGER NOT NULL,
-    -- timestamps
-    "block_time" TIMESTAMPTZ NOT NULL, -- From block header timestamp
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW (),
     -- constraints
     FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height")
 );
@@ -86,9 +83,6 @@ CREATE TABLE "block_consensus" (
     "producer" TEXT NOT NULL,
     "signature" TEXT,
     "transactions_root" TEXT,
-    -- timestamps
-    "block_time" TIMESTAMPTZ NOT NULL, -- From block header timestamp
-    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW (),
     -- constraints
     FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height")
 );

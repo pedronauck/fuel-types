@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Metadata } from "./common";
+import { BlockMetadata } from "./common";
 import { BlockPointer } from "./pointers";
 
 export const protobufPackage = "blocks";
@@ -51,85 +51,66 @@ export function consensusTypeToJSON(object: ConsensusType): string {
 }
 
 export interface Block {
-  blockHeight: number;
-  blockId: number;
-  version: string;
-  /** Relationship fields */
-  header: BlockHeader | undefined;
-  consensus: BlockConsensus | undefined;
-  transactionIds: Uint8Array[];
-  /** Metadata */
-  metadata: Metadata | undefined;
   pointer: BlockPointer | undefined;
+  data: BlockData | undefined;
+  metadata: BlockMetadata | undefined;
+}
+
+export interface BlockData {
+  version: string;
+  id: number;
+  header: BlockHeader | undefined;
+  consensusType: ConsensusType;
+  genesis?: BlockConsensusGenesis | undefined;
+  poa?: BlockConsensusPoa | undefined;
+  transactionIds: string[];
 }
 
 export interface BlockHeader {
-  blockHeight: number;
-  applicationHash: Uint8Array;
-  consensusParametersVersion: number;
+  version: string;
+  id: string;
+  chainId: number;
+  producer: string;
+  height: number;
   daHeight: number;
-  eventInboxRoot: Uint8Array;
-  messageOutboxRoot: Uint8Array;
-  messageReceiptCount: number;
-  prevRoot: Uint8Array;
+  consensusParametersVersion: number;
   stateTransitionBytecodeVersion: number;
-  time: number;
   transactionsCount: number;
-  transactionsRoot: Uint8Array;
-  version: number;
+  messageReceiptCount: number;
+  transactionsRoot: string;
+  messageOutboxRoot: string;
+  eventInboxRoot: string;
+  prevRoot: string;
+  time: number;
+  applicationHash: string;
 }
 
-export interface BlockConsensus {
-  chainId: number;
-  producer: Uint8Array;
-  blockHeight: number;
-  consensusType: ConsensusType;
-  chainConfigHash: Uint8Array;
-  coinsRoot: Uint8Array;
-  contractsRoot: Uint8Array;
-  messagesRoot: Uint8Array;
-  transactionsRoot: Uint8Array;
-  signature: Uint8Array;
+export interface BlockConsensusGenesis {
+  chainConfigHash: string;
+  coinsRoot: string;
+  contractsRoot: string;
+  messagesRoot: string;
+  transactionsRoot: string;
+}
+
+export interface BlockConsensusPoa {
+  signature: string;
 }
 
 function createBaseBlock(): Block {
-  return {
-    blockHeight: 0,
-    blockId: 0,
-    version: "",
-    header: undefined,
-    consensus: undefined,
-    transactionIds: [],
-    metadata: undefined,
-    pointer: undefined,
-  };
+  return { pointer: undefined, data: undefined, metadata: undefined };
 }
 
 export const Block: MessageFns<Block> = {
   encode(message: Block, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.pointer !== undefined) {
+      BlockPointer.encode(message.pointer, writer.uint32(10).fork()).join();
     }
-    if (message.blockId !== 0) {
-      writer.uint32(16).int32(message.blockId);
-    }
-    if (message.version !== "") {
-      writer.uint32(26).string(message.version);
-    }
-    if (message.header !== undefined) {
-      BlockHeader.encode(message.header, writer.uint32(34).fork()).join();
-    }
-    if (message.consensus !== undefined) {
-      BlockConsensus.encode(message.consensus, writer.uint32(42).fork()).join();
-    }
-    for (const v of message.transactionIds) {
-      writer.uint32(50).bytes(v!);
+    if (message.data !== undefined) {
+      BlockData.encode(message.data, writer.uint32(18).fork()).join();
     }
     if (message.metadata !== undefined) {
-      Metadata.encode(message.metadata, writer.uint32(58).fork()).join();
-    }
-    if (message.pointer !== undefined) {
-      BlockPointer.encode(message.pointer, writer.uint32(66).fork()).join();
+      BlockMetadata.encode(message.metadata, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -142,19 +123,19 @@ export const Block: MessageFns<Block> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.pointer = BlockPointer.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.blockId = reader.int32();
+          message.data = BlockData.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -162,47 +143,7 @@ export const Block: MessageFns<Block> = {
             break;
           }
 
-          message.version = reader.string();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.header = BlockHeader.decode(reader, reader.uint32());
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.consensus = BlockConsensus.decode(reader, reader.uint32());
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.transactionIds.push(reader.bytes());
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.metadata = Metadata.decode(reader, reader.uint32());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.pointer = BlockPointer.decode(reader, reader.uint32());
+          message.metadata = BlockMetadata.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -216,44 +157,22 @@ export const Block: MessageFns<Block> = {
 
   fromJSON(object: any): Block {
     return {
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      blockId: isSet(object.blockId) ? globalThis.Number(object.blockId) : 0,
-      version: isSet(object.version) ? globalThis.String(object.version) : "",
-      header: isSet(object.header) ? BlockHeader.fromJSON(object.header) : undefined,
-      consensus: isSet(object.consensus) ? BlockConsensus.fromJSON(object.consensus) : undefined,
-      transactionIds: globalThis.Array.isArray(object?.transactionIds)
-        ? object.transactionIds.map((e: any) => bytesFromBase64(e))
-        : [],
-      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
       pointer: isSet(object.pointer) ? BlockPointer.fromJSON(object.pointer) : undefined,
+      data: isSet(object.data) ? BlockData.fromJSON(object.data) : undefined,
+      metadata: isSet(object.metadata) ? BlockMetadata.fromJSON(object.metadata) : undefined,
     };
   },
 
   toJSON(message: Block): unknown {
     const obj: any = {};
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
-    }
-    if (message.blockId !== 0) {
-      obj.blockId = Math.round(message.blockId);
-    }
-    if (message.version !== "") {
-      obj.version = message.version;
-    }
-    if (message.header !== undefined) {
-      obj.header = BlockHeader.toJSON(message.header);
-    }
-    if (message.consensus !== undefined) {
-      obj.consensus = BlockConsensus.toJSON(message.consensus);
-    }
-    if (message.transactionIds?.length) {
-      obj.transactionIds = message.transactionIds.map((e) => base64FromBytes(e));
-    }
-    if (message.metadata !== undefined) {
-      obj.metadata = Metadata.toJSON(message.metadata);
-    }
     if (message.pointer !== undefined) {
       obj.pointer = BlockPointer.toJSON(message.pointer);
+    }
+    if (message.data !== undefined) {
+      obj.data = BlockData.toJSON(message.data);
+    }
+    if (message.metadata !== undefined) {
+      obj.metadata = BlockMetadata.toJSON(message.metadata);
     }
     return obj;
   },
@@ -263,84 +182,259 @@ export const Block: MessageFns<Block> = {
   },
   fromPartial<I extends Exact<DeepPartial<Block>, I>>(object: I): Block {
     const message = createBaseBlock();
-    message.blockHeight = object.blockHeight ?? 0;
-    message.blockId = object.blockId ?? 0;
-    message.version = object.version ?? "";
-    message.header = (object.header !== undefined && object.header !== null)
-      ? BlockHeader.fromPartial(object.header)
-      : undefined;
-    message.consensus = (object.consensus !== undefined && object.consensus !== null)
-      ? BlockConsensus.fromPartial(object.consensus)
-      : undefined;
-    message.transactionIds = object.transactionIds?.map((e) => e) || [];
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? Metadata.fromPartial(object.metadata)
-      : undefined;
     message.pointer = (object.pointer !== undefined && object.pointer !== null)
       ? BlockPointer.fromPartial(object.pointer)
       : undefined;
+    message.data = (object.data !== undefined && object.data !== null) ? BlockData.fromPartial(object.data) : undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? BlockMetadata.fromPartial(object.metadata)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseBlockData(): BlockData {
+  return {
+    version: "",
+    id: 0,
+    header: undefined,
+    consensusType: 0,
+    genesis: undefined,
+    poa: undefined,
+    transactionIds: [],
+  };
+}
+
+export const BlockData: MessageFns<BlockData> = {
+  encode(message: BlockData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.version !== "") {
+      writer.uint32(10).string(message.version);
+    }
+    if (message.id !== 0) {
+      writer.uint32(16).int32(message.id);
+    }
+    if (message.header !== undefined) {
+      BlockHeader.encode(message.header, writer.uint32(34).fork()).join();
+    }
+    if (message.consensusType !== 0) {
+      writer.uint32(40).int32(message.consensusType);
+    }
+    if (message.genesis !== undefined) {
+      BlockConsensusGenesis.encode(message.genesis, writer.uint32(50).fork()).join();
+    }
+    if (message.poa !== undefined) {
+      BlockConsensusPoa.encode(message.poa, writer.uint32(58).fork()).join();
+    }
+    for (const v of message.transactionIds) {
+      writer.uint32(66).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BlockData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBlockData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.version = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.id = reader.int32();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.header = BlockHeader.decode(reader, reader.uint32());
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.consensusType = reader.int32() as any;
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.genesis = BlockConsensusGenesis.decode(reader, reader.uint32());
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.poa = BlockConsensusPoa.decode(reader, reader.uint32());
+          continue;
+        }
+        case 8: {
+          if (tag !== 66) {
+            break;
+          }
+
+          message.transactionIds.push(reader.string());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BlockData {
+    return {
+      version: isSet(object.version) ? globalThis.String(object.version) : "",
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      header: isSet(object.header) ? BlockHeader.fromJSON(object.header) : undefined,
+      consensusType: isSet(object.consensusType) ? consensusTypeFromJSON(object.consensusType) : 0,
+      genesis: isSet(object.genesis) ? BlockConsensusGenesis.fromJSON(object.genesis) : undefined,
+      poa: isSet(object.poa) ? BlockConsensusPoa.fromJSON(object.poa) : undefined,
+      transactionIds: globalThis.Array.isArray(object?.transactionIds)
+        ? object.transactionIds.map((e: any) => globalThis.String(e))
+        : [],
+    };
+  },
+
+  toJSON(message: BlockData): unknown {
+    const obj: any = {};
+    if (message.version !== "") {
+      obj.version = message.version;
+    }
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.header !== undefined) {
+      obj.header = BlockHeader.toJSON(message.header);
+    }
+    if (message.consensusType !== 0) {
+      obj.consensusType = consensusTypeToJSON(message.consensusType);
+    }
+    if (message.genesis !== undefined) {
+      obj.genesis = BlockConsensusGenesis.toJSON(message.genesis);
+    }
+    if (message.poa !== undefined) {
+      obj.poa = BlockConsensusPoa.toJSON(message.poa);
+    }
+    if (message.transactionIds?.length) {
+      obj.transactionIds = message.transactionIds;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BlockData>, I>>(base?: I): BlockData {
+    return BlockData.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BlockData>, I>>(object: I): BlockData {
+    const message = createBaseBlockData();
+    message.version = object.version ?? "";
+    message.id = object.id ?? 0;
+    message.header = (object.header !== undefined && object.header !== null)
+      ? BlockHeader.fromPartial(object.header)
+      : undefined;
+    message.consensusType = object.consensusType ?? 0;
+    message.genesis = (object.genesis !== undefined && object.genesis !== null)
+      ? BlockConsensusGenesis.fromPartial(object.genesis)
+      : undefined;
+    message.poa = (object.poa !== undefined && object.poa !== null)
+      ? BlockConsensusPoa.fromPartial(object.poa)
+      : undefined;
+    message.transactionIds = object.transactionIds?.map((e) => e) || [];
     return message;
   },
 };
 
 function createBaseBlockHeader(): BlockHeader {
   return {
-    blockHeight: 0,
-    applicationHash: new Uint8Array(0),
-    consensusParametersVersion: 0,
+    version: "",
+    id: "",
+    chainId: 0,
+    producer: "",
+    height: 0,
     daHeight: 0,
-    eventInboxRoot: new Uint8Array(0),
-    messageOutboxRoot: new Uint8Array(0),
-    messageReceiptCount: 0,
-    prevRoot: new Uint8Array(0),
+    consensusParametersVersion: 0,
     stateTransitionBytecodeVersion: 0,
-    time: 0,
     transactionsCount: 0,
-    transactionsRoot: new Uint8Array(0),
-    version: 0,
+    messageReceiptCount: 0,
+    transactionsRoot: "",
+    messageOutboxRoot: "",
+    eventInboxRoot: "",
+    prevRoot: "",
+    time: 0,
+    applicationHash: "",
   };
 }
 
 export const BlockHeader: MessageFns<BlockHeader> = {
   encode(message: BlockHeader, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockHeight !== 0) {
-      writer.uint32(8).int64(message.blockHeight);
+    if (message.version !== "") {
+      writer.uint32(10).string(message.version);
     }
-    if (message.applicationHash.length !== 0) {
-      writer.uint32(18).bytes(message.applicationHash);
+    if (message.id !== "") {
+      writer.uint32(18).string(message.id);
     }
-    if (message.consensusParametersVersion !== 0) {
-      writer.uint32(24).int32(message.consensusParametersVersion);
+    if (message.chainId !== 0) {
+      writer.uint32(24).int64(message.chainId);
+    }
+    if (message.producer !== "") {
+      writer.uint32(34).string(message.producer);
+    }
+    if (message.height !== 0) {
+      writer.uint32(40).int64(message.height);
     }
     if (message.daHeight !== 0) {
-      writer.uint32(32).int64(message.daHeight);
+      writer.uint32(48).int64(message.daHeight);
     }
-    if (message.eventInboxRoot.length !== 0) {
-      writer.uint32(42).bytes(message.eventInboxRoot);
-    }
-    if (message.messageOutboxRoot.length !== 0) {
-      writer.uint32(50).bytes(message.messageOutboxRoot);
-    }
-    if (message.messageReceiptCount !== 0) {
-      writer.uint32(56).int32(message.messageReceiptCount);
-    }
-    if (message.prevRoot.length !== 0) {
-      writer.uint32(66).bytes(message.prevRoot);
+    if (message.consensusParametersVersion !== 0) {
+      writer.uint32(56).int32(message.consensusParametersVersion);
     }
     if (message.stateTransitionBytecodeVersion !== 0) {
-      writer.uint32(72).int32(message.stateTransitionBytecodeVersion);
-    }
-    if (message.time !== 0) {
-      writer.uint32(80).int64(message.time);
+      writer.uint32(64).int32(message.stateTransitionBytecodeVersion);
     }
     if (message.transactionsCount !== 0) {
-      writer.uint32(88).int32(message.transactionsCount);
+      writer.uint32(72).int32(message.transactionsCount);
     }
-    if (message.transactionsRoot.length !== 0) {
-      writer.uint32(98).bytes(message.transactionsRoot);
+    if (message.messageReceiptCount !== 0) {
+      writer.uint32(80).int32(message.messageReceiptCount);
     }
-    if (message.version !== 0) {
-      writer.uint32(104).int32(message.version);
+    if (message.transactionsRoot !== "") {
+      writer.uint32(90).string(message.transactionsRoot);
+    }
+    if (message.messageOutboxRoot !== "") {
+      writer.uint32(98).string(message.messageOutboxRoot);
+    }
+    if (message.eventInboxRoot !== "") {
+      writer.uint32(106).string(message.eventInboxRoot);
+    }
+    if (message.prevRoot !== "") {
+      writer.uint32(114).string(message.prevRoot);
+    }
+    if (message.time !== 0) {
+      writer.uint32(120).int64(message.time);
+    }
+    if (message.applicationHash !== "") {
+      writer.uint32(130).string(message.applicationHash);
     }
     return writer;
   },
@@ -353,11 +447,11 @@ export const BlockHeader: MessageFns<BlockHeader> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.version = reader.string();
           continue;
         }
         case 2: {
@@ -365,7 +459,7 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.applicationHash = reader.bytes();
+          message.id = reader.string();
           continue;
         }
         case 3: {
@@ -373,31 +467,31 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.consensusParametersVersion = reader.int32();
+          message.chainId = longToNumber(reader.int64());
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.producer = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.height = longToNumber(reader.int64());
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
             break;
           }
 
           message.daHeight = longToNumber(reader.int64());
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.eventInboxRoot = reader.bytes();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.messageOutboxRoot = reader.bytes();
           continue;
         }
         case 7: {
@@ -405,15 +499,15 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.messageReceiptCount = reader.int32();
+          message.consensusParametersVersion = reader.int32();
           continue;
         }
         case 8: {
-          if (tag !== 66) {
+          if (tag !== 64) {
             break;
           }
 
-          message.prevRoot = reader.bytes();
+          message.stateTransitionBytecodeVersion = reader.int32();
           continue;
         }
         case 9: {
@@ -421,7 +515,7 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.stateTransitionBytecodeVersion = reader.int32();
+          message.transactionsCount = reader.int32();
           continue;
         }
         case 10: {
@@ -429,15 +523,15 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.time = longToNumber(reader.int64());
+          message.messageReceiptCount = reader.int32();
           continue;
         }
         case 11: {
-          if (tag !== 88) {
+          if (tag !== 90) {
             break;
           }
 
-          message.transactionsCount = reader.int32();
+          message.transactionsRoot = reader.string();
           continue;
         }
         case 12: {
@@ -445,15 +539,39 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.transactionsRoot = reader.bytes();
+          message.messageOutboxRoot = reader.string();
           continue;
         }
         case 13: {
-          if (tag !== 104) {
+          if (tag !== 106) {
             break;
           }
 
-          message.version = reader.int32();
+          message.eventInboxRoot = reader.string();
+          continue;
+        }
+        case 14: {
+          if (tag !== 114) {
+            break;
+          }
+
+          message.prevRoot = reader.string();
+          continue;
+        }
+        case 15: {
+          if (tag !== 120) {
+            break;
+          }
+
+          message.time = longToNumber(reader.int64());
+          continue;
+        }
+        case 16: {
+          if (tag !== 130) {
+            break;
+          }
+
+          message.applicationHash = reader.string();
           continue;
         }
       }
@@ -467,68 +585,78 @@ export const BlockHeader: MessageFns<BlockHeader> = {
 
   fromJSON(object: any): BlockHeader {
     return {
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      applicationHash: isSet(object.applicationHash) ? bytesFromBase64(object.applicationHash) : new Uint8Array(0),
+      version: isSet(object.version) ? globalThis.String(object.version) : "",
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      chainId: isSet(object.chainId) ? globalThis.Number(object.chainId) : 0,
+      producer: isSet(object.producer) ? globalThis.String(object.producer) : "",
+      height: isSet(object.height) ? globalThis.Number(object.height) : 0,
+      daHeight: isSet(object.daHeight) ? globalThis.Number(object.daHeight) : 0,
       consensusParametersVersion: isSet(object.consensusParametersVersion)
         ? globalThis.Number(object.consensusParametersVersion)
         : 0,
-      daHeight: isSet(object.daHeight) ? globalThis.Number(object.daHeight) : 0,
-      eventInboxRoot: isSet(object.eventInboxRoot) ? bytesFromBase64(object.eventInboxRoot) : new Uint8Array(0),
-      messageOutboxRoot: isSet(object.messageOutboxRoot)
-        ? bytesFromBase64(object.messageOutboxRoot)
-        : new Uint8Array(0),
-      messageReceiptCount: isSet(object.messageReceiptCount) ? globalThis.Number(object.messageReceiptCount) : 0,
-      prevRoot: isSet(object.prevRoot) ? bytesFromBase64(object.prevRoot) : new Uint8Array(0),
       stateTransitionBytecodeVersion: isSet(object.stateTransitionBytecodeVersion)
         ? globalThis.Number(object.stateTransitionBytecodeVersion)
         : 0,
-      time: isSet(object.time) ? globalThis.Number(object.time) : 0,
       transactionsCount: isSet(object.transactionsCount) ? globalThis.Number(object.transactionsCount) : 0,
-      transactionsRoot: isSet(object.transactionsRoot) ? bytesFromBase64(object.transactionsRoot) : new Uint8Array(0),
-      version: isSet(object.version) ? globalThis.Number(object.version) : 0,
+      messageReceiptCount: isSet(object.messageReceiptCount) ? globalThis.Number(object.messageReceiptCount) : 0,
+      transactionsRoot: isSet(object.transactionsRoot) ? globalThis.String(object.transactionsRoot) : "",
+      messageOutboxRoot: isSet(object.messageOutboxRoot) ? globalThis.String(object.messageOutboxRoot) : "",
+      eventInboxRoot: isSet(object.eventInboxRoot) ? globalThis.String(object.eventInboxRoot) : "",
+      prevRoot: isSet(object.prevRoot) ? globalThis.String(object.prevRoot) : "",
+      time: isSet(object.time) ? globalThis.Number(object.time) : 0,
+      applicationHash: isSet(object.applicationHash) ? globalThis.String(object.applicationHash) : "",
     };
   },
 
   toJSON(message: BlockHeader): unknown {
     const obj: any = {};
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
+    if (message.version !== "") {
+      obj.version = message.version;
     }
-    if (message.applicationHash.length !== 0) {
-      obj.applicationHash = base64FromBytes(message.applicationHash);
+    if (message.id !== "") {
+      obj.id = message.id;
     }
-    if (message.consensusParametersVersion !== 0) {
-      obj.consensusParametersVersion = Math.round(message.consensusParametersVersion);
+    if (message.chainId !== 0) {
+      obj.chainId = Math.round(message.chainId);
+    }
+    if (message.producer !== "") {
+      obj.producer = message.producer;
+    }
+    if (message.height !== 0) {
+      obj.height = Math.round(message.height);
     }
     if (message.daHeight !== 0) {
       obj.daHeight = Math.round(message.daHeight);
     }
-    if (message.eventInboxRoot.length !== 0) {
-      obj.eventInboxRoot = base64FromBytes(message.eventInboxRoot);
-    }
-    if (message.messageOutboxRoot.length !== 0) {
-      obj.messageOutboxRoot = base64FromBytes(message.messageOutboxRoot);
-    }
-    if (message.messageReceiptCount !== 0) {
-      obj.messageReceiptCount = Math.round(message.messageReceiptCount);
-    }
-    if (message.prevRoot.length !== 0) {
-      obj.prevRoot = base64FromBytes(message.prevRoot);
+    if (message.consensusParametersVersion !== 0) {
+      obj.consensusParametersVersion = Math.round(message.consensusParametersVersion);
     }
     if (message.stateTransitionBytecodeVersion !== 0) {
       obj.stateTransitionBytecodeVersion = Math.round(message.stateTransitionBytecodeVersion);
     }
-    if (message.time !== 0) {
-      obj.time = Math.round(message.time);
-    }
     if (message.transactionsCount !== 0) {
       obj.transactionsCount = Math.round(message.transactionsCount);
     }
-    if (message.transactionsRoot.length !== 0) {
-      obj.transactionsRoot = base64FromBytes(message.transactionsRoot);
+    if (message.messageReceiptCount !== 0) {
+      obj.messageReceiptCount = Math.round(message.messageReceiptCount);
     }
-    if (message.version !== 0) {
-      obj.version = Math.round(message.version);
+    if (message.transactionsRoot !== "") {
+      obj.transactionsRoot = message.transactionsRoot;
+    }
+    if (message.messageOutboxRoot !== "") {
+      obj.messageOutboxRoot = message.messageOutboxRoot;
+    }
+    if (message.eventInboxRoot !== "") {
+      obj.eventInboxRoot = message.eventInboxRoot;
+    }
+    if (message.prevRoot !== "") {
+      obj.prevRoot = message.prevRoot;
+    }
+    if (message.time !== 0) {
+      obj.time = Math.round(message.time);
+    }
+    if (message.applicationHash !== "") {
+      obj.applicationHash = message.applicationHash;
     }
     return obj;
   },
@@ -538,86 +666,63 @@ export const BlockHeader: MessageFns<BlockHeader> = {
   },
   fromPartial<I extends Exact<DeepPartial<BlockHeader>, I>>(object: I): BlockHeader {
     const message = createBaseBlockHeader();
-    message.blockHeight = object.blockHeight ?? 0;
-    message.applicationHash = object.applicationHash ?? new Uint8Array(0);
-    message.consensusParametersVersion = object.consensusParametersVersion ?? 0;
+    message.version = object.version ?? "";
+    message.id = object.id ?? "";
+    message.chainId = object.chainId ?? 0;
+    message.producer = object.producer ?? "";
+    message.height = object.height ?? 0;
     message.daHeight = object.daHeight ?? 0;
-    message.eventInboxRoot = object.eventInboxRoot ?? new Uint8Array(0);
-    message.messageOutboxRoot = object.messageOutboxRoot ?? new Uint8Array(0);
-    message.messageReceiptCount = object.messageReceiptCount ?? 0;
-    message.prevRoot = object.prevRoot ?? new Uint8Array(0);
+    message.consensusParametersVersion = object.consensusParametersVersion ?? 0;
     message.stateTransitionBytecodeVersion = object.stateTransitionBytecodeVersion ?? 0;
-    message.time = object.time ?? 0;
     message.transactionsCount = object.transactionsCount ?? 0;
-    message.transactionsRoot = object.transactionsRoot ?? new Uint8Array(0);
-    message.version = object.version ?? 0;
+    message.messageReceiptCount = object.messageReceiptCount ?? 0;
+    message.transactionsRoot = object.transactionsRoot ?? "";
+    message.messageOutboxRoot = object.messageOutboxRoot ?? "";
+    message.eventInboxRoot = object.eventInboxRoot ?? "";
+    message.prevRoot = object.prevRoot ?? "";
+    message.time = object.time ?? 0;
+    message.applicationHash = object.applicationHash ?? "";
     return message;
   },
 };
 
-function createBaseBlockConsensus(): BlockConsensus {
-  return {
-    chainId: 0,
-    producer: new Uint8Array(0),
-    blockHeight: 0,
-    consensusType: 0,
-    chainConfigHash: new Uint8Array(0),
-    coinsRoot: new Uint8Array(0),
-    contractsRoot: new Uint8Array(0),
-    messagesRoot: new Uint8Array(0),
-    transactionsRoot: new Uint8Array(0),
-    signature: new Uint8Array(0),
-  };
+function createBaseBlockConsensusGenesis(): BlockConsensusGenesis {
+  return { chainConfigHash: "", coinsRoot: "", contractsRoot: "", messagesRoot: "", transactionsRoot: "" };
 }
 
-export const BlockConsensus: MessageFns<BlockConsensus> = {
-  encode(message: BlockConsensus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.chainId !== 0) {
-      writer.uint32(8).int64(message.chainId);
+export const BlockConsensusGenesis: MessageFns<BlockConsensusGenesis> = {
+  encode(message: BlockConsensusGenesis, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.chainConfigHash !== "") {
+      writer.uint32(10).string(message.chainConfigHash);
     }
-    if (message.producer.length !== 0) {
-      writer.uint32(18).bytes(message.producer);
+    if (message.coinsRoot !== "") {
+      writer.uint32(18).string(message.coinsRoot);
     }
-    if (message.blockHeight !== 0) {
-      writer.uint32(24).int64(message.blockHeight);
+    if (message.contractsRoot !== "") {
+      writer.uint32(26).string(message.contractsRoot);
     }
-    if (message.consensusType !== 0) {
-      writer.uint32(32).int32(message.consensusType);
+    if (message.messagesRoot !== "") {
+      writer.uint32(34).string(message.messagesRoot);
     }
-    if (message.chainConfigHash.length !== 0) {
-      writer.uint32(42).bytes(message.chainConfigHash);
-    }
-    if (message.coinsRoot.length !== 0) {
-      writer.uint32(50).bytes(message.coinsRoot);
-    }
-    if (message.contractsRoot.length !== 0) {
-      writer.uint32(58).bytes(message.contractsRoot);
-    }
-    if (message.messagesRoot.length !== 0) {
-      writer.uint32(66).bytes(message.messagesRoot);
-    }
-    if (message.transactionsRoot.length !== 0) {
-      writer.uint32(74).bytes(message.transactionsRoot);
-    }
-    if (message.signature.length !== 0) {
-      writer.uint32(82).bytes(message.signature);
+    if (message.transactionsRoot !== "") {
+      writer.uint32(42).string(message.transactionsRoot);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): BlockConsensus {
+  decode(input: BinaryReader | Uint8Array, length?: number): BlockConsensusGenesis {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseBlockConsensus();
+    const message = createBaseBlockConsensusGenesis();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.chainId = longToNumber(reader.int64());
+          message.chainConfigHash = reader.string();
           continue;
         }
         case 2: {
@@ -625,23 +730,23 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.producer = reader.bytes();
+          message.coinsRoot = reader.string();
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.contractsRoot = reader.string();
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.consensusType = reader.int32() as any;
+          message.messagesRoot = reader.string();
           continue;
         }
         case 5: {
@@ -649,47 +754,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.chainConfigHash = reader.bytes();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.coinsRoot = reader.bytes();
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.contractsRoot = reader.bytes();
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.messagesRoot = reader.bytes();
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.transactionsRoot = reader.bytes();
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.signature = reader.bytes();
+          message.transactionsRoot = reader.string();
           continue;
         }
       }
@@ -701,99 +766,107 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
     return message;
   },
 
-  fromJSON(object: any): BlockConsensus {
+  fromJSON(object: any): BlockConsensusGenesis {
     return {
-      chainId: isSet(object.chainId) ? globalThis.Number(object.chainId) : 0,
-      producer: isSet(object.producer) ? bytesFromBase64(object.producer) : new Uint8Array(0),
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      consensusType: isSet(object.consensusType) ? consensusTypeFromJSON(object.consensusType) : 0,
-      chainConfigHash: isSet(object.chainConfigHash) ? bytesFromBase64(object.chainConfigHash) : new Uint8Array(0),
-      coinsRoot: isSet(object.coinsRoot) ? bytesFromBase64(object.coinsRoot) : new Uint8Array(0),
-      contractsRoot: isSet(object.contractsRoot) ? bytesFromBase64(object.contractsRoot) : new Uint8Array(0),
-      messagesRoot: isSet(object.messagesRoot) ? bytesFromBase64(object.messagesRoot) : new Uint8Array(0),
-      transactionsRoot: isSet(object.transactionsRoot) ? bytesFromBase64(object.transactionsRoot) : new Uint8Array(0),
-      signature: isSet(object.signature) ? bytesFromBase64(object.signature) : new Uint8Array(0),
+      chainConfigHash: isSet(object.chainConfigHash) ? globalThis.String(object.chainConfigHash) : "",
+      coinsRoot: isSet(object.coinsRoot) ? globalThis.String(object.coinsRoot) : "",
+      contractsRoot: isSet(object.contractsRoot) ? globalThis.String(object.contractsRoot) : "",
+      messagesRoot: isSet(object.messagesRoot) ? globalThis.String(object.messagesRoot) : "",
+      transactionsRoot: isSet(object.transactionsRoot) ? globalThis.String(object.transactionsRoot) : "",
     };
   },
 
-  toJSON(message: BlockConsensus): unknown {
+  toJSON(message: BlockConsensusGenesis): unknown {
     const obj: any = {};
-    if (message.chainId !== 0) {
-      obj.chainId = Math.round(message.chainId);
+    if (message.chainConfigHash !== "") {
+      obj.chainConfigHash = message.chainConfigHash;
     }
-    if (message.producer.length !== 0) {
-      obj.producer = base64FromBytes(message.producer);
+    if (message.coinsRoot !== "") {
+      obj.coinsRoot = message.coinsRoot;
     }
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
+    if (message.contractsRoot !== "") {
+      obj.contractsRoot = message.contractsRoot;
     }
-    if (message.consensusType !== 0) {
-      obj.consensusType = consensusTypeToJSON(message.consensusType);
+    if (message.messagesRoot !== "") {
+      obj.messagesRoot = message.messagesRoot;
     }
-    if (message.chainConfigHash.length !== 0) {
-      obj.chainConfigHash = base64FromBytes(message.chainConfigHash);
-    }
-    if (message.coinsRoot.length !== 0) {
-      obj.coinsRoot = base64FromBytes(message.coinsRoot);
-    }
-    if (message.contractsRoot.length !== 0) {
-      obj.contractsRoot = base64FromBytes(message.contractsRoot);
-    }
-    if (message.messagesRoot.length !== 0) {
-      obj.messagesRoot = base64FromBytes(message.messagesRoot);
-    }
-    if (message.transactionsRoot.length !== 0) {
-      obj.transactionsRoot = base64FromBytes(message.transactionsRoot);
-    }
-    if (message.signature.length !== 0) {
-      obj.signature = base64FromBytes(message.signature);
+    if (message.transactionsRoot !== "") {
+      obj.transactionsRoot = message.transactionsRoot;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<BlockConsensus>, I>>(base?: I): BlockConsensus {
-    return BlockConsensus.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<BlockConsensusGenesis>, I>>(base?: I): BlockConsensusGenesis {
+    return BlockConsensusGenesis.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<BlockConsensus>, I>>(object: I): BlockConsensus {
-    const message = createBaseBlockConsensus();
-    message.chainId = object.chainId ?? 0;
-    message.producer = object.producer ?? new Uint8Array(0);
-    message.blockHeight = object.blockHeight ?? 0;
-    message.consensusType = object.consensusType ?? 0;
-    message.chainConfigHash = object.chainConfigHash ?? new Uint8Array(0);
-    message.coinsRoot = object.coinsRoot ?? new Uint8Array(0);
-    message.contractsRoot = object.contractsRoot ?? new Uint8Array(0);
-    message.messagesRoot = object.messagesRoot ?? new Uint8Array(0);
-    message.transactionsRoot = object.transactionsRoot ?? new Uint8Array(0);
-    message.signature = object.signature ?? new Uint8Array(0);
+  fromPartial<I extends Exact<DeepPartial<BlockConsensusGenesis>, I>>(object: I): BlockConsensusGenesis {
+    const message = createBaseBlockConsensusGenesis();
+    message.chainConfigHash = object.chainConfigHash ?? "";
+    message.coinsRoot = object.coinsRoot ?? "";
+    message.contractsRoot = object.contractsRoot ?? "";
+    message.messagesRoot = object.messagesRoot ?? "";
+    message.transactionsRoot = object.transactionsRoot ?? "";
     return message;
   },
 };
 
-function bytesFromBase64(b64: string): Uint8Array {
-  if ((globalThis as any).Buffer) {
-    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
-  } else {
-    const bin = globalThis.atob(b64);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; ++i) {
-      arr[i] = bin.charCodeAt(i);
-    }
-    return arr;
-  }
+function createBaseBlockConsensusPoa(): BlockConsensusPoa {
+  return { signature: "" };
 }
 
-function base64FromBytes(arr: Uint8Array): string {
-  if ((globalThis as any).Buffer) {
-    return globalThis.Buffer.from(arr).toString("base64");
-  } else {
-    const bin: string[] = [];
-    arr.forEach((byte) => {
-      bin.push(globalThis.String.fromCharCode(byte));
-    });
-    return globalThis.btoa(bin.join(""));
-  }
-}
+export const BlockConsensusPoa: MessageFns<BlockConsensusPoa> = {
+  encode(message: BlockConsensusPoa, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.signature !== "") {
+      writer.uint32(10).string(message.signature);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BlockConsensusPoa {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBlockConsensusPoa();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.signature = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BlockConsensusPoa {
+    return { signature: isSet(object.signature) ? globalThis.String(object.signature) : "" };
+  },
+
+  toJSON(message: BlockConsensusPoa): unknown {
+    const obj: any = {};
+    if (message.signature !== "") {
+      obj.signature = message.signature;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BlockConsensusPoa>, I>>(base?: I): BlockConsensusPoa {
+    return BlockConsensusPoa.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BlockConsensusPoa>, I>>(object: I): BlockConsensusPoa {
+    const message = createBaseBlockConsensusPoa();
+    message.signature = object.signature ?? "";
+    return message;
+  },
+};
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

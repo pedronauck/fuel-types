@@ -10,16 +10,16 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file pointers.proto.
  */
 export const file_pointers: GenFile = /*@__PURE__*/
-  fileDesc("Cg5wb2ludGVycy5wcm90bxIIcG9pbnRlcnMiJAoMQmxvY2tQb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAyJCCglUeFBvaW50ZXISFAoMYmxvY2tfaGVpZ2h0GAEgASgDEg0KBXR4X2lkGAIgASgFEhAKCHR4X2luZGV4GAMgASgFIloKDElucHV0UG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSEwoLaW5wdXRfaW5kZXgYBCABKAUiXAoNT3V0cHV0UG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSFAoMb3V0cHV0X2luZGV4GAQgASgFIl4KDlJlY2VpcHRQb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAxINCgV0eF9pZBgCIAEoBRIQCgh0eF9pbmRleBgDIAEoBRIVCg1yZWNlaXB0X2luZGV4GAQgASgFIoABCgtVdHhvUG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSDwoHdXR4b19pZBgEIAEoBRITCgtpbnB1dF9pbmRleBgFIAEoBRIUCgxvdXRwdXRfaW5kZXgYBiABKAViBnByb3RvMw");
+  fileDesc("Cg5wb2ludGVycy5wcm90bxIIcG9pbnRlcnMiHwoMQmxvY2tQb2ludGVyEg8KB3N1YmplY3QYASABKAkiYwoJVHhQb2ludGVyEg8KB3N1YmplY3QYASABKAkSFAoMYmxvY2tfaGVpZ2h0GAIgASgDEg0KBXR4X2lkGAMgASgJEhAKCHR4X2luZGV4GAQgASgFEg4KBmN1cnNvchgFIAEoCSJ7CgxJbnB1dFBvaW50ZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAkSEAoIdHhfaW5kZXgYBCABKAUSEwoLaW5wdXRfaW5kZXgYBSABKAUSDgoGY3Vyc29yGAYgASgJIn0KDU91dHB1dFBvaW50ZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAkSEAoIdHhfaW5kZXgYBCABKAUSFAoMb3V0cHV0X2luZGV4GAUgASgFEg4KBmN1cnNvchgGIAEoCSJ/Cg5SZWNlaXB0UG9pbnRlchIPCgdzdWJqZWN0GAEgASgJEhQKDGJsb2NrX2hlaWdodBgCIAEoAxINCgV0eF9pZBgDIAEoCRIQCgh0eF9pbmRleBgEIAEoBRIVCg1yZWNlaXB0X2luZGV4GAUgASgFEg4KBmN1cnNvchgGIAEoCSKhAQoLVXR4b1BvaW50ZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAkSEAoIdHhfaW5kZXgYBCABKAUSDwoHdXR4b19pZBgFIAEoBRITCgtpbnB1dF9pbmRleBgGIAEoBRIUCgxvdXRwdXRfaW5kZXgYByABKAUSDgoGY3Vyc29yGAggASgJIn8KEFByZWRpY2F0ZVBvaW50ZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAkSEAoIdHhfaW5kZXgYBCABKAUSEwoLaW5wdXRfaW5kZXgYBSABKAUSDgoGY3Vyc29yGAYgASgJIn8KD0NvbnRyYWN0UG9pbnRlchIPCgdzdWJqZWN0GAEgASgJEhQKDGJsb2NrX2hlaWdodBgCIAEoAxINCgV0eF9pZBgDIAEoCRIQCgh0eF9pbmRleBgEIAEoBRIUCgxvdXRwdXRfaW5kZXgYBSABKAUSDgoGY3Vyc29yGAYgASgJImcKDVNjcmlwdFBvaW50ZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAkSEAoIdHhfaW5kZXgYBCABKAUSDgoGY3Vyc29yGAYgASgJIo0BCgxBc3NldFBvaW50ZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAkSEAoIdHhfaW5kZXgYBCABKAUSEwoLY29udHJhY3RfaWQYBSABKAkSEAoIYXNzZXRfaWQYBiABKAkSDgoGY3Vyc29yGAcgASgJYgZwcm90bzM");
 
 /**
  * @generated from message pointers.BlockPointer
  */
 export type BlockPointer = Message<"pointers.BlockPointer"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string subject = 1;
    */
-  blockHeight: bigint;
+  subject: string;
 };
 
 /**
@@ -34,19 +34,29 @@ export const BlockPointerSchema: GenMessage<BlockPointer> = /*@__PURE__*/
  */
 export type TxPointer = Message<"pointers.TxPointer"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: int32 tx_id = 2;
+   * @generated from field: string tx_id = 3;
    */
-  txId: number;
+  txId: string;
 
   /**
-   * @generated from field: int32 tx_index = 3;
+   * @generated from field: int32 tx_index = 4;
    */
   txIndex: number;
+
+  /**
+   * @generated from field: string cursor = 5;
+   */
+  cursor: string;
 };
 
 /**
@@ -61,24 +71,34 @@ export const TxPointerSchema: GenMessage<TxPointer> = /*@__PURE__*/
  */
 export type InputPointer = Message<"pointers.InputPointer"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: int32 tx_id = 2;
+   * @generated from field: string tx_id = 3;
    */
-  txId: number;
+  txId: string;
 
   /**
-   * @generated from field: int32 tx_index = 3;
+   * @generated from field: int32 tx_index = 4;
    */
   txIndex: number;
 
   /**
-   * @generated from field: int32 input_index = 4;
+   * @generated from field: int32 input_index = 5;
    */
   inputIndex: number;
+
+  /**
+   * @generated from field: string cursor = 6;
+   */
+  cursor: string;
 };
 
 /**
@@ -93,24 +113,34 @@ export const InputPointerSchema: GenMessage<InputPointer> = /*@__PURE__*/
  */
 export type OutputPointer = Message<"pointers.OutputPointer"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: int32 tx_id = 2;
+   * @generated from field: string tx_id = 3;
    */
-  txId: number;
+  txId: string;
 
   /**
-   * @generated from field: int32 tx_index = 3;
+   * @generated from field: int32 tx_index = 4;
    */
   txIndex: number;
 
   /**
-   * @generated from field: int32 output_index = 4;
+   * @generated from field: int32 output_index = 5;
    */
   outputIndex: number;
+
+  /**
+   * @generated from field: string cursor = 6;
+   */
+  cursor: string;
 };
 
 /**
@@ -125,24 +155,34 @@ export const OutputPointerSchema: GenMessage<OutputPointer> = /*@__PURE__*/
  */
 export type ReceiptPointer = Message<"pointers.ReceiptPointer"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: int32 tx_id = 2;
+   * @generated from field: string tx_id = 3;
    */
-  txId: number;
+  txId: string;
 
   /**
-   * @generated from field: int32 tx_index = 3;
+   * @generated from field: int32 tx_index = 4;
    */
   txIndex: number;
 
   /**
-   * @generated from field: int32 receipt_index = 4;
+   * @generated from field: int32 receipt_index = 5;
    */
   receiptIndex: number;
+
+  /**
+   * @generated from field: string cursor = 6;
+   */
+  cursor: string;
 };
 
 /**
@@ -157,34 +197,44 @@ export const ReceiptPointerSchema: GenMessage<ReceiptPointer> = /*@__PURE__*/
  */
 export type UtxoPointer = Message<"pointers.UtxoPointer"> & {
   /**
-   * @generated from field: int64 block_height = 1;
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: int32 tx_id = 2;
+   * @generated from field: string tx_id = 3;
    */
-  txId: number;
+  txId: string;
 
   /**
-   * @generated from field: int32 tx_index = 3;
+   * @generated from field: int32 tx_index = 4;
    */
   txIndex: number;
 
   /**
-   * @generated from field: int32 utxo_id = 4;
+   * @generated from field: int32 utxo_id = 5;
    */
   utxoId: number;
 
   /**
-   * @generated from field: int32 input_index = 5;
+   * @generated from field: int32 input_index = 6;
    */
   inputIndex: number;
 
   /**
-   * @generated from field: int32 output_index = 6;
+   * @generated from field: int32 output_index = 7;
    */
   outputIndex: number;
+
+  /**
+   * @generated from field: string cursor = 8;
+   */
+  cursor: string;
 };
 
 /**
@@ -193,4 +243,172 @@ export type UtxoPointer = Message<"pointers.UtxoPointer"> & {
  */
 export const UtxoPointerSchema: GenMessage<UtxoPointer> = /*@__PURE__*/
   messageDesc(file_pointers, 5);
+
+/**
+ * @generated from message pointers.PredicatePointer
+ */
+export type PredicatePointer = Message<"pointers.PredicatePointer"> & {
+  /**
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
+   */
+  blockHeight: bigint;
+
+  /**
+   * @generated from field: string tx_id = 3;
+   */
+  txId: string;
+
+  /**
+   * @generated from field: int32 tx_index = 4;
+   */
+  txIndex: number;
+
+  /**
+   * @generated from field: int32 input_index = 5;
+   */
+  inputIndex: number;
+
+  /**
+   * @generated from field: string cursor = 6;
+   */
+  cursor: string;
+};
+
+/**
+ * Describes the message pointers.PredicatePointer.
+ * Use `create(PredicatePointerSchema)` to create a new message.
+ */
+export const PredicatePointerSchema: GenMessage<PredicatePointer> = /*@__PURE__*/
+  messageDesc(file_pointers, 6);
+
+/**
+ * @generated from message pointers.ContractPointer
+ */
+export type ContractPointer = Message<"pointers.ContractPointer"> & {
+  /**
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
+   */
+  blockHeight: bigint;
+
+  /**
+   * @generated from field: string tx_id = 3;
+   */
+  txId: string;
+
+  /**
+   * @generated from field: int32 tx_index = 4;
+   */
+  txIndex: number;
+
+  /**
+   * @generated from field: int32 output_index = 5;
+   */
+  outputIndex: number;
+
+  /**
+   * @generated from field: string cursor = 6;
+   */
+  cursor: string;
+};
+
+/**
+ * Describes the message pointers.ContractPointer.
+ * Use `create(ContractPointerSchema)` to create a new message.
+ */
+export const ContractPointerSchema: GenMessage<ContractPointer> = /*@__PURE__*/
+  messageDesc(file_pointers, 7);
+
+/**
+ * @generated from message pointers.ScriptPointer
+ */
+export type ScriptPointer = Message<"pointers.ScriptPointer"> & {
+  /**
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
+   */
+  blockHeight: bigint;
+
+  /**
+   * @generated from field: string tx_id = 3;
+   */
+  txId: string;
+
+  /**
+   * @generated from field: int32 tx_index = 4;
+   */
+  txIndex: number;
+
+  /**
+   * @generated from field: string cursor = 6;
+   */
+  cursor: string;
+};
+
+/**
+ * Describes the message pointers.ScriptPointer.
+ * Use `create(ScriptPointerSchema)` to create a new message.
+ */
+export const ScriptPointerSchema: GenMessage<ScriptPointer> = /*@__PURE__*/
+  messageDesc(file_pointers, 8);
+
+/**
+ * @generated from message pointers.AssetPointer
+ */
+export type AssetPointer = Message<"pointers.AssetPointer"> & {
+  /**
+   * @generated from field: string subject = 1;
+   */
+  subject: string;
+
+  /**
+   * @generated from field: int64 block_height = 2;
+   */
+  blockHeight: bigint;
+
+  /**
+   * @generated from field: string tx_id = 3;
+   */
+  txId: string;
+
+  /**
+   * @generated from field: int32 tx_index = 4;
+   */
+  txIndex: number;
+
+  /**
+   * @generated from field: string contract_id = 5;
+   */
+  contractId: string;
+
+  /**
+   * @generated from field: string asset_id = 6;
+   */
+  assetId: string;
+
+  /**
+   * @generated from field: string cursor = 7;
+   */
+  cursor: string;
+};
+
+/**
+ * Describes the message pointers.AssetPointer.
+ * Use `create(AssetPointerSchema)` to create a new message.
+ */
+export const AssetPointerSchema: GenMessage<AssetPointer> = /*@__PURE__*/
+  messageDesc(file_pointers, 9);
 

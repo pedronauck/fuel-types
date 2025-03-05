@@ -4,7 +4,7 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { InputPointer, TxPointer } from "./pointers_pb";
+import type { InputPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
 import type { Metadata } from "./common_pb";
 import { file_common } from "./common_pb";
@@ -14,26 +14,26 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file inputs.proto.
  */
 export const file_inputs: GenFile = /*@__PURE__*/
-  fileDesc("CgxpbnB1dHMucHJvdG8SBmlucHV0cyKGAgoFSW5wdXQSDwoHc3ViamVjdBgBIAEoCRIfCgR0eXBlGAIgASgOMhEuaW5wdXRzLklucHV0VHlwZRIhCgRjb2luGAMgASgLMhEuaW5wdXRzLklucHV0Q29pbkgAEikKCGNvbnRyYWN0GAQgASgLMhUuaW5wdXRzLklucHV0Q29udHJhY3RIABInCgdtZXNzYWdlGAUgASgLMhQuaW5wdXRzLklucHV0TWVzc2FnZUgAEiIKCG1ldGFkYXRhGAcgASgLMhAuY29tbW9uLk1ldGFkYXRhEicKB3BvaW50ZXIYCCABKAsyFi5wb2ludGVycy5JbnB1dFBvaW50ZXJCBwoFaW5wdXQiowIKCUlucHV0Q29pbhIPCgd1dHhvX2lkGAEgASgMEg0KBW93bmVyGAIgASgMEg4KBmFtb3VudBgDIAEoAxIQCghhc3NldF9pZBgEIAEoDBInCgp0eF9wb2ludGVyGAUgASgLMhMucG9pbnRlcnMuVHhQb2ludGVyEhUKDXdpdG5lc3NfaW5kZXgYBiABKAUSGgoScHJlZGljYXRlX2dhc191c2VkGAcgASgDEhEKCXByZWRpY2F0ZRgIIAEoDBIWCg5wcmVkaWNhdGVfZGF0YRgJIAEoDBIYChBwcmVkaWNhdGVfbGVuZ3RoGAogASgDEh0KFXByZWRpY2F0ZV9kYXRhX2xlbmd0aBgLIAEoAxIUCgxvdXRwdXRfaW5kZXgYDCABKAUingEKDUlucHV0Q29udHJhY3QSDwoHdXR4b19pZBgBIAEoDBIUCgxiYWxhbmNlX3Jvb3QYAiABKAwSEgoKc3RhdGVfcm9vdBgDIAEoDBInCgp0eF9wb2ludGVyGAQgASgLMhMucG9pbnRlcnMuVHhQb2ludGVyEhMKC2NvbnRyYWN0X2lkGAUgASgMEhQKDG91dHB1dF9pbmRleBgGIAEoBSKKAgoMSW5wdXRNZXNzYWdlEg4KBnNlbmRlchgBIAEoDBIRCglyZWNpcGllbnQYAiABKAwSDgoGYW1vdW50GAMgASgDEg0KBW5vbmNlGAQgASgMEhUKDXdpdG5lc3NfaW5kZXgYBSABKAUSGgoScHJlZGljYXRlX2dhc191c2VkGAYgASgDEgwKBGRhdGEYByABKAwSEQoJcHJlZGljYXRlGAggASgMEhYKDnByZWRpY2F0ZV9kYXRhGAkgASgMEhMKC2RhdGFfbGVuZ3RoGAogASgFEhgKEHByZWRpY2F0ZV9sZW5ndGgYCyABKAUSHQoVcHJlZGljYXRlX2RhdGFfbGVuZ3RoGAwgASgFKkgKCUlucHV0VHlwZRIWChJVTktOT1dOX0lOUFVUX1RZUEUQABIMCghDT05UUkFDVBABEggKBENPSU4QAhILCgdNRVNTQUdFEANiBnByb3RvMw", [file_pointers, file_common]);
+  fileDesc("CgxpbnB1dHMucHJvdG8SBmlucHV0cyL0AQoFSW5wdXQSHwoEdHlwZRgBIAEoDjIRLmlucHV0cy5JbnB1dFR5cGUSJwoHcG9pbnRlchgCIAEoCzIWLnBvaW50ZXJzLklucHV0UG9pbnRlchIhCgRjb2luGAMgASgLMhEuaW5wdXRzLklucHV0Q29pbkgAEikKCGNvbnRyYWN0GAQgASgLMhUuaW5wdXRzLklucHV0Q29udHJhY3RIABInCgdtZXNzYWdlGAUgASgLMhQuaW5wdXRzLklucHV0TWVzc2FnZUgAEiIKCG1ldGFkYXRhGAYgASgLMhAuY29tbW9uLk1ldGFkYXRhQgYKBGRhdGEi+gEKCUlucHV0Q29pbhIPCgd1dHhvX2lkGAEgASgJEg0KBW93bmVyGAIgASgJEg4KBmFtb3VudBgDIAEoAxIQCghhc3NldF9pZBgEIAEoCRIVCg13aXRuZXNzX2luZGV4GAUgASgFEhoKEnByZWRpY2F0ZV9nYXNfdXNlZBgGIAEoAxIRCglwcmVkaWNhdGUYByABKAkSFgoOcHJlZGljYXRlX2RhdGEYCCABKAkSGAoQcHJlZGljYXRlX2xlbmd0aBgJIAEoAxIdChVwcmVkaWNhdGVfZGF0YV9sZW5ndGgYCiABKAMSFAoMb3V0cHV0X2luZGV4GAsgASgFInUKDUlucHV0Q29udHJhY3QSDwoHdXR4b19pZBgBIAEoCRIUCgxiYWxhbmNlX3Jvb3QYAiABKAkSEgoKc3RhdGVfcm9vdBgDIAEoCRITCgtjb250cmFjdF9pZBgEIAEoCRIUCgxvdXRwdXRfaW5kZXgYBSABKAUiigIKDElucHV0TWVzc2FnZRIOCgZzZW5kZXIYASABKAkSEQoJcmVjaXBpZW50GAIgASgJEg4KBmFtb3VudBgDIAEoAxINCgVub25jZRgEIAEoCRIVCg13aXRuZXNzX2luZGV4GAUgASgFEhoKEnByZWRpY2F0ZV9nYXNfdXNlZBgGIAEoAxIMCgRkYXRhGAcgASgJEhEKCXByZWRpY2F0ZRgIIAEoCRIWCg5wcmVkaWNhdGVfZGF0YRgJIAEoCRITCgtkYXRhX2xlbmd0aBgKIAEoBRIYChBwcmVkaWNhdGVfbGVuZ3RoGAsgASgFEh0KFXByZWRpY2F0ZV9kYXRhX2xlbmd0aBgMIAEoBSpICglJbnB1dFR5cGUSFgoSVU5LTk9XTl9JTlBVVF9UWVBFEAASDAoIQ09OVFJBQ1QQARIICgRDT0lOEAISCwoHTUVTU0FHRRADYgZwcm90bzM", [file_pointers, file_common]);
 
 /**
  * @generated from message inputs.Input
  */
 export type Input = Message<"inputs.Input"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: inputs.InputType type = 2;
+   * @generated from field: inputs.InputType type = 1;
    */
   type: InputType;
 
   /**
-   * @generated from oneof inputs.Input.input
+   * @generated from field: pointers.InputPointer pointer = 2;
    */
-  input: {
+  pointer?: InputPointer;
+
+  /**
+   * @generated from oneof inputs.Input.data
+   */
+  data: {
     /**
      * @generated from field: inputs.InputCoin coin = 3;
      */
@@ -56,14 +56,9 @@ export type Input = Message<"inputs.Input"> & {
   /**
    * Metadata
    *
-   * @generated from field: common.Metadata metadata = 7;
+   * @generated from field: common.Metadata metadata = 6;
    */
   metadata?: Metadata;
-
-  /**
-   * @generated from field: pointers.InputPointer pointer = 8;
-   */
-  pointer?: InputPointer;
 };
 
 /**
@@ -80,14 +75,14 @@ export type InputCoin = Message<"inputs.InputCoin"> & {
   /**
    * Fields matching fuel-core
    *
-   * @generated from field: bytes utxo_id = 1;
+   * @generated from field: string utxo_id = 1;
    */
-  utxoId: Uint8Array;
+  utxoId: string;
 
   /**
-   * @generated from field: bytes owner = 2;
+   * @generated from field: string owner = 2;
    */
-  owner: Uint8Array;
+  owner: string;
 
   /**
    * @generated from field: int64 amount = 3;
@@ -95,49 +90,44 @@ export type InputCoin = Message<"inputs.InputCoin"> & {
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 4;
+   * @generated from field: string asset_id = 4;
    */
-  assetId: Uint8Array;
+  assetId: string;
 
   /**
-   * @generated from field: pointers.TxPointer tx_pointer = 5;
-   */
-  txPointer?: TxPointer;
-
-  /**
-   * @generated from field: int32 witness_index = 6;
+   * @generated from field: int32 witness_index = 5;
    */
   witnessIndex: number;
 
   /**
-   * @generated from field: int64 predicate_gas_used = 7;
+   * @generated from field: int64 predicate_gas_used = 6;
    */
   predicateGasUsed: bigint;
 
   /**
-   * @generated from field: bytes predicate = 8;
+   * @generated from field: string predicate = 7;
    */
-  predicate: Uint8Array;
+  predicate: string;
 
   /**
-   * @generated from field: bytes predicate_data = 9;
+   * @generated from field: string predicate_data = 8;
    */
-  predicateData: Uint8Array;
+  predicateData: string;
 
   /**
    * Extra fields (not in fuel-core)
    *
-   * @generated from field: int64 predicate_length = 10;
+   * @generated from field: int64 predicate_length = 9;
    */
   predicateLength: bigint;
 
   /**
-   * @generated from field: int64 predicate_data_length = 11;
+   * @generated from field: int64 predicate_data_length = 10;
    */
   predicateDataLength: bigint;
 
   /**
-   * @generated from field: int32 output_index = 12;
+   * @generated from field: int32 output_index = 11;
    */
   outputIndex: number;
 };
@@ -156,34 +146,29 @@ export type InputContract = Message<"inputs.InputContract"> & {
   /**
    * Fields matching fuel-core
    *
-   * @generated from field: bytes utxo_id = 1;
+   * @generated from field: string utxo_id = 1;
    */
-  utxoId: Uint8Array;
+  utxoId: string;
 
   /**
-   * @generated from field: bytes balance_root = 2;
+   * @generated from field: string balance_root = 2;
    */
-  balanceRoot: Uint8Array;
+  balanceRoot: string;
 
   /**
-   * @generated from field: bytes state_root = 3;
+   * @generated from field: string state_root = 3;
    */
-  stateRoot: Uint8Array;
+  stateRoot: string;
 
   /**
-   * @generated from field: pointers.TxPointer tx_pointer = 4;
+   * @generated from field: string contract_id = 4;
    */
-  txPointer?: TxPointer;
-
-  /**
-   * @generated from field: bytes contract_id = 5;
-   */
-  contractId: Uint8Array;
+  contractId: string;
 
   /**
    * Extra fields (not in fuel-core)
    *
-   * @generated from field: int32 output_index = 6;
+   * @generated from field: int32 output_index = 5;
    */
   outputIndex: number;
 };
@@ -202,14 +187,14 @@ export type InputMessage = Message<"inputs.InputMessage"> & {
   /**
    * Fields matching fuel-core
    *
-   * @generated from field: bytes sender = 1;
+   * @generated from field: string sender = 1;
    */
-  sender: Uint8Array;
+  sender: string;
 
   /**
-   * @generated from field: bytes recipient = 2;
+   * @generated from field: string recipient = 2;
    */
-  recipient: Uint8Array;
+  recipient: string;
 
   /**
    * @generated from field: int64 amount = 3;
@@ -217,9 +202,9 @@ export type InputMessage = Message<"inputs.InputMessage"> & {
   amount: bigint;
 
   /**
-   * @generated from field: bytes nonce = 4;
+   * @generated from field: string nonce = 4;
    */
-  nonce: Uint8Array;
+  nonce: string;
 
   /**
    * @generated from field: int32 witness_index = 5;
@@ -232,19 +217,19 @@ export type InputMessage = Message<"inputs.InputMessage"> & {
   predicateGasUsed: bigint;
 
   /**
-   * @generated from field: bytes data = 7;
+   * @generated from field: string data = 7;
    */
-  data: Uint8Array;
+  data: string;
 
   /**
-   * @generated from field: bytes predicate = 8;
+   * @generated from field: string predicate = 8;
    */
-  predicate: Uint8Array;
+  predicate: string;
 
   /**
-   * @generated from field: bytes predicate_data = 9;
+   * @generated from field: string predicate_data = 9;
    */
-  predicateData: Uint8Array;
+  predicateData: string;
 
   /**
    * Extra fields (not in fuel-core)

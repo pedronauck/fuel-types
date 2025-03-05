@@ -18,19 +18,17 @@ enum UtxoType {
 }
 
 message Utxo {
-  string subject = 1;
-  bytes utxo_id = 2;
-  UtxoType type = 3;
-  UtxoStatus status = 4;
+  UtxoType type = 1;
+  pointers.UtxoPointer pointer = 2;
+  UtxoStatus status = 3;
 
-  oneof utxo_data {
-    UtxoCoin coin = 5;
-    UtxoContract contract = 6;
-    UtxoMessage message = 7;
+  oneof data {
+    UtxoCoin coin = 4;
+    UtxoContract contract = 5;
+    UtxoMessage message = 6;
   }
   
-  common.Metadata metadata = 8;
-  pointers.UtxoPointer pointer = 9;
+  common.Metadata metadata = 7;
 }
 
 message UtxoCoin {

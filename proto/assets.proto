@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package assets;
+
+import "pointers.proto";
+import "common.proto";
+
+message Asset {
+   string type = 1;
+   pointers.AssetPointer pointer = 2;
+   AssetData data = 3;
+   common.Metadata metadata = 4;
+}
+
+message AssetData {
+   string sub_id = 1;
+   string name = 2;
+   string symbol = 3;
+   int64 decimals = 4;
+   int64 total_supply = 5;
+   string owner = 6;
+   string metadata = 7;
+}

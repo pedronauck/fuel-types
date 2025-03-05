@@ -14,26 +14,26 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file outputs.proto.
  */
 export const file_outputs: GenFile = /*@__PURE__*/
-  fileDesc("Cg1vdXRwdXRzLnByb3RvEgdvdXRwdXRzIvgCCgZPdXRwdXQSDwoHc3ViamVjdBgBIAEoCRIhCgR0eXBlGAIgASgOMhMub3V0cHV0cy5PdXRwdXRUeXBlEiMKBGNvaW4YAyABKAsyEy5vdXRwdXRzLk91dHB1dENvaW5IABIrCghjb250cmFjdBgEIAEoCzIXLm91dHB1dHMuT3V0cHV0Q29udHJhY3RIABInCgZjaGFuZ2UYBSABKAsyFS5vdXRwdXRzLk91dHB1dENoYW5nZUgAEisKCHZhcmlhYmxlGAYgASgLMhcub3V0cHV0cy5PdXRwdXRWYXJpYWJsZUgAEjoKEGNvbnRyYWN0X2NyZWF0ZWQYByABKAsyHi5vdXRwdXRzLk91dHB1dENvbnRyYWN0Q3JlYXRlZEgAEiIKCG1ldGFkYXRhGAkgASgLMhAuY29tbW9uLk1ldGFkYXRhEigKB3BvaW50ZXIYCiABKAsyFy5wb2ludGVycy5PdXRwdXRQb2ludGVyQggKBm91dHB1dCI6CgpPdXRwdXRDb2luEgoKAnRvGAEgASgMEg4KBmFtb3VudBgCIAEoAxIQCghhc3NldF9pZBgDIAEoDCJPCg5PdXRwdXRDb250cmFjdBIUCgxiYWxhbmNlX3Jvb3QYASABKAwSEgoKc3RhdGVfcm9vdBgCIAEoDBITCgtpbnB1dF9pbmRleBgDIAEoBSJAChVPdXRwdXRDb250cmFjdENyZWF0ZWQSEwoLY29udHJhY3RfaWQYASABKAwSEgoKc3RhdGVfcm9vdBgCIAEoDCI8CgxPdXRwdXRDaGFuZ2USCgoCdG8YASABKAwSDgoGYW1vdW50GAIgASgDEhAKCGFzc2V0X2lkGAMgASgMIj4KDk91dHB1dFZhcmlhYmxlEgoKAnRvGAEgASgMEg4KBmFtb3VudBgCIAEoAxIQCghhc3NldF9pZBgDIAEoDCptCgpPdXRwdXRUeXBlEhcKE1VOS05PV05fT1VUUFVUX1RZUEUQABIICgRDT0lOEAESDAoIQ09OVFJBQ1QQAhIKCgZDSEFOR0UQAxIMCghWQVJJQUJMRRAEEhQKEENPTlRSQUNUX0NSRUFURUQQBWIGcHJvdG8z", [file_pointers, file_common]);
+  fileDesc("Cg1vdXRwdXRzLnByb3RvEgdvdXRwdXRzIuUCCgZPdXRwdXQSIQoEdHlwZRgBIAEoDjITLm91dHB1dHMuT3V0cHV0VHlwZRIoCgdwb2ludGVyGAIgASgLMhcucG9pbnRlcnMuT3V0cHV0UG9pbnRlchIjCgRjb2luGAMgASgLMhMub3V0cHV0cy5PdXRwdXRDb2luSAASKwoIY29udHJhY3QYBCABKAsyFy5vdXRwdXRzLk91dHB1dENvbnRyYWN0SAASJwoGY2hhbmdlGAUgASgLMhUub3V0cHV0cy5PdXRwdXRDaGFuZ2VIABIrCgh2YXJpYWJsZRgGIAEoCzIXLm91dHB1dHMuT3V0cHV0VmFyaWFibGVIABI6ChBjb250cmFjdF9jcmVhdGVkGAcgASgLMh4ub3V0cHV0cy5PdXRwdXRDb250cmFjdENyZWF0ZWRIABIiCghtZXRhZGF0YRgIIAEoCzIQLmNvbW1vbi5NZXRhZGF0YUIGCgRkYXRhIjoKCk91dHB1dENvaW4SCgoCdG8YASABKAkSDgoGYW1vdW50GAIgASgDEhAKCGFzc2V0X2lkGAMgASgJIk8KDk91dHB1dENvbnRyYWN0EhQKDGJhbGFuY2Vfcm9vdBgBIAEoCRISCgpzdGF0ZV9yb290GAIgASgJEhMKC2lucHV0X2luZGV4GAMgASgFIkAKFU91dHB1dENvbnRyYWN0Q3JlYXRlZBITCgtjb250cmFjdF9pZBgBIAEoCRISCgpzdGF0ZV9yb290GAIgASgJIjwKDE91dHB1dENoYW5nZRIKCgJ0bxgBIAEoCRIOCgZhbW91bnQYAiABKAMSEAoIYXNzZXRfaWQYAyABKAkiPgoOT3V0cHV0VmFyaWFibGUSCgoCdG8YASABKAkSDgoGYW1vdW50GAIgASgDEhAKCGFzc2V0X2lkGAMgASgJKm0KCk91dHB1dFR5cGUSFwoTVU5LTk9XTl9PVVRQVVRfVFlQRRAAEggKBENPSU4QARIMCghDT05UUkFDVBACEgoKBkNIQU5HRRADEgwKCFZBUklBQkxFEAQSFAoQQ09OVFJBQ1RfQ1JFQVRFRBAFYgZwcm90bzM", [file_pointers, file_common]);
 
 /**
  * @generated from message outputs.Output
  */
 export type Output = Message<"outputs.Output"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: outputs.OutputType type = 2;
+   * @generated from field: outputs.OutputType type = 1;
    */
   type: OutputType;
 
   /**
-   * @generated from oneof outputs.Output.output
+   * @generated from field: pointers.OutputPointer pointer = 2;
    */
-  output: {
+  pointer?: OutputPointer;
+
+  /**
+   * @generated from oneof outputs.Output.data
+   */
+  data: {
     /**
      * @generated from field: outputs.OutputCoin coin = 3;
      */
@@ -68,14 +68,9 @@ export type Output = Message<"outputs.Output"> & {
   /**
    * Metadata
    *
-   * @generated from field: common.Metadata metadata = 9;
+   * @generated from field: common.Metadata metadata = 8;
    */
   metadata?: Metadata;
-
-  /**
-   * @generated from field: pointers.OutputPointer pointer = 10;
-   */
-  pointer?: OutputPointer;
 };
 
 /**
@@ -90,9 +85,9 @@ export const OutputSchema: GenMessage<Output> = /*@__PURE__*/
  */
 export type OutputCoin = Message<"outputs.OutputCoin"> & {
   /**
-   * @generated from field: bytes to = 1;
+   * @generated from field: string to = 1;
    */
-  to: Uint8Array;
+  to: string;
 
   /**
    * @generated from field: int64 amount = 2;
@@ -100,9 +95,9 @@ export type OutputCoin = Message<"outputs.OutputCoin"> & {
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 3;
+   * @generated from field: string asset_id = 3;
    */
-  assetId: Uint8Array;
+  assetId: string;
 };
 
 /**
@@ -117,14 +112,14 @@ export const OutputCoinSchema: GenMessage<OutputCoin> = /*@__PURE__*/
  */
 export type OutputContract = Message<"outputs.OutputContract"> & {
   /**
-   * @generated from field: bytes balance_root = 1;
+   * @generated from field: string balance_root = 1;
    */
-  balanceRoot: Uint8Array;
+  balanceRoot: string;
 
   /**
-   * @generated from field: bytes state_root = 2;
+   * @generated from field: string state_root = 2;
    */
-  stateRoot: Uint8Array;
+  stateRoot: string;
 
   /**
    * @generated from field: int32 input_index = 3;
@@ -144,14 +139,14 @@ export const OutputContractSchema: GenMessage<OutputContract> = /*@__PURE__*/
  */
 export type OutputContractCreated = Message<"outputs.OutputContractCreated"> & {
   /**
-   * @generated from field: bytes contract_id = 1;
+   * @generated from field: string contract_id = 1;
    */
-  contractId: Uint8Array;
+  contractId: string;
 
   /**
-   * @generated from field: bytes state_root = 2;
+   * @generated from field: string state_root = 2;
    */
-  stateRoot: Uint8Array;
+  stateRoot: string;
 };
 
 /**
@@ -166,9 +161,9 @@ export const OutputContractCreatedSchema: GenMessage<OutputContractCreated> = /*
  */
 export type OutputChange = Message<"outputs.OutputChange"> & {
   /**
-   * @generated from field: bytes to = 1;
+   * @generated from field: string to = 1;
    */
-  to: Uint8Array;
+  to: string;
 
   /**
    * @generated from field: int64 amount = 2;
@@ -176,9 +171,9 @@ export type OutputChange = Message<"outputs.OutputChange"> & {
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 3;
+   * @generated from field: string asset_id = 3;
    */
-  assetId: Uint8Array;
+  assetId: string;
 };
 
 /**
@@ -193,9 +188,9 @@ export const OutputChangeSchema: GenMessage<OutputChange> = /*@__PURE__*/
  */
 export type OutputVariable = Message<"outputs.OutputVariable"> & {
   /**
-   * @generated from field: bytes to = 1;
+   * @generated from field: string to = 1;
    */
-  to: Uint8Array;
+  to: string;
 
   /**
    * @generated from field: int64 amount = 2;
@@ -203,9 +198,9 @@ export type OutputVariable = Message<"outputs.OutputVariable"> & {
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 3;
+   * @generated from field: string asset_id = 3;
    */
-  assetId: Uint8Array;
+  assetId: string;
 };
 
 /**

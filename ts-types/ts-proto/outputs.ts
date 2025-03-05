@@ -69,8 +69,8 @@ export function outputTypeToJSON(object: OutputType): string {
 }
 
 export interface Output {
-  subject: string;
   type: OutputType;
+  pointer: OutputPointer | undefined;
   coin?: OutputCoin | undefined;
   contract?: OutputContract | undefined;
   change?: OutputChange | undefined;
@@ -80,59 +80,57 @@ export interface Output {
     | undefined;
   /** Metadata */
   metadata: Metadata | undefined;
-  pointer: OutputPointer | undefined;
 }
 
 export interface OutputCoin {
-  to: Uint8Array;
+  to: string;
   amount: number;
-  assetId: Uint8Array;
+  assetId: string;
 }
 
 export interface OutputContract {
-  balanceRoot: Uint8Array;
-  stateRoot: Uint8Array;
+  balanceRoot: string;
+  stateRoot: string;
   inputIndex: number;
 }
 
 export interface OutputContractCreated {
-  contractId: Uint8Array;
-  stateRoot: Uint8Array;
+  contractId: string;
+  stateRoot: string;
 }
 
 export interface OutputChange {
-  to: Uint8Array;
+  to: string;
   amount: number;
-  assetId: Uint8Array;
+  assetId: string;
 }
 
 export interface OutputVariable {
-  to: Uint8Array;
+  to: string;
   amount: number;
-  assetId: Uint8Array;
+  assetId: string;
 }
 
 function createBaseOutput(): Output {
   return {
-    subject: "",
     type: 0,
+    pointer: undefined,
     coin: undefined,
     contract: undefined,
     change: undefined,
     variable: undefined,
     contractCreated: undefined,
     metadata: undefined,
-    pointer: undefined,
   };
 }
 
 export const Output: MessageFns<Output> = {
   encode(message: Output, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
     if (message.type !== 0) {
-      writer.uint32(16).int32(message.type);
+      writer.uint32(8).int32(message.type);
+    }
+    if (message.pointer !== undefined) {
+      OutputPointer.encode(message.pointer, writer.uint32(18).fork()).join();
     }
     if (message.coin !== undefined) {
       OutputCoin.encode(message.coin, writer.uint32(26).fork()).join();
@@ -150,10 +148,7 @@ export const Output: MessageFns<Output> = {
       OutputContractCreated.encode(message.contractCreated, writer.uint32(58).fork()).join();
     }
     if (message.metadata !== undefined) {
-      Metadata.encode(message.metadata, writer.uint32(74).fork()).join();
-    }
-    if (message.pointer !== undefined) {
-      OutputPointer.encode(message.pointer, writer.uint32(82).fork()).join();
+      Metadata.encode(message.metadata, writer.uint32(66).fork()).join();
     }
     return writer;
   },
@@ -166,19 +161,19 @@ export const Output: MessageFns<Output> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.subject = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
+          if (tag !== 8) {
             break;
           }
 
           message.type = reader.int32() as any;
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pointer = OutputPointer.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -221,20 +216,12 @@ export const Output: MessageFns<Output> = {
           message.contractCreated = OutputContractCreated.decode(reader, reader.uint32());
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 8: {
+          if (tag !== 66) {
             break;
           }
 
           message.metadata = Metadata.decode(reader, reader.uint32());
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.pointer = OutputPointer.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -248,8 +235,8 @@ export const Output: MessageFns<Output> = {
 
   fromJSON(object: any): Output {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       type: isSet(object.type) ? outputTypeFromJSON(object.type) : 0,
+      pointer: isSet(object.pointer) ? OutputPointer.fromJSON(object.pointer) : undefined,
       coin: isSet(object.coin) ? OutputCoin.fromJSON(object.coin) : undefined,
       contract: isSet(object.contract) ? OutputContract.fromJSON(object.contract) : undefined,
       change: isSet(object.change) ? OutputChange.fromJSON(object.change) : undefined,
@@ -258,17 +245,16 @@ export const Output: MessageFns<Output> = {
         ? OutputContractCreated.fromJSON(object.contractCreated)
         : undefined,
       metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
-      pointer: isSet(object.pointer) ? OutputPointer.fromJSON(object.pointer) : undefined,
     };
   },
 
   toJSON(message: Output): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
     if (message.type !== 0) {
       obj.type = outputTypeToJSON(message.type);
+    }
+    if (message.pointer !== undefined) {
+      obj.pointer = OutputPointer.toJSON(message.pointer);
     }
     if (message.coin !== undefined) {
       obj.coin = OutputCoin.toJSON(message.coin);
@@ -288,9 +274,6 @@ export const Output: MessageFns<Output> = {
     if (message.metadata !== undefined) {
       obj.metadata = Metadata.toJSON(message.metadata);
     }
-    if (message.pointer !== undefined) {
-      obj.pointer = OutputPointer.toJSON(message.pointer);
-    }
     return obj;
   },
 
@@ -299,8 +282,10 @@ export const Output: MessageFns<Output> = {
   },
   fromPartial<I extends Exact<DeepPartial<Output>, I>>(object: I): Output {
     const message = createBaseOutput();
-    message.subject = object.subject ?? "";
     message.type = object.type ?? 0;
+    message.pointer = (object.pointer !== undefined && object.pointer !== null)
+      ? OutputPointer.fromPartial(object.pointer)
+      : undefined;
     message.coin = (object.coin !== undefined && object.coin !== null)
       ? OutputCoin.fromPartial(object.coin)
       : undefined;
@@ -319,27 +304,24 @@ export const Output: MessageFns<Output> = {
     message.metadata = (object.metadata !== undefined && object.metadata !== null)
       ? Metadata.fromPartial(object.metadata)
       : undefined;
-    message.pointer = (object.pointer !== undefined && object.pointer !== null)
-      ? OutputPointer.fromPartial(object.pointer)
-      : undefined;
     return message;
   },
 };
 
 function createBaseOutputCoin(): OutputCoin {
-  return { to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0) };
+  return { to: "", amount: 0, assetId: "" };
 }
 
 export const OutputCoin: MessageFns<OutputCoin> = {
   encode(message: OutputCoin, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.to.length !== 0) {
-      writer.uint32(10).bytes(message.to);
+    if (message.to !== "") {
+      writer.uint32(10).string(message.to);
     }
     if (message.amount !== 0) {
       writer.uint32(16).int64(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      writer.uint32(26).bytes(message.assetId);
+    if (message.assetId !== "") {
+      writer.uint32(26).string(message.assetId);
     }
     return writer;
   },
@@ -356,7 +338,7 @@ export const OutputCoin: MessageFns<OutputCoin> = {
             break;
           }
 
-          message.to = reader.bytes();
+          message.to = reader.string();
           continue;
         }
         case 2: {
@@ -372,7 +354,7 @@ export const OutputCoin: MessageFns<OutputCoin> = {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.assetId = reader.string();
           continue;
         }
       }
@@ -386,22 +368,22 @@ export const OutputCoin: MessageFns<OutputCoin> = {
 
   fromJSON(object: any): OutputCoin {
     return {
-      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      to: isSet(object.to) ? globalThis.String(object.to) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
+      assetId: isSet(object.assetId) ? globalThis.String(object.assetId) : "",
     };
   },
 
   toJSON(message: OutputCoin): unknown {
     const obj: any = {};
-    if (message.to.length !== 0) {
-      obj.to = base64FromBytes(message.to);
+    if (message.to !== "") {
+      obj.to = message.to;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      obj.assetId = base64FromBytes(message.assetId);
+    if (message.assetId !== "") {
+      obj.assetId = message.assetId;
     }
     return obj;
   },
@@ -411,24 +393,24 @@ export const OutputCoin: MessageFns<OutputCoin> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputCoin>, I>>(object: I): OutputCoin {
     const message = createBaseOutputCoin();
-    message.to = object.to ?? new Uint8Array(0);
+    message.to = object.to ?? "";
     message.amount = object.amount ?? 0;
-    message.assetId = object.assetId ?? new Uint8Array(0);
+    message.assetId = object.assetId ?? "";
     return message;
   },
 };
 
 function createBaseOutputContract(): OutputContract {
-  return { balanceRoot: new Uint8Array(0), stateRoot: new Uint8Array(0), inputIndex: 0 };
+  return { balanceRoot: "", stateRoot: "", inputIndex: 0 };
 }
 
 export const OutputContract: MessageFns<OutputContract> = {
   encode(message: OutputContract, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.balanceRoot.length !== 0) {
-      writer.uint32(10).bytes(message.balanceRoot);
+    if (message.balanceRoot !== "") {
+      writer.uint32(10).string(message.balanceRoot);
     }
-    if (message.stateRoot.length !== 0) {
-      writer.uint32(18).bytes(message.stateRoot);
+    if (message.stateRoot !== "") {
+      writer.uint32(18).string(message.stateRoot);
     }
     if (message.inputIndex !== 0) {
       writer.uint32(24).int32(message.inputIndex);
@@ -448,7 +430,7 @@ export const OutputContract: MessageFns<OutputContract> = {
             break;
           }
 
-          message.balanceRoot = reader.bytes();
+          message.balanceRoot = reader.string();
           continue;
         }
         case 2: {
@@ -456,7 +438,7 @@ export const OutputContract: MessageFns<OutputContract> = {
             break;
           }
 
-          message.stateRoot = reader.bytes();
+          message.stateRoot = reader.string();
           continue;
         }
         case 3: {
@@ -478,19 +460,19 @@ export const OutputContract: MessageFns<OutputContract> = {
 
   fromJSON(object: any): OutputContract {
     return {
-      balanceRoot: isSet(object.balanceRoot) ? bytesFromBase64(object.balanceRoot) : new Uint8Array(0),
-      stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
+      balanceRoot: isSet(object.balanceRoot) ? globalThis.String(object.balanceRoot) : "",
+      stateRoot: isSet(object.stateRoot) ? globalThis.String(object.stateRoot) : "",
       inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
     };
   },
 
   toJSON(message: OutputContract): unknown {
     const obj: any = {};
-    if (message.balanceRoot.length !== 0) {
-      obj.balanceRoot = base64FromBytes(message.balanceRoot);
+    if (message.balanceRoot !== "") {
+      obj.balanceRoot = message.balanceRoot;
     }
-    if (message.stateRoot.length !== 0) {
-      obj.stateRoot = base64FromBytes(message.stateRoot);
+    if (message.stateRoot !== "") {
+      obj.stateRoot = message.stateRoot;
     }
     if (message.inputIndex !== 0) {
       obj.inputIndex = Math.round(message.inputIndex);
@@ -503,24 +485,24 @@ export const OutputContract: MessageFns<OutputContract> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputContract>, I>>(object: I): OutputContract {
     const message = createBaseOutputContract();
-    message.balanceRoot = object.balanceRoot ?? new Uint8Array(0);
-    message.stateRoot = object.stateRoot ?? new Uint8Array(0);
+    message.balanceRoot = object.balanceRoot ?? "";
+    message.stateRoot = object.stateRoot ?? "";
     message.inputIndex = object.inputIndex ?? 0;
     return message;
   },
 };
 
 function createBaseOutputContractCreated(): OutputContractCreated {
-  return { contractId: new Uint8Array(0), stateRoot: new Uint8Array(0) };
+  return { contractId: "", stateRoot: "" };
 }
 
 export const OutputContractCreated: MessageFns<OutputContractCreated> = {
   encode(message: OutputContractCreated, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.contractId.length !== 0) {
-      writer.uint32(10).bytes(message.contractId);
+    if (message.contractId !== "") {
+      writer.uint32(10).string(message.contractId);
     }
-    if (message.stateRoot.length !== 0) {
-      writer.uint32(18).bytes(message.stateRoot);
+    if (message.stateRoot !== "") {
+      writer.uint32(18).string(message.stateRoot);
     }
     return writer;
   },
@@ -537,7 +519,7 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.contractId = reader.string();
           continue;
         }
         case 2: {
@@ -545,7 +527,7 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
             break;
           }
 
-          message.stateRoot = reader.bytes();
+          message.stateRoot = reader.string();
           continue;
         }
       }
@@ -559,18 +541,18 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
 
   fromJSON(object: any): OutputContractCreated {
     return {
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
-      stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
+      contractId: isSet(object.contractId) ? globalThis.String(object.contractId) : "",
+      stateRoot: isSet(object.stateRoot) ? globalThis.String(object.stateRoot) : "",
     };
   },
 
   toJSON(message: OutputContractCreated): unknown {
     const obj: any = {};
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.contractId !== "") {
+      obj.contractId = message.contractId;
     }
-    if (message.stateRoot.length !== 0) {
-      obj.stateRoot = base64FromBytes(message.stateRoot);
+    if (message.stateRoot !== "") {
+      obj.stateRoot = message.stateRoot;
     }
     return obj;
   },
@@ -580,26 +562,26 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputContractCreated>, I>>(object: I): OutputContractCreated {
     const message = createBaseOutputContractCreated();
-    message.contractId = object.contractId ?? new Uint8Array(0);
-    message.stateRoot = object.stateRoot ?? new Uint8Array(0);
+    message.contractId = object.contractId ?? "";
+    message.stateRoot = object.stateRoot ?? "";
     return message;
   },
 };
 
 function createBaseOutputChange(): OutputChange {
-  return { to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0) };
+  return { to: "", amount: 0, assetId: "" };
 }
 
 export const OutputChange: MessageFns<OutputChange> = {
   encode(message: OutputChange, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.to.length !== 0) {
-      writer.uint32(10).bytes(message.to);
+    if (message.to !== "") {
+      writer.uint32(10).string(message.to);
     }
     if (message.amount !== 0) {
       writer.uint32(16).int64(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      writer.uint32(26).bytes(message.assetId);
+    if (message.assetId !== "") {
+      writer.uint32(26).string(message.assetId);
     }
     return writer;
   },
@@ -616,7 +598,7 @@ export const OutputChange: MessageFns<OutputChange> = {
             break;
           }
 
-          message.to = reader.bytes();
+          message.to = reader.string();
           continue;
         }
         case 2: {
@@ -632,7 +614,7 @@ export const OutputChange: MessageFns<OutputChange> = {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.assetId = reader.string();
           continue;
         }
       }
@@ -646,22 +628,22 @@ export const OutputChange: MessageFns<OutputChange> = {
 
   fromJSON(object: any): OutputChange {
     return {
-      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      to: isSet(object.to) ? globalThis.String(object.to) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
+      assetId: isSet(object.assetId) ? globalThis.String(object.assetId) : "",
     };
   },
 
   toJSON(message: OutputChange): unknown {
     const obj: any = {};
-    if (message.to.length !== 0) {
-      obj.to = base64FromBytes(message.to);
+    if (message.to !== "") {
+      obj.to = message.to;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      obj.assetId = base64FromBytes(message.assetId);
+    if (message.assetId !== "") {
+      obj.assetId = message.assetId;
     }
     return obj;
   },
@@ -671,27 +653,27 @@ export const OutputChange: MessageFns<OutputChange> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputChange>, I>>(object: I): OutputChange {
     const message = createBaseOutputChange();
-    message.to = object.to ?? new Uint8Array(0);
+    message.to = object.to ?? "";
     message.amount = object.amount ?? 0;
-    message.assetId = object.assetId ?? new Uint8Array(0);
+    message.assetId = object.assetId ?? "";
     return message;
   },
 };
 
 function createBaseOutputVariable(): OutputVariable {
-  return { to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0) };
+  return { to: "", amount: 0, assetId: "" };
 }
 
 export const OutputVariable: MessageFns<OutputVariable> = {
   encode(message: OutputVariable, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.to.length !== 0) {
-      writer.uint32(10).bytes(message.to);
+    if (message.to !== "") {
+      writer.uint32(10).string(message.to);
     }
     if (message.amount !== 0) {
       writer.uint32(16).int64(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      writer.uint32(26).bytes(message.assetId);
+    if (message.assetId !== "") {
+      writer.uint32(26).string(message.assetId);
     }
     return writer;
   },
@@ -708,7 +690,7 @@ export const OutputVariable: MessageFns<OutputVariable> = {
             break;
           }
 
-          message.to = reader.bytes();
+          message.to = reader.string();
           continue;
         }
         case 2: {
@@ -724,7 +706,7 @@ export const OutputVariable: MessageFns<OutputVariable> = {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.assetId = reader.string();
           continue;
         }
       }
@@ -738,22 +720,22 @@ export const OutputVariable: MessageFns<OutputVariable> = {
 
   fromJSON(object: any): OutputVariable {
     return {
-      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
+      to: isSet(object.to) ? globalThis.String(object.to) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
+      assetId: isSet(object.assetId) ? globalThis.String(object.assetId) : "",
     };
   },
 
   toJSON(message: OutputVariable): unknown {
     const obj: any = {};
-    if (message.to.length !== 0) {
-      obj.to = base64FromBytes(message.to);
+    if (message.to !== "") {
+      obj.to = message.to;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      obj.assetId = base64FromBytes(message.assetId);
+    if (message.assetId !== "") {
+      obj.assetId = message.assetId;
     }
     return obj;
   },
@@ -763,37 +745,12 @@ export const OutputVariable: MessageFns<OutputVariable> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputVariable>, I>>(object: I): OutputVariable {
     const message = createBaseOutputVariable();
-    message.to = object.to ?? new Uint8Array(0);
+    message.to = object.to ?? "";
     message.amount = object.amount ?? 0;
-    message.assetId = object.assetId ?? new Uint8Array(0);
+    message.assetId = object.assetId ?? "";
     return message;
   },
 };
-
-function bytesFromBase64(b64: string): Uint8Array {
-  if ((globalThis as any).Buffer) {
-    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
-  } else {
-    const bin = globalThis.atob(b64);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; ++i) {
-      arr[i] = bin.charCodeAt(i);
-    }
-    return arr;
-  }
-}
-
-function base64FromBytes(arr: Uint8Array): string {
-  if ((globalThis as any).Buffer) {
-    return globalThis.Buffer.from(arr).toString("base64");
-  } else {
-    const bin: string[] = [];
-    arr.forEach((byte) => {
-      bin.push(globalThis.String.fromCharCode(byte));
-    });
-    return globalThis.btoa(bin.join(""));
-  }
-}
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

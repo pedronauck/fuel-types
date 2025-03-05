@@ -14,64 +14,54 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file utxos.proto.
  */
 export const file_utxos: GenFile = /*@__PURE__*/
-  fileDesc("Cgt1dHhvcy5wcm90bxIFdXR4b3MitAIKBFV0eG8SDwoHc3ViamVjdBgBIAEoCRIPCgd1dHhvX2lkGAIgASgMEh0KBHR5cGUYAyABKA4yDy51dHhvcy5VdHhvVHlwZRIhCgZzdGF0dXMYBCABKA4yES51dHhvcy5VdHhvU3RhdHVzEh8KBGNvaW4YBSABKAsyDy51dHhvcy5VdHhvQ29pbkgAEicKCGNvbnRyYWN0GAYgASgLMhMudXR4b3MuVXR4b0NvbnRyYWN0SAASJQoHbWVzc2FnZRgHIAEoCzISLnV0eG9zLlV0eG9NZXNzYWdlSAASIgoIbWV0YWRhdGEYCCABKAsyEC5jb21tb24uTWV0YWRhdGESJgoHcG9pbnRlchgJIAEoCzIVLnBvaW50ZXJzLlV0eG9Qb2ludGVyQgsKCXV0eG9fZGF0YSIaCghVdHhvQ29pbhIOCgZhbW91bnQYASABKAMiMgoMVXR4b0NvbnRyYWN0EhMKC2NvbnRyYWN0X2lkGAEgASgMEg0KBXZhbHVlGAIgASgMIk0KC1V0eG9NZXNzYWdlEg4KBnNlbmRlchgBIAEoDBIRCglyZWNpcGllbnQYAiABKAwSDQoFbm9uY2UYAyABKAwSDAoEZGF0YRgEIAEoDCokCgpVdHhvU3RhdHVzEgsKB1VOU1BFTlQQABIJCgVTUEVOVBACKjwKCFV0eG9UeXBlEgsKB1VOS05PV04QABIMCghDT05UUkFDVBABEggKBENPSU4QAhILCgdNRVNTQUdFEANiBnByb3RvMw", [file_pointers, file_common]);
+  fileDesc("Cgt1dHhvcy5wcm90bxIFdXR4b3MijQIKBFV0eG8SHQoEdHlwZRgBIAEoDjIPLnV0eG9zLlV0eG9UeXBlEiYKB3BvaW50ZXIYAiABKAsyFS5wb2ludGVycy5VdHhvUG9pbnRlchIhCgZzdGF0dXMYAyABKA4yES51dHhvcy5VdHhvU3RhdHVzEh8KBGNvaW4YBCABKAsyDy51dHhvcy5VdHhvQ29pbkgAEicKCGNvbnRyYWN0GAUgASgLMhMudXR4b3MuVXR4b0NvbnRyYWN0SAASJQoHbWVzc2FnZRgGIAEoCzISLnV0eG9zLlV0eG9NZXNzYWdlSAASIgoIbWV0YWRhdGEYByABKAsyEC5jb21tb24uTWV0YWRhdGFCBgoEZGF0YSIaCghVdHhvQ29pbhIOCgZhbW91bnQYASABKAMiMgoMVXR4b0NvbnRyYWN0EhMKC2NvbnRyYWN0X2lkGAEgASgMEg0KBXZhbHVlGAIgASgMIk0KC1V0eG9NZXNzYWdlEg4KBnNlbmRlchgBIAEoDBIRCglyZWNpcGllbnQYAiABKAwSDQoFbm9uY2UYAyABKAwSDAoEZGF0YRgEIAEoDCokCgpVdHhvU3RhdHVzEgsKB1VOU1BFTlQQABIJCgVTUEVOVBACKjwKCFV0eG9UeXBlEgsKB1VOS05PV04QABIMCghDT05UUkFDVBABEggKBENPSU4QAhILCgdNRVNTQUdFEANiBnByb3RvMw", [file_pointers, file_common]);
 
 /**
  * @generated from message utxos.Utxo
  */
 export type Utxo = Message<"utxos.Utxo"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes utxo_id = 2;
-   */
-  utxoId: Uint8Array;
-
-  /**
-   * @generated from field: utxos.UtxoType type = 3;
+   * @generated from field: utxos.UtxoType type = 1;
    */
   type: UtxoType;
 
   /**
-   * @generated from field: utxos.UtxoStatus status = 4;
+   * @generated from field: pointers.UtxoPointer pointer = 2;
+   */
+  pointer?: UtxoPointer;
+
+  /**
+   * @generated from field: utxos.UtxoStatus status = 3;
    */
   status: UtxoStatus;
 
   /**
-   * @generated from oneof utxos.Utxo.utxo_data
+   * @generated from oneof utxos.Utxo.data
    */
-  utxoData: {
+  data: {
     /**
-     * @generated from field: utxos.UtxoCoin coin = 5;
+     * @generated from field: utxos.UtxoCoin coin = 4;
      */
     value: UtxoCoin;
     case: "coin";
   } | {
     /**
-     * @generated from field: utxos.UtxoContract contract = 6;
+     * @generated from field: utxos.UtxoContract contract = 5;
      */
     value: UtxoContract;
     case: "contract";
   } | {
     /**
-     * @generated from field: utxos.UtxoMessage message = 7;
+     * @generated from field: utxos.UtxoMessage message = 6;
      */
     value: UtxoMessage;
     case: "message";
   } | { case: undefined; value?: undefined };
 
   /**
-   * @generated from field: common.Metadata metadata = 8;
+   * @generated from field: common.Metadata metadata = 7;
    */
   metadata?: Metadata;
-
-  /**
-   * @generated from field: pointers.UtxoPointer pointer = 9;
-   */
-  pointer?: UtxoPointer;
 };
 
 /**

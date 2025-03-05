@@ -26,7 +26,7 @@ goog.object.extend(proto, pointers_pb);
 var common_pb = require('./common_pb.js');
 goog.object.extend(proto, common_pb);
 goog.exportSymbol('proto.outputs.Output', null, global);
-goog.exportSymbol('proto.outputs.Output.OutputCase', null, global);
+goog.exportSymbol('proto.outputs.Output.DataCase', null, global);
 goog.exportSymbol('proto.outputs.OutputChange', null, global);
 goog.exportSymbol('proto.outputs.OutputCoin', null, global);
 goog.exportSymbol('proto.outputs.OutputContract', null, global);
@@ -173,8 +173,8 @@ proto.outputs.Output.oneofGroups_ = [[3,4,5,6,7]];
 /**
  * @enum {number}
  */
-proto.outputs.Output.OutputCase = {
-  OUTPUT_NOT_SET: 0,
+proto.outputs.Output.DataCase = {
+  DATA_NOT_SET: 0,
   COIN: 3,
   CONTRACT: 4,
   CHANGE: 5,
@@ -183,10 +183,10 @@ proto.outputs.Output.OutputCase = {
 };
 
 /**
- * @return {proto.outputs.Output.OutputCase}
+ * @return {proto.outputs.Output.DataCase}
  */
-proto.outputs.Output.prototype.getOutputCase = function() {
-  return /** @type {proto.outputs.Output.OutputCase} */(jspb.Message.computeOneofCase(this, proto.outputs.Output.oneofGroups_[0]));
+proto.outputs.Output.prototype.getDataCase = function() {
+  return /** @type {proto.outputs.Output.DataCase} */(jspb.Message.computeOneofCase(this, proto.outputs.Output.oneofGroups_[0]));
 };
 
 
@@ -220,15 +220,14 @@ proto.outputs.Output.prototype.toObject = function(opt_includeInstance) {
  */
 proto.outputs.Output.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    pointer: (f = msg.getPointer()) && pointers_pb.OutputPointer.toObject(includeInstance, f),
     coin: (f = msg.getCoin()) && proto.outputs.OutputCoin.toObject(includeInstance, f),
     contract: (f = msg.getContract()) && proto.outputs.OutputContract.toObject(includeInstance, f),
     change: (f = msg.getChange()) && proto.outputs.OutputChange.toObject(includeInstance, f),
     variable: (f = msg.getVariable()) && proto.outputs.OutputVariable.toObject(includeInstance, f),
     contractCreated: (f = msg.getContractCreated()) && proto.outputs.OutputContractCreated.toObject(includeInstance, f),
-    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f),
-    pointer: (f = msg.getPointer()) && pointers_pb.OutputPointer.toObject(includeInstance, f)
+    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -266,12 +265,13 @@ proto.outputs.Output.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
       var value = /** @type {!proto.outputs.OutputType} */ (reader.readEnum());
       msg.setType(value);
+      break;
+    case 2:
+      var value = new pointers_pb.OutputPointer;
+      reader.readMessage(value,pointers_pb.OutputPointer.deserializeBinaryFromReader);
+      msg.setPointer(value);
       break;
     case 3:
       var value = new proto.outputs.OutputCoin;
@@ -298,15 +298,10 @@ proto.outputs.Output.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.outputs.OutputContractCreated.deserializeBinaryFromReader);
       msg.setContractCreated(value);
       break;
-    case 9:
+    case 8:
       var value = new common_pb.Metadata;
       reader.readMessage(value,common_pb.Metadata.deserializeBinaryFromReader);
       msg.setMetadata(value);
-      break;
-    case 10:
-      var value = new pointers_pb.OutputPointer;
-      reader.readMessage(value,pointers_pb.OutputPointer.deserializeBinaryFromReader);
-      msg.setPointer(value);
       break;
     default:
       reader.skipField();
@@ -337,18 +332,19 @@ proto.outputs.Output.prototype.serializeBinary = function() {
  */
 proto.outputs.Output.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
       1,
       f
     );
   }
-  f = message.getType();
-  if (f !== 0.0) {
-    writer.writeEnum(
+  f = message.getPointer();
+  if (f != null) {
+    writer.writeMessage(
       2,
-      f
+      f,
+      pointers_pb.OutputPointer.serializeBinaryToWriter
     );
   }
   f = message.getCoin();
@@ -394,46 +390,20 @@ proto.outputs.Output.serializeBinaryToWriter = function(message, writer) {
   f = message.getMetadata();
   if (f != null) {
     writer.writeMessage(
-      9,
+      8,
       f,
       common_pb.Metadata.serializeBinaryToWriter
     );
   }
-  f = message.getPointer();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      pointers_pb.OutputPointer.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.outputs.Output.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.outputs.Output} returns this
- */
-proto.outputs.Output.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional OutputType type = 2;
+ * optional OutputType type = 1;
  * @return {!proto.outputs.OutputType}
  */
 proto.outputs.Output.prototype.getType = function() {
-  return /** @type {!proto.outputs.OutputType} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {!proto.outputs.OutputType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -442,7 +412,44 @@ proto.outputs.Output.prototype.getType = function() {
  * @return {!proto.outputs.Output} returns this
  */
 proto.outputs.Output.prototype.setType = function(value) {
-  return jspb.Message.setProto3EnumField(this, 2, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional pointers.OutputPointer pointer = 2;
+ * @return {?proto.pointers.OutputPointer}
+ */
+proto.outputs.Output.prototype.getPointer = function() {
+  return /** @type{?proto.pointers.OutputPointer} */ (
+    jspb.Message.getWrapperField(this, pointers_pb.OutputPointer, 2));
+};
+
+
+/**
+ * @param {?proto.pointers.OutputPointer|undefined} value
+ * @return {!proto.outputs.Output} returns this
+*/
+proto.outputs.Output.prototype.setPointer = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.outputs.Output} returns this
+ */
+proto.outputs.Output.prototype.clearPointer = function() {
+  return this.setPointer(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.outputs.Output.prototype.hasPointer = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -632,12 +639,12 @@ proto.outputs.Output.prototype.hasContractCreated = function() {
 
 
 /**
- * optional common.Metadata metadata = 9;
+ * optional common.Metadata metadata = 8;
  * @return {?proto.common.Metadata}
  */
 proto.outputs.Output.prototype.getMetadata = function() {
   return /** @type{?proto.common.Metadata} */ (
-    jspb.Message.getWrapperField(this, common_pb.Metadata, 9));
+    jspb.Message.getWrapperField(this, common_pb.Metadata, 8));
 };
 
 
@@ -646,7 +653,7 @@ proto.outputs.Output.prototype.getMetadata = function() {
  * @return {!proto.outputs.Output} returns this
 */
 proto.outputs.Output.prototype.setMetadata = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+  return jspb.Message.setWrapperField(this, 8, value);
 };
 
 
@@ -664,44 +671,7 @@ proto.outputs.Output.prototype.clearMetadata = function() {
  * @return {boolean}
  */
 proto.outputs.Output.prototype.hasMetadata = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * optional pointers.OutputPointer pointer = 10;
- * @return {?proto.pointers.OutputPointer}
- */
-proto.outputs.Output.prototype.getPointer = function() {
-  return /** @type{?proto.pointers.OutputPointer} */ (
-    jspb.Message.getWrapperField(this, pointers_pb.OutputPointer, 10));
-};
-
-
-/**
- * @param {?proto.pointers.OutputPointer|undefined} value
- * @return {!proto.outputs.Output} returns this
-*/
-proto.outputs.Output.prototype.setPointer = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.outputs.Output} returns this
- */
-proto.outputs.Output.prototype.clearPointer = function() {
-  return this.setPointer(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.outputs.Output.prototype.hasPointer = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
@@ -737,9 +707,9 @@ proto.outputs.OutputCoin.prototype.toObject = function(opt_includeInstance) {
  */
 proto.outputs.OutputCoin.toObject = function(includeInstance, msg) {
   var f, obj = {
-    to: msg.getTo_asB64(),
+    to: jspb.Message.getFieldWithDefault(msg, 1, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    assetId: msg.getAssetId_asB64()
+    assetId: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -777,7 +747,7 @@ proto.outputs.OutputCoin.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setTo(value);
       break;
     case 2:
@@ -785,7 +755,7 @@ proto.outputs.OutputCoin.deserializeBinaryFromReader = function(msg, reader) {
       msg.setAmount(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setAssetId(value);
       break;
     default:
@@ -817,9 +787,9 @@ proto.outputs.OutputCoin.prototype.serializeBinary = function() {
  */
 proto.outputs.OutputCoin.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTo_asU8();
+  f = message.getTo();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
@@ -831,9 +801,9 @@ proto.outputs.OutputCoin.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getAssetId_asU8();
+  f = message.getAssetId();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       3,
       f
     );
@@ -842,44 +812,20 @@ proto.outputs.OutputCoin.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional bytes to = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputCoin.prototype.getTo = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * optional bytes to = 1;
- * This is a type-conversion wrapper around `getTo()`
+ * optional string to = 1;
  * @return {string}
  */
-proto.outputs.OutputCoin.prototype.getTo_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTo()));
+proto.outputs.OutputCoin.prototype.getTo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes to = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTo()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputCoin.prototype.getTo_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTo()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputCoin} returns this
  */
 proto.outputs.OutputCoin.prototype.setTo = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -902,44 +848,20 @@ proto.outputs.OutputCoin.prototype.setAmount = function(value) {
 
 
 /**
- * optional bytes asset_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputCoin.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes asset_id = 3;
- * This is a type-conversion wrapper around `getAssetId()`
+ * optional string asset_id = 3;
  * @return {string}
  */
-proto.outputs.OutputCoin.prototype.getAssetId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getAssetId()));
+proto.outputs.OutputCoin.prototype.getAssetId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes asset_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getAssetId()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputCoin.prototype.getAssetId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getAssetId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputCoin} returns this
  */
 proto.outputs.OutputCoin.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -975,8 +897,8 @@ proto.outputs.OutputContract.prototype.toObject = function(opt_includeInstance) 
  */
 proto.outputs.OutputContract.toObject = function(includeInstance, msg) {
   var f, obj = {
-    balanceRoot: msg.getBalanceRoot_asB64(),
-    stateRoot: msg.getStateRoot_asB64(),
+    balanceRoot: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    stateRoot: jspb.Message.getFieldWithDefault(msg, 2, ""),
     inputIndex: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
@@ -1015,11 +937,11 @@ proto.outputs.OutputContract.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setBalanceRoot(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setStateRoot(value);
       break;
     case 3:
@@ -1055,16 +977,16 @@ proto.outputs.OutputContract.prototype.serializeBinary = function() {
  */
 proto.outputs.OutputContract.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getBalanceRoot_asU8();
+  f = message.getBalanceRoot();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
   }
-  f = message.getStateRoot_asU8();
+  f = message.getStateRoot();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       2,
       f
     );
@@ -1080,86 +1002,38 @@ proto.outputs.OutputContract.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * optional bytes balance_root = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputContract.prototype.getBalanceRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * optional bytes balance_root = 1;
- * This is a type-conversion wrapper around `getBalanceRoot()`
+ * optional string balance_root = 1;
  * @return {string}
  */
-proto.outputs.OutputContract.prototype.getBalanceRoot_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getBalanceRoot()));
+proto.outputs.OutputContract.prototype.getBalanceRoot = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes balance_root = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getBalanceRoot()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputContract.prototype.getBalanceRoot_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getBalanceRoot()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputContract} returns this
  */
 proto.outputs.OutputContract.prototype.setBalanceRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional bytes state_root = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputContract.prototype.getStateRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes state_root = 2;
- * This is a type-conversion wrapper around `getStateRoot()`
+ * optional string state_root = 2;
  * @return {string}
  */
-proto.outputs.OutputContract.prototype.getStateRoot_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getStateRoot()));
+proto.outputs.OutputContract.prototype.getStateRoot = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes state_root = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getStateRoot()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputContract.prototype.getStateRoot_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getStateRoot()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputContract} returns this
  */
 proto.outputs.OutputContract.prototype.setStateRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -1213,8 +1087,8 @@ proto.outputs.OutputContractCreated.prototype.toObject = function(opt_includeIns
  */
 proto.outputs.OutputContractCreated.toObject = function(includeInstance, msg) {
   var f, obj = {
-    contractId: msg.getContractId_asB64(),
-    stateRoot: msg.getStateRoot_asB64()
+    contractId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    stateRoot: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1252,11 +1126,11 @@ proto.outputs.OutputContractCreated.deserializeBinaryFromReader = function(msg, 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setContractId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setStateRoot(value);
       break;
     default:
@@ -1288,16 +1162,16 @@ proto.outputs.OutputContractCreated.prototype.serializeBinary = function() {
  */
 proto.outputs.OutputContractCreated.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getContractId_asU8();
+  f = message.getContractId();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
   }
-  f = message.getStateRoot_asU8();
+  f = message.getStateRoot();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       2,
       f
     );
@@ -1306,86 +1180,38 @@ proto.outputs.OutputContractCreated.serializeBinaryToWriter = function(message, 
 
 
 /**
- * optional bytes contract_id = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputContractCreated.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * optional bytes contract_id = 1;
- * This is a type-conversion wrapper around `getContractId()`
+ * optional string contract_id = 1;
  * @return {string}
  */
-proto.outputs.OutputContractCreated.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
+proto.outputs.OutputContractCreated.prototype.getContractId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes contract_id = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputContractCreated.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputContractCreated} returns this
  */
 proto.outputs.OutputContractCreated.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional bytes state_root = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputContractCreated.prototype.getStateRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes state_root = 2;
- * This is a type-conversion wrapper around `getStateRoot()`
+ * optional string state_root = 2;
  * @return {string}
  */
-proto.outputs.OutputContractCreated.prototype.getStateRoot_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getStateRoot()));
+proto.outputs.OutputContractCreated.prototype.getStateRoot = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes state_root = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getStateRoot()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputContractCreated.prototype.getStateRoot_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getStateRoot()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputContractCreated} returns this
  */
 proto.outputs.OutputContractCreated.prototype.setStateRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -1421,9 +1247,9 @@ proto.outputs.OutputChange.prototype.toObject = function(opt_includeInstance) {
  */
 proto.outputs.OutputChange.toObject = function(includeInstance, msg) {
   var f, obj = {
-    to: msg.getTo_asB64(),
+    to: jspb.Message.getFieldWithDefault(msg, 1, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    assetId: msg.getAssetId_asB64()
+    assetId: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -1461,7 +1287,7 @@ proto.outputs.OutputChange.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setTo(value);
       break;
     case 2:
@@ -1469,7 +1295,7 @@ proto.outputs.OutputChange.deserializeBinaryFromReader = function(msg, reader) {
       msg.setAmount(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setAssetId(value);
       break;
     default:
@@ -1501,9 +1327,9 @@ proto.outputs.OutputChange.prototype.serializeBinary = function() {
  */
 proto.outputs.OutputChange.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTo_asU8();
+  f = message.getTo();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
@@ -1515,9 +1341,9 @@ proto.outputs.OutputChange.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getAssetId_asU8();
+  f = message.getAssetId();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       3,
       f
     );
@@ -1526,44 +1352,20 @@ proto.outputs.OutputChange.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional bytes to = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputChange.prototype.getTo = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * optional bytes to = 1;
- * This is a type-conversion wrapper around `getTo()`
+ * optional string to = 1;
  * @return {string}
  */
-proto.outputs.OutputChange.prototype.getTo_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTo()));
+proto.outputs.OutputChange.prototype.getTo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes to = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTo()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputChange.prototype.getTo_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTo()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputChange} returns this
  */
 proto.outputs.OutputChange.prototype.setTo = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -1586,44 +1388,20 @@ proto.outputs.OutputChange.prototype.setAmount = function(value) {
 
 
 /**
- * optional bytes asset_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputChange.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes asset_id = 3;
- * This is a type-conversion wrapper around `getAssetId()`
+ * optional string asset_id = 3;
  * @return {string}
  */
-proto.outputs.OutputChange.prototype.getAssetId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getAssetId()));
+proto.outputs.OutputChange.prototype.getAssetId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes asset_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getAssetId()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputChange.prototype.getAssetId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getAssetId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputChange} returns this
  */
 proto.outputs.OutputChange.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -1659,9 +1437,9 @@ proto.outputs.OutputVariable.prototype.toObject = function(opt_includeInstance) 
  */
 proto.outputs.OutputVariable.toObject = function(includeInstance, msg) {
   var f, obj = {
-    to: msg.getTo_asB64(),
+    to: jspb.Message.getFieldWithDefault(msg, 1, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    assetId: msg.getAssetId_asB64()
+    assetId: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -1699,7 +1477,7 @@ proto.outputs.OutputVariable.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setTo(value);
       break;
     case 2:
@@ -1707,7 +1485,7 @@ proto.outputs.OutputVariable.deserializeBinaryFromReader = function(msg, reader)
       msg.setAmount(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      var value = /** @type {string} */ (reader.readString());
       msg.setAssetId(value);
       break;
     default:
@@ -1739,9 +1517,9 @@ proto.outputs.OutputVariable.prototype.serializeBinary = function() {
  */
 proto.outputs.OutputVariable.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTo_asU8();
+  f = message.getTo();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       1,
       f
     );
@@ -1753,9 +1531,9 @@ proto.outputs.OutputVariable.serializeBinaryToWriter = function(message, writer)
       f
     );
   }
-  f = message.getAssetId_asU8();
+  f = message.getAssetId();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeString(
       3,
       f
     );
@@ -1764,44 +1542,20 @@ proto.outputs.OutputVariable.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * optional bytes to = 1;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputVariable.prototype.getTo = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * optional bytes to = 1;
- * This is a type-conversion wrapper around `getTo()`
+ * optional string to = 1;
  * @return {string}
  */
-proto.outputs.OutputVariable.prototype.getTo_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTo()));
+proto.outputs.OutputVariable.prototype.getTo = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes to = 1;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTo()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputVariable.prototype.getTo_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTo()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputVariable} returns this
  */
 proto.outputs.OutputVariable.prototype.setTo = function(value) {
-  return jspb.Message.setProto3BytesField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
@@ -1824,44 +1578,20 @@ proto.outputs.OutputVariable.prototype.setAmount = function(value) {
 
 
 /**
- * optional bytes asset_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.outputs.OutputVariable.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes asset_id = 3;
- * This is a type-conversion wrapper around `getAssetId()`
+ * optional string asset_id = 3;
  * @return {string}
  */
-proto.outputs.OutputVariable.prototype.getAssetId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getAssetId()));
+proto.outputs.OutputVariable.prototype.getAssetId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes asset_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getAssetId()`
- * @return {!Uint8Array}
- */
-proto.outputs.OutputVariable.prototype.getAssetId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getAssetId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {string} value
  * @return {!proto.outputs.OutputVariable} returns this
  */
 proto.outputs.OutputVariable.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

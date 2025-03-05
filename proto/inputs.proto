@@ -13,61 +13,58 @@ enum InputType {
 }
 
 message Input {
-  string subject = 1;
-  InputType type = 2;
+  InputType type = 1;
+  pointers.InputPointer pointer = 2;
   
-  oneof input {
+  oneof data {
     InputCoin coin = 3;
     InputContract contract = 4;
     InputMessage message = 5;
   }
   
   // Metadata
-  common.Metadata metadata = 7;
-  pointers.InputPointer pointer = 8;
+  common.Metadata metadata = 6;
 }
 
 message InputCoin {
   // Fields matching fuel-core
-  bytes utxo_id = 1;
-  bytes owner = 2;
+  string utxo_id = 1;
+  string owner = 2;
   int64 amount = 3;
-  bytes asset_id = 4;
-  pointers.TxPointer tx_pointer = 5;
-  int32 witness_index = 6;
-  int64 predicate_gas_used = 7;
-  bytes predicate = 8;
-  bytes predicate_data = 9;
+  string asset_id = 4;
+  int32 witness_index = 5;
+  int64 predicate_gas_used = 6;
+  string predicate = 7;
+  string predicate_data = 8;
 
   // Extra fields (not in fuel-core)
-  int64 predicate_length = 10;
-  int64 predicate_data_length = 11;
-  int32 output_index = 12;
+  int64 predicate_length = 9;
+  int64 predicate_data_length = 10;
+  int32 output_index = 11;
 }
 
 message InputContract {
   // Fields matching fuel-core
-  bytes utxo_id = 1;
-  bytes balance_root = 2;
-  bytes state_root = 3;
-  pointers.TxPointer tx_pointer = 4;
-  bytes contract_id = 5;
+  string utxo_id = 1;
+  string balance_root = 2;
+  string state_root = 3;
+  string contract_id = 4;
 
   // Extra fields (not in fuel-core)
-  int32 output_index = 6;
+  int32 output_index = 5;
 }
 
 message InputMessage {
   // Fields matching fuel-core
-  bytes sender = 1;
-  bytes recipient = 2;
+  string sender = 1;
+  string recipient = 2;
   int64 amount = 3;
-  bytes nonce = 4;
+  string nonce = 4;
   int32 witness_index = 5;
   int64 predicate_gas_used = 6;
-  bytes data = 7;
-  bytes predicate = 8;
-  bytes predicate_data = 9;
+  string data = 7;
+  string predicate = 8;
+  string predicate_data = 9;
 
   // Extra fields (not in fuel-core)
   int32 data_length = 10;

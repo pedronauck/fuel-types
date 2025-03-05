@@ -2,17 +2,22 @@
 -- Assets table
 -- ------------------------------------------------------------------------------
 
+CREATE TYPE "AssetType" AS ENUM (
+    'COIN',
+    'NFT'
+);
+
 CREATE TABLE "assets" (
     -- uniques
     "_id" SERIAL PRIMARY KEY,
+    "subject" TEXT UNIQUE NOT NULL,
     "block_height" BIGINT NOT NULL,
     "tx_index" INTEGER NOT NULL,
     "tx_id" TEXT NOT NULL,
     "contract_id" TEXT NOT NULL,
     "asset_id" TEXT NOT NULL,
-    
-    -- cursor
-    "cursor" TEXT UNIQUE NOT NULL, -- {block_height}-{tx_index}-{asset_id}
+    "cursor" TEXT UNIQUE NOT NULL, -- {block_height}-{tx_index}-{<generated_id>}
+    "type" AssetType NOT NULL,
     
     -- props
     "sub_id" TEXT,
@@ -33,10 +38,13 @@ CREATE TABLE "assets" (
     FOREIGN KEY ("contract_id") REFERENCES "contracts" ("_id"),
 );
 
+CREATE INDEX ON "assets" ("cursor");
+CREATE INDEX ON "assets" ("subject");
 CREATE INDEX ON "assets" ("block_height");
 CREATE INDEX ON "assets" ("tx_id");
 CREATE INDEX ON "assets" ("contract_id");
 CREATE INDEX ON "assets" ("asset_id");
+CREATE INDEX ON "assets" ("type");
 CREATE INDEX ON "assets" ("sub_id");
 CREATE INDEX ON "assets" ("owner");
 CREATE INDEX ON "assets" ("name");

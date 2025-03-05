@@ -6,26 +6,31 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "common";
 
 export interface Metadata {
-  blockTime: Date | undefined;
-  publishedAt: Date | undefined;
+  blockTime: string;
+  publishedAt: string;
+}
+
+export interface BlockMetadata {
+  blockTime: string;
+  publishedAt: string;
+  blockPropagationMs: string;
 }
 
 function createBaseMetadata(): Metadata {
-  return { blockTime: undefined, publishedAt: undefined };
+  return { blockTime: "", publishedAt: "" };
 }
 
 export const Metadata: MessageFns<Metadata> = {
   encode(message: Metadata, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.blockTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.blockTime), writer.uint32(10).fork()).join();
+    if (message.blockTime !== "") {
+      writer.uint32(10).string(message.blockTime);
     }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(18).fork()).join();
+    if (message.publishedAt !== "") {
+      writer.uint32(18).string(message.publishedAt);
     }
     return writer;
   },
@@ -42,7 +47,7 @@ export const Metadata: MessageFns<Metadata> = {
             break;
           }
 
-          message.blockTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.blockTime = reader.string();
           continue;
         }
         case 2: {
@@ -50,7 +55,7 @@ export const Metadata: MessageFns<Metadata> = {
             break;
           }
 
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.publishedAt = reader.string();
           continue;
         }
       }
@@ -64,18 +69,18 @@ export const Metadata: MessageFns<Metadata> = {
 
   fromJSON(object: any): Metadata {
     return {
-      blockTime: isSet(object.blockTime) ? fromJsonTimestamp(object.blockTime) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      blockTime: isSet(object.blockTime) ? globalThis.String(object.blockTime) : "",
+      publishedAt: isSet(object.publishedAt) ? globalThis.String(object.publishedAt) : "",
     };
   },
 
   toJSON(message: Metadata): unknown {
     const obj: any = {};
-    if (message.blockTime !== undefined) {
-      obj.blockTime = message.blockTime.toISOString();
+    if (message.blockTime !== "") {
+      obj.blockTime = message.blockTime;
     }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.publishedAt !== "") {
+      obj.publishedAt = message.publishedAt;
     }
     return obj;
   },
@@ -85,8 +90,100 @@ export const Metadata: MessageFns<Metadata> = {
   },
   fromPartial<I extends Exact<DeepPartial<Metadata>, I>>(object: I): Metadata {
     const message = createBaseMetadata();
-    message.blockTime = object.blockTime ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.blockTime = object.blockTime ?? "";
+    message.publishedAt = object.publishedAt ?? "";
+    return message;
+  },
+};
+
+function createBaseBlockMetadata(): BlockMetadata {
+  return { blockTime: "", publishedAt: "", blockPropagationMs: "" };
+}
+
+export const BlockMetadata: MessageFns<BlockMetadata> = {
+  encode(message: BlockMetadata, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.blockTime !== "") {
+      writer.uint32(10).string(message.blockTime);
+    }
+    if (message.publishedAt !== "") {
+      writer.uint32(18).string(message.publishedAt);
+    }
+    if (message.blockPropagationMs !== "") {
+      writer.uint32(26).string(message.blockPropagationMs);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BlockMetadata {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBlockMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.blockTime = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.publishedAt = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.blockPropagationMs = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BlockMetadata {
+    return {
+      blockTime: isSet(object.blockTime) ? globalThis.String(object.blockTime) : "",
+      publishedAt: isSet(object.publishedAt) ? globalThis.String(object.publishedAt) : "",
+      blockPropagationMs: isSet(object.blockPropagationMs) ? globalThis.String(object.blockPropagationMs) : "",
+    };
+  },
+
+  toJSON(message: BlockMetadata): unknown {
+    const obj: any = {};
+    if (message.blockTime !== "") {
+      obj.blockTime = message.blockTime;
+    }
+    if (message.publishedAt !== "") {
+      obj.publishedAt = message.publishedAt;
+    }
+    if (message.blockPropagationMs !== "") {
+      obj.blockPropagationMs = message.blockPropagationMs;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BlockMetadata>, I>>(base?: I): BlockMetadata {
+    return BlockMetadata.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BlockMetadata>, I>>(object: I): BlockMetadata {
+    const message = createBaseBlockMetadata();
+    message.blockTime = object.blockTime ?? "";
+    message.publishedAt = object.publishedAt ?? "";
+    message.blockPropagationMs = object.blockPropagationMs ?? "";
     return message;
   },
 };
@@ -102,28 +199,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

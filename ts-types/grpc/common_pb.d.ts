@@ -5,19 +5,12 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 
 export class Metadata extends jspb.Message { 
-
-    hasBlockTime(): boolean;
-    clearBlockTime(): void;
-    getBlockTime(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setBlockTime(value?: google_protobuf_timestamp_pb.Timestamp): Metadata;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): Metadata;
+    getBlockTime(): string;
+    setBlockTime(value: string): Metadata;
+    getPublishedAt(): string;
+    setPublishedAt(value: string): Metadata;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Metadata.AsObject;
@@ -31,7 +24,33 @@ export class Metadata extends jspb.Message {
 
 export namespace Metadata {
     export type AsObject = {
-        blockTime?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+        blockTime: string,
+        publishedAt: string,
+    }
+}
+
+export class BlockMetadata extends jspb.Message { 
+    getBlockTime(): string;
+    setBlockTime(value: string): BlockMetadata;
+    getPublishedAt(): string;
+    setPublishedAt(value: string): BlockMetadata;
+    getBlockPropagationMs(): string;
+    setBlockPropagationMs(value: string): BlockMetadata;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): BlockMetadata.AsObject;
+    static toObject(includeInstance: boolean, msg: BlockMetadata): BlockMetadata.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: BlockMetadata, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): BlockMetadata;
+    static deserializeBinaryFromReader(message: BlockMetadata, reader: jspb.BinaryReader): BlockMetadata;
+}
+
+export namespace BlockMetadata {
+    export type AsObject = {
+        blockTime: string,
+        publishedAt: string,
+        blockPropagationMs: string,
     }
 }

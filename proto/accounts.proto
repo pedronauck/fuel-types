@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package accounts;
+
+import "pointers.proto";
+import "common.proto";
+
+enum AccountType {
+  UNKNOWN_ACCOUNT_TYPE = 0;
+  PREDICATE = 1;
+  CONTRACT = 2;
+  SCRIPT = 3;
+}
+
+message Predicate {
+  AccountType type = 1;
+  pointers.PredicatePointer pointer = 2;
+  PredicateData data = 3;
+  common.Metadata metadata = 4;
+}
+
+message PredicateData {
+  string bytecode = 1;
+}
+
+message Contract {
+  AccountType type = 1;
+  pointers.ContractPointer pointer = 2;
+  ContractData data = 3;
+  common.Metadata metadata = 4;
+}
+
+message ContractData {
+  string bytecode = 1;
+  string abi = 2;
+}
+
+message Script {
+  AccountType type = 1;
+  pointers.ScriptPointer pointer = 2;
+  ScriptData data = 3;
+  common.Metadata metadata = 4;
+}
+
+message ScriptData {
+  string bytecode = 1;
+}

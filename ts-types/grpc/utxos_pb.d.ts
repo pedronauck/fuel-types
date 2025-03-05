@@ -9,14 +9,13 @@ import * as pointers_pb from "./pointers_pb";
 import * as common_pb from "./common_pb";
 
 export class Utxo extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): Utxo;
-    getUtxoId(): Uint8Array | string;
-    getUtxoId_asU8(): Uint8Array;
-    getUtxoId_asB64(): string;
-    setUtxoId(value: Uint8Array | string): Utxo;
     getType(): UtxoType;
     setType(value: UtxoType): Utxo;
+
+    hasPointer(): boolean;
+    clearPointer(): void;
+    getPointer(): pointers_pb.UtxoPointer | undefined;
+    setPointer(value?: pointers_pb.UtxoPointer): Utxo;
     getStatus(): UtxoStatus;
     setStatus(value: UtxoStatus): Utxo;
 
@@ -40,12 +39,7 @@ export class Utxo extends jspb.Message {
     getMetadata(): common_pb.Metadata | undefined;
     setMetadata(value?: common_pb.Metadata): Utxo;
 
-    hasPointer(): boolean;
-    clearPointer(): void;
-    getPointer(): pointers_pb.UtxoPointer | undefined;
-    setPointer(value?: pointers_pb.UtxoPointer): Utxo;
-
-    getUtxoDataCase(): Utxo.UtxoDataCase;
+    getDataCase(): Utxo.DataCase;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Utxo.AsObject;
@@ -59,22 +53,20 @@ export class Utxo extends jspb.Message {
 
 export namespace Utxo {
     export type AsObject = {
-        subject: string,
-        utxoId: Uint8Array | string,
         type: UtxoType,
+        pointer?: pointers_pb.UtxoPointer.AsObject,
         status: UtxoStatus,
         coin?: UtxoCoin.AsObject,
         contract?: UtxoContract.AsObject,
         message?: UtxoMessage.AsObject,
         metadata?: common_pb.Metadata.AsObject,
-        pointer?: pointers_pb.UtxoPointer.AsObject,
     }
 
-    export enum UtxoDataCase {
-        UTXO_DATA_NOT_SET = 0,
-        COIN = 5,
-        CONTRACT = 6,
-        MESSAGE = 7,
+    export enum DataCase {
+        DATA_NOT_SET = 0,
+        COIN = 4,
+        CONTRACT = 5,
+        MESSAGE = 6,
     }
 
 }

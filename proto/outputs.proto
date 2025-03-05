@@ -15,10 +15,10 @@ enum OutputType {
 }
 
 message Output {
-  string subject = 1;
-  OutputType type = 2;
+  OutputType type = 1;
+  pointers.OutputPointer pointer = 2;
   
-  oneof output {
+  oneof data {
     OutputCoin coin = 3;
     OutputContract contract = 4;
     OutputChange change = 5;
@@ -27,35 +27,34 @@ message Output {
   }
 
   // Metadata
-  common.Metadata metadata = 9;
-  pointers.OutputPointer pointer = 10;
+  common.Metadata metadata = 8;
 }
 
 message OutputCoin {
-  bytes to = 1;
+  string to = 1;
   int64 amount = 2;
-  bytes asset_id = 3;
+  string asset_id = 3;
 }
 
 message OutputContract {
-  bytes balance_root = 1;
-  bytes state_root = 2;
+  string balance_root = 1;
+  string state_root = 2;
   int32 input_index = 3;
 }
 
 message OutputContractCreated {
-  bytes contract_id = 1;
-  bytes state_root = 2;
+  string contract_id = 1;
+  string state_root = 2;
 }
 
 message OutputChange {
-  bytes to = 1;
+  string to = 1;
   int64 amount = 2;
-  bytes asset_id = 3;
+  string asset_id = 3;
 }
 
 message OutputVariable {
-  bytes to = 1;
+  string to = 1;
   int64 amount = 2;
-  bytes asset_id = 3;
+  string asset_id = 3;
 }

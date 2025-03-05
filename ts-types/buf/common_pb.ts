@@ -4,29 +4,27 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file common.proto.
  */
 export const file_common: GenFile = /*@__PURE__*/
-  fileDesc("Cgxjb21tb24ucHJvdG8SBmNvbW1vbiJsCghNZXRhZGF0YRIuCgpibG9ja190aW1lGAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("Cgxjb21tb24ucHJvdG8SBmNvbW1vbiI0CghNZXRhZGF0YRISCgpibG9ja190aW1lGAEgASgJEhQKDHB1Ymxpc2hlZF9hdBgCIAEoCSJXCg1CbG9ja01ldGFkYXRhEhIKCmJsb2NrX3RpbWUYASABKAkSFAoMcHVibGlzaGVkX2F0GAIgASgJEhwKFGJsb2NrX3Byb3BhZ2F0aW9uX21zGAMgASgJYgZwcm90bzM");
 
 /**
  * @generated from message common.Metadata
  */
 export type Metadata = Message<"common.Metadata"> & {
   /**
-   * @generated from field: google.protobuf.Timestamp block_time = 1;
+   * @generated from field: string block_time = 1;
    */
-  blockTime?: Timestamp;
+  blockTime: string;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 2;
+   * @generated from field: string published_at = 2;
    */
-  publishedAt?: Timestamp;
+  publishedAt: string;
 };
 
 /**
@@ -35,4 +33,31 @@ export type Metadata = Message<"common.Metadata"> & {
  */
 export const MetadataSchema: GenMessage<Metadata> = /*@__PURE__*/
   messageDesc(file_common, 0);
+
+/**
+ * @generated from message common.BlockMetadata
+ */
+export type BlockMetadata = Message<"common.BlockMetadata"> & {
+  /**
+   * @generated from field: string block_time = 1;
+   */
+  blockTime: string;
+
+  /**
+   * @generated from field: string published_at = 2;
+   */
+  publishedAt: string;
+
+  /**
+   * @generated from field: string block_propagation_ms = 3;
+   */
+  blockPropagationMs: string;
+};
+
+/**
+ * Describes the message common.BlockMetadata.
+ * Use `create(BlockMetadataSchema)` to create a new message.
+ */
+export const BlockMetadataSchema: GenMessage<BlockMetadata> = /*@__PURE__*/
+  messageDesc(file_common, 1);
 

@@ -26,7 +26,7 @@ goog.object.extend(proto, pointers_pb);
 var common_pb = require('./common_pb.js');
 goog.object.extend(proto, common_pb);
 goog.exportSymbol('proto.utxos.Utxo', null, global);
-goog.exportSymbol('proto.utxos.Utxo.UtxoDataCase', null, global);
+goog.exportSymbol('proto.utxos.Utxo.DataCase', null, global);
 goog.exportSymbol('proto.utxos.UtxoCoin', null, global);
 goog.exportSymbol('proto.utxos.UtxoContract', null, global);
 goog.exportSymbol('proto.utxos.UtxoMessage', null, global);
@@ -125,23 +125,23 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.utxos.Utxo.oneofGroups_ = [[5,6,7]];
+proto.utxos.Utxo.oneofGroups_ = [[4,5,6]];
 
 /**
  * @enum {number}
  */
-proto.utxos.Utxo.UtxoDataCase = {
-  UTXO_DATA_NOT_SET: 0,
-  COIN: 5,
-  CONTRACT: 6,
-  MESSAGE: 7
+proto.utxos.Utxo.DataCase = {
+  DATA_NOT_SET: 0,
+  COIN: 4,
+  CONTRACT: 5,
+  MESSAGE: 6
 };
 
 /**
- * @return {proto.utxos.Utxo.UtxoDataCase}
+ * @return {proto.utxos.Utxo.DataCase}
  */
-proto.utxos.Utxo.prototype.getUtxoDataCase = function() {
-  return /** @type {proto.utxos.Utxo.UtxoDataCase} */(jspb.Message.computeOneofCase(this, proto.utxos.Utxo.oneofGroups_[0]));
+proto.utxos.Utxo.prototype.getDataCase = function() {
+  return /** @type {proto.utxos.Utxo.DataCase} */(jspb.Message.computeOneofCase(this, proto.utxos.Utxo.oneofGroups_[0]));
 };
 
 
@@ -175,15 +175,13 @@ proto.utxos.Utxo.prototype.toObject = function(opt_includeInstance) {
  */
 proto.utxos.Utxo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    utxoId: msg.getUtxoId_asB64(),
-    type: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    pointer: (f = msg.getPointer()) && pointers_pb.UtxoPointer.toObject(includeInstance, f),
+    status: jspb.Message.getFieldWithDefault(msg, 3, 0),
     coin: (f = msg.getCoin()) && proto.utxos.UtxoCoin.toObject(includeInstance, f),
     contract: (f = msg.getContract()) && proto.utxos.UtxoContract.toObject(includeInstance, f),
     message: (f = msg.getMessage()) && proto.utxos.UtxoMessage.toObject(includeInstance, f),
-    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f),
-    pointer: (f = msg.getPointer()) && pointers_pb.UtxoPointer.toObject(includeInstance, f)
+    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -221,45 +219,37 @@ proto.utxos.Utxo.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setUtxoId(value);
-      break;
-    case 3:
       var value = /** @type {!proto.utxos.UtxoType} */ (reader.readEnum());
       msg.setType(value);
       break;
-    case 4:
+    case 2:
+      var value = new pointers_pb.UtxoPointer;
+      reader.readMessage(value,pointers_pb.UtxoPointer.deserializeBinaryFromReader);
+      msg.setPointer(value);
+      break;
+    case 3:
       var value = /** @type {!proto.utxos.UtxoStatus} */ (reader.readEnum());
       msg.setStatus(value);
       break;
-    case 5:
+    case 4:
       var value = new proto.utxos.UtxoCoin;
       reader.readMessage(value,proto.utxos.UtxoCoin.deserializeBinaryFromReader);
       msg.setCoin(value);
       break;
-    case 6:
+    case 5:
       var value = new proto.utxos.UtxoContract;
       reader.readMessage(value,proto.utxos.UtxoContract.deserializeBinaryFromReader);
       msg.setContract(value);
       break;
-    case 7:
+    case 6:
       var value = new proto.utxos.UtxoMessage;
       reader.readMessage(value,proto.utxos.UtxoMessage.deserializeBinaryFromReader);
       msg.setMessage(value);
       break;
-    case 8:
+    case 7:
       var value = new common_pb.Metadata;
       reader.readMessage(value,common_pb.Metadata.deserializeBinaryFromReader);
       msg.setMetadata(value);
-      break;
-    case 9:
-      var value = new pointers_pb.UtxoPointer;
-      reader.readMessage(value,pointers_pb.UtxoPointer.deserializeBinaryFromReader);
-      msg.setPointer(value);
       break;
     default:
       reader.skipField();
@@ -290,38 +280,32 @@ proto.utxos.Utxo.prototype.serializeBinary = function() {
  */
 proto.utxos.Utxo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
       1,
       f
     );
   }
-  f = message.getUtxoId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getPointer();
+  if (f != null) {
+    writer.writeMessage(
       2,
-      f
+      f,
+      pointers_pb.UtxoPointer.serializeBinaryToWriter
     );
   }
-  f = message.getType();
+  f = message.getStatus();
   if (f !== 0.0) {
     writer.writeEnum(
       3,
       f
     );
   }
-  f = message.getStatus();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      4,
-      f
-    );
-  }
   f = message.getCoin();
   if (f != null) {
     writer.writeMessage(
-      5,
+      4,
       f,
       proto.utxos.UtxoCoin.serializeBinaryToWriter
     );
@@ -329,7 +313,7 @@ proto.utxos.Utxo.serializeBinaryToWriter = function(message, writer) {
   f = message.getContract();
   if (f != null) {
     writer.writeMessage(
-      6,
+      5,
       f,
       proto.utxos.UtxoContract.serializeBinaryToWriter
     );
@@ -337,7 +321,7 @@ proto.utxos.Utxo.serializeBinaryToWriter = function(message, writer) {
   f = message.getMessage();
   if (f != null) {
     writer.writeMessage(
-      7,
+      6,
       f,
       proto.utxos.UtxoMessage.serializeBinaryToWriter
     );
@@ -345,88 +329,20 @@ proto.utxos.Utxo.serializeBinaryToWriter = function(message, writer) {
   f = message.getMetadata();
   if (f != null) {
     writer.writeMessage(
-      8,
+      7,
       f,
       common_pb.Metadata.serializeBinaryToWriter
     );
   }
-  f = message.getPointer();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      pointers_pb.UtxoPointer.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.utxos.Utxo.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes utxo_id = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.utxos.Utxo.prototype.getUtxoId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes utxo_id = 2;
- * This is a type-conversion wrapper around `getUtxoId()`
- * @return {string}
- */
-proto.utxos.Utxo.prototype.getUtxoId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getUtxoId()));
-};
-
-
-/**
- * optional bytes utxo_id = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getUtxoId()`
- * @return {!Uint8Array}
- */
-proto.utxos.Utxo.prototype.getUtxoId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getUtxoId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.setUtxoId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
-};
-
-
-/**
- * optional UtxoType type = 3;
+ * optional UtxoType type = 1;
  * @return {!proto.utxos.UtxoType}
  */
 proto.utxos.Utxo.prototype.getType = function() {
-  return /** @type {!proto.utxos.UtxoType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {!proto.utxos.UtxoType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -435,183 +351,17 @@ proto.utxos.Utxo.prototype.getType = function() {
  * @return {!proto.utxos.Utxo} returns this
  */
 proto.utxos.Utxo.prototype.setType = function(value) {
-  return jspb.Message.setProto3EnumField(this, 3, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional UtxoStatus status = 4;
- * @return {!proto.utxos.UtxoStatus}
- */
-proto.utxos.Utxo.prototype.getStatus = function() {
-  return /** @type {!proto.utxos.UtxoStatus} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {!proto.utxos.UtxoStatus} value
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3EnumField(this, 4, value);
-};
-
-
-/**
- * optional UtxoCoin coin = 5;
- * @return {?proto.utxos.UtxoCoin}
- */
-proto.utxos.Utxo.prototype.getCoin = function() {
-  return /** @type{?proto.utxos.UtxoCoin} */ (
-    jspb.Message.getWrapperField(this, proto.utxos.UtxoCoin, 5));
-};
-
-
-/**
- * @param {?proto.utxos.UtxoCoin|undefined} value
- * @return {!proto.utxos.Utxo} returns this
-*/
-proto.utxos.Utxo.prototype.setCoin = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 5, proto.utxos.Utxo.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.clearCoin = function() {
-  return this.setCoin(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.utxos.Utxo.prototype.hasCoin = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional UtxoContract contract = 6;
- * @return {?proto.utxos.UtxoContract}
- */
-proto.utxos.Utxo.prototype.getContract = function() {
-  return /** @type{?proto.utxos.UtxoContract} */ (
-    jspb.Message.getWrapperField(this, proto.utxos.UtxoContract, 6));
-};
-
-
-/**
- * @param {?proto.utxos.UtxoContract|undefined} value
- * @return {!proto.utxos.Utxo} returns this
-*/
-proto.utxos.Utxo.prototype.setContract = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 6, proto.utxos.Utxo.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.clearContract = function() {
-  return this.setContract(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.utxos.Utxo.prototype.hasContract = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
- * optional UtxoMessage message = 7;
- * @return {?proto.utxos.UtxoMessage}
- */
-proto.utxos.Utxo.prototype.getMessage = function() {
-  return /** @type{?proto.utxos.UtxoMessage} */ (
-    jspb.Message.getWrapperField(this, proto.utxos.UtxoMessage, 7));
-};
-
-
-/**
- * @param {?proto.utxos.UtxoMessage|undefined} value
- * @return {!proto.utxos.Utxo} returns this
-*/
-proto.utxos.Utxo.prototype.setMessage = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 7, proto.utxos.Utxo.oneofGroups_[0], value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.clearMessage = function() {
-  return this.setMessage(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.utxos.Utxo.prototype.hasMessage = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * optional common.Metadata metadata = 8;
- * @return {?proto.common.Metadata}
- */
-proto.utxos.Utxo.prototype.getMetadata = function() {
-  return /** @type{?proto.common.Metadata} */ (
-    jspb.Message.getWrapperField(this, common_pb.Metadata, 8));
-};
-
-
-/**
- * @param {?proto.common.Metadata|undefined} value
- * @return {!proto.utxos.Utxo} returns this
-*/
-proto.utxos.Utxo.prototype.setMetadata = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.utxos.Utxo} returns this
- */
-proto.utxos.Utxo.prototype.clearMetadata = function() {
-  return this.setMetadata(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.utxos.Utxo.prototype.hasMetadata = function() {
-  return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * optional pointers.UtxoPointer pointer = 9;
+ * optional pointers.UtxoPointer pointer = 2;
  * @return {?proto.pointers.UtxoPointer}
  */
 proto.utxos.Utxo.prototype.getPointer = function() {
   return /** @type{?proto.pointers.UtxoPointer} */ (
-    jspb.Message.getWrapperField(this, pointers_pb.UtxoPointer, 9));
+    jspb.Message.getWrapperField(this, pointers_pb.UtxoPointer, 2));
 };
 
 
@@ -620,7 +370,7 @@ proto.utxos.Utxo.prototype.getPointer = function() {
  * @return {!proto.utxos.Utxo} returns this
 */
 proto.utxos.Utxo.prototype.setPointer = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+  return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
@@ -638,7 +388,173 @@ proto.utxos.Utxo.prototype.clearPointer = function() {
  * @return {boolean}
  */
 proto.utxos.Utxo.prototype.hasPointer = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional UtxoStatus status = 3;
+ * @return {!proto.utxos.UtxoStatus}
+ */
+proto.utxos.Utxo.prototype.getStatus = function() {
+  return /** @type {!proto.utxos.UtxoStatus} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {!proto.utxos.UtxoStatus} value
+ * @return {!proto.utxos.Utxo} returns this
+ */
+proto.utxos.Utxo.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 3, value);
+};
+
+
+/**
+ * optional UtxoCoin coin = 4;
+ * @return {?proto.utxos.UtxoCoin}
+ */
+proto.utxos.Utxo.prototype.getCoin = function() {
+  return /** @type{?proto.utxos.UtxoCoin} */ (
+    jspb.Message.getWrapperField(this, proto.utxos.UtxoCoin, 4));
+};
+
+
+/**
+ * @param {?proto.utxos.UtxoCoin|undefined} value
+ * @return {!proto.utxos.Utxo} returns this
+*/
+proto.utxos.Utxo.prototype.setCoin = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 4, proto.utxos.Utxo.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.utxos.Utxo} returns this
+ */
+proto.utxos.Utxo.prototype.clearCoin = function() {
+  return this.setCoin(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.utxos.Utxo.prototype.hasCoin = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional UtxoContract contract = 5;
+ * @return {?proto.utxos.UtxoContract}
+ */
+proto.utxos.Utxo.prototype.getContract = function() {
+  return /** @type{?proto.utxos.UtxoContract} */ (
+    jspb.Message.getWrapperField(this, proto.utxos.UtxoContract, 5));
+};
+
+
+/**
+ * @param {?proto.utxos.UtxoContract|undefined} value
+ * @return {!proto.utxos.Utxo} returns this
+*/
+proto.utxos.Utxo.prototype.setContract = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 5, proto.utxos.Utxo.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.utxos.Utxo} returns this
+ */
+proto.utxos.Utxo.prototype.clearContract = function() {
+  return this.setContract(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.utxos.Utxo.prototype.hasContract = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional UtxoMessage message = 6;
+ * @return {?proto.utxos.UtxoMessage}
+ */
+proto.utxos.Utxo.prototype.getMessage = function() {
+  return /** @type{?proto.utxos.UtxoMessage} */ (
+    jspb.Message.getWrapperField(this, proto.utxos.UtxoMessage, 6));
+};
+
+
+/**
+ * @param {?proto.utxos.UtxoMessage|undefined} value
+ * @return {!proto.utxos.Utxo} returns this
+*/
+proto.utxos.Utxo.prototype.setMessage = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 6, proto.utxos.Utxo.oneofGroups_[0], value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.utxos.Utxo} returns this
+ */
+proto.utxos.Utxo.prototype.clearMessage = function() {
+  return this.setMessage(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.utxos.Utxo.prototype.hasMessage = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional common.Metadata metadata = 7;
+ * @return {?proto.common.Metadata}
+ */
+proto.utxos.Utxo.prototype.getMetadata = function() {
+  return /** @type{?proto.common.Metadata} */ (
+    jspb.Message.getWrapperField(this, common_pb.Metadata, 7));
+};
+
+
+/**
+ * @param {?proto.common.Metadata|undefined} value
+ * @return {!proto.utxos.Utxo} returns this
+*/
+proto.utxos.Utxo.prototype.setMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 7, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.utxos.Utxo} returns this
+ */
+proto.utxos.Utxo.prototype.clearMetadata = function() {
+  return this.setMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.utxos.Utxo.prototype.hasMetadata = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 

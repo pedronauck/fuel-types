@@ -9,10 +9,13 @@ import * as pointers_pb from "./pointers_pb";
 import * as common_pb from "./common_pb";
 
 export class Output extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): Output;
     getType(): OutputType;
     setType(value: OutputType): Output;
+
+    hasPointer(): boolean;
+    clearPointer(): void;
+    getPointer(): pointers_pb.OutputPointer | undefined;
+    setPointer(value?: pointers_pb.OutputPointer): Output;
 
     hasCoin(): boolean;
     clearCoin(): void;
@@ -44,12 +47,7 @@ export class Output extends jspb.Message {
     getMetadata(): common_pb.Metadata | undefined;
     setMetadata(value?: common_pb.Metadata): Output;
 
-    hasPointer(): boolean;
-    clearPointer(): void;
-    getPointer(): pointers_pb.OutputPointer | undefined;
-    setPointer(value?: pointers_pb.OutputPointer): Output;
-
-    getOutputCase(): Output.OutputCase;
+    getDataCase(): Output.DataCase;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Output.AsObject;
@@ -63,19 +61,18 @@ export class Output extends jspb.Message {
 
 export namespace Output {
     export type AsObject = {
-        subject: string,
         type: OutputType,
+        pointer?: pointers_pb.OutputPointer.AsObject,
         coin?: OutputCoin.AsObject,
         contract?: OutputContract.AsObject,
         change?: OutputChange.AsObject,
         variable?: OutputVariable.AsObject,
         contractCreated?: OutputContractCreated.AsObject,
         metadata?: common_pb.Metadata.AsObject,
-        pointer?: pointers_pb.OutputPointer.AsObject,
     }
 
-    export enum OutputCase {
-        OUTPUT_NOT_SET = 0,
+    export enum DataCase {
+        DATA_NOT_SET = 0,
         COIN = 3,
         CONTRACT = 4,
         CHANGE = 5,
@@ -86,16 +83,12 @@ export namespace Output {
 }
 
 export class OutputCoin extends jspb.Message { 
-    getTo(): Uint8Array | string;
-    getTo_asU8(): Uint8Array;
-    getTo_asB64(): string;
-    setTo(value: Uint8Array | string): OutputCoin;
+    getTo(): string;
+    setTo(value: string): OutputCoin;
     getAmount(): number;
     setAmount(value: number): OutputCoin;
-    getAssetId(): Uint8Array | string;
-    getAssetId_asU8(): Uint8Array;
-    getAssetId_asB64(): string;
-    setAssetId(value: Uint8Array | string): OutputCoin;
+    getAssetId(): string;
+    setAssetId(value: string): OutputCoin;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): OutputCoin.AsObject;
@@ -109,21 +102,17 @@ export class OutputCoin extends jspb.Message {
 
 export namespace OutputCoin {
     export type AsObject = {
-        to: Uint8Array | string,
+        to: string,
         amount: number,
-        assetId: Uint8Array | string,
+        assetId: string,
     }
 }
 
 export class OutputContract extends jspb.Message { 
-    getBalanceRoot(): Uint8Array | string;
-    getBalanceRoot_asU8(): Uint8Array;
-    getBalanceRoot_asB64(): string;
-    setBalanceRoot(value: Uint8Array | string): OutputContract;
-    getStateRoot(): Uint8Array | string;
-    getStateRoot_asU8(): Uint8Array;
-    getStateRoot_asB64(): string;
-    setStateRoot(value: Uint8Array | string): OutputContract;
+    getBalanceRoot(): string;
+    setBalanceRoot(value: string): OutputContract;
+    getStateRoot(): string;
+    setStateRoot(value: string): OutputContract;
     getInputIndex(): number;
     setInputIndex(value: number): OutputContract;
 
@@ -139,21 +128,17 @@ export class OutputContract extends jspb.Message {
 
 export namespace OutputContract {
     export type AsObject = {
-        balanceRoot: Uint8Array | string,
-        stateRoot: Uint8Array | string,
+        balanceRoot: string,
+        stateRoot: string,
         inputIndex: number,
     }
 }
 
 export class OutputContractCreated extends jspb.Message { 
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): OutputContractCreated;
-    getStateRoot(): Uint8Array | string;
-    getStateRoot_asU8(): Uint8Array;
-    getStateRoot_asB64(): string;
-    setStateRoot(value: Uint8Array | string): OutputContractCreated;
+    getContractId(): string;
+    setContractId(value: string): OutputContractCreated;
+    getStateRoot(): string;
+    setStateRoot(value: string): OutputContractCreated;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): OutputContractCreated.AsObject;
@@ -167,22 +152,18 @@ export class OutputContractCreated extends jspb.Message {
 
 export namespace OutputContractCreated {
     export type AsObject = {
-        contractId: Uint8Array | string,
-        stateRoot: Uint8Array | string,
+        contractId: string,
+        stateRoot: string,
     }
 }
 
 export class OutputChange extends jspb.Message { 
-    getTo(): Uint8Array | string;
-    getTo_asU8(): Uint8Array;
-    getTo_asB64(): string;
-    setTo(value: Uint8Array | string): OutputChange;
+    getTo(): string;
+    setTo(value: string): OutputChange;
     getAmount(): number;
     setAmount(value: number): OutputChange;
-    getAssetId(): Uint8Array | string;
-    getAssetId_asU8(): Uint8Array;
-    getAssetId_asB64(): string;
-    setAssetId(value: Uint8Array | string): OutputChange;
+    getAssetId(): string;
+    setAssetId(value: string): OutputChange;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): OutputChange.AsObject;
@@ -196,23 +177,19 @@ export class OutputChange extends jspb.Message {
 
 export namespace OutputChange {
     export type AsObject = {
-        to: Uint8Array | string,
+        to: string,
         amount: number,
-        assetId: Uint8Array | string,
+        assetId: string,
     }
 }
 
 export class OutputVariable extends jspb.Message { 
-    getTo(): Uint8Array | string;
-    getTo_asU8(): Uint8Array;
-    getTo_asB64(): string;
-    setTo(value: Uint8Array | string): OutputVariable;
+    getTo(): string;
+    setTo(value: string): OutputVariable;
     getAmount(): number;
     setAmount(value: number): OutputVariable;
-    getAssetId(): Uint8Array | string;
-    getAssetId_asU8(): Uint8Array;
-    getAssetId_asB64(): string;
-    setAssetId(value: Uint8Array | string): OutputVariable;
+    getAssetId(): string;
+    setAssetId(value: string): OutputVariable;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): OutputVariable.AsObject;
@@ -226,9 +203,9 @@ export class OutputVariable extends jspb.Message {
 
 export namespace OutputVariable {
     export type AsObject = {
-        to: Uint8Array | string,
+        to: string,
         amount: number,
-        assetId: Uint8Array | string,
+        assetId: string,
     }
 }
 

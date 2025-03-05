@@ -185,13 +185,17 @@ export function policyTypeToJSON(object: PolicyType): string {
 }
 
 export interface Transaction {
-  subject: string;
-  /** Fields matching fuel-core */
-  id: Uint8Array;
+  type: TransactionType;
+  pointer: TxPointer | undefined;
+  data: TransactionData | undefined;
+  metadata: Metadata | undefined;
+}
+
+export interface TransactionData {
+  id: string;
   scriptGasLimit: number;
-  txPointer: TxPointer | undefined;
-  inputAssetIds: Uint8Array[];
-  inputContracts: Uint8Array[];
+  inputAssetIds: string[];
+  inputContracts: string[];
   inputContract: InputContract | undefined;
   inputs: Input[];
   isScript: boolean;
@@ -203,27 +207,27 @@ export interface Transaction {
   outputs: Output[];
   outputContract: OutputContract | undefined;
   mintAmount: number;
-  mintAssetId: Uint8Array;
+  mintAssetId: string;
   mintGasPrice: number;
-  receiptsRoot: Uint8Array;
+  receiptsRoot: string;
   status: TransactionStatus;
-  witnesses: Uint8Array[];
-  script: Uint8Array;
-  scriptData: Uint8Array;
+  witnesses: string[];
+  script: string;
+  scriptData: string;
   policies: Policy | undefined;
-  salt: Uint8Array;
-  storageSlots: Uint8Array[];
+  salt: string;
+  storageSlots: string[];
   bytecodeWitnessIndex: number;
-  bytecodeRoot: Uint8Array;
+  bytecodeRoot: string;
   subsectionIndex: number;
   subsectionsNumber: number;
-  proofSet: Uint8Array[];
+  proofSet: string[];
   upgradePurpose: number;
-  blobId: Uint8Array;
+  blobId: string;
   /** Extra fields (not in fuel-core) */
   maturity: number;
   policyType: number;
-  rawPayload: Uint8Array;
+  rawPayload: string;
   scriptLength: number;
   scriptDataLength: number;
   storageSlotsCount: number;
@@ -231,223 +235,52 @@ export interface Transaction {
   witnessesCount: number;
   inputsCount: number;
   outputsCount: number;
-  /** Metadata */
-  metadata: Metadata | undefined;
 }
 
 export interface StorageSlot {
   subject: string;
-  txId: Uint8Array;
-  key: Uint8Array;
-  value: Uint8Array;
+  txId: string;
+  key: string;
+  value: string;
 }
 
 export interface Witness {
   subject: string;
-  txId: Uint8Array;
-  witnessData: Uint8Array;
+  txId: string;
+  witnessData: string;
   witnessDataLength: number;
 }
 
 export interface ProofSet {
   subject: string;
-  txId: Uint8Array;
-  proofHash: Uint8Array;
+  txId: string;
+  proofHash: string;
 }
 
 export interface Policy {
   subject: string;
-  txId: Uint8Array;
+  txId: string;
   type: PolicyType;
   data: number;
 }
 
 function createBaseTransaction(): Transaction {
-  return {
-    subject: "",
-    id: new Uint8Array(0),
-    scriptGasLimit: 0,
-    txPointer: undefined,
-    inputAssetIds: [],
-    inputContracts: [],
-    inputContract: undefined,
-    inputs: [],
-    isScript: false,
-    isCreate: false,
-    isMint: false,
-    isUpgrade: false,
-    isUpload: false,
-    isBlob: false,
-    outputs: [],
-    outputContract: undefined,
-    mintAmount: 0,
-    mintAssetId: new Uint8Array(0),
-    mintGasPrice: 0,
-    receiptsRoot: new Uint8Array(0),
-    status: 0,
-    witnesses: [],
-    script: new Uint8Array(0),
-    scriptData: new Uint8Array(0),
-    policies: undefined,
-    salt: new Uint8Array(0),
-    storageSlots: [],
-    bytecodeWitnessIndex: 0,
-    bytecodeRoot: new Uint8Array(0),
-    subsectionIndex: 0,
-    subsectionsNumber: 0,
-    proofSet: [],
-    upgradePurpose: 0,
-    blobId: new Uint8Array(0),
-    maturity: 0,
-    policyType: 0,
-    rawPayload: new Uint8Array(0),
-    scriptLength: 0,
-    scriptDataLength: 0,
-    storageSlotsCount: 0,
-    proofSetCount: 0,
-    witnessesCount: 0,
-    inputsCount: 0,
-    outputsCount: 0,
-    metadata: undefined,
-  };
+  return { type: 0, pointer: undefined, data: undefined, metadata: undefined };
 }
 
 export const Transaction: MessageFns<Transaction> = {
   encode(message: Transaction, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.type !== 0) {
+      writer.uint32(8).int32(message.type);
     }
-    if (message.id.length !== 0) {
-      writer.uint32(18).bytes(message.id);
+    if (message.pointer !== undefined) {
+      TxPointer.encode(message.pointer, writer.uint32(18).fork()).join();
     }
-    if (message.scriptGasLimit !== 0) {
-      writer.uint32(24).int64(message.scriptGasLimit);
-    }
-    if (message.txPointer !== undefined) {
-      TxPointer.encode(message.txPointer, writer.uint32(34).fork()).join();
-    }
-    for (const v of message.inputAssetIds) {
-      writer.uint32(42).bytes(v!);
-    }
-    for (const v of message.inputContracts) {
-      writer.uint32(50).bytes(v!);
-    }
-    if (message.inputContract !== undefined) {
-      InputContract.encode(message.inputContract, writer.uint32(58).fork()).join();
-    }
-    for (const v of message.inputs) {
-      Input.encode(v!, writer.uint32(66).fork()).join();
-    }
-    if (message.isScript !== false) {
-      writer.uint32(72).bool(message.isScript);
-    }
-    if (message.isCreate !== false) {
-      writer.uint32(80).bool(message.isCreate);
-    }
-    if (message.isMint !== false) {
-      writer.uint32(88).bool(message.isMint);
-    }
-    if (message.isUpgrade !== false) {
-      writer.uint32(96).bool(message.isUpgrade);
-    }
-    if (message.isUpload !== false) {
-      writer.uint32(104).bool(message.isUpload);
-    }
-    if (message.isBlob !== false) {
-      writer.uint32(112).bool(message.isBlob);
-    }
-    for (const v of message.outputs) {
-      Output.encode(v!, writer.uint32(122).fork()).join();
-    }
-    if (message.outputContract !== undefined) {
-      OutputContract.encode(message.outputContract, writer.uint32(130).fork()).join();
-    }
-    if (message.mintAmount !== 0) {
-      writer.uint32(136).int64(message.mintAmount);
-    }
-    if (message.mintAssetId.length !== 0) {
-      writer.uint32(146).bytes(message.mintAssetId);
-    }
-    if (message.mintGasPrice !== 0) {
-      writer.uint32(152).int64(message.mintGasPrice);
-    }
-    if (message.receiptsRoot.length !== 0) {
-      writer.uint32(162).bytes(message.receiptsRoot);
-    }
-    if (message.status !== 0) {
-      writer.uint32(168).int32(message.status);
-    }
-    for (const v of message.witnesses) {
-      writer.uint32(178).bytes(v!);
-    }
-    if (message.script.length !== 0) {
-      writer.uint32(186).bytes(message.script);
-    }
-    if (message.scriptData.length !== 0) {
-      writer.uint32(194).bytes(message.scriptData);
-    }
-    if (message.policies !== undefined) {
-      Policy.encode(message.policies, writer.uint32(202).fork()).join();
-    }
-    if (message.salt.length !== 0) {
-      writer.uint32(210).bytes(message.salt);
-    }
-    for (const v of message.storageSlots) {
-      writer.uint32(218).bytes(v!);
-    }
-    if (message.bytecodeWitnessIndex !== 0) {
-      writer.uint32(224).int32(message.bytecodeWitnessIndex);
-    }
-    if (message.bytecodeRoot.length !== 0) {
-      writer.uint32(234).bytes(message.bytecodeRoot);
-    }
-    if (message.subsectionIndex !== 0) {
-      writer.uint32(240).int32(message.subsectionIndex);
-    }
-    if (message.subsectionsNumber !== 0) {
-      writer.uint32(248).int32(message.subsectionsNumber);
-    }
-    for (const v of message.proofSet) {
-      writer.uint32(258).bytes(v!);
-    }
-    if (message.upgradePurpose !== 0) {
-      writer.uint32(264).int32(message.upgradePurpose);
-    }
-    if (message.blobId.length !== 0) {
-      writer.uint32(274).bytes(message.blobId);
-    }
-    if (message.maturity !== 0) {
-      writer.uint32(280).int32(message.maturity);
-    }
-    if (message.policyType !== 0) {
-      writer.uint32(288).int32(message.policyType);
-    }
-    if (message.rawPayload.length !== 0) {
-      writer.uint32(298).bytes(message.rawPayload);
-    }
-    if (message.scriptLength !== 0) {
-      writer.uint32(304).int64(message.scriptLength);
-    }
-    if (message.scriptDataLength !== 0) {
-      writer.uint32(312).int64(message.scriptDataLength);
-    }
-    if (message.storageSlotsCount !== 0) {
-      writer.uint32(320).int64(message.storageSlotsCount);
-    }
-    if (message.proofSetCount !== 0) {
-      writer.uint32(328).int32(message.proofSetCount);
-    }
-    if (message.witnessesCount !== 0) {
-      writer.uint32(336).int32(message.witnessesCount);
-    }
-    if (message.inputsCount !== 0) {
-      writer.uint32(344).int32(message.inputsCount);
-    }
-    if (message.outputsCount !== 0) {
-      writer.uint32(352).int32(message.outputsCount);
+    if (message.data !== undefined) {
+      TransactionData.encode(message.data, writer.uint32(26).fork()).join();
     }
     if (message.metadata !== undefined) {
-      Metadata.encode(message.metadata, writer.uint32(362).fork()).join();
+      Metadata.encode(message.metadata, writer.uint32(34).fork()).join();
     }
     return writer;
   },
@@ -460,11 +293,11 @@ export const Transaction: MessageFns<Transaction> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.subject = reader.string();
+          message.type = reader.int32() as any;
           continue;
         }
         case 2: {
@@ -472,347 +305,19 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.id = reader.bytes();
+          message.pointer = TxPointer.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.scriptGasLimit = longToNumber(reader.int64());
+          message.data = TransactionData.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
           if (tag !== 34) {
-            break;
-          }
-
-          message.txPointer = TxPointer.decode(reader, reader.uint32());
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.inputAssetIds.push(reader.bytes());
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.inputContracts.push(reader.bytes());
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.inputContract = InputContract.decode(reader, reader.uint32());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.inputs.push(Input.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 9: {
-          if (tag !== 72) {
-            break;
-          }
-
-          message.isScript = reader.bool();
-          continue;
-        }
-        case 10: {
-          if (tag !== 80) {
-            break;
-          }
-
-          message.isCreate = reader.bool();
-          continue;
-        }
-        case 11: {
-          if (tag !== 88) {
-            break;
-          }
-
-          message.isMint = reader.bool();
-          continue;
-        }
-        case 12: {
-          if (tag !== 96) {
-            break;
-          }
-
-          message.isUpgrade = reader.bool();
-          continue;
-        }
-        case 13: {
-          if (tag !== 104) {
-            break;
-          }
-
-          message.isUpload = reader.bool();
-          continue;
-        }
-        case 14: {
-          if (tag !== 112) {
-            break;
-          }
-
-          message.isBlob = reader.bool();
-          continue;
-        }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.outputs.push(Output.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 16: {
-          if (tag !== 130) {
-            break;
-          }
-
-          message.outputContract = OutputContract.decode(reader, reader.uint32());
-          continue;
-        }
-        case 17: {
-          if (tag !== 136) {
-            break;
-          }
-
-          message.mintAmount = longToNumber(reader.int64());
-          continue;
-        }
-        case 18: {
-          if (tag !== 146) {
-            break;
-          }
-
-          message.mintAssetId = reader.bytes();
-          continue;
-        }
-        case 19: {
-          if (tag !== 152) {
-            break;
-          }
-
-          message.mintGasPrice = longToNumber(reader.int64());
-          continue;
-        }
-        case 20: {
-          if (tag !== 162) {
-            break;
-          }
-
-          message.receiptsRoot = reader.bytes();
-          continue;
-        }
-        case 21: {
-          if (tag !== 168) {
-            break;
-          }
-
-          message.status = reader.int32() as any;
-          continue;
-        }
-        case 22: {
-          if (tag !== 178) {
-            break;
-          }
-
-          message.witnesses.push(reader.bytes());
-          continue;
-        }
-        case 23: {
-          if (tag !== 186) {
-            break;
-          }
-
-          message.script = reader.bytes();
-          continue;
-        }
-        case 24: {
-          if (tag !== 194) {
-            break;
-          }
-
-          message.scriptData = reader.bytes();
-          continue;
-        }
-        case 25: {
-          if (tag !== 202) {
-            break;
-          }
-
-          message.policies = Policy.decode(reader, reader.uint32());
-          continue;
-        }
-        case 26: {
-          if (tag !== 210) {
-            break;
-          }
-
-          message.salt = reader.bytes();
-          continue;
-        }
-        case 27: {
-          if (tag !== 218) {
-            break;
-          }
-
-          message.storageSlots.push(reader.bytes());
-          continue;
-        }
-        case 28: {
-          if (tag !== 224) {
-            break;
-          }
-
-          message.bytecodeWitnessIndex = reader.int32();
-          continue;
-        }
-        case 29: {
-          if (tag !== 234) {
-            break;
-          }
-
-          message.bytecodeRoot = reader.bytes();
-          continue;
-        }
-        case 30: {
-          if (tag !== 240) {
-            break;
-          }
-
-          message.subsectionIndex = reader.int32();
-          continue;
-        }
-        case 31: {
-          if (tag !== 248) {
-            break;
-          }
-
-          message.subsectionsNumber = reader.int32();
-          continue;
-        }
-        case 32: {
-          if (tag !== 258) {
-            break;
-          }
-
-          message.proofSet.push(reader.bytes());
-          continue;
-        }
-        case 33: {
-          if (tag !== 264) {
-            break;
-          }
-
-          message.upgradePurpose = reader.int32();
-          continue;
-        }
-        case 34: {
-          if (tag !== 274) {
-            break;
-          }
-
-          message.blobId = reader.bytes();
-          continue;
-        }
-        case 35: {
-          if (tag !== 280) {
-            break;
-          }
-
-          message.maturity = reader.int32();
-          continue;
-        }
-        case 36: {
-          if (tag !== 288) {
-            break;
-          }
-
-          message.policyType = reader.int32();
-          continue;
-        }
-        case 37: {
-          if (tag !== 298) {
-            break;
-          }
-
-          message.rawPayload = reader.bytes();
-          continue;
-        }
-        case 38: {
-          if (tag !== 304) {
-            break;
-          }
-
-          message.scriptLength = longToNumber(reader.int64());
-          continue;
-        }
-        case 39: {
-          if (tag !== 312) {
-            break;
-          }
-
-          message.scriptDataLength = longToNumber(reader.int64());
-          continue;
-        }
-        case 40: {
-          if (tag !== 320) {
-            break;
-          }
-
-          message.storageSlotsCount = longToNumber(reader.int64());
-          continue;
-        }
-        case 41: {
-          if (tag !== 328) {
-            break;
-          }
-
-          message.proofSetCount = reader.int32();
-          continue;
-        }
-        case 42: {
-          if (tag !== 336) {
-            break;
-          }
-
-          message.witnessesCount = reader.int32();
-          continue;
-        }
-        case 43: {
-          if (tag !== 344) {
-            break;
-          }
-
-          message.inputsCount = reader.int32();
-          continue;
-        }
-        case 44: {
-          if (tag !== 352) {
-            break;
-          }
-
-          message.outputsCount = reader.int32();
-          continue;
-        }
-        case 45: {
-          if (tag !== 362) {
             break;
           }
 
@@ -830,15 +335,588 @@ export const Transaction: MessageFns<Transaction> = {
 
   fromJSON(object: any): Transaction {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      type: isSet(object.type) ? transactionTypeFromJSON(object.type) : 0,
+      pointer: isSet(object.pointer) ? TxPointer.fromJSON(object.pointer) : undefined,
+      data: isSet(object.data) ? TransactionData.fromJSON(object.data) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
+    };
+  },
+
+  toJSON(message: Transaction): unknown {
+    const obj: any = {};
+    if (message.type !== 0) {
+      obj.type = transactionTypeToJSON(message.type);
+    }
+    if (message.pointer !== undefined) {
+      obj.pointer = TxPointer.toJSON(message.pointer);
+    }
+    if (message.data !== undefined) {
+      obj.data = TransactionData.toJSON(message.data);
+    }
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Transaction>, I>>(base?: I): Transaction {
+    return Transaction.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Transaction>, I>>(object: I): Transaction {
+    const message = createBaseTransaction();
+    message.type = object.type ?? 0;
+    message.pointer = (object.pointer !== undefined && object.pointer !== null)
+      ? TxPointer.fromPartial(object.pointer)
+      : undefined;
+    message.data = (object.data !== undefined && object.data !== null)
+      ? TransactionData.fromPartial(object.data)
+      : undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseTransactionData(): TransactionData {
+  return {
+    id: "",
+    scriptGasLimit: 0,
+    inputAssetIds: [],
+    inputContracts: [],
+    inputContract: undefined,
+    inputs: [],
+    isScript: false,
+    isCreate: false,
+    isMint: false,
+    isUpgrade: false,
+    isUpload: false,
+    isBlob: false,
+    outputs: [],
+    outputContract: undefined,
+    mintAmount: 0,
+    mintAssetId: "",
+    mintGasPrice: 0,
+    receiptsRoot: "",
+    status: 0,
+    witnesses: [],
+    script: "",
+    scriptData: "",
+    policies: undefined,
+    salt: "",
+    storageSlots: [],
+    bytecodeWitnessIndex: 0,
+    bytecodeRoot: "",
+    subsectionIndex: 0,
+    subsectionsNumber: 0,
+    proofSet: [],
+    upgradePurpose: 0,
+    blobId: "",
+    maturity: 0,
+    policyType: 0,
+    rawPayload: "",
+    scriptLength: 0,
+    scriptDataLength: 0,
+    storageSlotsCount: 0,
+    proofSetCount: 0,
+    witnessesCount: 0,
+    inputsCount: 0,
+    outputsCount: 0,
+  };
+}
+
+export const TransactionData: MessageFns<TransactionData> = {
+  encode(message: TransactionData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.scriptGasLimit !== 0) {
+      writer.uint32(16).int64(message.scriptGasLimit);
+    }
+    for (const v of message.inputAssetIds) {
+      writer.uint32(26).string(v!);
+    }
+    for (const v of message.inputContracts) {
+      writer.uint32(34).string(v!);
+    }
+    if (message.inputContract !== undefined) {
+      InputContract.encode(message.inputContract, writer.uint32(42).fork()).join();
+    }
+    for (const v of message.inputs) {
+      Input.encode(v!, writer.uint32(50).fork()).join();
+    }
+    if (message.isScript !== false) {
+      writer.uint32(56).bool(message.isScript);
+    }
+    if (message.isCreate !== false) {
+      writer.uint32(64).bool(message.isCreate);
+    }
+    if (message.isMint !== false) {
+      writer.uint32(72).bool(message.isMint);
+    }
+    if (message.isUpgrade !== false) {
+      writer.uint32(80).bool(message.isUpgrade);
+    }
+    if (message.isUpload !== false) {
+      writer.uint32(88).bool(message.isUpload);
+    }
+    if (message.isBlob !== false) {
+      writer.uint32(96).bool(message.isBlob);
+    }
+    for (const v of message.outputs) {
+      Output.encode(v!, writer.uint32(106).fork()).join();
+    }
+    if (message.outputContract !== undefined) {
+      OutputContract.encode(message.outputContract, writer.uint32(114).fork()).join();
+    }
+    if (message.mintAmount !== 0) {
+      writer.uint32(120).int64(message.mintAmount);
+    }
+    if (message.mintAssetId !== "") {
+      writer.uint32(130).string(message.mintAssetId);
+    }
+    if (message.mintGasPrice !== 0) {
+      writer.uint32(136).int64(message.mintGasPrice);
+    }
+    if (message.receiptsRoot !== "") {
+      writer.uint32(146).string(message.receiptsRoot);
+    }
+    if (message.status !== 0) {
+      writer.uint32(152).int32(message.status);
+    }
+    for (const v of message.witnesses) {
+      writer.uint32(162).string(v!);
+    }
+    if (message.script !== "") {
+      writer.uint32(170).string(message.script);
+    }
+    if (message.scriptData !== "") {
+      writer.uint32(178).string(message.scriptData);
+    }
+    if (message.policies !== undefined) {
+      Policy.encode(message.policies, writer.uint32(186).fork()).join();
+    }
+    if (message.salt !== "") {
+      writer.uint32(194).string(message.salt);
+    }
+    for (const v of message.storageSlots) {
+      writer.uint32(202).string(v!);
+    }
+    if (message.bytecodeWitnessIndex !== 0) {
+      writer.uint32(208).int32(message.bytecodeWitnessIndex);
+    }
+    if (message.bytecodeRoot !== "") {
+      writer.uint32(218).string(message.bytecodeRoot);
+    }
+    if (message.subsectionIndex !== 0) {
+      writer.uint32(224).int32(message.subsectionIndex);
+    }
+    if (message.subsectionsNumber !== 0) {
+      writer.uint32(232).int32(message.subsectionsNumber);
+    }
+    for (const v of message.proofSet) {
+      writer.uint32(242).string(v!);
+    }
+    if (message.upgradePurpose !== 0) {
+      writer.uint32(248).int32(message.upgradePurpose);
+    }
+    if (message.blobId !== "") {
+      writer.uint32(258).string(message.blobId);
+    }
+    if (message.maturity !== 0) {
+      writer.uint32(264).int32(message.maturity);
+    }
+    if (message.policyType !== 0) {
+      writer.uint32(272).int32(message.policyType);
+    }
+    if (message.rawPayload !== "") {
+      writer.uint32(282).string(message.rawPayload);
+    }
+    if (message.scriptLength !== 0) {
+      writer.uint32(288).int64(message.scriptLength);
+    }
+    if (message.scriptDataLength !== 0) {
+      writer.uint32(296).int64(message.scriptDataLength);
+    }
+    if (message.storageSlotsCount !== 0) {
+      writer.uint32(304).int64(message.storageSlotsCount);
+    }
+    if (message.proofSetCount !== 0) {
+      writer.uint32(312).int32(message.proofSetCount);
+    }
+    if (message.witnessesCount !== 0) {
+      writer.uint32(320).int32(message.witnessesCount);
+    }
+    if (message.inputsCount !== 0) {
+      writer.uint32(328).int32(message.inputsCount);
+    }
+    if (message.outputsCount !== 0) {
+      writer.uint32(336).int32(message.outputsCount);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): TransactionData {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTransactionData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.scriptGasLimit = longToNumber(reader.int64());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.inputAssetIds.push(reader.string());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.inputContracts.push(reader.string());
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.inputContract = InputContract.decode(reader, reader.uint32());
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.inputs.push(Input.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.isScript = reader.bool();
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.isCreate = reader.bool();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.isMint = reader.bool();
+          continue;
+        }
+        case 10: {
+          if (tag !== 80) {
+            break;
+          }
+
+          message.isUpgrade = reader.bool();
+          continue;
+        }
+        case 11: {
+          if (tag !== 88) {
+            break;
+          }
+
+          message.isUpload = reader.bool();
+          continue;
+        }
+        case 12: {
+          if (tag !== 96) {
+            break;
+          }
+
+          message.isBlob = reader.bool();
+          continue;
+        }
+        case 13: {
+          if (tag !== 106) {
+            break;
+          }
+
+          message.outputs.push(Output.decode(reader, reader.uint32()));
+          continue;
+        }
+        case 14: {
+          if (tag !== 114) {
+            break;
+          }
+
+          message.outputContract = OutputContract.decode(reader, reader.uint32());
+          continue;
+        }
+        case 15: {
+          if (tag !== 120) {
+            break;
+          }
+
+          message.mintAmount = longToNumber(reader.int64());
+          continue;
+        }
+        case 16: {
+          if (tag !== 130) {
+            break;
+          }
+
+          message.mintAssetId = reader.string();
+          continue;
+        }
+        case 17: {
+          if (tag !== 136) {
+            break;
+          }
+
+          message.mintGasPrice = longToNumber(reader.int64());
+          continue;
+        }
+        case 18: {
+          if (tag !== 146) {
+            break;
+          }
+
+          message.receiptsRoot = reader.string();
+          continue;
+        }
+        case 19: {
+          if (tag !== 152) {
+            break;
+          }
+
+          message.status = reader.int32() as any;
+          continue;
+        }
+        case 20: {
+          if (tag !== 162) {
+            break;
+          }
+
+          message.witnesses.push(reader.string());
+          continue;
+        }
+        case 21: {
+          if (tag !== 170) {
+            break;
+          }
+
+          message.script = reader.string();
+          continue;
+        }
+        case 22: {
+          if (tag !== 178) {
+            break;
+          }
+
+          message.scriptData = reader.string();
+          continue;
+        }
+        case 23: {
+          if (tag !== 186) {
+            break;
+          }
+
+          message.policies = Policy.decode(reader, reader.uint32());
+          continue;
+        }
+        case 24: {
+          if (tag !== 194) {
+            break;
+          }
+
+          message.salt = reader.string();
+          continue;
+        }
+        case 25: {
+          if (tag !== 202) {
+            break;
+          }
+
+          message.storageSlots.push(reader.string());
+          continue;
+        }
+        case 26: {
+          if (tag !== 208) {
+            break;
+          }
+
+          message.bytecodeWitnessIndex = reader.int32();
+          continue;
+        }
+        case 27: {
+          if (tag !== 218) {
+            break;
+          }
+
+          message.bytecodeRoot = reader.string();
+          continue;
+        }
+        case 28: {
+          if (tag !== 224) {
+            break;
+          }
+
+          message.subsectionIndex = reader.int32();
+          continue;
+        }
+        case 29: {
+          if (tag !== 232) {
+            break;
+          }
+
+          message.subsectionsNumber = reader.int32();
+          continue;
+        }
+        case 30: {
+          if (tag !== 242) {
+            break;
+          }
+
+          message.proofSet.push(reader.string());
+          continue;
+        }
+        case 31: {
+          if (tag !== 248) {
+            break;
+          }
+
+          message.upgradePurpose = reader.int32();
+          continue;
+        }
+        case 32: {
+          if (tag !== 258) {
+            break;
+          }
+
+          message.blobId = reader.string();
+          continue;
+        }
+        case 33: {
+          if (tag !== 264) {
+            break;
+          }
+
+          message.maturity = reader.int32();
+          continue;
+        }
+        case 34: {
+          if (tag !== 272) {
+            break;
+          }
+
+          message.policyType = reader.int32();
+          continue;
+        }
+        case 35: {
+          if (tag !== 282) {
+            break;
+          }
+
+          message.rawPayload = reader.string();
+          continue;
+        }
+        case 36: {
+          if (tag !== 288) {
+            break;
+          }
+
+          message.scriptLength = longToNumber(reader.int64());
+          continue;
+        }
+        case 37: {
+          if (tag !== 296) {
+            break;
+          }
+
+          message.scriptDataLength = longToNumber(reader.int64());
+          continue;
+        }
+        case 38: {
+          if (tag !== 304) {
+            break;
+          }
+
+          message.storageSlotsCount = longToNumber(reader.int64());
+          continue;
+        }
+        case 39: {
+          if (tag !== 312) {
+            break;
+          }
+
+          message.proofSetCount = reader.int32();
+          continue;
+        }
+        case 40: {
+          if (tag !== 320) {
+            break;
+          }
+
+          message.witnessesCount = reader.int32();
+          continue;
+        }
+        case 41: {
+          if (tag !== 328) {
+            break;
+          }
+
+          message.inputsCount = reader.int32();
+          continue;
+        }
+        case 42: {
+          if (tag !== 336) {
+            break;
+          }
+
+          message.outputsCount = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TransactionData {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
       scriptGasLimit: isSet(object.scriptGasLimit) ? globalThis.Number(object.scriptGasLimit) : 0,
-      txPointer: isSet(object.txPointer) ? TxPointer.fromJSON(object.txPointer) : undefined,
       inputAssetIds: globalThis.Array.isArray(object?.inputAssetIds)
-        ? object.inputAssetIds.map((e: any) => bytesFromBase64(e))
+        ? object.inputAssetIds.map((e: any) => globalThis.String(e))
         : [],
       inputContracts: globalThis.Array.isArray(object?.inputContracts)
-        ? object.inputContracts.map((e: any) => bytesFromBase64(e))
+        ? object.inputContracts.map((e: any) => globalThis.String(e))
         : [],
       inputContract: isSet(object.inputContract) ? InputContract.fromJSON(object.inputContract) : undefined,
       inputs: globalThis.Array.isArray(object?.inputs) ? object.inputs.map((e: any) => Input.fromJSON(e)) : [],
@@ -851,30 +929,30 @@ export const Transaction: MessageFns<Transaction> = {
       outputs: globalThis.Array.isArray(object?.outputs) ? object.outputs.map((e: any) => Output.fromJSON(e)) : [],
       outputContract: isSet(object.outputContract) ? OutputContract.fromJSON(object.outputContract) : undefined,
       mintAmount: isSet(object.mintAmount) ? globalThis.Number(object.mintAmount) : 0,
-      mintAssetId: isSet(object.mintAssetId) ? bytesFromBase64(object.mintAssetId) : new Uint8Array(0),
+      mintAssetId: isSet(object.mintAssetId) ? globalThis.String(object.mintAssetId) : "",
       mintGasPrice: isSet(object.mintGasPrice) ? globalThis.Number(object.mintGasPrice) : 0,
-      receiptsRoot: isSet(object.receiptsRoot) ? bytesFromBase64(object.receiptsRoot) : new Uint8Array(0),
+      receiptsRoot: isSet(object.receiptsRoot) ? globalThis.String(object.receiptsRoot) : "",
       status: isSet(object.status) ? transactionStatusFromJSON(object.status) : 0,
       witnesses: globalThis.Array.isArray(object?.witnesses)
-        ? object.witnesses.map((e: any) => bytesFromBase64(e))
+        ? object.witnesses.map((e: any) => globalThis.String(e))
         : [],
-      script: isSet(object.script) ? bytesFromBase64(object.script) : new Uint8Array(0),
-      scriptData: isSet(object.scriptData) ? bytesFromBase64(object.scriptData) : new Uint8Array(0),
+      script: isSet(object.script) ? globalThis.String(object.script) : "",
+      scriptData: isSet(object.scriptData) ? globalThis.String(object.scriptData) : "",
       policies: isSet(object.policies) ? Policy.fromJSON(object.policies) : undefined,
-      salt: isSet(object.salt) ? bytesFromBase64(object.salt) : new Uint8Array(0),
+      salt: isSet(object.salt) ? globalThis.String(object.salt) : "",
       storageSlots: globalThis.Array.isArray(object?.storageSlots)
-        ? object.storageSlots.map((e: any) => bytesFromBase64(e))
+        ? object.storageSlots.map((e: any) => globalThis.String(e))
         : [],
       bytecodeWitnessIndex: isSet(object.bytecodeWitnessIndex) ? globalThis.Number(object.bytecodeWitnessIndex) : 0,
-      bytecodeRoot: isSet(object.bytecodeRoot) ? bytesFromBase64(object.bytecodeRoot) : new Uint8Array(0),
+      bytecodeRoot: isSet(object.bytecodeRoot) ? globalThis.String(object.bytecodeRoot) : "",
       subsectionIndex: isSet(object.subsectionIndex) ? globalThis.Number(object.subsectionIndex) : 0,
       subsectionsNumber: isSet(object.subsectionsNumber) ? globalThis.Number(object.subsectionsNumber) : 0,
-      proofSet: globalThis.Array.isArray(object?.proofSet) ? object.proofSet.map((e: any) => bytesFromBase64(e)) : [],
+      proofSet: globalThis.Array.isArray(object?.proofSet) ? object.proofSet.map((e: any) => globalThis.String(e)) : [],
       upgradePurpose: isSet(object.upgradePurpose) ? globalThis.Number(object.upgradePurpose) : 0,
-      blobId: isSet(object.blobId) ? bytesFromBase64(object.blobId) : new Uint8Array(0),
+      blobId: isSet(object.blobId) ? globalThis.String(object.blobId) : "",
       maturity: isSet(object.maturity) ? globalThis.Number(object.maturity) : 0,
       policyType: isSet(object.policyType) ? globalThis.Number(object.policyType) : 0,
-      rawPayload: isSet(object.rawPayload) ? bytesFromBase64(object.rawPayload) : new Uint8Array(0),
+      rawPayload: isSet(object.rawPayload) ? globalThis.String(object.rawPayload) : "",
       scriptLength: isSet(object.scriptLength) ? globalThis.Number(object.scriptLength) : 0,
       scriptDataLength: isSet(object.scriptDataLength) ? globalThis.Number(object.scriptDataLength) : 0,
       storageSlotsCount: isSet(object.storageSlotsCount) ? globalThis.Number(object.storageSlotsCount) : 0,
@@ -882,29 +960,22 @@ export const Transaction: MessageFns<Transaction> = {
       witnessesCount: isSet(object.witnessesCount) ? globalThis.Number(object.witnessesCount) : 0,
       inputsCount: isSet(object.inputsCount) ? globalThis.Number(object.inputsCount) : 0,
       outputsCount: isSet(object.outputsCount) ? globalThis.Number(object.outputsCount) : 0,
-      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
     };
   },
 
-  toJSON(message: Transaction): unknown {
+  toJSON(message: TransactionData): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.id.length !== 0) {
-      obj.id = base64FromBytes(message.id);
+    if (message.id !== "") {
+      obj.id = message.id;
     }
     if (message.scriptGasLimit !== 0) {
       obj.scriptGasLimit = Math.round(message.scriptGasLimit);
     }
-    if (message.txPointer !== undefined) {
-      obj.txPointer = TxPointer.toJSON(message.txPointer);
-    }
     if (message.inputAssetIds?.length) {
-      obj.inputAssetIds = message.inputAssetIds.map((e) => base64FromBytes(e));
+      obj.inputAssetIds = message.inputAssetIds;
     }
     if (message.inputContracts?.length) {
-      obj.inputContracts = message.inputContracts.map((e) => base64FromBytes(e));
+      obj.inputContracts = message.inputContracts;
     }
     if (message.inputContract !== undefined) {
       obj.inputContract = InputContract.toJSON(message.inputContract);
@@ -939,41 +1010,41 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.mintAmount !== 0) {
       obj.mintAmount = Math.round(message.mintAmount);
     }
-    if (message.mintAssetId.length !== 0) {
-      obj.mintAssetId = base64FromBytes(message.mintAssetId);
+    if (message.mintAssetId !== "") {
+      obj.mintAssetId = message.mintAssetId;
     }
     if (message.mintGasPrice !== 0) {
       obj.mintGasPrice = Math.round(message.mintGasPrice);
     }
-    if (message.receiptsRoot.length !== 0) {
-      obj.receiptsRoot = base64FromBytes(message.receiptsRoot);
+    if (message.receiptsRoot !== "") {
+      obj.receiptsRoot = message.receiptsRoot;
     }
     if (message.status !== 0) {
       obj.status = transactionStatusToJSON(message.status);
     }
     if (message.witnesses?.length) {
-      obj.witnesses = message.witnesses.map((e) => base64FromBytes(e));
+      obj.witnesses = message.witnesses;
     }
-    if (message.script.length !== 0) {
-      obj.script = base64FromBytes(message.script);
+    if (message.script !== "") {
+      obj.script = message.script;
     }
-    if (message.scriptData.length !== 0) {
-      obj.scriptData = base64FromBytes(message.scriptData);
+    if (message.scriptData !== "") {
+      obj.scriptData = message.scriptData;
     }
     if (message.policies !== undefined) {
       obj.policies = Policy.toJSON(message.policies);
     }
-    if (message.salt.length !== 0) {
-      obj.salt = base64FromBytes(message.salt);
+    if (message.salt !== "") {
+      obj.salt = message.salt;
     }
     if (message.storageSlots?.length) {
-      obj.storageSlots = message.storageSlots.map((e) => base64FromBytes(e));
+      obj.storageSlots = message.storageSlots;
     }
     if (message.bytecodeWitnessIndex !== 0) {
       obj.bytecodeWitnessIndex = Math.round(message.bytecodeWitnessIndex);
     }
-    if (message.bytecodeRoot.length !== 0) {
-      obj.bytecodeRoot = base64FromBytes(message.bytecodeRoot);
+    if (message.bytecodeRoot !== "") {
+      obj.bytecodeRoot = message.bytecodeRoot;
     }
     if (message.subsectionIndex !== 0) {
       obj.subsectionIndex = Math.round(message.subsectionIndex);
@@ -982,13 +1053,13 @@ export const Transaction: MessageFns<Transaction> = {
       obj.subsectionsNumber = Math.round(message.subsectionsNumber);
     }
     if (message.proofSet?.length) {
-      obj.proofSet = message.proofSet.map((e) => base64FromBytes(e));
+      obj.proofSet = message.proofSet;
     }
     if (message.upgradePurpose !== 0) {
       obj.upgradePurpose = Math.round(message.upgradePurpose);
     }
-    if (message.blobId.length !== 0) {
-      obj.blobId = base64FromBytes(message.blobId);
+    if (message.blobId !== "") {
+      obj.blobId = message.blobId;
     }
     if (message.maturity !== 0) {
       obj.maturity = Math.round(message.maturity);
@@ -996,8 +1067,8 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.policyType !== 0) {
       obj.policyType = Math.round(message.policyType);
     }
-    if (message.rawPayload.length !== 0) {
-      obj.rawPayload = base64FromBytes(message.rawPayload);
+    if (message.rawPayload !== "") {
+      obj.rawPayload = message.rawPayload;
     }
     if (message.scriptLength !== 0) {
       obj.scriptLength = Math.round(message.scriptLength);
@@ -1020,23 +1091,16 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.outputsCount !== 0) {
       obj.outputsCount = Math.round(message.outputsCount);
     }
-    if (message.metadata !== undefined) {
-      obj.metadata = Metadata.toJSON(message.metadata);
-    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<Transaction>, I>>(base?: I): Transaction {
-    return Transaction.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<TransactionData>, I>>(base?: I): TransactionData {
+    return TransactionData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Transaction>, I>>(object: I): Transaction {
-    const message = createBaseTransaction();
-    message.subject = object.subject ?? "";
-    message.id = object.id ?? new Uint8Array(0);
+  fromPartial<I extends Exact<DeepPartial<TransactionData>, I>>(object: I): TransactionData {
+    const message = createBaseTransactionData();
+    message.id = object.id ?? "";
     message.scriptGasLimit = object.scriptGasLimit ?? 0;
-    message.txPointer = (object.txPointer !== undefined && object.txPointer !== null)
-      ? TxPointer.fromPartial(object.txPointer)
-      : undefined;
     message.inputAssetIds = object.inputAssetIds?.map((e) => e) || [];
     message.inputContracts = object.inputContracts?.map((e) => e) || [];
     message.inputContract = (object.inputContract !== undefined && object.inputContract !== null)
@@ -1054,28 +1118,28 @@ export const Transaction: MessageFns<Transaction> = {
       ? OutputContract.fromPartial(object.outputContract)
       : undefined;
     message.mintAmount = object.mintAmount ?? 0;
-    message.mintAssetId = object.mintAssetId ?? new Uint8Array(0);
+    message.mintAssetId = object.mintAssetId ?? "";
     message.mintGasPrice = object.mintGasPrice ?? 0;
-    message.receiptsRoot = object.receiptsRoot ?? new Uint8Array(0);
+    message.receiptsRoot = object.receiptsRoot ?? "";
     message.status = object.status ?? 0;
     message.witnesses = object.witnesses?.map((e) => e) || [];
-    message.script = object.script ?? new Uint8Array(0);
-    message.scriptData = object.scriptData ?? new Uint8Array(0);
+    message.script = object.script ?? "";
+    message.scriptData = object.scriptData ?? "";
     message.policies = (object.policies !== undefined && object.policies !== null)
       ? Policy.fromPartial(object.policies)
       : undefined;
-    message.salt = object.salt ?? new Uint8Array(0);
+    message.salt = object.salt ?? "";
     message.storageSlots = object.storageSlots?.map((e) => e) || [];
     message.bytecodeWitnessIndex = object.bytecodeWitnessIndex ?? 0;
-    message.bytecodeRoot = object.bytecodeRoot ?? new Uint8Array(0);
+    message.bytecodeRoot = object.bytecodeRoot ?? "";
     message.subsectionIndex = object.subsectionIndex ?? 0;
     message.subsectionsNumber = object.subsectionsNumber ?? 0;
     message.proofSet = object.proofSet?.map((e) => e) || [];
     message.upgradePurpose = object.upgradePurpose ?? 0;
-    message.blobId = object.blobId ?? new Uint8Array(0);
+    message.blobId = object.blobId ?? "";
     message.maturity = object.maturity ?? 0;
     message.policyType = object.policyType ?? 0;
-    message.rawPayload = object.rawPayload ?? new Uint8Array(0);
+    message.rawPayload = object.rawPayload ?? "";
     message.scriptLength = object.scriptLength ?? 0;
     message.scriptDataLength = object.scriptDataLength ?? 0;
     message.storageSlotsCount = object.storageSlotsCount ?? 0;
@@ -1083,15 +1147,12 @@ export const Transaction: MessageFns<Transaction> = {
     message.witnessesCount = object.witnessesCount ?? 0;
     message.inputsCount = object.inputsCount ?? 0;
     message.outputsCount = object.outputsCount ?? 0;
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? Metadata.fromPartial(object.metadata)
-      : undefined;
     return message;
   },
 };
 
 function createBaseStorageSlot(): StorageSlot {
-  return { subject: "", txId: new Uint8Array(0), key: new Uint8Array(0), value: new Uint8Array(0) };
+  return { subject: "", txId: "", key: "", value: "" };
 }
 
 export const StorageSlot: MessageFns<StorageSlot> = {
@@ -1099,14 +1160,14 @@ export const StorageSlot: MessageFns<StorageSlot> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.txId !== "") {
+      writer.uint32(18).string(message.txId);
     }
-    if (message.key.length !== 0) {
-      writer.uint32(26).bytes(message.key);
+    if (message.key !== "") {
+      writer.uint32(26).string(message.key);
     }
-    if (message.value.length !== 0) {
-      writer.uint32(34).bytes(message.value);
+    if (message.value !== "") {
+      writer.uint32(34).string(message.value);
     }
     return writer;
   },
@@ -1131,7 +1192,7 @@ export const StorageSlot: MessageFns<StorageSlot> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.txId = reader.string();
           continue;
         }
         case 3: {
@@ -1139,7 +1200,7 @@ export const StorageSlot: MessageFns<StorageSlot> = {
             break;
           }
 
-          message.key = reader.bytes();
+          message.key = reader.string();
           continue;
         }
         case 4: {
@@ -1147,7 +1208,7 @@ export const StorageSlot: MessageFns<StorageSlot> = {
             break;
           }
 
-          message.value = reader.bytes();
+          message.value = reader.string();
           continue;
         }
       }
@@ -1162,9 +1223,9 @@ export const StorageSlot: MessageFns<StorageSlot> = {
   fromJSON(object: any): StorageSlot {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(0),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
     };
   },
 
@@ -1173,14 +1234,14 @@ export const StorageSlot: MessageFns<StorageSlot> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
-    if (message.key.length !== 0) {
-      obj.key = base64FromBytes(message.key);
+    if (message.key !== "") {
+      obj.key = message.key;
     }
-    if (message.value.length !== 0) {
-      obj.value = base64FromBytes(message.value);
+    if (message.value !== "") {
+      obj.value = message.value;
     }
     return obj;
   },
@@ -1191,15 +1252,15 @@ export const StorageSlot: MessageFns<StorageSlot> = {
   fromPartial<I extends Exact<DeepPartial<StorageSlot>, I>>(object: I): StorageSlot {
     const message = createBaseStorageSlot();
     message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.key = object.key ?? new Uint8Array(0);
-    message.value = object.value ?? new Uint8Array(0);
+    message.txId = object.txId ?? "";
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
     return message;
   },
 };
 
 function createBaseWitness(): Witness {
-  return { subject: "", txId: new Uint8Array(0), witnessData: new Uint8Array(0), witnessDataLength: 0 };
+  return { subject: "", txId: "", witnessData: "", witnessDataLength: 0 };
 }
 
 export const Witness: MessageFns<Witness> = {
@@ -1207,11 +1268,11 @@ export const Witness: MessageFns<Witness> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.txId !== "") {
+      writer.uint32(18).string(message.txId);
     }
-    if (message.witnessData.length !== 0) {
-      writer.uint32(26).bytes(message.witnessData);
+    if (message.witnessData !== "") {
+      writer.uint32(26).string(message.witnessData);
     }
     if (message.witnessDataLength !== 0) {
       writer.uint32(32).int32(message.witnessDataLength);
@@ -1239,7 +1300,7 @@ export const Witness: MessageFns<Witness> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.txId = reader.string();
           continue;
         }
         case 3: {
@@ -1247,7 +1308,7 @@ export const Witness: MessageFns<Witness> = {
             break;
           }
 
-          message.witnessData = reader.bytes();
+          message.witnessData = reader.string();
           continue;
         }
         case 4: {
@@ -1270,8 +1331,8 @@ export const Witness: MessageFns<Witness> = {
   fromJSON(object: any): Witness {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      witnessData: isSet(object.witnessData) ? bytesFromBase64(object.witnessData) : new Uint8Array(0),
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      witnessData: isSet(object.witnessData) ? globalThis.String(object.witnessData) : "",
       witnessDataLength: isSet(object.witnessDataLength) ? globalThis.Number(object.witnessDataLength) : 0,
     };
   },
@@ -1281,11 +1342,11 @@ export const Witness: MessageFns<Witness> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
-    if (message.witnessData.length !== 0) {
-      obj.witnessData = base64FromBytes(message.witnessData);
+    if (message.witnessData !== "") {
+      obj.witnessData = message.witnessData;
     }
     if (message.witnessDataLength !== 0) {
       obj.witnessDataLength = Math.round(message.witnessDataLength);
@@ -1299,15 +1360,15 @@ export const Witness: MessageFns<Witness> = {
   fromPartial<I extends Exact<DeepPartial<Witness>, I>>(object: I): Witness {
     const message = createBaseWitness();
     message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.witnessData = object.witnessData ?? new Uint8Array(0);
+    message.txId = object.txId ?? "";
+    message.witnessData = object.witnessData ?? "";
     message.witnessDataLength = object.witnessDataLength ?? 0;
     return message;
   },
 };
 
 function createBaseProofSet(): ProofSet {
-  return { subject: "", txId: new Uint8Array(0), proofHash: new Uint8Array(0) };
+  return { subject: "", txId: "", proofHash: "" };
 }
 
 export const ProofSet: MessageFns<ProofSet> = {
@@ -1315,11 +1376,11 @@ export const ProofSet: MessageFns<ProofSet> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.txId !== "") {
+      writer.uint32(18).string(message.txId);
     }
-    if (message.proofHash.length !== 0) {
-      writer.uint32(26).bytes(message.proofHash);
+    if (message.proofHash !== "") {
+      writer.uint32(26).string(message.proofHash);
     }
     return writer;
   },
@@ -1344,7 +1405,7 @@ export const ProofSet: MessageFns<ProofSet> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.txId = reader.string();
           continue;
         }
         case 3: {
@@ -1352,7 +1413,7 @@ export const ProofSet: MessageFns<ProofSet> = {
             break;
           }
 
-          message.proofHash = reader.bytes();
+          message.proofHash = reader.string();
           continue;
         }
       }
@@ -1367,8 +1428,8 @@ export const ProofSet: MessageFns<ProofSet> = {
   fromJSON(object: any): ProofSet {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      proofHash: isSet(object.proofHash) ? bytesFromBase64(object.proofHash) : new Uint8Array(0),
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
+      proofHash: isSet(object.proofHash) ? globalThis.String(object.proofHash) : "",
     };
   },
 
@@ -1377,11 +1438,11 @@ export const ProofSet: MessageFns<ProofSet> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
-    if (message.proofHash.length !== 0) {
-      obj.proofHash = base64FromBytes(message.proofHash);
+    if (message.proofHash !== "") {
+      obj.proofHash = message.proofHash;
     }
     return obj;
   },
@@ -1392,14 +1453,14 @@ export const ProofSet: MessageFns<ProofSet> = {
   fromPartial<I extends Exact<DeepPartial<ProofSet>, I>>(object: I): ProofSet {
     const message = createBaseProofSet();
     message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.proofHash = object.proofHash ?? new Uint8Array(0);
+    message.txId = object.txId ?? "";
+    message.proofHash = object.proofHash ?? "";
     return message;
   },
 };
 
 function createBasePolicy(): Policy {
-  return { subject: "", txId: new Uint8Array(0), type: 0, data: 0 };
+  return { subject: "", txId: "", type: 0, data: 0 };
 }
 
 export const Policy: MessageFns<Policy> = {
@@ -1407,8 +1468,8 @@ export const Policy: MessageFns<Policy> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.txId !== "") {
+      writer.uint32(18).string(message.txId);
     }
     if (message.type !== 0) {
       writer.uint32(24).int32(message.type);
@@ -1439,7 +1500,7 @@ export const Policy: MessageFns<Policy> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.txId = reader.string();
           continue;
         }
         case 3: {
@@ -1470,7 +1531,7 @@ export const Policy: MessageFns<Policy> = {
   fromJSON(object: any): Policy {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      txId: isSet(object.txId) ? globalThis.String(object.txId) : "",
       type: isSet(object.type) ? policyTypeFromJSON(object.type) : 0,
       data: isSet(object.data) ? globalThis.Number(object.data) : 0,
     };
@@ -1481,8 +1542,8 @@ export const Policy: MessageFns<Policy> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.txId !== "") {
+      obj.txId = message.txId;
     }
     if (message.type !== 0) {
       obj.type = policyTypeToJSON(message.type);
@@ -1499,37 +1560,12 @@ export const Policy: MessageFns<Policy> = {
   fromPartial<I extends Exact<DeepPartial<Policy>, I>>(object: I): Policy {
     const message = createBasePolicy();
     message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.txId = object.txId ?? "";
     message.type = object.type ?? 0;
     message.data = object.data ?? 0;
     return message;
   },
 };
-
-function bytesFromBase64(b64: string): Uint8Array {
-  if ((globalThis as any).Buffer) {
-    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
-  } else {
-    const bin = globalThis.atob(b64);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; ++i) {
-      arr[i] = bin.charCodeAt(i);
-    }
-    return arr;
-  }
-}
-
-function base64FromBytes(arr: Uint8Array): string {
-  if ((globalThis as any).Buffer) {
-    return globalThis.Buffer.from(arr).toString("base64");
-  } else {
-    const bin: string[] = [];
-    arr.forEach((byte) => {
-      bin.push(globalThis.String.fromCharCode(byte));
-    });
-    return globalThis.btoa(bin.join(""));
-  }
-}
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 

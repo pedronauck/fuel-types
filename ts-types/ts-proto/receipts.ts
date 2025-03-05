@@ -168,8 +168,8 @@ export function scriptResultTypeToJSON(object: ScriptResultType): string {
 }
 
 export interface Receipt {
-  subject: string;
   type: ReceiptType;
+  pointer: ReceiptPointer | undefined;
   call?: ReceiptCall | undefined;
   return?: ReceiptReturn | undefined;
   returnData?: ReceiptReturnData | undefined;
@@ -187,7 +187,6 @@ export interface Receipt {
     | undefined;
   /** Metadata */
   metadata: Metadata | undefined;
-  pointer: ReceiptPointer | undefined;
 }
 
 export interface ReceiptCall {
@@ -309,8 +308,8 @@ export interface ReceiptBurn {
 
 function createBaseReceipt(): Receipt {
   return {
-    subject: "",
     type: 0,
+    pointer: undefined,
     call: undefined,
     return: undefined,
     returnData: undefined,
@@ -325,17 +324,16 @@ function createBaseReceipt(): Receipt {
     mint: undefined,
     burn: undefined,
     metadata: undefined,
-    pointer: undefined,
   };
 }
 
 export const Receipt: MessageFns<Receipt> = {
   encode(message: Receipt, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
     if (message.type !== 0) {
-      writer.uint32(16).int32(message.type);
+      writer.uint32(8).int32(message.type);
+    }
+    if (message.pointer !== undefined) {
+      ReceiptPointer.encode(message.pointer, writer.uint32(18).fork()).join();
     }
     if (message.call !== undefined) {
       ReceiptCall.encode(message.call, writer.uint32(26).fork()).join();
@@ -379,9 +377,6 @@ export const Receipt: MessageFns<Receipt> = {
     if (message.metadata !== undefined) {
       Metadata.encode(message.metadata, writer.uint32(130).fork()).join();
     }
-    if (message.pointer !== undefined) {
-      ReceiptPointer.encode(message.pointer, writer.uint32(138).fork()).join();
-    }
     return writer;
   },
 
@@ -393,19 +388,19 @@ export const Receipt: MessageFns<Receipt> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.subject = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
+          if (tag !== 8) {
             break;
           }
 
           message.type = reader.int32() as any;
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pointer = ReceiptPointer.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -520,14 +515,6 @@ export const Receipt: MessageFns<Receipt> = {
           message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
-        case 17: {
-          if (tag !== 138) {
-            break;
-          }
-
-          message.pointer = ReceiptPointer.decode(reader, reader.uint32());
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -539,8 +526,8 @@ export const Receipt: MessageFns<Receipt> = {
 
   fromJSON(object: any): Receipt {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       type: isSet(object.type) ? receiptTypeFromJSON(object.type) : 0,
+      pointer: isSet(object.pointer) ? ReceiptPointer.fromJSON(object.pointer) : undefined,
       call: isSet(object.call) ? ReceiptCall.fromJSON(object.call) : undefined,
       return: isSet(object.return) ? ReceiptReturn.fromJSON(object.return) : undefined,
       returnData: isSet(object.returnData) ? ReceiptReturnData.fromJSON(object.returnData) : undefined,
@@ -555,17 +542,16 @@ export const Receipt: MessageFns<Receipt> = {
       mint: isSet(object.mint) ? ReceiptMint.fromJSON(object.mint) : undefined,
       burn: isSet(object.burn) ? ReceiptBurn.fromJSON(object.burn) : undefined,
       metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
-      pointer: isSet(object.pointer) ? ReceiptPointer.fromJSON(object.pointer) : undefined,
     };
   },
 
   toJSON(message: Receipt): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
     if (message.type !== 0) {
       obj.type = receiptTypeToJSON(message.type);
+    }
+    if (message.pointer !== undefined) {
+      obj.pointer = ReceiptPointer.toJSON(message.pointer);
     }
     if (message.call !== undefined) {
       obj.call = ReceiptCall.toJSON(message.call);
@@ -609,9 +595,6 @@ export const Receipt: MessageFns<Receipt> = {
     if (message.metadata !== undefined) {
       obj.metadata = Metadata.toJSON(message.metadata);
     }
-    if (message.pointer !== undefined) {
-      obj.pointer = ReceiptPointer.toJSON(message.pointer);
-    }
     return obj;
   },
 
@@ -620,8 +603,10 @@ export const Receipt: MessageFns<Receipt> = {
   },
   fromPartial<I extends Exact<DeepPartial<Receipt>, I>>(object: I): Receipt {
     const message = createBaseReceipt();
-    message.subject = object.subject ?? "";
     message.type = object.type ?? 0;
+    message.pointer = (object.pointer !== undefined && object.pointer !== null)
+      ? ReceiptPointer.fromPartial(object.pointer)
+      : undefined;
     message.call = (object.call !== undefined && object.call !== null)
       ? ReceiptCall.fromPartial(object.call)
       : undefined;
@@ -661,9 +646,6 @@ export const Receipt: MessageFns<Receipt> = {
       : undefined;
     message.metadata = (object.metadata !== undefined && object.metadata !== null)
       ? Metadata.fromPartial(object.metadata)
-      : undefined;
-    message.pointer = (object.pointer !== undefined && object.pointer !== null)
-      ? ReceiptPointer.fromPartial(object.pointer)
       : undefined;
     return message;
   },

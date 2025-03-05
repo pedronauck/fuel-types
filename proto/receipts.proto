@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package receipts;
 
-import "pointers.proto";
 import "common.proto";
+import "pointers.proto";
 
 enum ReceiptType {
   UNKNOWN_RECEIPT_TYPE = 0;
@@ -31,10 +31,10 @@ enum ScriptResultType {
 }
 
 message Receipt {
-  string subject = 1;
-  ReceiptType type = 2;
+  ReceiptType type = 1;
+  pointers.ReceiptPointer pointer = 2;
 
-  oneof receipt {
+  oneof data {
     ReceiptCall call = 3;
     ReceiptReturn return = 4;
     ReceiptReturnData return_data = 5;
@@ -52,7 +52,6 @@ message Receipt {
 
   // Metadata
   common.Metadata metadata = 16;
-  pointers.ReceiptPointer pointer = 17;
 }
 
 message ReceiptCall {

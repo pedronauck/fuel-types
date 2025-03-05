@@ -21,12 +21,12 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
-var pointers_pb = require('./pointers_pb.js');
-goog.object.extend(proto, pointers_pb);
 var common_pb = require('./common_pb.js');
 goog.object.extend(proto, common_pb);
+var pointers_pb = require('./pointers_pb.js');
+goog.object.extend(proto, pointers_pb);
 goog.exportSymbol('proto.receipts.Receipt', null, global);
-goog.exportSymbol('proto.receipts.Receipt.ReceiptCase', null, global);
+goog.exportSymbol('proto.receipts.Receipt.DataCase', null, global);
 goog.exportSymbol('proto.receipts.ReceiptBurn', null, global);
 goog.exportSymbol('proto.receipts.ReceiptCall', null, global);
 goog.exportSymbol('proto.receipts.ReceiptLog', null, global);
@@ -350,8 +350,8 @@ proto.receipts.Receipt.oneofGroups_ = [[3,4,5,6,7,8,9,10,11,12,13,14,15]];
 /**
  * @enum {number}
  */
-proto.receipts.Receipt.ReceiptCase = {
-  RECEIPT_NOT_SET: 0,
+proto.receipts.Receipt.DataCase = {
+  DATA_NOT_SET: 0,
   CALL: 3,
   RETURN: 4,
   RETURN_DATA: 5,
@@ -368,10 +368,10 @@ proto.receipts.Receipt.ReceiptCase = {
 };
 
 /**
- * @return {proto.receipts.Receipt.ReceiptCase}
+ * @return {proto.receipts.Receipt.DataCase}
  */
-proto.receipts.Receipt.prototype.getReceiptCase = function() {
-  return /** @type {proto.receipts.Receipt.ReceiptCase} */(jspb.Message.computeOneofCase(this, proto.receipts.Receipt.oneofGroups_[0]));
+proto.receipts.Receipt.prototype.getDataCase = function() {
+  return /** @type {proto.receipts.Receipt.DataCase} */(jspb.Message.computeOneofCase(this, proto.receipts.Receipt.oneofGroups_[0]));
 };
 
 
@@ -405,8 +405,8 @@ proto.receipts.Receipt.prototype.toObject = function(opt_includeInstance) {
  */
 proto.receipts.Receipt.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    pointer: (f = msg.getPointer()) && pointers_pb.ReceiptPointer.toObject(includeInstance, f),
     call: (f = msg.getCall()) && proto.receipts.ReceiptCall.toObject(includeInstance, f),
     pb_return: (f = msg.getReturn()) && proto.receipts.ReceiptReturn.toObject(includeInstance, f),
     returnData: (f = msg.getReturnData()) && proto.receipts.ReceiptReturnData.toObject(includeInstance, f),
@@ -420,8 +420,7 @@ proto.receipts.Receipt.toObject = function(includeInstance, msg) {
     messageOut: (f = msg.getMessageOut()) && proto.receipts.ReceiptMessageOut.toObject(includeInstance, f),
     mint: (f = msg.getMint()) && proto.receipts.ReceiptMint.toObject(includeInstance, f),
     burn: (f = msg.getBurn()) && proto.receipts.ReceiptBurn.toObject(includeInstance, f),
-    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f),
-    pointer: (f = msg.getPointer()) && pointers_pb.ReceiptPointer.toObject(includeInstance, f)
+    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -459,12 +458,13 @@ proto.receipts.Receipt.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
       var value = /** @type {!proto.receipts.ReceiptType} */ (reader.readEnum());
       msg.setType(value);
+      break;
+    case 2:
+      var value = new pointers_pb.ReceiptPointer;
+      reader.readMessage(value,pointers_pb.ReceiptPointer.deserializeBinaryFromReader);
+      msg.setPointer(value);
       break;
     case 3:
       var value = new proto.receipts.ReceiptCall;
@@ -536,11 +536,6 @@ proto.receipts.Receipt.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,common_pb.Metadata.deserializeBinaryFromReader);
       msg.setMetadata(value);
       break;
-    case 17:
-      var value = new pointers_pb.ReceiptPointer;
-      reader.readMessage(value,pointers_pb.ReceiptPointer.deserializeBinaryFromReader);
-      msg.setPointer(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -570,18 +565,19 @@ proto.receipts.Receipt.prototype.serializeBinary = function() {
  */
 proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
       1,
       f
     );
   }
-  f = message.getType();
-  if (f !== 0.0) {
-    writer.writeEnum(
+  f = message.getPointer();
+  if (f != null) {
+    writer.writeMessage(
       2,
-      f
+      f,
+      pointers_pb.ReceiptPointer.serializeBinaryToWriter
     );
   }
   f = message.getCall();
@@ -696,41 +692,15 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
       common_pb.Metadata.serializeBinaryToWriter
     );
   }
-  f = message.getPointer();
-  if (f != null) {
-    writer.writeMessage(
-      17,
-      f,
-      pointers_pb.ReceiptPointer.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.Receipt.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional ReceiptType type = 2;
+ * optional ReceiptType type = 1;
  * @return {!proto.receipts.ReceiptType}
  */
 proto.receipts.Receipt.prototype.getType = function() {
-  return /** @type {!proto.receipts.ReceiptType} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {!proto.receipts.ReceiptType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -739,7 +709,44 @@ proto.receipts.Receipt.prototype.getType = function() {
  * @return {!proto.receipts.Receipt} returns this
  */
 proto.receipts.Receipt.prototype.setType = function(value) {
-  return jspb.Message.setProto3EnumField(this, 2, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional pointers.ReceiptPointer pointer = 2;
+ * @return {?proto.pointers.ReceiptPointer}
+ */
+proto.receipts.Receipt.prototype.getPointer = function() {
+  return /** @type{?proto.pointers.ReceiptPointer} */ (
+    jspb.Message.getWrapperField(this, pointers_pb.ReceiptPointer, 2));
+};
+
+
+/**
+ * @param {?proto.pointers.ReceiptPointer|undefined} value
+ * @return {!proto.receipts.Receipt} returns this
+*/
+proto.receipts.Receipt.prototype.setPointer = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.receipts.Receipt} returns this
+ */
+proto.receipts.Receipt.prototype.clearPointer = function() {
+  return this.setPointer(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.receipts.Receipt.prototype.hasPointer = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -1258,43 +1265,6 @@ proto.receipts.Receipt.prototype.clearMetadata = function() {
  */
 proto.receipts.Receipt.prototype.hasMetadata = function() {
   return jspb.Message.getField(this, 16) != null;
-};
-
-
-/**
- * optional pointers.ReceiptPointer pointer = 17;
- * @return {?proto.pointers.ReceiptPointer}
- */
-proto.receipts.Receipt.prototype.getPointer = function() {
-  return /** @type{?proto.pointers.ReceiptPointer} */ (
-    jspb.Message.getWrapperField(this, pointers_pb.ReceiptPointer, 17));
-};
-
-
-/**
- * @param {?proto.pointers.ReceiptPointer|undefined} value
- * @return {!proto.receipts.Receipt} returns this
-*/
-proto.receipts.Receipt.prototype.setPointer = function(value) {
-  return jspb.Message.setWrapperField(this, 17, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.clearPointer = function() {
-  return this.setPointer(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.Receipt.prototype.hasPointer = function() {
-  return jspb.Message.getField(this, 17) != null;
 };
 
 

@@ -5,14 +5,17 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as pointers_pb from "./pointers_pb";
 import * as common_pb from "./common_pb";
+import * as pointers_pb from "./pointers_pb";
 
 export class Receipt extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): Receipt;
     getType(): ReceiptType;
     setType(value: ReceiptType): Receipt;
+
+    hasPointer(): boolean;
+    clearPointer(): void;
+    getPointer(): pointers_pb.ReceiptPointer | undefined;
+    setPointer(value?: pointers_pb.ReceiptPointer): Receipt;
 
     hasCall(): boolean;
     clearCall(): void;
@@ -84,12 +87,7 @@ export class Receipt extends jspb.Message {
     getMetadata(): common_pb.Metadata | undefined;
     setMetadata(value?: common_pb.Metadata): Receipt;
 
-    hasPointer(): boolean;
-    clearPointer(): void;
-    getPointer(): pointers_pb.ReceiptPointer | undefined;
-    setPointer(value?: pointers_pb.ReceiptPointer): Receipt;
-
-    getReceiptCase(): Receipt.ReceiptCase;
+    getDataCase(): Receipt.DataCase;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Receipt.AsObject;
@@ -103,8 +101,8 @@ export class Receipt extends jspb.Message {
 
 export namespace Receipt {
     export type AsObject = {
-        subject: string,
         type: ReceiptType,
+        pointer?: pointers_pb.ReceiptPointer.AsObject,
         call?: ReceiptCall.AsObject,
         pb_return?: ReceiptReturn.AsObject,
         returnData?: ReceiptReturnData.AsObject,
@@ -119,11 +117,10 @@ export namespace Receipt {
         mint?: ReceiptMint.AsObject,
         burn?: ReceiptBurn.AsObject,
         metadata?: common_pb.Metadata.AsObject,
-        pointer?: pointers_pb.ReceiptPointer.AsObject,
     }
 
-    export enum ReceiptCase {
-        RECEIPT_NOT_SET = 0,
+    export enum DataCase {
+        DATA_NOT_SET = 0,
         CALL = 3,
         RETURN = 4,
         RETURN_DATA = 5,

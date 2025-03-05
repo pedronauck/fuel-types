@@ -12,45 +12,50 @@ enum ConsensusType {
 }
 
 message Block {
-  int64 block_height = 1;
-  int32 block_id = 2;
-  string version = 3;
-  
-  // Relationship fields
-  BlockHeader header = 4;
-  BlockConsensus consensus = 5;
-  repeated bytes transaction_ids = 6;
+  pointers.BlockPointer pointer = 1;
+  BlockData data = 2;
+  common.BlockMetadata metadata = 3;
+}
 
-  // Metadata
-  common.Metadata metadata = 7;
-  pointers.BlockPointer pointer = 8;
+message BlockData {
+  string version = 1;
+  int32 id = 2;
+  BlockHeader header = 4;
+  ConsensusType consensus_type = 5;
+  oneof consensus { 
+    BlockConsensusGenesis genesis = 6;
+    BlockConsensusPoa poa = 7;
+  }
+  repeated string transaction_ids = 8;
 }
 
 message BlockHeader {
-  int64 block_height = 1;
-  bytes application_hash = 2;
-  int32 consensus_parameters_version = 3;
-  int64 da_height = 4;
-  bytes event_inbox_root = 5;
-  bytes message_outbox_root = 6;
-  int32 message_receipt_count = 7;
-  bytes prev_root = 8;
-  int32 state_transition_bytecode_version = 9;
-  int64 time = 10;
-  int32 transactions_count = 11;
-  bytes transactions_root = 12;
-  int32 version = 13;
+  string version = 1;
+  string id = 2;
+  int64 chain_id = 3;
+  string producer = 4;
+  int64 height = 5;
+  int64 da_height = 6;
+  int32 consensus_parameters_version = 7;
+  int32 state_transition_bytecode_version = 8;
+  int32 transactions_count = 9;
+  int32 message_receipt_count = 10;
+  string transactions_root = 11;
+  string message_outbox_root = 12;
+  string event_inbox_root = 13;
+  string prev_root = 14;
+  int64 time = 15;
+  string application_hash = 16;
 }
 
-message BlockConsensus {
-  int64 chain_id = 1;
-  bytes producer = 2;
-  int64 block_height = 3;
-  ConsensusType consensus_type = 4;
-  bytes chain_config_hash = 5;
-  bytes coins_root = 6;
-  bytes contracts_root = 7;
-  bytes messages_root = 8;
-  bytes transactions_root = 9;
-  bytes signature = 10;
+message BlockConsensusGenesis {
+  string chain_config_hash = 1;
+  string coins_root = 2;
+  string contracts_root = 3;
+  string messages_root = 4;
+  string transactions_root = 5;
+}
+
+message BlockConsensusPoa {
+  string signature = 1;
 }

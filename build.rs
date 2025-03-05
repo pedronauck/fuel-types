@@ -1,15 +1,37 @@
-use prost_build_config::{BuildConfig, Builder};
 use std::io::Result;
 use std::path::Path;
 use std::process::Command;
 
 fn build_rust() -> Result<()> {
-    let config: BuildConfig = serde_yaml::from_str(include_str!("build_config.yaml")).unwrap();
-    Builder::from(config).build_protos();
+    let rust_out_dir = Path::new("src/proto");
+    std::fs::create_dir_all(rust_out_dir)?;
+    let proto_files = [
+        "proto/accounts.proto",
+        "proto/assets.proto",
+        "proto/blocks.proto",
+        "proto/common.proto",
+        "proto/inputs.proto",
+        "proto/outputs.proto",
+        "proto/pointers.proto",
+        "proto/receipts.proto",
+        "proto/transactions.proto",
+        "proto/utxos.proto",
+    ];
+
+    // Create new prost config with serde derives
+    let mut config = prost_build::Config::new();
+
+    // Only add serde derives and the macro call
+    config
+        .type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
+        .message_attribute(".", "#[serde(default)]")
+        .out_dir(rust_out_dir)
+        .compile_protos(&proto_files, &["proto/"])?;
+
     Ok(())
 }
 
-fn build_ts() -> Result<()> {
+fn _build_ts() -> Result<()> {
     // Check if bun is installed
     let bun_check = Command::new("bun").arg("--version").status();
     if bun_check.is_err() || !bun_check.unwrap().success() {
@@ -47,7 +69,7 @@ fn build_ts() -> Result<()> {
 }
 
 fn main() -> Result<()> {
-    // build_rust()?;
-    build_ts()?;
+    build_rust()?;
+    // _build_ts()?;
     Ok(())
 }

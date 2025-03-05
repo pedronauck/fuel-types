@@ -4,8 +4,6 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Metadata } from "./common_pb";
-import { file_common } from "./common_pb";
 import type { TxPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
 import type { Input, InputContract } from "./inputs_pb";
@@ -13,246 +11,37 @@ import { file_inputs } from "./inputs_pb";
 import type { Output, OutputContract } from "./outputs_pb";
 import { file_outputs } from "./outputs_pb";
 import { file_receipts } from "./receipts_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file transactions.proto.
  */
 export const file_transactions: GenFile = /*@__PURE__*/
-  fileDesc("ChJ0cmFuc2FjdGlvbnMucHJvdG8SDHRyYW5zYWN0aW9ucyL6CAoLVHJhbnNhY3Rpb24SDwoHc3ViamVjdBgBIAEoCRIKCgJpZBgCIAEoDBIYChBzY3JpcHRfZ2FzX2xpbWl0GAMgASgDEicKCnR4X3BvaW50ZXIYBCABKAsyEy5wb2ludGVycy5UeFBvaW50ZXISFwoPaW5wdXRfYXNzZXRfaWRzGAUgAygMEhcKD2lucHV0X2NvbnRyYWN0cxgGIAMoDBItCg5pbnB1dF9jb250cmFjdBgHIAEoCzIVLmlucHV0cy5JbnB1dENvbnRyYWN0Eh0KBmlucHV0cxgIIAMoCzINLmlucHV0cy5JbnB1dBIRCglpc19zY3JpcHQYCSABKAgSEQoJaXNfY3JlYXRlGAogASgIEg8KB2lzX21pbnQYCyABKAgSEgoKaXNfdXBncmFkZRgMIAEoCBIRCglpc191cGxvYWQYDSABKAgSDwoHaXNfYmxvYhgOIAEoCBIgCgdvdXRwdXRzGA8gAygLMg8ub3V0cHV0cy5PdXRwdXQSMAoPb3V0cHV0X2NvbnRyYWN0GBAgASgLMhcub3V0cHV0cy5PdXRwdXRDb250cmFjdBITCgttaW50X2Ftb3VudBgRIAEoAxIVCg1taW50X2Fzc2V0X2lkGBIgASgMEhYKDm1pbnRfZ2FzX3ByaWNlGBMgASgDEhUKDXJlY2VpcHRzX3Jvb3QYFCABKAwSLwoGc3RhdHVzGBUgASgOMh8udHJhbnNhY3Rpb25zLlRyYW5zYWN0aW9uU3RhdHVzEhEKCXdpdG5lc3NlcxgWIAMoDBIOCgZzY3JpcHQYFyABKAwSEwoLc2NyaXB0X2RhdGEYGCABKAwSJgoIcG9saWNpZXMYGSABKAsyFC50cmFuc2FjdGlvbnMuUG9saWN5EgwKBHNhbHQYGiABKAwSFQoNc3RvcmFnZV9zbG90cxgbIAMoDBIeChZieXRlY29kZV93aXRuZXNzX2luZGV4GBwgASgFEhUKDWJ5dGVjb2RlX3Jvb3QYHSABKAwSGAoQc3Vic2VjdGlvbl9pbmRleBgeIAEoBRIaChJzdWJzZWN0aW9uc19udW1iZXIYHyABKAUSEQoJcHJvb2Zfc2V0GCAgAygMEhcKD3VwZ3JhZGVfcHVycG9zZRghIAEoBRIPCgdibG9iX2lkGCIgASgMEhAKCG1hdHVyaXR5GCMgASgFEhMKC3BvbGljeV90eXBlGCQgASgFEhMKC3Jhd19wYXlsb2FkGCUgASgMEhUKDXNjcmlwdF9sZW5ndGgYJiABKAMSGgoSc2NyaXB0X2RhdGFfbGVuZ3RoGCcgASgDEhsKE3N0b3JhZ2Vfc2xvdHNfY291bnQYKCABKAMSFwoPcHJvb2Zfc2V0X2NvdW50GCkgASgFEhcKD3dpdG5lc3Nlc19jb3VudBgqIAEoBRIUCgxpbnB1dHNfY291bnQYKyABKAUSFQoNb3V0cHV0c19jb3VudBgsIAEoBRIiCghtZXRhZGF0YRgtIAEoCzIQLmNvbW1vbi5NZXRhZGF0YSJJCgtTdG9yYWdlU2xvdBIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEgsKA2tleRgDIAEoDBINCgV2YWx1ZRgEIAEoDCJcCgdXaXRuZXNzEg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSFAoMd2l0bmVzc19kYXRhGAMgASgMEhsKE3dpdG5lc3NfZGF0YV9sZW5ndGgYBCABKAUiPgoIUHJvb2ZTZXQSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBISCgpwcm9vZl9oYXNoGAMgASgMIl4KBlBvbGljeRIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEiYKBHR5cGUYAyABKA4yGC50cmFuc2FjdGlvbnMuUG9saWN5VHlwZRIMCgRkYXRhGAQgASgDKnQKD1RyYW5zYWN0aW9uVHlwZRIcChhVTktOT1dOX1RSQU5TQUNUSU9OX1RZUEUQABIKCgZTQ1JJUFQQARIKCgZDUkVBVEUQAhIICgRNSU5UEAMSCwoHVVBHUkFERRAEEgoKBlVQTE9BRBAFEggKBEJMT0IQBip3ChFUcmFuc2FjdGlvblN0YXR1cxIeChpVTktOT1dOX1RSQU5TQUNUSU9OX1NUQVRVUxAAEgoKBkZBSUxFRBABEg0KCVNVQk1JVFRFRBACEhAKDFNRVUVFWkVEX09VVBADEgsKB1NVQ0NFU1MQBBIICgROT05FEAUqXAoKUG9saWN5VHlwZRIXChNVTktOT1dOX1BPTElDWV9UWVBFEAASBwoDVElQEAESEQoNV0lUTkVTU19MSU1JVBACEgwKCE1BVFVSSVRZEAMSCwoHTUFYX0ZFRRAEYgZwcm90bzM", [file_common, file_pointers, file_inputs, file_outputs, file_receipts]);
+  fileDesc("ChJ0cmFuc2FjdGlvbnMucHJvdG8SDHRyYW5zYWN0aW9ucyKxAQoLVHJhbnNhY3Rpb24SKwoEdHlwZRgBIAEoDjIdLnRyYW5zYWN0aW9ucy5UcmFuc2FjdGlvblR5cGUSJAoHcG9pbnRlchgCIAEoCzITLnBvaW50ZXJzLlR4UG9pbnRlchIrCgRkYXRhGAMgASgLMh0udHJhbnNhY3Rpb25zLlRyYW5zYWN0aW9uRGF0YRIiCghtZXRhZGF0YRgEIAEoCzIQLmNvbW1vbi5NZXRhZGF0YSKgCAoPVHJhbnNhY3Rpb25EYXRhEgoKAmlkGAEgASgJEhgKEHNjcmlwdF9nYXNfbGltaXQYAiABKAMSFwoPaW5wdXRfYXNzZXRfaWRzGAMgAygJEhcKD2lucHV0X2NvbnRyYWN0cxgEIAMoCRItCg5pbnB1dF9jb250cmFjdBgFIAEoCzIVLmlucHV0cy5JbnB1dENvbnRyYWN0Eh0KBmlucHV0cxgGIAMoCzINLmlucHV0cy5JbnB1dBIRCglpc19zY3JpcHQYByABKAgSEQoJaXNfY3JlYXRlGAggASgIEg8KB2lzX21pbnQYCSABKAgSEgoKaXNfdXBncmFkZRgKIAEoCBIRCglpc191cGxvYWQYCyABKAgSDwoHaXNfYmxvYhgMIAEoCBIgCgdvdXRwdXRzGA0gAygLMg8ub3V0cHV0cy5PdXRwdXQSMAoPb3V0cHV0X2NvbnRyYWN0GA4gASgLMhcub3V0cHV0cy5PdXRwdXRDb250cmFjdBITCgttaW50X2Ftb3VudBgPIAEoAxIVCg1taW50X2Fzc2V0X2lkGBAgASgJEhYKDm1pbnRfZ2FzX3ByaWNlGBEgASgDEhUKDXJlY2VpcHRzX3Jvb3QYEiABKAkSLwoGc3RhdHVzGBMgASgOMh8udHJhbnNhY3Rpb25zLlRyYW5zYWN0aW9uU3RhdHVzEhEKCXdpdG5lc3NlcxgUIAMoCRIOCgZzY3JpcHQYFSABKAkSEwoLc2NyaXB0X2RhdGEYFiABKAkSJgoIcG9saWNpZXMYFyABKAsyFC50cmFuc2FjdGlvbnMuUG9saWN5EgwKBHNhbHQYGCABKAkSFQoNc3RvcmFnZV9zbG90cxgZIAMoCRIeChZieXRlY29kZV93aXRuZXNzX2luZGV4GBogASgFEhUKDWJ5dGVjb2RlX3Jvb3QYGyABKAkSGAoQc3Vic2VjdGlvbl9pbmRleBgcIAEoBRIaChJzdWJzZWN0aW9uc19udW1iZXIYHSABKAUSEQoJcHJvb2Zfc2V0GB4gAygJEhcKD3VwZ3JhZGVfcHVycG9zZRgfIAEoBRIPCgdibG9iX2lkGCAgASgJEhAKCG1hdHVyaXR5GCEgASgFEhMKC3BvbGljeV90eXBlGCIgASgFEhMKC3Jhd19wYXlsb2FkGCMgASgJEhUKDXNjcmlwdF9sZW5ndGgYJCABKAMSGgoSc2NyaXB0X2RhdGFfbGVuZ3RoGCUgASgDEhsKE3N0b3JhZ2Vfc2xvdHNfY291bnQYJiABKAMSFwoPcHJvb2Zfc2V0X2NvdW50GCcgASgFEhcKD3dpdG5lc3Nlc19jb3VudBgoIAEoBRIUCgxpbnB1dHNfY291bnQYKSABKAUSFQoNb3V0cHV0c19jb3VudBgqIAEoBSJJCgtTdG9yYWdlU2xvdBIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgJEgsKA2tleRgDIAEoCRINCgV2YWx1ZRgEIAEoCSJcCgdXaXRuZXNzEg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAkSFAoMd2l0bmVzc19kYXRhGAMgASgJEhsKE3dpdG5lc3NfZGF0YV9sZW5ndGgYBCABKAUiPgoIUHJvb2ZTZXQSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoCRISCgpwcm9vZl9oYXNoGAMgASgJIl4KBlBvbGljeRIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgJEiYKBHR5cGUYAyABKA4yGC50cmFuc2FjdGlvbnMuUG9saWN5VHlwZRIMCgRkYXRhGAQgASgDKnQKD1RyYW5zYWN0aW9uVHlwZRIcChhVTktOT1dOX1RSQU5TQUNUSU9OX1RZUEUQABIKCgZTQ1JJUFQQARIKCgZDUkVBVEUQAhIICgRNSU5UEAMSCwoHVVBHUkFERRAEEgoKBlVQTE9BRBAFEggKBEJMT0IQBip3ChFUcmFuc2FjdGlvblN0YXR1cxIeChpVTktOT1dOX1RSQU5TQUNUSU9OX1NUQVRVUxAAEgoKBkZBSUxFRBABEg0KCVNVQk1JVFRFRBACEhAKDFNRVUVFWkVEX09VVBADEgsKB1NVQ0NFU1MQBBIICgROT05FEAUqXAoKUG9saWN5VHlwZRIXChNVTktOT1dOX1BPTElDWV9UWVBFEAASBwoDVElQEAESEQoNV0lUTkVTU19MSU1JVBACEgwKCE1BVFVSSVRZEAMSCwoHTUFYX0ZFRRAEYgZwcm90bzM", [file_pointers, file_inputs, file_outputs, file_receipts, file_common]);
 
 /**
  * @generated from message transactions.Transaction
  */
 export type Transaction = Message<"transactions.Transaction"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: transactions.TransactionType type = 1;
    */
-  subject: string;
+  type: TransactionType;
 
   /**
-   * Fields matching fuel-core
-   *
-   * @generated from field: bytes id = 2;
+   * @generated from field: pointers.TxPointer pointer = 2;
    */
-  id: Uint8Array;
+  pointer?: TxPointer;
 
   /**
-   * @generated from field: int64 script_gas_limit = 3;
+   * @generated from field: transactions.TransactionData data = 3;
    */
-  scriptGasLimit: bigint;
+  data?: TransactionData;
 
   /**
-   * @generated from field: pointers.TxPointer tx_pointer = 4;
-   */
-  txPointer?: TxPointer;
-
-  /**
-   * @generated from field: repeated bytes input_asset_ids = 5;
-   */
-  inputAssetIds: Uint8Array[];
-
-  /**
-   * @generated from field: repeated bytes input_contracts = 6;
-   */
-  inputContracts: Uint8Array[];
-
-  /**
-   * @generated from field: inputs.InputContract input_contract = 7;
-   */
-  inputContract?: InputContract;
-
-  /**
-   * @generated from field: repeated inputs.Input inputs = 8;
-   */
-  inputs: Input[];
-
-  /**
-   * @generated from field: bool is_script = 9;
-   */
-  isScript: boolean;
-
-  /**
-   * @generated from field: bool is_create = 10;
-   */
-  isCreate: boolean;
-
-  /**
-   * @generated from field: bool is_mint = 11;
-   */
-  isMint: boolean;
-
-  /**
-   * @generated from field: bool is_upgrade = 12;
-   */
-  isUpgrade: boolean;
-
-  /**
-   * @generated from field: bool is_upload = 13;
-   */
-  isUpload: boolean;
-
-  /**
-   * @generated from field: bool is_blob = 14;
-   */
-  isBlob: boolean;
-
-  /**
-   * @generated from field: repeated outputs.Output outputs = 15;
-   */
-  outputs: Output[];
-
-  /**
-   * @generated from field: outputs.OutputContract output_contract = 16;
-   */
-  outputContract?: OutputContract;
-
-  /**
-   * @generated from field: int64 mint_amount = 17;
-   */
-  mintAmount: bigint;
-
-  /**
-   * @generated from field: bytes mint_asset_id = 18;
-   */
-  mintAssetId: Uint8Array;
-
-  /**
-   * @generated from field: int64 mint_gas_price = 19;
-   */
-  mintGasPrice: bigint;
-
-  /**
-   * @generated from field: bytes receipts_root = 20;
-   */
-  receiptsRoot: Uint8Array;
-
-  /**
-   * @generated from field: transactions.TransactionStatus status = 21;
-   */
-  status: TransactionStatus;
-
-  /**
-   * @generated from field: repeated bytes witnesses = 22;
-   */
-  witnesses: Uint8Array[];
-
-  /**
-   * @generated from field: bytes script = 23;
-   */
-  script: Uint8Array;
-
-  /**
-   * @generated from field: bytes script_data = 24;
-   */
-  scriptData: Uint8Array;
-
-  /**
-   * @generated from field: transactions.Policy policies = 25;
-   */
-  policies?: Policy;
-
-  /**
-   * @generated from field: bytes salt = 26;
-   */
-  salt: Uint8Array;
-
-  /**
-   * @generated from field: repeated bytes storage_slots = 27;
-   */
-  storageSlots: Uint8Array[];
-
-  /**
-   * @generated from field: int32 bytecode_witness_index = 28;
-   */
-  bytecodeWitnessIndex: number;
-
-  /**
-   * @generated from field: bytes bytecode_root = 29;
-   */
-  bytecodeRoot: Uint8Array;
-
-  /**
-   * @generated from field: int32 subsection_index = 30;
-   */
-  subsectionIndex: number;
-
-  /**
-   * @generated from field: int32 subsections_number = 31;
-   */
-  subsectionsNumber: number;
-
-  /**
-   * @generated from field: repeated bytes proof_set = 32;
-   */
-  proofSet: Uint8Array[];
-
-  /**
-   * @generated from field: int32 upgrade_purpose = 33;
-   */
-  upgradePurpose: number;
-
-  /**
-   * @generated from field: bytes blob_id = 34;
-   */
-  blobId: Uint8Array;
-
-  /**
-   * Extra fields (not in fuel-core)
-   *
-   * @generated from field: int32 maturity = 35;
-   */
-  maturity: number;
-
-  /**
-   * @generated from field: int32 policy_type = 36;
-   */
-  policyType: number;
-
-  /**
-   * @generated from field: bytes raw_payload = 37;
-   */
-  rawPayload: Uint8Array;
-
-  /**
-   * @generated from field: int64 script_length = 38;
-   */
-  scriptLength: bigint;
-
-  /**
-   * @generated from field: int64 script_data_length = 39;
-   */
-  scriptDataLength: bigint;
-
-  /**
-   * @generated from field: int64 storage_slots_count = 40;
-   */
-  storageSlotsCount: bigint;
-
-  /**
-   * @generated from field: int32 proof_set_count = 41;
-   */
-  proofSetCount: number;
-
-  /**
-   * @generated from field: int32 witnesses_count = 42;
-   */
-  witnessesCount: number;
-
-  /**
-   * @generated from field: int32 inputs_count = 43;
-   */
-  inputsCount: number;
-
-  /**
-   * @generated from field: int32 outputs_count = 44;
-   */
-  outputsCount: number;
-
-  /**
-   * Metadata
-   *
-   * @generated from field: common.Metadata metadata = 45;
+   * @generated from field: common.Metadata metadata = 4;
    */
   metadata?: Metadata;
 };
@@ -265,6 +54,230 @@ export const TransactionSchema: GenMessage<Transaction> = /*@__PURE__*/
   messageDesc(file_transactions, 0);
 
 /**
+ * @generated from message transactions.TransactionData
+ */
+export type TransactionData = Message<"transactions.TransactionData"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: int64 script_gas_limit = 2;
+   */
+  scriptGasLimit: bigint;
+
+  /**
+   * @generated from field: repeated string input_asset_ids = 3;
+   */
+  inputAssetIds: string[];
+
+  /**
+   * @generated from field: repeated string input_contracts = 4;
+   */
+  inputContracts: string[];
+
+  /**
+   * @generated from field: inputs.InputContract input_contract = 5;
+   */
+  inputContract?: InputContract;
+
+  /**
+   * @generated from field: repeated inputs.Input inputs = 6;
+   */
+  inputs: Input[];
+
+  /**
+   * @generated from field: bool is_script = 7;
+   */
+  isScript: boolean;
+
+  /**
+   * @generated from field: bool is_create = 8;
+   */
+  isCreate: boolean;
+
+  /**
+   * @generated from field: bool is_mint = 9;
+   */
+  isMint: boolean;
+
+  /**
+   * @generated from field: bool is_upgrade = 10;
+   */
+  isUpgrade: boolean;
+
+  /**
+   * @generated from field: bool is_upload = 11;
+   */
+  isUpload: boolean;
+
+  /**
+   * @generated from field: bool is_blob = 12;
+   */
+  isBlob: boolean;
+
+  /**
+   * @generated from field: repeated outputs.Output outputs = 13;
+   */
+  outputs: Output[];
+
+  /**
+   * @generated from field: outputs.OutputContract output_contract = 14;
+   */
+  outputContract?: OutputContract;
+
+  /**
+   * @generated from field: int64 mint_amount = 15;
+   */
+  mintAmount: bigint;
+
+  /**
+   * @generated from field: string mint_asset_id = 16;
+   */
+  mintAssetId: string;
+
+  /**
+   * @generated from field: int64 mint_gas_price = 17;
+   */
+  mintGasPrice: bigint;
+
+  /**
+   * @generated from field: string receipts_root = 18;
+   */
+  receiptsRoot: string;
+
+  /**
+   * @generated from field: transactions.TransactionStatus status = 19;
+   */
+  status: TransactionStatus;
+
+  /**
+   * @generated from field: repeated string witnesses = 20;
+   */
+  witnesses: string[];
+
+  /**
+   * @generated from field: string script = 21;
+   */
+  script: string;
+
+  /**
+   * @generated from field: string script_data = 22;
+   */
+  scriptData: string;
+
+  /**
+   * @generated from field: transactions.Policy policies = 23;
+   */
+  policies?: Policy;
+
+  /**
+   * @generated from field: string salt = 24;
+   */
+  salt: string;
+
+  /**
+   * @generated from field: repeated string storage_slots = 25;
+   */
+  storageSlots: string[];
+
+  /**
+   * @generated from field: int32 bytecode_witness_index = 26;
+   */
+  bytecodeWitnessIndex: number;
+
+  /**
+   * @generated from field: string bytecode_root = 27;
+   */
+  bytecodeRoot: string;
+
+  /**
+   * @generated from field: int32 subsection_index = 28;
+   */
+  subsectionIndex: number;
+
+  /**
+   * @generated from field: int32 subsections_number = 29;
+   */
+  subsectionsNumber: number;
+
+  /**
+   * @generated from field: repeated string proof_set = 30;
+   */
+  proofSet: string[];
+
+  /**
+   * @generated from field: int32 upgrade_purpose = 31;
+   */
+  upgradePurpose: number;
+
+  /**
+   * @generated from field: string blob_id = 32;
+   */
+  blobId: string;
+
+  /**
+   * Extra fields (not in fuel-core)
+   *
+   * @generated from field: int32 maturity = 33;
+   */
+  maturity: number;
+
+  /**
+   * @generated from field: int32 policy_type = 34;
+   */
+  policyType: number;
+
+  /**
+   * @generated from field: string raw_payload = 35;
+   */
+  rawPayload: string;
+
+  /**
+   * @generated from field: int64 script_length = 36;
+   */
+  scriptLength: bigint;
+
+  /**
+   * @generated from field: int64 script_data_length = 37;
+   */
+  scriptDataLength: bigint;
+
+  /**
+   * @generated from field: int64 storage_slots_count = 38;
+   */
+  storageSlotsCount: bigint;
+
+  /**
+   * @generated from field: int32 proof_set_count = 39;
+   */
+  proofSetCount: number;
+
+  /**
+   * @generated from field: int32 witnesses_count = 40;
+   */
+  witnessesCount: number;
+
+  /**
+   * @generated from field: int32 inputs_count = 41;
+   */
+  inputsCount: number;
+
+  /**
+   * @generated from field: int32 outputs_count = 42;
+   */
+  outputsCount: number;
+};
+
+/**
+ * Describes the message transactions.TransactionData.
+ * Use `create(TransactionDataSchema)` to create a new message.
+ */
+export const TransactionDataSchema: GenMessage<TransactionData> = /*@__PURE__*/
+  messageDesc(file_transactions, 1);
+
+/**
  * @generated from message transactions.StorageSlot
  */
 export type StorageSlot = Message<"transactions.StorageSlot"> & {
@@ -274,19 +287,19 @@ export type StorageSlot = Message<"transactions.StorageSlot"> & {
   subject: string;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: string tx_id = 2;
    */
-  txId: Uint8Array;
+  txId: string;
 
   /**
-   * @generated from field: bytes key = 3;
+   * @generated from field: string key = 3;
    */
-  key: Uint8Array;
+  key: string;
 
   /**
-   * @generated from field: bytes value = 4;
+   * @generated from field: string value = 4;
    */
-  value: Uint8Array;
+  value: string;
 };
 
 /**
@@ -294,7 +307,7 @@ export type StorageSlot = Message<"transactions.StorageSlot"> & {
  * Use `create(StorageSlotSchema)` to create a new message.
  */
 export const StorageSlotSchema: GenMessage<StorageSlot> = /*@__PURE__*/
-  messageDesc(file_transactions, 1);
+  messageDesc(file_transactions, 2);
 
 /**
  * @generated from message transactions.Witness
@@ -306,14 +319,14 @@ export type Witness = Message<"transactions.Witness"> & {
   subject: string;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: string tx_id = 2;
    */
-  txId: Uint8Array;
+  txId: string;
 
   /**
-   * @generated from field: bytes witness_data = 3;
+   * @generated from field: string witness_data = 3;
    */
-  witnessData: Uint8Array;
+  witnessData: string;
 
   /**
    * @generated from field: int32 witness_data_length = 4;
@@ -326,7 +339,7 @@ export type Witness = Message<"transactions.Witness"> & {
  * Use `create(WitnessSchema)` to create a new message.
  */
 export const WitnessSchema: GenMessage<Witness> = /*@__PURE__*/
-  messageDesc(file_transactions, 2);
+  messageDesc(file_transactions, 3);
 
 /**
  * @generated from message transactions.ProofSet
@@ -338,14 +351,14 @@ export type ProofSet = Message<"transactions.ProofSet"> & {
   subject: string;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: string tx_id = 2;
    */
-  txId: Uint8Array;
+  txId: string;
 
   /**
-   * @generated from field: bytes proof_hash = 3;
+   * @generated from field: string proof_hash = 3;
    */
-  proofHash: Uint8Array;
+  proofHash: string;
 };
 
 /**
@@ -353,7 +366,7 @@ export type ProofSet = Message<"transactions.ProofSet"> & {
  * Use `create(ProofSetSchema)` to create a new message.
  */
 export const ProofSetSchema: GenMessage<ProofSet> = /*@__PURE__*/
-  messageDesc(file_transactions, 3);
+  messageDesc(file_transactions, 4);
 
 /**
  * @generated from message transactions.Policy
@@ -365,9 +378,9 @@ export type Policy = Message<"transactions.Policy"> & {
   subject: string;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: string tx_id = 2;
    */
-  txId: Uint8Array;
+  txId: string;
 
   /**
    * @generated from field: transactions.PolicyType type = 3;
@@ -385,7 +398,7 @@ export type Policy = Message<"transactions.Policy"> & {
  * Use `create(PolicySchema)` to create a new message.
  */
 export const PolicySchema: GenMessage<Policy> = /*@__PURE__*/
-  messageDesc(file_transactions, 4);
+  messageDesc(file_transactions, 5);
 
 /**
  * @generated from enum transactions.TransactionType

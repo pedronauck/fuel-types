@@ -1,468 +1,652 @@
 import * as $protobuf from "protobufjs";
 import Long = require("long");
-/** Namespace blocks. */
-export namespace blocks {
+/** Namespace accounts. */
+export namespace accounts {
 
-    /** ConsensusType enum. */
-    enum ConsensusType {
-        UNKNOWN_CONSENSUS_TYPE = 0,
-        GENESIS = 1,
-        POA_CONSENSUS = 2
+    /** AccountType enum. */
+    enum AccountType {
+        UNKNOWN_ACCOUNT_TYPE = 0,
+        PREDICATE = 1,
+        CONTRACT = 2,
+        SCRIPT = 3
     }
 
-    /** Properties of a Block. */
-    interface IBlock {
+    /** Properties of a Predicate. */
+    interface IPredicate {
 
-        /** Block blockHeight */
-        blockHeight?: (number|Long|null);
+        /** Predicate type */
+        type?: (accounts.AccountType|null);
 
-        /** Block blockId */
-        blockId?: (number|null);
+        /** Predicate pointer */
+        pointer?: (pointers.IPredicatePointer|null);
 
-        /** Block version */
-        version?: (string|null);
+        /** Predicate data */
+        data?: (accounts.IPredicateData|null);
 
-        /** Block header */
-        header?: (blocks.IBlockHeader|null);
-
-        /** Block consensus */
-        consensus?: (blocks.IBlockConsensus|null);
-
-        /** Block transactionIds */
-        transactionIds?: (Uint8Array[]|null);
-
-        /** Block metadata */
+        /** Predicate metadata */
         metadata?: (common.IMetadata|null);
-
-        /** Block pointer */
-        pointer?: (pointers.IBlockPointer|null);
     }
 
-    /** Represents a Block. */
-    class Block implements IBlock {
+    /** Represents a Predicate. */
+    class Predicate implements IPredicate {
 
         /**
-         * Constructs a new Block.
+         * Constructs a new Predicate.
          * @param [properties] Properties to set
          */
-        constructor(properties?: blocks.IBlock);
+        constructor(properties?: accounts.IPredicate);
 
-        /** Block blockHeight. */
-        public blockHeight: (number|Long);
+        /** Predicate type. */
+        public type: accounts.AccountType;
 
-        /** Block blockId. */
-        public blockId: number;
+        /** Predicate pointer. */
+        public pointer?: (pointers.IPredicatePointer|null);
 
-        /** Block version. */
-        public version: string;
+        /** Predicate data. */
+        public data?: (accounts.IPredicateData|null);
 
-        /** Block header. */
-        public header?: (blocks.IBlockHeader|null);
-
-        /** Block consensus. */
-        public consensus?: (blocks.IBlockConsensus|null);
-
-        /** Block transactionIds. */
-        public transactionIds: Uint8Array[];
-
-        /** Block metadata. */
+        /** Predicate metadata. */
         public metadata?: (common.IMetadata|null);
 
-        /** Block pointer. */
-        public pointer?: (pointers.IBlockPointer|null);
-
         /**
-         * Creates a new Block instance using the specified properties.
+         * Creates a new Predicate instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns Block instance
+         * @returns Predicate instance
          */
-        public static create(properties?: blocks.IBlock): blocks.Block;
+        public static create(properties?: accounts.IPredicate): accounts.Predicate;
 
         /**
-         * Encodes the specified Block message. Does not implicitly {@link blocks.Block.verify|verify} messages.
-         * @param message Block message or plain object to encode
+         * Encodes the specified Predicate message. Does not implicitly {@link accounts.Predicate.verify|verify} messages.
+         * @param message Predicate message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: blocks.IBlock, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: accounts.IPredicate, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified Block message, length delimited. Does not implicitly {@link blocks.Block.verify|verify} messages.
-         * @param message Block message or plain object to encode
+         * Encodes the specified Predicate message, length delimited. Does not implicitly {@link accounts.Predicate.verify|verify} messages.
+         * @param message Predicate message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: blocks.IBlock, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: accounts.IPredicate, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a Block message from the specified reader or buffer.
+         * Decodes a Predicate message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns Block
+         * @returns Predicate
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.Block;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): accounts.Predicate;
 
         /**
-         * Decodes a Block message from the specified reader or buffer, length delimited.
+         * Decodes a Predicate message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns Block
+         * @returns Predicate
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.Block;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): accounts.Predicate;
 
         /**
-         * Verifies a Block message.
+         * Verifies a Predicate message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a Block message from a plain object. Also converts values to their respective internal types.
+         * Creates a Predicate message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns Block
+         * @returns Predicate
          */
-        public static fromObject(object: { [k: string]: any }): blocks.Block;
+        public static fromObject(object: { [k: string]: any }): accounts.Predicate;
 
         /**
-         * Creates a plain object from a Block message. Also converts values to other types if specified.
-         * @param message Block
+         * Creates a plain object from a Predicate message. Also converts values to other types if specified.
+         * @param message Predicate
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: blocks.Block, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: accounts.Predicate, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this Block to JSON.
+         * Converts this Predicate to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for Block
+         * Gets the default type url for Predicate
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a BlockHeader. */
-    interface IBlockHeader {
+    /** Properties of a PredicateData. */
+    interface IPredicateData {
 
-        /** BlockHeader blockHeight */
-        blockHeight?: (number|Long|null);
-
-        /** BlockHeader applicationHash */
-        applicationHash?: (Uint8Array|null);
-
-        /** BlockHeader consensusParametersVersion */
-        consensusParametersVersion?: (number|null);
-
-        /** BlockHeader daHeight */
-        daHeight?: (number|Long|null);
-
-        /** BlockHeader eventInboxRoot */
-        eventInboxRoot?: (Uint8Array|null);
-
-        /** BlockHeader messageOutboxRoot */
-        messageOutboxRoot?: (Uint8Array|null);
-
-        /** BlockHeader messageReceiptCount */
-        messageReceiptCount?: (number|null);
-
-        /** BlockHeader prevRoot */
-        prevRoot?: (Uint8Array|null);
-
-        /** BlockHeader stateTransitionBytecodeVersion */
-        stateTransitionBytecodeVersion?: (number|null);
-
-        /** BlockHeader time */
-        time?: (number|Long|null);
-
-        /** BlockHeader transactionsCount */
-        transactionsCount?: (number|null);
-
-        /** BlockHeader transactionsRoot */
-        transactionsRoot?: (Uint8Array|null);
-
-        /** BlockHeader version */
-        version?: (number|null);
+        /** PredicateData bytecode */
+        bytecode?: (string|null);
     }
 
-    /** Represents a BlockHeader. */
-    class BlockHeader implements IBlockHeader {
+    /** Represents a PredicateData. */
+    class PredicateData implements IPredicateData {
 
         /**
-         * Constructs a new BlockHeader.
+         * Constructs a new PredicateData.
          * @param [properties] Properties to set
          */
-        constructor(properties?: blocks.IBlockHeader);
+        constructor(properties?: accounts.IPredicateData);
 
-        /** BlockHeader blockHeight. */
-        public blockHeight: (number|Long);
-
-        /** BlockHeader applicationHash. */
-        public applicationHash: Uint8Array;
-
-        /** BlockHeader consensusParametersVersion. */
-        public consensusParametersVersion: number;
-
-        /** BlockHeader daHeight. */
-        public daHeight: (number|Long);
-
-        /** BlockHeader eventInboxRoot. */
-        public eventInboxRoot: Uint8Array;
-
-        /** BlockHeader messageOutboxRoot. */
-        public messageOutboxRoot: Uint8Array;
-
-        /** BlockHeader messageReceiptCount. */
-        public messageReceiptCount: number;
-
-        /** BlockHeader prevRoot. */
-        public prevRoot: Uint8Array;
-
-        /** BlockHeader stateTransitionBytecodeVersion. */
-        public stateTransitionBytecodeVersion: number;
-
-        /** BlockHeader time. */
-        public time: (number|Long);
-
-        /** BlockHeader transactionsCount. */
-        public transactionsCount: number;
-
-        /** BlockHeader transactionsRoot. */
-        public transactionsRoot: Uint8Array;
-
-        /** BlockHeader version. */
-        public version: number;
+        /** PredicateData bytecode. */
+        public bytecode: string;
 
         /**
-         * Creates a new BlockHeader instance using the specified properties.
+         * Creates a new PredicateData instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns BlockHeader instance
+         * @returns PredicateData instance
          */
-        public static create(properties?: blocks.IBlockHeader): blocks.BlockHeader;
+        public static create(properties?: accounts.IPredicateData): accounts.PredicateData;
 
         /**
-         * Encodes the specified BlockHeader message. Does not implicitly {@link blocks.BlockHeader.verify|verify} messages.
-         * @param message BlockHeader message or plain object to encode
+         * Encodes the specified PredicateData message. Does not implicitly {@link accounts.PredicateData.verify|verify} messages.
+         * @param message PredicateData message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: blocks.IBlockHeader, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: accounts.IPredicateData, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified BlockHeader message, length delimited. Does not implicitly {@link blocks.BlockHeader.verify|verify} messages.
-         * @param message BlockHeader message or plain object to encode
+         * Encodes the specified PredicateData message, length delimited. Does not implicitly {@link accounts.PredicateData.verify|verify} messages.
+         * @param message PredicateData message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: blocks.IBlockHeader, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: accounts.IPredicateData, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a BlockHeader message from the specified reader or buffer.
+         * Decodes a PredicateData message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns BlockHeader
+         * @returns PredicateData
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.BlockHeader;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): accounts.PredicateData;
 
         /**
-         * Decodes a BlockHeader message from the specified reader or buffer, length delimited.
+         * Decodes a PredicateData message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns BlockHeader
+         * @returns PredicateData
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.BlockHeader;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): accounts.PredicateData;
 
         /**
-         * Verifies a BlockHeader message.
+         * Verifies a PredicateData message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a BlockHeader message from a plain object. Also converts values to their respective internal types.
+         * Creates a PredicateData message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns BlockHeader
+         * @returns PredicateData
          */
-        public static fromObject(object: { [k: string]: any }): blocks.BlockHeader;
+        public static fromObject(object: { [k: string]: any }): accounts.PredicateData;
 
         /**
-         * Creates a plain object from a BlockHeader message. Also converts values to other types if specified.
-         * @param message BlockHeader
+         * Creates a plain object from a PredicateData message. Also converts values to other types if specified.
+         * @param message PredicateData
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: blocks.BlockHeader, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: accounts.PredicateData, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this BlockHeader to JSON.
+         * Converts this PredicateData to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for BlockHeader
+         * Gets the default type url for PredicateData
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a BlockConsensus. */
-    interface IBlockConsensus {
+    /** Properties of a Contract. */
+    interface IContract {
 
-        /** BlockConsensus chainId */
-        chainId?: (number|Long|null);
+        /** Contract type */
+        type?: (accounts.AccountType|null);
 
-        /** BlockConsensus producer */
-        producer?: (Uint8Array|null);
+        /** Contract pointer */
+        pointer?: (pointers.IContractPointer|null);
 
-        /** BlockConsensus blockHeight */
-        blockHeight?: (number|Long|null);
+        /** Contract data */
+        data?: (accounts.IContractData|null);
 
-        /** BlockConsensus consensusType */
-        consensusType?: (blocks.ConsensusType|null);
-
-        /** BlockConsensus chainConfigHash */
-        chainConfigHash?: (Uint8Array|null);
-
-        /** BlockConsensus coinsRoot */
-        coinsRoot?: (Uint8Array|null);
-
-        /** BlockConsensus contractsRoot */
-        contractsRoot?: (Uint8Array|null);
-
-        /** BlockConsensus messagesRoot */
-        messagesRoot?: (Uint8Array|null);
-
-        /** BlockConsensus transactionsRoot */
-        transactionsRoot?: (Uint8Array|null);
-
-        /** BlockConsensus signature */
-        signature?: (Uint8Array|null);
+        /** Contract metadata */
+        metadata?: (common.IMetadata|null);
     }
 
-    /** Represents a BlockConsensus. */
-    class BlockConsensus implements IBlockConsensus {
+    /** Represents a Contract. */
+    class Contract implements IContract {
 
         /**
-         * Constructs a new BlockConsensus.
+         * Constructs a new Contract.
          * @param [properties] Properties to set
          */
-        constructor(properties?: blocks.IBlockConsensus);
+        constructor(properties?: accounts.IContract);
 
-        /** BlockConsensus chainId. */
-        public chainId: (number|Long);
+        /** Contract type. */
+        public type: accounts.AccountType;
 
-        /** BlockConsensus producer. */
-        public producer: Uint8Array;
+        /** Contract pointer. */
+        public pointer?: (pointers.IContractPointer|null);
 
-        /** BlockConsensus blockHeight. */
-        public blockHeight: (number|Long);
+        /** Contract data. */
+        public data?: (accounts.IContractData|null);
 
-        /** BlockConsensus consensusType. */
-        public consensusType: blocks.ConsensusType;
-
-        /** BlockConsensus chainConfigHash. */
-        public chainConfigHash: Uint8Array;
-
-        /** BlockConsensus coinsRoot. */
-        public coinsRoot: Uint8Array;
-
-        /** BlockConsensus contractsRoot. */
-        public contractsRoot: Uint8Array;
-
-        /** BlockConsensus messagesRoot. */
-        public messagesRoot: Uint8Array;
-
-        /** BlockConsensus transactionsRoot. */
-        public transactionsRoot: Uint8Array;
-
-        /** BlockConsensus signature. */
-        public signature: Uint8Array;
+        /** Contract metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /**
-         * Creates a new BlockConsensus instance using the specified properties.
+         * Creates a new Contract instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns BlockConsensus instance
+         * @returns Contract instance
          */
-        public static create(properties?: blocks.IBlockConsensus): blocks.BlockConsensus;
+        public static create(properties?: accounts.IContract): accounts.Contract;
 
         /**
-         * Encodes the specified BlockConsensus message. Does not implicitly {@link blocks.BlockConsensus.verify|verify} messages.
-         * @param message BlockConsensus message or plain object to encode
+         * Encodes the specified Contract message. Does not implicitly {@link accounts.Contract.verify|verify} messages.
+         * @param message Contract message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: blocks.IBlockConsensus, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: accounts.IContract, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified BlockConsensus message, length delimited. Does not implicitly {@link blocks.BlockConsensus.verify|verify} messages.
-         * @param message BlockConsensus message or plain object to encode
+         * Encodes the specified Contract message, length delimited. Does not implicitly {@link accounts.Contract.verify|verify} messages.
+         * @param message Contract message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: blocks.IBlockConsensus, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: accounts.IContract, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a BlockConsensus message from the specified reader or buffer.
+         * Decodes a Contract message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns BlockConsensus
+         * @returns Contract
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.BlockConsensus;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): accounts.Contract;
 
         /**
-         * Decodes a BlockConsensus message from the specified reader or buffer, length delimited.
+         * Decodes a Contract message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns BlockConsensus
+         * @returns Contract
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.BlockConsensus;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): accounts.Contract;
 
         /**
-         * Verifies a BlockConsensus message.
+         * Verifies a Contract message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a BlockConsensus message from a plain object. Also converts values to their respective internal types.
+         * Creates a Contract message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns BlockConsensus
+         * @returns Contract
          */
-        public static fromObject(object: { [k: string]: any }): blocks.BlockConsensus;
+        public static fromObject(object: { [k: string]: any }): accounts.Contract;
 
         /**
-         * Creates a plain object from a BlockConsensus message. Also converts values to other types if specified.
-         * @param message BlockConsensus
+         * Creates a plain object from a Contract message. Also converts values to other types if specified.
+         * @param message Contract
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: blocks.BlockConsensus, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: accounts.Contract, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this BlockConsensus to JSON.
+         * Converts this Contract to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for BlockConsensus
+         * Gets the default type url for Contract
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a ContractData. */
+    interface IContractData {
+
+        /** ContractData bytecode */
+        bytecode?: (string|null);
+
+        /** ContractData abi */
+        abi?: (string|null);
+    }
+
+    /** Represents a ContractData. */
+    class ContractData implements IContractData {
+
+        /**
+         * Constructs a new ContractData.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: accounts.IContractData);
+
+        /** ContractData bytecode. */
+        public bytecode: string;
+
+        /** ContractData abi. */
+        public abi: string;
+
+        /**
+         * Creates a new ContractData instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ContractData instance
+         */
+        public static create(properties?: accounts.IContractData): accounts.ContractData;
+
+        /**
+         * Encodes the specified ContractData message. Does not implicitly {@link accounts.ContractData.verify|verify} messages.
+         * @param message ContractData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: accounts.IContractData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ContractData message, length delimited. Does not implicitly {@link accounts.ContractData.verify|verify} messages.
+         * @param message ContractData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: accounts.IContractData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ContractData message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ContractData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): accounts.ContractData;
+
+        /**
+         * Decodes a ContractData message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ContractData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): accounts.ContractData;
+
+        /**
+         * Verifies a ContractData message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ContractData message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ContractData
+         */
+        public static fromObject(object: { [k: string]: any }): accounts.ContractData;
+
+        /**
+         * Creates a plain object from a ContractData message. Also converts values to other types if specified.
+         * @param message ContractData
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: accounts.ContractData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ContractData to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for ContractData
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a Script. */
+    interface IScript {
+
+        /** Script type */
+        type?: (accounts.AccountType|null);
+
+        /** Script pointer */
+        pointer?: (pointers.IScriptPointer|null);
+
+        /** Script data */
+        data?: (accounts.IScriptData|null);
+
+        /** Script metadata */
+        metadata?: (common.IMetadata|null);
+    }
+
+    /** Represents a Script. */
+    class Script implements IScript {
+
+        /**
+         * Constructs a new Script.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: accounts.IScript);
+
+        /** Script type. */
+        public type: accounts.AccountType;
+
+        /** Script pointer. */
+        public pointer?: (pointers.IScriptPointer|null);
+
+        /** Script data. */
+        public data?: (accounts.IScriptData|null);
+
+        /** Script metadata. */
+        public metadata?: (common.IMetadata|null);
+
+        /**
+         * Creates a new Script instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Script instance
+         */
+        public static create(properties?: accounts.IScript): accounts.Script;
+
+        /**
+         * Encodes the specified Script message. Does not implicitly {@link accounts.Script.verify|verify} messages.
+         * @param message Script message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: accounts.IScript, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified Script message, length delimited. Does not implicitly {@link accounts.Script.verify|verify} messages.
+         * @param message Script message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: accounts.IScript, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a Script message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Script
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): accounts.Script;
+
+        /**
+         * Decodes a Script message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns Script
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): accounts.Script;
+
+        /**
+         * Verifies a Script message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a Script message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns Script
+         */
+        public static fromObject(object: { [k: string]: any }): accounts.Script;
+
+        /**
+         * Creates a plain object from a Script message. Also converts values to other types if specified.
+         * @param message Script
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: accounts.Script, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this Script to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for Script
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a ScriptData. */
+    interface IScriptData {
+
+        /** ScriptData bytecode */
+        bytecode?: (string|null);
+    }
+
+    /** Represents a ScriptData. */
+    class ScriptData implements IScriptData {
+
+        /**
+         * Constructs a new ScriptData.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: accounts.IScriptData);
+
+        /** ScriptData bytecode. */
+        public bytecode: string;
+
+        /**
+         * Creates a new ScriptData instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ScriptData instance
+         */
+        public static create(properties?: accounts.IScriptData): accounts.ScriptData;
+
+        /**
+         * Encodes the specified ScriptData message. Does not implicitly {@link accounts.ScriptData.verify|verify} messages.
+         * @param message ScriptData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: accounts.IScriptData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ScriptData message, length delimited. Does not implicitly {@link accounts.ScriptData.verify|verify} messages.
+         * @param message ScriptData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: accounts.IScriptData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ScriptData message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ScriptData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): accounts.ScriptData;
+
+        /**
+         * Decodes a ScriptData message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ScriptData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): accounts.ScriptData;
+
+        /**
+         * Verifies a ScriptData message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ScriptData message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ScriptData
+         */
+        public static fromObject(object: { [k: string]: any }): accounts.ScriptData;
+
+        /**
+         * Creates a plain object from a ScriptData message. Also converts values to other types if specified.
+         * @param message ScriptData
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: accounts.ScriptData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ScriptData to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for ScriptData
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
@@ -476,8 +660,8 @@ export namespace pointers {
     /** Properties of a BlockPointer. */
     interface IBlockPointer {
 
-        /** BlockPointer blockHeight */
-        blockHeight?: (number|Long|null);
+        /** BlockPointer subject */
+        subject?: (string|null);
     }
 
     /** Represents a BlockPointer. */
@@ -489,8 +673,8 @@ export namespace pointers {
          */
         constructor(properties?: pointers.IBlockPointer);
 
-        /** BlockPointer blockHeight. */
-        public blockHeight: (number|Long);
+        /** BlockPointer subject. */
+        public subject: string;
 
         /**
          * Creates a new BlockPointer instance using the specified properties.
@@ -573,14 +757,20 @@ export namespace pointers {
     /** Properties of a TxPointer. */
     interface ITxPointer {
 
+        /** TxPointer subject */
+        subject?: (string|null);
+
         /** TxPointer blockHeight */
         blockHeight?: (number|Long|null);
 
         /** TxPointer txId */
-        txId?: (number|null);
+        txId?: (string|null);
 
         /** TxPointer txIndex */
         txIndex?: (number|null);
+
+        /** TxPointer cursor */
+        cursor?: (string|null);
     }
 
     /** Represents a TxPointer. */
@@ -592,14 +782,20 @@ export namespace pointers {
          */
         constructor(properties?: pointers.ITxPointer);
 
+        /** TxPointer subject. */
+        public subject: string;
+
         /** TxPointer blockHeight. */
         public blockHeight: (number|Long);
 
         /** TxPointer txId. */
-        public txId: number;
+        public txId: string;
 
         /** TxPointer txIndex. */
         public txIndex: number;
+
+        /** TxPointer cursor. */
+        public cursor: string;
 
         /**
          * Creates a new TxPointer instance using the specified properties.
@@ -682,17 +878,23 @@ export namespace pointers {
     /** Properties of an InputPointer. */
     interface IInputPointer {
 
+        /** InputPointer subject */
+        subject?: (string|null);
+
         /** InputPointer blockHeight */
         blockHeight?: (number|Long|null);
 
         /** InputPointer txId */
-        txId?: (number|null);
+        txId?: (string|null);
 
         /** InputPointer txIndex */
         txIndex?: (number|null);
 
         /** InputPointer inputIndex */
         inputIndex?: (number|null);
+
+        /** InputPointer cursor */
+        cursor?: (string|null);
     }
 
     /** Represents an InputPointer. */
@@ -704,17 +906,23 @@ export namespace pointers {
          */
         constructor(properties?: pointers.IInputPointer);
 
+        /** InputPointer subject. */
+        public subject: string;
+
         /** InputPointer blockHeight. */
         public blockHeight: (number|Long);
 
         /** InputPointer txId. */
-        public txId: number;
+        public txId: string;
 
         /** InputPointer txIndex. */
         public txIndex: number;
 
         /** InputPointer inputIndex. */
         public inputIndex: number;
+
+        /** InputPointer cursor. */
+        public cursor: string;
 
         /**
          * Creates a new InputPointer instance using the specified properties.
@@ -797,17 +1005,23 @@ export namespace pointers {
     /** Properties of an OutputPointer. */
     interface IOutputPointer {
 
+        /** OutputPointer subject */
+        subject?: (string|null);
+
         /** OutputPointer blockHeight */
         blockHeight?: (number|Long|null);
 
         /** OutputPointer txId */
-        txId?: (number|null);
+        txId?: (string|null);
 
         /** OutputPointer txIndex */
         txIndex?: (number|null);
 
         /** OutputPointer outputIndex */
         outputIndex?: (number|null);
+
+        /** OutputPointer cursor */
+        cursor?: (string|null);
     }
 
     /** Represents an OutputPointer. */
@@ -819,17 +1033,23 @@ export namespace pointers {
          */
         constructor(properties?: pointers.IOutputPointer);
 
+        /** OutputPointer subject. */
+        public subject: string;
+
         /** OutputPointer blockHeight. */
         public blockHeight: (number|Long);
 
         /** OutputPointer txId. */
-        public txId: number;
+        public txId: string;
 
         /** OutputPointer txIndex. */
         public txIndex: number;
 
         /** OutputPointer outputIndex. */
         public outputIndex: number;
+
+        /** OutputPointer cursor. */
+        public cursor: string;
 
         /**
          * Creates a new OutputPointer instance using the specified properties.
@@ -912,17 +1132,23 @@ export namespace pointers {
     /** Properties of a ReceiptPointer. */
     interface IReceiptPointer {
 
+        /** ReceiptPointer subject */
+        subject?: (string|null);
+
         /** ReceiptPointer blockHeight */
         blockHeight?: (number|Long|null);
 
         /** ReceiptPointer txId */
-        txId?: (number|null);
+        txId?: (string|null);
 
         /** ReceiptPointer txIndex */
         txIndex?: (number|null);
 
         /** ReceiptPointer receiptIndex */
         receiptIndex?: (number|null);
+
+        /** ReceiptPointer cursor */
+        cursor?: (string|null);
     }
 
     /** Represents a ReceiptPointer. */
@@ -934,17 +1160,23 @@ export namespace pointers {
          */
         constructor(properties?: pointers.IReceiptPointer);
 
+        /** ReceiptPointer subject. */
+        public subject: string;
+
         /** ReceiptPointer blockHeight. */
         public blockHeight: (number|Long);
 
         /** ReceiptPointer txId. */
-        public txId: number;
+        public txId: string;
 
         /** ReceiptPointer txIndex. */
         public txIndex: number;
 
         /** ReceiptPointer receiptIndex. */
         public receiptIndex: number;
+
+        /** ReceiptPointer cursor. */
+        public cursor: string;
 
         /**
          * Creates a new ReceiptPointer instance using the specified properties.
@@ -1027,11 +1259,14 @@ export namespace pointers {
     /** Properties of an UtxoPointer. */
     interface IUtxoPointer {
 
+        /** UtxoPointer subject */
+        subject?: (string|null);
+
         /** UtxoPointer blockHeight */
         blockHeight?: (number|Long|null);
 
         /** UtxoPointer txId */
-        txId?: (number|null);
+        txId?: (string|null);
 
         /** UtxoPointer txIndex */
         txIndex?: (number|null);
@@ -1044,6 +1279,9 @@ export namespace pointers {
 
         /** UtxoPointer outputIndex */
         outputIndex?: (number|null);
+
+        /** UtxoPointer cursor */
+        cursor?: (string|null);
     }
 
     /** Represents an UtxoPointer. */
@@ -1055,11 +1293,14 @@ export namespace pointers {
          */
         constructor(properties?: pointers.IUtxoPointer);
 
+        /** UtxoPointer subject. */
+        public subject: string;
+
         /** UtxoPointer blockHeight. */
         public blockHeight: (number|Long);
 
         /** UtxoPointer txId. */
-        public txId: number;
+        public txId: string;
 
         /** UtxoPointer txIndex. */
         public txIndex: number;
@@ -1072,6 +1313,9 @@ export namespace pointers {
 
         /** UtxoPointer outputIndex. */
         public outputIndex: number;
+
+        /** UtxoPointer cursor. */
+        public cursor: string;
 
         /**
          * Creates a new UtxoPointer instance using the specified properties.
@@ -1150,6 +1394,514 @@ export namespace pointers {
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
+
+    /** Properties of a PredicatePointer. */
+    interface IPredicatePointer {
+
+        /** PredicatePointer subject */
+        subject?: (string|null);
+
+        /** PredicatePointer blockHeight */
+        blockHeight?: (number|Long|null);
+
+        /** PredicatePointer txId */
+        txId?: (string|null);
+
+        /** PredicatePointer txIndex */
+        txIndex?: (number|null);
+
+        /** PredicatePointer inputIndex */
+        inputIndex?: (number|null);
+
+        /** PredicatePointer cursor */
+        cursor?: (string|null);
+    }
+
+    /** Represents a PredicatePointer. */
+    class PredicatePointer implements IPredicatePointer {
+
+        /**
+         * Constructs a new PredicatePointer.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pointers.IPredicatePointer);
+
+        /** PredicatePointer subject. */
+        public subject: string;
+
+        /** PredicatePointer blockHeight. */
+        public blockHeight: (number|Long);
+
+        /** PredicatePointer txId. */
+        public txId: string;
+
+        /** PredicatePointer txIndex. */
+        public txIndex: number;
+
+        /** PredicatePointer inputIndex. */
+        public inputIndex: number;
+
+        /** PredicatePointer cursor. */
+        public cursor: string;
+
+        /**
+         * Creates a new PredicatePointer instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns PredicatePointer instance
+         */
+        public static create(properties?: pointers.IPredicatePointer): pointers.PredicatePointer;
+
+        /**
+         * Encodes the specified PredicatePointer message. Does not implicitly {@link pointers.PredicatePointer.verify|verify} messages.
+         * @param message PredicatePointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pointers.IPredicatePointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified PredicatePointer message, length delimited. Does not implicitly {@link pointers.PredicatePointer.verify|verify} messages.
+         * @param message PredicatePointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pointers.IPredicatePointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a PredicatePointer message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns PredicatePointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pointers.PredicatePointer;
+
+        /**
+         * Decodes a PredicatePointer message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns PredicatePointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pointers.PredicatePointer;
+
+        /**
+         * Verifies a PredicatePointer message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a PredicatePointer message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns PredicatePointer
+         */
+        public static fromObject(object: { [k: string]: any }): pointers.PredicatePointer;
+
+        /**
+         * Creates a plain object from a PredicatePointer message. Also converts values to other types if specified.
+         * @param message PredicatePointer
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pointers.PredicatePointer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this PredicatePointer to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for PredicatePointer
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a ContractPointer. */
+    interface IContractPointer {
+
+        /** ContractPointer subject */
+        subject?: (string|null);
+
+        /** ContractPointer blockHeight */
+        blockHeight?: (number|Long|null);
+
+        /** ContractPointer txId */
+        txId?: (string|null);
+
+        /** ContractPointer txIndex */
+        txIndex?: (number|null);
+
+        /** ContractPointer outputIndex */
+        outputIndex?: (number|null);
+
+        /** ContractPointer cursor */
+        cursor?: (string|null);
+    }
+
+    /** Represents a ContractPointer. */
+    class ContractPointer implements IContractPointer {
+
+        /**
+         * Constructs a new ContractPointer.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pointers.IContractPointer);
+
+        /** ContractPointer subject. */
+        public subject: string;
+
+        /** ContractPointer blockHeight. */
+        public blockHeight: (number|Long);
+
+        /** ContractPointer txId. */
+        public txId: string;
+
+        /** ContractPointer txIndex. */
+        public txIndex: number;
+
+        /** ContractPointer outputIndex. */
+        public outputIndex: number;
+
+        /** ContractPointer cursor. */
+        public cursor: string;
+
+        /**
+         * Creates a new ContractPointer instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ContractPointer instance
+         */
+        public static create(properties?: pointers.IContractPointer): pointers.ContractPointer;
+
+        /**
+         * Encodes the specified ContractPointer message. Does not implicitly {@link pointers.ContractPointer.verify|verify} messages.
+         * @param message ContractPointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pointers.IContractPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ContractPointer message, length delimited. Does not implicitly {@link pointers.ContractPointer.verify|verify} messages.
+         * @param message ContractPointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pointers.IContractPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ContractPointer message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ContractPointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pointers.ContractPointer;
+
+        /**
+         * Decodes a ContractPointer message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ContractPointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pointers.ContractPointer;
+
+        /**
+         * Verifies a ContractPointer message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ContractPointer message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ContractPointer
+         */
+        public static fromObject(object: { [k: string]: any }): pointers.ContractPointer;
+
+        /**
+         * Creates a plain object from a ContractPointer message. Also converts values to other types if specified.
+         * @param message ContractPointer
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pointers.ContractPointer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ContractPointer to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for ContractPointer
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a ScriptPointer. */
+    interface IScriptPointer {
+
+        /** ScriptPointer subject */
+        subject?: (string|null);
+
+        /** ScriptPointer blockHeight */
+        blockHeight?: (number|Long|null);
+
+        /** ScriptPointer txId */
+        txId?: (string|null);
+
+        /** ScriptPointer txIndex */
+        txIndex?: (number|null);
+
+        /** ScriptPointer cursor */
+        cursor?: (string|null);
+    }
+
+    /** Represents a ScriptPointer. */
+    class ScriptPointer implements IScriptPointer {
+
+        /**
+         * Constructs a new ScriptPointer.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pointers.IScriptPointer);
+
+        /** ScriptPointer subject. */
+        public subject: string;
+
+        /** ScriptPointer blockHeight. */
+        public blockHeight: (number|Long);
+
+        /** ScriptPointer txId. */
+        public txId: string;
+
+        /** ScriptPointer txIndex. */
+        public txIndex: number;
+
+        /** ScriptPointer cursor. */
+        public cursor: string;
+
+        /**
+         * Creates a new ScriptPointer instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ScriptPointer instance
+         */
+        public static create(properties?: pointers.IScriptPointer): pointers.ScriptPointer;
+
+        /**
+         * Encodes the specified ScriptPointer message. Does not implicitly {@link pointers.ScriptPointer.verify|verify} messages.
+         * @param message ScriptPointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pointers.IScriptPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ScriptPointer message, length delimited. Does not implicitly {@link pointers.ScriptPointer.verify|verify} messages.
+         * @param message ScriptPointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pointers.IScriptPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ScriptPointer message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ScriptPointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pointers.ScriptPointer;
+
+        /**
+         * Decodes a ScriptPointer message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ScriptPointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pointers.ScriptPointer;
+
+        /**
+         * Verifies a ScriptPointer message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ScriptPointer message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ScriptPointer
+         */
+        public static fromObject(object: { [k: string]: any }): pointers.ScriptPointer;
+
+        /**
+         * Creates a plain object from a ScriptPointer message. Also converts values to other types if specified.
+         * @param message ScriptPointer
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pointers.ScriptPointer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ScriptPointer to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for ScriptPointer
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of an AssetPointer. */
+    interface IAssetPointer {
+
+        /** AssetPointer subject */
+        subject?: (string|null);
+
+        /** AssetPointer blockHeight */
+        blockHeight?: (number|Long|null);
+
+        /** AssetPointer txId */
+        txId?: (string|null);
+
+        /** AssetPointer txIndex */
+        txIndex?: (number|null);
+
+        /** AssetPointer contractId */
+        contractId?: (string|null);
+
+        /** AssetPointer assetId */
+        assetId?: (string|null);
+
+        /** AssetPointer cursor */
+        cursor?: (string|null);
+    }
+
+    /** Represents an AssetPointer. */
+    class AssetPointer implements IAssetPointer {
+
+        /**
+         * Constructs a new AssetPointer.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: pointers.IAssetPointer);
+
+        /** AssetPointer subject. */
+        public subject: string;
+
+        /** AssetPointer blockHeight. */
+        public blockHeight: (number|Long);
+
+        /** AssetPointer txId. */
+        public txId: string;
+
+        /** AssetPointer txIndex. */
+        public txIndex: number;
+
+        /** AssetPointer contractId. */
+        public contractId: string;
+
+        /** AssetPointer assetId. */
+        public assetId: string;
+
+        /** AssetPointer cursor. */
+        public cursor: string;
+
+        /**
+         * Creates a new AssetPointer instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns AssetPointer instance
+         */
+        public static create(properties?: pointers.IAssetPointer): pointers.AssetPointer;
+
+        /**
+         * Encodes the specified AssetPointer message. Does not implicitly {@link pointers.AssetPointer.verify|verify} messages.
+         * @param message AssetPointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: pointers.IAssetPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified AssetPointer message, length delimited. Does not implicitly {@link pointers.AssetPointer.verify|verify} messages.
+         * @param message AssetPointer message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: pointers.IAssetPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an AssetPointer message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns AssetPointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pointers.AssetPointer;
+
+        /**
+         * Decodes an AssetPointer message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns AssetPointer
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pointers.AssetPointer;
+
+        /**
+         * Verifies an AssetPointer message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an AssetPointer message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns AssetPointer
+         */
+        public static fromObject(object: { [k: string]: any }): pointers.AssetPointer;
+
+        /**
+         * Creates a plain object from an AssetPointer message. Also converts values to other types if specified.
+         * @param message AssetPointer
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: pointers.AssetPointer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this AssetPointer to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for AssetPointer
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
 }
 
 /** Namespace common. */
@@ -1159,10 +1911,10 @@ export namespace common {
     interface IMetadata {
 
         /** Metadata blockTime */
-        blockTime?: (google.protobuf.ITimestamp|null);
+        blockTime?: (string|null);
 
         /** Metadata publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        publishedAt?: (string|null);
     }
 
     /** Represents a Metadata. */
@@ -1175,10 +1927,10 @@ export namespace common {
         constructor(properties?: common.IMetadata);
 
         /** Metadata blockTime. */
-        public blockTime?: (google.protobuf.ITimestamp|null);
+        public blockTime: string;
 
         /** Metadata publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        public publishedAt: string;
 
         /**
          * Creates a new Metadata instance using the specified properties.
@@ -1257,116 +2009,1027 @@ export namespace common {
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
+
+    /** Properties of a BlockMetadata. */
+    interface IBlockMetadata {
+
+        /** BlockMetadata blockTime */
+        blockTime?: (string|null);
+
+        /** BlockMetadata publishedAt */
+        publishedAt?: (string|null);
+
+        /** BlockMetadata blockPropagationMs */
+        blockPropagationMs?: (string|null);
+    }
+
+    /** Represents a BlockMetadata. */
+    class BlockMetadata implements IBlockMetadata {
+
+        /**
+         * Constructs a new BlockMetadata.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: common.IBlockMetadata);
+
+        /** BlockMetadata blockTime. */
+        public blockTime: string;
+
+        /** BlockMetadata publishedAt. */
+        public publishedAt: string;
+
+        /** BlockMetadata blockPropagationMs. */
+        public blockPropagationMs: string;
+
+        /**
+         * Creates a new BlockMetadata instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns BlockMetadata instance
+         */
+        public static create(properties?: common.IBlockMetadata): common.BlockMetadata;
+
+        /**
+         * Encodes the specified BlockMetadata message. Does not implicitly {@link common.BlockMetadata.verify|verify} messages.
+         * @param message BlockMetadata message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: common.IBlockMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified BlockMetadata message, length delimited. Does not implicitly {@link common.BlockMetadata.verify|verify} messages.
+         * @param message BlockMetadata message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: common.IBlockMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a BlockMetadata message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns BlockMetadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): common.BlockMetadata;
+
+        /**
+         * Decodes a BlockMetadata message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns BlockMetadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): common.BlockMetadata;
+
+        /**
+         * Verifies a BlockMetadata message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a BlockMetadata message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns BlockMetadata
+         */
+        public static fromObject(object: { [k: string]: any }): common.BlockMetadata;
+
+        /**
+         * Creates a plain object from a BlockMetadata message. Also converts values to other types if specified.
+         * @param message BlockMetadata
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: common.BlockMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this BlockMetadata to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for BlockMetadata
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
 }
 
-/** Namespace google. */
-export namespace google {
+/** Namespace assets. */
+export namespace assets {
 
-    /** Namespace protobuf. */
-    namespace protobuf {
+    /** Properties of an Asset. */
+    interface IAsset {
 
-        /** Properties of a Timestamp. */
-        interface ITimestamp {
+        /** Asset type */
+        type?: (string|null);
 
-            /** Timestamp seconds */
-            seconds?: (number|Long|null);
+        /** Asset pointer */
+        pointer?: (pointers.IAssetPointer|null);
 
-            /** Timestamp nanos */
-            nanos?: (number|null);
-        }
+        /** Asset data */
+        data?: (assets.IAssetData|null);
 
-        /** Represents a Timestamp. */
-        class Timestamp implements ITimestamp {
+        /** Asset metadata */
+        metadata?: (common.IMetadata|null);
+    }
 
-            /**
-             * Constructs a new Timestamp.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.protobuf.ITimestamp);
+    /** Represents an Asset. */
+    class Asset implements IAsset {
 
-            /** Timestamp seconds. */
-            public seconds: (number|Long);
+        /**
+         * Constructs a new Asset.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: assets.IAsset);
 
-            /** Timestamp nanos. */
-            public nanos: number;
+        /** Asset type. */
+        public type: string;
 
-            /**
-             * Creates a new Timestamp instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns Timestamp instance
-             */
-            public static create(properties?: google.protobuf.ITimestamp): google.protobuf.Timestamp;
+        /** Asset pointer. */
+        public pointer?: (pointers.IAssetPointer|null);
 
-            /**
-             * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-             * @param message Timestamp message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
+        /** Asset data. */
+        public data?: (assets.IAssetData|null);
 
-            /**
-             * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-             * @param message Timestamp message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
+        /** Asset metadata. */
+        public metadata?: (common.IMetadata|null);
 
-            /**
-             * Decodes a Timestamp message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns Timestamp
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Timestamp;
+        /**
+         * Creates a new Asset instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Asset instance
+         */
+        public static create(properties?: assets.IAsset): assets.Asset;
 
-            /**
-             * Decodes a Timestamp message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns Timestamp
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Timestamp;
+        /**
+         * Encodes the specified Asset message. Does not implicitly {@link assets.Asset.verify|verify} messages.
+         * @param message Asset message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: assets.IAsset, writer?: $protobuf.Writer): $protobuf.Writer;
 
-            /**
-             * Verifies a Timestamp message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
+        /**
+         * Encodes the specified Asset message, length delimited. Does not implicitly {@link assets.Asset.verify|verify} messages.
+         * @param message Asset message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: assets.IAsset, writer?: $protobuf.Writer): $protobuf.Writer;
 
-            /**
-             * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns Timestamp
-             */
-            public static fromObject(object: { [k: string]: any }): google.protobuf.Timestamp;
+        /**
+         * Decodes an Asset message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Asset
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): assets.Asset;
 
-            /**
-             * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
-             * @param message Timestamp
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.protobuf.Timestamp, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        /**
+         * Decodes an Asset message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns Asset
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): assets.Asset;
 
-            /**
-             * Converts this Timestamp to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
+        /**
+         * Verifies an Asset message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
 
-            /**
-             * Gets the default type url for Timestamp
-             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-             * @returns The default type url
-             */
-            public static getTypeUrl(typeUrlPrefix?: string): string;
-        }
+        /**
+         * Creates an Asset message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns Asset
+         */
+        public static fromObject(object: { [k: string]: any }): assets.Asset;
+
+        /**
+         * Creates a plain object from an Asset message. Also converts values to other types if specified.
+         * @param message Asset
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: assets.Asset, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this Asset to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for Asset
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of an AssetData. */
+    interface IAssetData {
+
+        /** AssetData subId */
+        subId?: (string|null);
+
+        /** AssetData name */
+        name?: (string|null);
+
+        /** AssetData symbol */
+        symbol?: (string|null);
+
+        /** AssetData decimals */
+        decimals?: (number|Long|null);
+
+        /** AssetData totalSupply */
+        totalSupply?: (number|Long|null);
+
+        /** AssetData owner */
+        owner?: (string|null);
+
+        /** AssetData metadata */
+        metadata?: (string|null);
+    }
+
+    /** Represents an AssetData. */
+    class AssetData implements IAssetData {
+
+        /**
+         * Constructs a new AssetData.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: assets.IAssetData);
+
+        /** AssetData subId. */
+        public subId: string;
+
+        /** AssetData name. */
+        public name: string;
+
+        /** AssetData symbol. */
+        public symbol: string;
+
+        /** AssetData decimals. */
+        public decimals: (number|Long);
+
+        /** AssetData totalSupply. */
+        public totalSupply: (number|Long);
+
+        /** AssetData owner. */
+        public owner: string;
+
+        /** AssetData metadata. */
+        public metadata: string;
+
+        /**
+         * Creates a new AssetData instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns AssetData instance
+         */
+        public static create(properties?: assets.IAssetData): assets.AssetData;
+
+        /**
+         * Encodes the specified AssetData message. Does not implicitly {@link assets.AssetData.verify|verify} messages.
+         * @param message AssetData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: assets.IAssetData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified AssetData message, length delimited. Does not implicitly {@link assets.AssetData.verify|verify} messages.
+         * @param message AssetData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: assets.IAssetData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an AssetData message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns AssetData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): assets.AssetData;
+
+        /**
+         * Decodes an AssetData message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns AssetData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): assets.AssetData;
+
+        /**
+         * Verifies an AssetData message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an AssetData message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns AssetData
+         */
+        public static fromObject(object: { [k: string]: any }): assets.AssetData;
+
+        /**
+         * Creates a plain object from an AssetData message. Also converts values to other types if specified.
+         * @param message AssetData
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: assets.AssetData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this AssetData to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for AssetData
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+}
+
+/** Namespace blocks. */
+export namespace blocks {
+
+    /** ConsensusType enum. */
+    enum ConsensusType {
+        UNKNOWN_CONSENSUS_TYPE = 0,
+        GENESIS = 1,
+        POA_CONSENSUS = 2
+    }
+
+    /** Properties of a Block. */
+    interface IBlock {
+
+        /** Block pointer */
+        pointer?: (pointers.IBlockPointer|null);
+
+        /** Block data */
+        data?: (blocks.IBlockData|null);
+
+        /** Block metadata */
+        metadata?: (common.IBlockMetadata|null);
+    }
+
+    /** Represents a Block. */
+    class Block implements IBlock {
+
+        /**
+         * Constructs a new Block.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: blocks.IBlock);
+
+        /** Block pointer. */
+        public pointer?: (pointers.IBlockPointer|null);
+
+        /** Block data. */
+        public data?: (blocks.IBlockData|null);
+
+        /** Block metadata. */
+        public metadata?: (common.IBlockMetadata|null);
+
+        /**
+         * Creates a new Block instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Block instance
+         */
+        public static create(properties?: blocks.IBlock): blocks.Block;
+
+        /**
+         * Encodes the specified Block message. Does not implicitly {@link blocks.Block.verify|verify} messages.
+         * @param message Block message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: blocks.IBlock, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified Block message, length delimited. Does not implicitly {@link blocks.Block.verify|verify} messages.
+         * @param message Block message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: blocks.IBlock, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a Block message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Block
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.Block;
+
+        /**
+         * Decodes a Block message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns Block
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.Block;
+
+        /**
+         * Verifies a Block message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a Block message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns Block
+         */
+        public static fromObject(object: { [k: string]: any }): blocks.Block;
+
+        /**
+         * Creates a plain object from a Block message. Also converts values to other types if specified.
+         * @param message Block
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: blocks.Block, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this Block to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for Block
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a BlockData. */
+    interface IBlockData {
+
+        /** BlockData version */
+        version?: (string|null);
+
+        /** BlockData id */
+        id?: (number|null);
+
+        /** BlockData header */
+        header?: (blocks.IBlockHeader|null);
+
+        /** BlockData consensusType */
+        consensusType?: (blocks.ConsensusType|null);
+
+        /** BlockData genesis */
+        genesis?: (blocks.IBlockConsensusGenesis|null);
+
+        /** BlockData poa */
+        poa?: (blocks.IBlockConsensusPoa|null);
+
+        /** BlockData transactionIds */
+        transactionIds?: (string[]|null);
+    }
+
+    /** Represents a BlockData. */
+    class BlockData implements IBlockData {
+
+        /**
+         * Constructs a new BlockData.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: blocks.IBlockData);
+
+        /** BlockData version. */
+        public version: string;
+
+        /** BlockData id. */
+        public id: number;
+
+        /** BlockData header. */
+        public header?: (blocks.IBlockHeader|null);
+
+        /** BlockData consensusType. */
+        public consensusType: blocks.ConsensusType;
+
+        /** BlockData genesis. */
+        public genesis?: (blocks.IBlockConsensusGenesis|null);
+
+        /** BlockData poa. */
+        public poa?: (blocks.IBlockConsensusPoa|null);
+
+        /** BlockData transactionIds. */
+        public transactionIds: string[];
+
+        /** BlockData consensus. */
+        public consensus?: ("genesis"|"poa");
+
+        /**
+         * Creates a new BlockData instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns BlockData instance
+         */
+        public static create(properties?: blocks.IBlockData): blocks.BlockData;
+
+        /**
+         * Encodes the specified BlockData message. Does not implicitly {@link blocks.BlockData.verify|verify} messages.
+         * @param message BlockData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: blocks.IBlockData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified BlockData message, length delimited. Does not implicitly {@link blocks.BlockData.verify|verify} messages.
+         * @param message BlockData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: blocks.IBlockData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a BlockData message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns BlockData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.BlockData;
+
+        /**
+         * Decodes a BlockData message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns BlockData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.BlockData;
+
+        /**
+         * Verifies a BlockData message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a BlockData message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns BlockData
+         */
+        public static fromObject(object: { [k: string]: any }): blocks.BlockData;
+
+        /**
+         * Creates a plain object from a BlockData message. Also converts values to other types if specified.
+         * @param message BlockData
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: blocks.BlockData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this BlockData to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for BlockData
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a BlockHeader. */
+    interface IBlockHeader {
+
+        /** BlockHeader version */
+        version?: (string|null);
+
+        /** BlockHeader id */
+        id?: (string|null);
+
+        /** BlockHeader chainId */
+        chainId?: (number|Long|null);
+
+        /** BlockHeader producer */
+        producer?: (string|null);
+
+        /** BlockHeader height */
+        height?: (number|Long|null);
+
+        /** BlockHeader daHeight */
+        daHeight?: (number|Long|null);
+
+        /** BlockHeader consensusParametersVersion */
+        consensusParametersVersion?: (number|null);
+
+        /** BlockHeader stateTransitionBytecodeVersion */
+        stateTransitionBytecodeVersion?: (number|null);
+
+        /** BlockHeader transactionsCount */
+        transactionsCount?: (number|null);
+
+        /** BlockHeader messageReceiptCount */
+        messageReceiptCount?: (number|null);
+
+        /** BlockHeader transactionsRoot */
+        transactionsRoot?: (string|null);
+
+        /** BlockHeader messageOutboxRoot */
+        messageOutboxRoot?: (string|null);
+
+        /** BlockHeader eventInboxRoot */
+        eventInboxRoot?: (string|null);
+
+        /** BlockHeader prevRoot */
+        prevRoot?: (string|null);
+
+        /** BlockHeader time */
+        time?: (number|Long|null);
+
+        /** BlockHeader applicationHash */
+        applicationHash?: (string|null);
+    }
+
+    /** Represents a BlockHeader. */
+    class BlockHeader implements IBlockHeader {
+
+        /**
+         * Constructs a new BlockHeader.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: blocks.IBlockHeader);
+
+        /** BlockHeader version. */
+        public version: string;
+
+        /** BlockHeader id. */
+        public id: string;
+
+        /** BlockHeader chainId. */
+        public chainId: (number|Long);
+
+        /** BlockHeader producer. */
+        public producer: string;
+
+        /** BlockHeader height. */
+        public height: (number|Long);
+
+        /** BlockHeader daHeight. */
+        public daHeight: (number|Long);
+
+        /** BlockHeader consensusParametersVersion. */
+        public consensusParametersVersion: number;
+
+        /** BlockHeader stateTransitionBytecodeVersion. */
+        public stateTransitionBytecodeVersion: number;
+
+        /** BlockHeader transactionsCount. */
+        public transactionsCount: number;
+
+        /** BlockHeader messageReceiptCount. */
+        public messageReceiptCount: number;
+
+        /** BlockHeader transactionsRoot. */
+        public transactionsRoot: string;
+
+        /** BlockHeader messageOutboxRoot. */
+        public messageOutboxRoot: string;
+
+        /** BlockHeader eventInboxRoot. */
+        public eventInboxRoot: string;
+
+        /** BlockHeader prevRoot. */
+        public prevRoot: string;
+
+        /** BlockHeader time. */
+        public time: (number|Long);
+
+        /** BlockHeader applicationHash. */
+        public applicationHash: string;
+
+        /**
+         * Creates a new BlockHeader instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns BlockHeader instance
+         */
+        public static create(properties?: blocks.IBlockHeader): blocks.BlockHeader;
+
+        /**
+         * Encodes the specified BlockHeader message. Does not implicitly {@link blocks.BlockHeader.verify|verify} messages.
+         * @param message BlockHeader message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: blocks.IBlockHeader, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified BlockHeader message, length delimited. Does not implicitly {@link blocks.BlockHeader.verify|verify} messages.
+         * @param message BlockHeader message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: blocks.IBlockHeader, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a BlockHeader message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns BlockHeader
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.BlockHeader;
+
+        /**
+         * Decodes a BlockHeader message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns BlockHeader
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.BlockHeader;
+
+        /**
+         * Verifies a BlockHeader message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a BlockHeader message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns BlockHeader
+         */
+        public static fromObject(object: { [k: string]: any }): blocks.BlockHeader;
+
+        /**
+         * Creates a plain object from a BlockHeader message. Also converts values to other types if specified.
+         * @param message BlockHeader
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: blocks.BlockHeader, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this BlockHeader to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for BlockHeader
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a BlockConsensusGenesis. */
+    interface IBlockConsensusGenesis {
+
+        /** BlockConsensusGenesis chainConfigHash */
+        chainConfigHash?: (string|null);
+
+        /** BlockConsensusGenesis coinsRoot */
+        coinsRoot?: (string|null);
+
+        /** BlockConsensusGenesis contractsRoot */
+        contractsRoot?: (string|null);
+
+        /** BlockConsensusGenesis messagesRoot */
+        messagesRoot?: (string|null);
+
+        /** BlockConsensusGenesis transactionsRoot */
+        transactionsRoot?: (string|null);
+    }
+
+    /** Represents a BlockConsensusGenesis. */
+    class BlockConsensusGenesis implements IBlockConsensusGenesis {
+
+        /**
+         * Constructs a new BlockConsensusGenesis.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: blocks.IBlockConsensusGenesis);
+
+        /** BlockConsensusGenesis chainConfigHash. */
+        public chainConfigHash: string;
+
+        /** BlockConsensusGenesis coinsRoot. */
+        public coinsRoot: string;
+
+        /** BlockConsensusGenesis contractsRoot. */
+        public contractsRoot: string;
+
+        /** BlockConsensusGenesis messagesRoot. */
+        public messagesRoot: string;
+
+        /** BlockConsensusGenesis transactionsRoot. */
+        public transactionsRoot: string;
+
+        /**
+         * Creates a new BlockConsensusGenesis instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns BlockConsensusGenesis instance
+         */
+        public static create(properties?: blocks.IBlockConsensusGenesis): blocks.BlockConsensusGenesis;
+
+        /**
+         * Encodes the specified BlockConsensusGenesis message. Does not implicitly {@link blocks.BlockConsensusGenesis.verify|verify} messages.
+         * @param message BlockConsensusGenesis message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: blocks.IBlockConsensusGenesis, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified BlockConsensusGenesis message, length delimited. Does not implicitly {@link blocks.BlockConsensusGenesis.verify|verify} messages.
+         * @param message BlockConsensusGenesis message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: blocks.IBlockConsensusGenesis, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a BlockConsensusGenesis message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns BlockConsensusGenesis
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.BlockConsensusGenesis;
+
+        /**
+         * Decodes a BlockConsensusGenesis message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns BlockConsensusGenesis
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.BlockConsensusGenesis;
+
+        /**
+         * Verifies a BlockConsensusGenesis message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a BlockConsensusGenesis message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns BlockConsensusGenesis
+         */
+        public static fromObject(object: { [k: string]: any }): blocks.BlockConsensusGenesis;
+
+        /**
+         * Creates a plain object from a BlockConsensusGenesis message. Also converts values to other types if specified.
+         * @param message BlockConsensusGenesis
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: blocks.BlockConsensusGenesis, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this BlockConsensusGenesis to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for BlockConsensusGenesis
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a BlockConsensusPoa. */
+    interface IBlockConsensusPoa {
+
+        /** BlockConsensusPoa signature */
+        signature?: (string|null);
+    }
+
+    /** Represents a BlockConsensusPoa. */
+    class BlockConsensusPoa implements IBlockConsensusPoa {
+
+        /**
+         * Constructs a new BlockConsensusPoa.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: blocks.IBlockConsensusPoa);
+
+        /** BlockConsensusPoa signature. */
+        public signature: string;
+
+        /**
+         * Creates a new BlockConsensusPoa instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns BlockConsensusPoa instance
+         */
+        public static create(properties?: blocks.IBlockConsensusPoa): blocks.BlockConsensusPoa;
+
+        /**
+         * Encodes the specified BlockConsensusPoa message. Does not implicitly {@link blocks.BlockConsensusPoa.verify|verify} messages.
+         * @param message BlockConsensusPoa message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: blocks.IBlockConsensusPoa, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified BlockConsensusPoa message, length delimited. Does not implicitly {@link blocks.BlockConsensusPoa.verify|verify} messages.
+         * @param message BlockConsensusPoa message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: blocks.IBlockConsensusPoa, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a BlockConsensusPoa message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns BlockConsensusPoa
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): blocks.BlockConsensusPoa;
+
+        /**
+         * Decodes a BlockConsensusPoa message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns BlockConsensusPoa
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): blocks.BlockConsensusPoa;
+
+        /**
+         * Verifies a BlockConsensusPoa message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a BlockConsensusPoa message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns BlockConsensusPoa
+         */
+        public static fromObject(object: { [k: string]: any }): blocks.BlockConsensusPoa;
+
+        /**
+         * Creates a plain object from a BlockConsensusPoa message. Also converts values to other types if specified.
+         * @param message BlockConsensusPoa
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: blocks.BlockConsensusPoa, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this BlockConsensusPoa to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for BlockConsensusPoa
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 }
 
@@ -1384,11 +3047,11 @@ export namespace inputs {
     /** Properties of an Input. */
     interface IInput {
 
-        /** Input subject */
-        subject?: (string|null);
-
         /** Input type */
         type?: (inputs.InputType|null);
+
+        /** Input pointer */
+        pointer?: (pointers.IInputPointer|null);
 
         /** Input coin */
         coin?: (inputs.IInputCoin|null);
@@ -1401,9 +3064,6 @@ export namespace inputs {
 
         /** Input metadata */
         metadata?: (common.IMetadata|null);
-
-        /** Input pointer */
-        pointer?: (pointers.IInputPointer|null);
     }
 
     /** Represents an Input. */
@@ -1415,11 +3075,11 @@ export namespace inputs {
          */
         constructor(properties?: inputs.IInput);
 
-        /** Input subject. */
-        public subject: string;
-
         /** Input type. */
         public type: inputs.InputType;
+
+        /** Input pointer. */
+        public pointer?: (pointers.IInputPointer|null);
 
         /** Input coin. */
         public coin?: (inputs.IInputCoin|null);
@@ -1433,11 +3093,8 @@ export namespace inputs {
         /** Input metadata. */
         public metadata?: (common.IMetadata|null);
 
-        /** Input pointer. */
-        public pointer?: (pointers.IInputPointer|null);
-
-        /** Input input. */
-        public input?: ("coin"|"contract"|"message");
+        /** Input data. */
+        public data?: ("coin"|"contract"|"message");
 
         /**
          * Creates a new Input instance using the specified properties.
@@ -1521,19 +3178,16 @@ export namespace inputs {
     interface IInputCoin {
 
         /** InputCoin utxoId */
-        utxoId?: (Uint8Array|null);
+        utxoId?: (string|null);
 
         /** InputCoin owner */
-        owner?: (Uint8Array|null);
+        owner?: (string|null);
 
         /** InputCoin amount */
         amount?: (number|Long|null);
 
         /** InputCoin assetId */
-        assetId?: (Uint8Array|null);
-
-        /** InputCoin txPointer */
-        txPointer?: (pointers.ITxPointer|null);
+        assetId?: (string|null);
 
         /** InputCoin witnessIndex */
         witnessIndex?: (number|null);
@@ -1542,10 +3196,10 @@ export namespace inputs {
         predicateGasUsed?: (number|Long|null);
 
         /** InputCoin predicate */
-        predicate?: (Uint8Array|null);
+        predicate?: (string|null);
 
         /** InputCoin predicateData */
-        predicateData?: (Uint8Array|null);
+        predicateData?: (string|null);
 
         /** InputCoin predicateLength */
         predicateLength?: (number|Long|null);
@@ -1567,19 +3221,16 @@ export namespace inputs {
         constructor(properties?: inputs.IInputCoin);
 
         /** InputCoin utxoId. */
-        public utxoId: Uint8Array;
+        public utxoId: string;
 
         /** InputCoin owner. */
-        public owner: Uint8Array;
+        public owner: string;
 
         /** InputCoin amount. */
         public amount: (number|Long);
 
         /** InputCoin assetId. */
-        public assetId: Uint8Array;
-
-        /** InputCoin txPointer. */
-        public txPointer?: (pointers.ITxPointer|null);
+        public assetId: string;
 
         /** InputCoin witnessIndex. */
         public witnessIndex: number;
@@ -1588,10 +3239,10 @@ export namespace inputs {
         public predicateGasUsed: (number|Long);
 
         /** InputCoin predicate. */
-        public predicate: Uint8Array;
+        public predicate: string;
 
         /** InputCoin predicateData. */
-        public predicateData: Uint8Array;
+        public predicateData: string;
 
         /** InputCoin predicateLength. */
         public predicateLength: (number|Long);
@@ -1684,19 +3335,16 @@ export namespace inputs {
     interface IInputContract {
 
         /** InputContract utxoId */
-        utxoId?: (Uint8Array|null);
+        utxoId?: (string|null);
 
         /** InputContract balanceRoot */
-        balanceRoot?: (Uint8Array|null);
+        balanceRoot?: (string|null);
 
         /** InputContract stateRoot */
-        stateRoot?: (Uint8Array|null);
-
-        /** InputContract txPointer */
-        txPointer?: (pointers.ITxPointer|null);
+        stateRoot?: (string|null);
 
         /** InputContract contractId */
-        contractId?: (Uint8Array|null);
+        contractId?: (string|null);
 
         /** InputContract outputIndex */
         outputIndex?: (number|null);
@@ -1712,19 +3360,16 @@ export namespace inputs {
         constructor(properties?: inputs.IInputContract);
 
         /** InputContract utxoId. */
-        public utxoId: Uint8Array;
+        public utxoId: string;
 
         /** InputContract balanceRoot. */
-        public balanceRoot: Uint8Array;
+        public balanceRoot: string;
 
         /** InputContract stateRoot. */
-        public stateRoot: Uint8Array;
-
-        /** InputContract txPointer. */
-        public txPointer?: (pointers.ITxPointer|null);
+        public stateRoot: string;
 
         /** InputContract contractId. */
-        public contractId: Uint8Array;
+        public contractId: string;
 
         /** InputContract outputIndex. */
         public outputIndex: number;
@@ -1811,16 +3456,16 @@ export namespace inputs {
     interface IInputMessage {
 
         /** InputMessage sender */
-        sender?: (Uint8Array|null);
+        sender?: (string|null);
 
         /** InputMessage recipient */
-        recipient?: (Uint8Array|null);
+        recipient?: (string|null);
 
         /** InputMessage amount */
         amount?: (number|Long|null);
 
         /** InputMessage nonce */
-        nonce?: (Uint8Array|null);
+        nonce?: (string|null);
 
         /** InputMessage witnessIndex */
         witnessIndex?: (number|null);
@@ -1829,13 +3474,13 @@ export namespace inputs {
         predicateGasUsed?: (number|Long|null);
 
         /** InputMessage data */
-        data?: (Uint8Array|null);
+        data?: (string|null);
 
         /** InputMessage predicate */
-        predicate?: (Uint8Array|null);
+        predicate?: (string|null);
 
         /** InputMessage predicateData */
-        predicateData?: (Uint8Array|null);
+        predicateData?: (string|null);
 
         /** InputMessage dataLength */
         dataLength?: (number|null);
@@ -1857,16 +3502,16 @@ export namespace inputs {
         constructor(properties?: inputs.IInputMessage);
 
         /** InputMessage sender. */
-        public sender: Uint8Array;
+        public sender: string;
 
         /** InputMessage recipient. */
-        public recipient: Uint8Array;
+        public recipient: string;
 
         /** InputMessage amount. */
         public amount: (number|Long);
 
         /** InputMessage nonce. */
-        public nonce: Uint8Array;
+        public nonce: string;
 
         /** InputMessage witnessIndex. */
         public witnessIndex: number;
@@ -1875,13 +3520,13 @@ export namespace inputs {
         public predicateGasUsed: (number|Long);
 
         /** InputMessage data. */
-        public data: Uint8Array;
+        public data: string;
 
         /** InputMessage predicate. */
-        public predicate: Uint8Array;
+        public predicate: string;
 
         /** InputMessage predicateData. */
-        public predicateData: Uint8Array;
+        public predicateData: string;
 
         /** InputMessage dataLength. */
         public dataLength: number;
@@ -1987,11 +3632,11 @@ export namespace outputs {
     /** Properties of an Output. */
     interface IOutput {
 
-        /** Output subject */
-        subject?: (string|null);
-
         /** Output type */
         type?: (outputs.OutputType|null);
+
+        /** Output pointer */
+        pointer?: (pointers.IOutputPointer|null);
 
         /** Output coin */
         coin?: (outputs.IOutputCoin|null);
@@ -2010,9 +3655,6 @@ export namespace outputs {
 
         /** Output metadata */
         metadata?: (common.IMetadata|null);
-
-        /** Output pointer */
-        pointer?: (pointers.IOutputPointer|null);
     }
 
     /** Represents an Output. */
@@ -2024,11 +3666,11 @@ export namespace outputs {
          */
         constructor(properties?: outputs.IOutput);
 
-        /** Output subject. */
-        public subject: string;
-
         /** Output type. */
         public type: outputs.OutputType;
+
+        /** Output pointer. */
+        public pointer?: (pointers.IOutputPointer|null);
 
         /** Output coin. */
         public coin?: (outputs.IOutputCoin|null);
@@ -2048,11 +3690,8 @@ export namespace outputs {
         /** Output metadata. */
         public metadata?: (common.IMetadata|null);
 
-        /** Output pointer. */
-        public pointer?: (pointers.IOutputPointer|null);
-
-        /** Output output. */
-        public output?: ("coin"|"contract"|"change"|"variable"|"contractCreated");
+        /** Output data. */
+        public data?: ("coin"|"contract"|"change"|"variable"|"contractCreated");
 
         /**
          * Creates a new Output instance using the specified properties.
@@ -2136,13 +3775,13 @@ export namespace outputs {
     interface IOutputCoin {
 
         /** OutputCoin to */
-        to?: (Uint8Array|null);
+        to?: (string|null);
 
         /** OutputCoin amount */
         amount?: (number|Long|null);
 
         /** OutputCoin assetId */
-        assetId?: (Uint8Array|null);
+        assetId?: (string|null);
     }
 
     /** Represents an OutputCoin. */
@@ -2155,13 +3794,13 @@ export namespace outputs {
         constructor(properties?: outputs.IOutputCoin);
 
         /** OutputCoin to. */
-        public to: Uint8Array;
+        public to: string;
 
         /** OutputCoin amount. */
         public amount: (number|Long);
 
         /** OutputCoin assetId. */
-        public assetId: Uint8Array;
+        public assetId: string;
 
         /**
          * Creates a new OutputCoin instance using the specified properties.
@@ -2245,10 +3884,10 @@ export namespace outputs {
     interface IOutputContract {
 
         /** OutputContract balanceRoot */
-        balanceRoot?: (Uint8Array|null);
+        balanceRoot?: (string|null);
 
         /** OutputContract stateRoot */
-        stateRoot?: (Uint8Array|null);
+        stateRoot?: (string|null);
 
         /** OutputContract inputIndex */
         inputIndex?: (number|null);
@@ -2264,10 +3903,10 @@ export namespace outputs {
         constructor(properties?: outputs.IOutputContract);
 
         /** OutputContract balanceRoot. */
-        public balanceRoot: Uint8Array;
+        public balanceRoot: string;
 
         /** OutputContract stateRoot. */
-        public stateRoot: Uint8Array;
+        public stateRoot: string;
 
         /** OutputContract inputIndex. */
         public inputIndex: number;
@@ -2354,10 +3993,10 @@ export namespace outputs {
     interface IOutputContractCreated {
 
         /** OutputContractCreated contractId */
-        contractId?: (Uint8Array|null);
+        contractId?: (string|null);
 
         /** OutputContractCreated stateRoot */
-        stateRoot?: (Uint8Array|null);
+        stateRoot?: (string|null);
     }
 
     /** Represents an OutputContractCreated. */
@@ -2370,10 +4009,10 @@ export namespace outputs {
         constructor(properties?: outputs.IOutputContractCreated);
 
         /** OutputContractCreated contractId. */
-        public contractId: Uint8Array;
+        public contractId: string;
 
         /** OutputContractCreated stateRoot. */
-        public stateRoot: Uint8Array;
+        public stateRoot: string;
 
         /**
          * Creates a new OutputContractCreated instance using the specified properties.
@@ -2457,13 +4096,13 @@ export namespace outputs {
     interface IOutputChange {
 
         /** OutputChange to */
-        to?: (Uint8Array|null);
+        to?: (string|null);
 
         /** OutputChange amount */
         amount?: (number|Long|null);
 
         /** OutputChange assetId */
-        assetId?: (Uint8Array|null);
+        assetId?: (string|null);
     }
 
     /** Represents an OutputChange. */
@@ -2476,13 +4115,13 @@ export namespace outputs {
         constructor(properties?: outputs.IOutputChange);
 
         /** OutputChange to. */
-        public to: Uint8Array;
+        public to: string;
 
         /** OutputChange amount. */
         public amount: (number|Long);
 
         /** OutputChange assetId. */
-        public assetId: Uint8Array;
+        public assetId: string;
 
         /**
          * Creates a new OutputChange instance using the specified properties.
@@ -2566,13 +4205,13 @@ export namespace outputs {
     interface IOutputVariable {
 
         /** OutputVariable to */
-        to?: (Uint8Array|null);
+        to?: (string|null);
 
         /** OutputVariable amount */
         amount?: (number|Long|null);
 
         /** OutputVariable assetId */
-        assetId?: (Uint8Array|null);
+        assetId?: (string|null);
     }
 
     /** Represents an OutputVariable. */
@@ -2585,13 +4224,13 @@ export namespace outputs {
         constructor(properties?: outputs.IOutputVariable);
 
         /** OutputVariable to. */
-        public to: Uint8Array;
+        public to: string;
 
         /** OutputVariable amount. */
         public amount: (number|Long);
 
         /** OutputVariable assetId. */
-        public assetId: Uint8Array;
+        public assetId: string;
 
         /**
          * Creates a new OutputVariable instance using the specified properties.
@@ -2705,11 +4344,11 @@ export namespace receipts {
     /** Properties of a Receipt. */
     interface IReceipt {
 
-        /** Receipt subject */
-        subject?: (string|null);
-
         /** Receipt type */
         type?: (receipts.ReceiptType|null);
+
+        /** Receipt pointer */
+        pointer?: (pointers.IReceiptPointer|null);
 
         /** Receipt call */
         call?: (receipts.IReceiptCall|null);
@@ -2752,9 +4391,6 @@ export namespace receipts {
 
         /** Receipt metadata */
         metadata?: (common.IMetadata|null);
-
-        /** Receipt pointer */
-        pointer?: (pointers.IReceiptPointer|null);
     }
 
     /** Represents a Receipt. */
@@ -2766,11 +4402,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceipt);
 
-        /** Receipt subject. */
-        public subject: string;
-
         /** Receipt type. */
         public type: receipts.ReceiptType;
+
+        /** Receipt pointer. */
+        public pointer?: (pointers.IReceiptPointer|null);
 
         /** Receipt call. */
         public call?: (receipts.IReceiptCall|null);
@@ -2814,11 +4450,8 @@ export namespace receipts {
         /** Receipt metadata. */
         public metadata?: (common.IMetadata|null);
 
-        /** Receipt pointer. */
-        public pointer?: (pointers.IReceiptPointer|null);
-
-        /** Receipt receipt. */
-        public receipt?: ("call"|"return"|"returnData"|"panic"|"revert"|"log"|"logData"|"transfer"|"transferOut"|"scriptResult"|"messageOut"|"mint"|"burn");
+        /** Receipt data. */
+        public data?: ("call"|"return"|"returnData"|"panic"|"revert"|"log"|"logData"|"transfer"|"transferOut"|"scriptResult"|"messageOut"|"mint"|"burn");
 
         /**
          * Creates a new Receipt instance using the specified properties.
@@ -4586,137 +6219,14 @@ export namespace transactions {
     /** Properties of a Transaction. */
     interface ITransaction {
 
-        /** Transaction subject */
-        subject?: (string|null);
+        /** Transaction type */
+        type?: (transactions.TransactionType|null);
 
-        /** Transaction id */
-        id?: (Uint8Array|null);
+        /** Transaction pointer */
+        pointer?: (pointers.ITxPointer|null);
 
-        /** Transaction scriptGasLimit */
-        scriptGasLimit?: (number|Long|null);
-
-        /** Transaction txPointer */
-        txPointer?: (pointers.ITxPointer|null);
-
-        /** Transaction inputAssetIds */
-        inputAssetIds?: (Uint8Array[]|null);
-
-        /** Transaction inputContracts */
-        inputContracts?: (Uint8Array[]|null);
-
-        /** Transaction inputContract */
-        inputContract?: (inputs.IInputContract|null);
-
-        /** Transaction inputs */
-        inputs?: (inputs.IInput[]|null);
-
-        /** Transaction isScript */
-        isScript?: (boolean|null);
-
-        /** Transaction isCreate */
-        isCreate?: (boolean|null);
-
-        /** Transaction isMint */
-        isMint?: (boolean|null);
-
-        /** Transaction isUpgrade */
-        isUpgrade?: (boolean|null);
-
-        /** Transaction isUpload */
-        isUpload?: (boolean|null);
-
-        /** Transaction isBlob */
-        isBlob?: (boolean|null);
-
-        /** Transaction outputs */
-        outputs?: (outputs.IOutput[]|null);
-
-        /** Transaction outputContract */
-        outputContract?: (outputs.IOutputContract|null);
-
-        /** Transaction mintAmount */
-        mintAmount?: (number|Long|null);
-
-        /** Transaction mintAssetId */
-        mintAssetId?: (Uint8Array|null);
-
-        /** Transaction mintGasPrice */
-        mintGasPrice?: (number|Long|null);
-
-        /** Transaction receiptsRoot */
-        receiptsRoot?: (Uint8Array|null);
-
-        /** Transaction status */
-        status?: (transactions.TransactionStatus|null);
-
-        /** Transaction witnesses */
-        witnesses?: (Uint8Array[]|null);
-
-        /** Transaction script */
-        script?: (Uint8Array|null);
-
-        /** Transaction scriptData */
-        scriptData?: (Uint8Array|null);
-
-        /** Transaction policies */
-        policies?: (transactions.IPolicy|null);
-
-        /** Transaction salt */
-        salt?: (Uint8Array|null);
-
-        /** Transaction storageSlots */
-        storageSlots?: (Uint8Array[]|null);
-
-        /** Transaction bytecodeWitnessIndex */
-        bytecodeWitnessIndex?: (number|null);
-
-        /** Transaction bytecodeRoot */
-        bytecodeRoot?: (Uint8Array|null);
-
-        /** Transaction subsectionIndex */
-        subsectionIndex?: (number|null);
-
-        /** Transaction subsectionsNumber */
-        subsectionsNumber?: (number|null);
-
-        /** Transaction proofSet */
-        proofSet?: (Uint8Array[]|null);
-
-        /** Transaction upgradePurpose */
-        upgradePurpose?: (number|null);
-
-        /** Transaction blobId */
-        blobId?: (Uint8Array|null);
-
-        /** Transaction maturity */
-        maturity?: (number|null);
-
-        /** Transaction policyType */
-        policyType?: (number|null);
-
-        /** Transaction rawPayload */
-        rawPayload?: (Uint8Array|null);
-
-        /** Transaction scriptLength */
-        scriptLength?: (number|Long|null);
-
-        /** Transaction scriptDataLength */
-        scriptDataLength?: (number|Long|null);
-
-        /** Transaction storageSlotsCount */
-        storageSlotsCount?: (number|Long|null);
-
-        /** Transaction proofSetCount */
-        proofSetCount?: (number|null);
-
-        /** Transaction witnessesCount */
-        witnessesCount?: (number|null);
-
-        /** Transaction inputsCount */
-        inputsCount?: (number|null);
-
-        /** Transaction outputsCount */
-        outputsCount?: (number|null);
+        /** Transaction data */
+        data?: (transactions.ITransactionData|null);
 
         /** Transaction metadata */
         metadata?: (common.IMetadata|null);
@@ -4731,137 +6241,14 @@ export namespace transactions {
          */
         constructor(properties?: transactions.ITransaction);
 
-        /** Transaction subject. */
-        public subject: string;
+        /** Transaction type. */
+        public type: transactions.TransactionType;
 
-        /** Transaction id. */
-        public id: Uint8Array;
+        /** Transaction pointer. */
+        public pointer?: (pointers.ITxPointer|null);
 
-        /** Transaction scriptGasLimit. */
-        public scriptGasLimit: (number|Long);
-
-        /** Transaction txPointer. */
-        public txPointer?: (pointers.ITxPointer|null);
-
-        /** Transaction inputAssetIds. */
-        public inputAssetIds: Uint8Array[];
-
-        /** Transaction inputContracts. */
-        public inputContracts: Uint8Array[];
-
-        /** Transaction inputContract. */
-        public inputContract?: (inputs.IInputContract|null);
-
-        /** Transaction inputs. */
-        public inputs: inputs.IInput[];
-
-        /** Transaction isScript. */
-        public isScript: boolean;
-
-        /** Transaction isCreate. */
-        public isCreate: boolean;
-
-        /** Transaction isMint. */
-        public isMint: boolean;
-
-        /** Transaction isUpgrade. */
-        public isUpgrade: boolean;
-
-        /** Transaction isUpload. */
-        public isUpload: boolean;
-
-        /** Transaction isBlob. */
-        public isBlob: boolean;
-
-        /** Transaction outputs. */
-        public outputs: outputs.IOutput[];
-
-        /** Transaction outputContract. */
-        public outputContract?: (outputs.IOutputContract|null);
-
-        /** Transaction mintAmount. */
-        public mintAmount: (number|Long);
-
-        /** Transaction mintAssetId. */
-        public mintAssetId: Uint8Array;
-
-        /** Transaction mintGasPrice. */
-        public mintGasPrice: (number|Long);
-
-        /** Transaction receiptsRoot. */
-        public receiptsRoot: Uint8Array;
-
-        /** Transaction status. */
-        public status: transactions.TransactionStatus;
-
-        /** Transaction witnesses. */
-        public witnesses: Uint8Array[];
-
-        /** Transaction script. */
-        public script: Uint8Array;
-
-        /** Transaction scriptData. */
-        public scriptData: Uint8Array;
-
-        /** Transaction policies. */
-        public policies?: (transactions.IPolicy|null);
-
-        /** Transaction salt. */
-        public salt: Uint8Array;
-
-        /** Transaction storageSlots. */
-        public storageSlots: Uint8Array[];
-
-        /** Transaction bytecodeWitnessIndex. */
-        public bytecodeWitnessIndex: number;
-
-        /** Transaction bytecodeRoot. */
-        public bytecodeRoot: Uint8Array;
-
-        /** Transaction subsectionIndex. */
-        public subsectionIndex: number;
-
-        /** Transaction subsectionsNumber. */
-        public subsectionsNumber: number;
-
-        /** Transaction proofSet. */
-        public proofSet: Uint8Array[];
-
-        /** Transaction upgradePurpose. */
-        public upgradePurpose: number;
-
-        /** Transaction blobId. */
-        public blobId: Uint8Array;
-
-        /** Transaction maturity. */
-        public maturity: number;
-
-        /** Transaction policyType. */
-        public policyType: number;
-
-        /** Transaction rawPayload. */
-        public rawPayload: Uint8Array;
-
-        /** Transaction scriptLength. */
-        public scriptLength: (number|Long);
-
-        /** Transaction scriptDataLength. */
-        public scriptDataLength: (number|Long);
-
-        /** Transaction storageSlotsCount. */
-        public storageSlotsCount: (number|Long);
-
-        /** Transaction proofSetCount. */
-        public proofSetCount: number;
-
-        /** Transaction witnessesCount. */
-        public witnessesCount: number;
-
-        /** Transaction inputsCount. */
-        public inputsCount: number;
-
-        /** Transaction outputsCount. */
-        public outputsCount: number;
+        /** Transaction data. */
+        public data?: (transactions.ITransactionData|null);
 
         /** Transaction metadata. */
         public metadata?: (common.IMetadata|null);
@@ -4944,6 +6331,349 @@ export namespace transactions {
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
+    /** Properties of a TransactionData. */
+    interface ITransactionData {
+
+        /** TransactionData id */
+        id?: (string|null);
+
+        /** TransactionData scriptGasLimit */
+        scriptGasLimit?: (number|Long|null);
+
+        /** TransactionData inputAssetIds */
+        inputAssetIds?: (string[]|null);
+
+        /** TransactionData inputContracts */
+        inputContracts?: (string[]|null);
+
+        /** TransactionData inputContract */
+        inputContract?: (inputs.IInputContract|null);
+
+        /** TransactionData inputs */
+        inputs?: (inputs.IInput[]|null);
+
+        /** TransactionData isScript */
+        isScript?: (boolean|null);
+
+        /** TransactionData isCreate */
+        isCreate?: (boolean|null);
+
+        /** TransactionData isMint */
+        isMint?: (boolean|null);
+
+        /** TransactionData isUpgrade */
+        isUpgrade?: (boolean|null);
+
+        /** TransactionData isUpload */
+        isUpload?: (boolean|null);
+
+        /** TransactionData isBlob */
+        isBlob?: (boolean|null);
+
+        /** TransactionData outputs */
+        outputs?: (outputs.IOutput[]|null);
+
+        /** TransactionData outputContract */
+        outputContract?: (outputs.IOutputContract|null);
+
+        /** TransactionData mintAmount */
+        mintAmount?: (number|Long|null);
+
+        /** TransactionData mintAssetId */
+        mintAssetId?: (string|null);
+
+        /** TransactionData mintGasPrice */
+        mintGasPrice?: (number|Long|null);
+
+        /** TransactionData receiptsRoot */
+        receiptsRoot?: (string|null);
+
+        /** TransactionData status */
+        status?: (transactions.TransactionStatus|null);
+
+        /** TransactionData witnesses */
+        witnesses?: (string[]|null);
+
+        /** TransactionData script */
+        script?: (string|null);
+
+        /** TransactionData scriptData */
+        scriptData?: (string|null);
+
+        /** TransactionData policies */
+        policies?: (transactions.IPolicy|null);
+
+        /** TransactionData salt */
+        salt?: (string|null);
+
+        /** TransactionData storageSlots */
+        storageSlots?: (string[]|null);
+
+        /** TransactionData bytecodeWitnessIndex */
+        bytecodeWitnessIndex?: (number|null);
+
+        /** TransactionData bytecodeRoot */
+        bytecodeRoot?: (string|null);
+
+        /** TransactionData subsectionIndex */
+        subsectionIndex?: (number|null);
+
+        /** TransactionData subsectionsNumber */
+        subsectionsNumber?: (number|null);
+
+        /** TransactionData proofSet */
+        proofSet?: (string[]|null);
+
+        /** TransactionData upgradePurpose */
+        upgradePurpose?: (number|null);
+
+        /** TransactionData blobId */
+        blobId?: (string|null);
+
+        /** TransactionData maturity */
+        maturity?: (number|null);
+
+        /** TransactionData policyType */
+        policyType?: (number|null);
+
+        /** TransactionData rawPayload */
+        rawPayload?: (string|null);
+
+        /** TransactionData scriptLength */
+        scriptLength?: (number|Long|null);
+
+        /** TransactionData scriptDataLength */
+        scriptDataLength?: (number|Long|null);
+
+        /** TransactionData storageSlotsCount */
+        storageSlotsCount?: (number|Long|null);
+
+        /** TransactionData proofSetCount */
+        proofSetCount?: (number|null);
+
+        /** TransactionData witnessesCount */
+        witnessesCount?: (number|null);
+
+        /** TransactionData inputsCount */
+        inputsCount?: (number|null);
+
+        /** TransactionData outputsCount */
+        outputsCount?: (number|null);
+    }
+
+    /** Represents a TransactionData. */
+    class TransactionData implements ITransactionData {
+
+        /**
+         * Constructs a new TransactionData.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: transactions.ITransactionData);
+
+        /** TransactionData id. */
+        public id: string;
+
+        /** TransactionData scriptGasLimit. */
+        public scriptGasLimit: (number|Long);
+
+        /** TransactionData inputAssetIds. */
+        public inputAssetIds: string[];
+
+        /** TransactionData inputContracts. */
+        public inputContracts: string[];
+
+        /** TransactionData inputContract. */
+        public inputContract?: (inputs.IInputContract|null);
+
+        /** TransactionData inputs. */
+        public inputs: inputs.IInput[];
+
+        /** TransactionData isScript. */
+        public isScript: boolean;
+
+        /** TransactionData isCreate. */
+        public isCreate: boolean;
+
+        /** TransactionData isMint. */
+        public isMint: boolean;
+
+        /** TransactionData isUpgrade. */
+        public isUpgrade: boolean;
+
+        /** TransactionData isUpload. */
+        public isUpload: boolean;
+
+        /** TransactionData isBlob. */
+        public isBlob: boolean;
+
+        /** TransactionData outputs. */
+        public outputs: outputs.IOutput[];
+
+        /** TransactionData outputContract. */
+        public outputContract?: (outputs.IOutputContract|null);
+
+        /** TransactionData mintAmount. */
+        public mintAmount: (number|Long);
+
+        /** TransactionData mintAssetId. */
+        public mintAssetId: string;
+
+        /** TransactionData mintGasPrice. */
+        public mintGasPrice: (number|Long);
+
+        /** TransactionData receiptsRoot. */
+        public receiptsRoot: string;
+
+        /** TransactionData status. */
+        public status: transactions.TransactionStatus;
+
+        /** TransactionData witnesses. */
+        public witnesses: string[];
+
+        /** TransactionData script. */
+        public script: string;
+
+        /** TransactionData scriptData. */
+        public scriptData: string;
+
+        /** TransactionData policies. */
+        public policies?: (transactions.IPolicy|null);
+
+        /** TransactionData salt. */
+        public salt: string;
+
+        /** TransactionData storageSlots. */
+        public storageSlots: string[];
+
+        /** TransactionData bytecodeWitnessIndex. */
+        public bytecodeWitnessIndex: number;
+
+        /** TransactionData bytecodeRoot. */
+        public bytecodeRoot: string;
+
+        /** TransactionData subsectionIndex. */
+        public subsectionIndex: number;
+
+        /** TransactionData subsectionsNumber. */
+        public subsectionsNumber: number;
+
+        /** TransactionData proofSet. */
+        public proofSet: string[];
+
+        /** TransactionData upgradePurpose. */
+        public upgradePurpose: number;
+
+        /** TransactionData blobId. */
+        public blobId: string;
+
+        /** TransactionData maturity. */
+        public maturity: number;
+
+        /** TransactionData policyType. */
+        public policyType: number;
+
+        /** TransactionData rawPayload. */
+        public rawPayload: string;
+
+        /** TransactionData scriptLength. */
+        public scriptLength: (number|Long);
+
+        /** TransactionData scriptDataLength. */
+        public scriptDataLength: (number|Long);
+
+        /** TransactionData storageSlotsCount. */
+        public storageSlotsCount: (number|Long);
+
+        /** TransactionData proofSetCount. */
+        public proofSetCount: number;
+
+        /** TransactionData witnessesCount. */
+        public witnessesCount: number;
+
+        /** TransactionData inputsCount. */
+        public inputsCount: number;
+
+        /** TransactionData outputsCount. */
+        public outputsCount: number;
+
+        /**
+         * Creates a new TransactionData instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns TransactionData instance
+         */
+        public static create(properties?: transactions.ITransactionData): transactions.TransactionData;
+
+        /**
+         * Encodes the specified TransactionData message. Does not implicitly {@link transactions.TransactionData.verify|verify} messages.
+         * @param message TransactionData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: transactions.ITransactionData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified TransactionData message, length delimited. Does not implicitly {@link transactions.TransactionData.verify|verify} messages.
+         * @param message TransactionData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: transactions.ITransactionData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a TransactionData message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns TransactionData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): transactions.TransactionData;
+
+        /**
+         * Decodes a TransactionData message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns TransactionData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): transactions.TransactionData;
+
+        /**
+         * Verifies a TransactionData message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a TransactionData message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns TransactionData
+         */
+        public static fromObject(object: { [k: string]: any }): transactions.TransactionData;
+
+        /**
+         * Creates a plain object from a TransactionData message. Also converts values to other types if specified.
+         * @param message TransactionData
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: transactions.TransactionData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this TransactionData to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for TransactionData
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
     /** Properties of a StorageSlot. */
     interface IStorageSlot {
 
@@ -4951,13 +6681,13 @@ export namespace transactions {
         subject?: (string|null);
 
         /** StorageSlot txId */
-        txId?: (Uint8Array|null);
+        txId?: (string|null);
 
         /** StorageSlot key */
-        key?: (Uint8Array|null);
+        key?: (string|null);
 
         /** StorageSlot value */
-        value?: (Uint8Array|null);
+        value?: (string|null);
     }
 
     /** Represents a StorageSlot. */
@@ -4973,13 +6703,13 @@ export namespace transactions {
         public subject: string;
 
         /** StorageSlot txId. */
-        public txId: Uint8Array;
+        public txId: string;
 
         /** StorageSlot key. */
-        public key: Uint8Array;
+        public key: string;
 
         /** StorageSlot value. */
-        public value: Uint8Array;
+        public value: string;
 
         /**
          * Creates a new StorageSlot instance using the specified properties.
@@ -5066,10 +6796,10 @@ export namespace transactions {
         subject?: (string|null);
 
         /** Witness txId */
-        txId?: (Uint8Array|null);
+        txId?: (string|null);
 
         /** Witness witnessData */
-        witnessData?: (Uint8Array|null);
+        witnessData?: (string|null);
 
         /** Witness witnessDataLength */
         witnessDataLength?: (number|null);
@@ -5088,10 +6818,10 @@ export namespace transactions {
         public subject: string;
 
         /** Witness txId. */
-        public txId: Uint8Array;
+        public txId: string;
 
         /** Witness witnessData. */
-        public witnessData: Uint8Array;
+        public witnessData: string;
 
         /** Witness witnessDataLength. */
         public witnessDataLength: number;
@@ -5181,10 +6911,10 @@ export namespace transactions {
         subject?: (string|null);
 
         /** ProofSet txId */
-        txId?: (Uint8Array|null);
+        txId?: (string|null);
 
         /** ProofSet proofHash */
-        proofHash?: (Uint8Array|null);
+        proofHash?: (string|null);
     }
 
     /** Represents a ProofSet. */
@@ -5200,10 +6930,10 @@ export namespace transactions {
         public subject: string;
 
         /** ProofSet txId. */
-        public txId: Uint8Array;
+        public txId: string;
 
         /** ProofSet proofHash. */
-        public proofHash: Uint8Array;
+        public proofHash: string;
 
         /**
          * Creates a new ProofSet instance using the specified properties.
@@ -5290,7 +7020,7 @@ export namespace transactions {
         subject?: (string|null);
 
         /** Policy txId */
-        txId?: (Uint8Array|null);
+        txId?: (string|null);
 
         /** Policy type */
         type?: (transactions.PolicyType|null);
@@ -5312,7 +7042,7 @@ export namespace transactions {
         public subject: string;
 
         /** Policy txId. */
-        public txId: Uint8Array;
+        public txId: string;
 
         /** Policy type. */
         public type: transactions.PolicyType;
@@ -5419,14 +7149,11 @@ export namespace utxos {
     /** Properties of an Utxo. */
     interface IUtxo {
 
-        /** Utxo subject */
-        subject?: (string|null);
-
-        /** Utxo utxoId */
-        utxoId?: (Uint8Array|null);
-
         /** Utxo type */
         type?: (utxos.UtxoType|null);
+
+        /** Utxo pointer */
+        pointer?: (pointers.IUtxoPointer|null);
 
         /** Utxo status */
         status?: (utxos.UtxoStatus|null);
@@ -5442,9 +7169,6 @@ export namespace utxos {
 
         /** Utxo metadata */
         metadata?: (common.IMetadata|null);
-
-        /** Utxo pointer */
-        pointer?: (pointers.IUtxoPointer|null);
     }
 
     /** Represents an Utxo. */
@@ -5456,14 +7180,11 @@ export namespace utxos {
          */
         constructor(properties?: utxos.IUtxo);
 
-        /** Utxo subject. */
-        public subject: string;
-
-        /** Utxo utxoId. */
-        public utxoId: Uint8Array;
-
         /** Utxo type. */
         public type: utxos.UtxoType;
+
+        /** Utxo pointer. */
+        public pointer?: (pointers.IUtxoPointer|null);
 
         /** Utxo status. */
         public status: utxos.UtxoStatus;
@@ -5480,11 +7201,8 @@ export namespace utxos {
         /** Utxo metadata. */
         public metadata?: (common.IMetadata|null);
 
-        /** Utxo pointer. */
-        public pointer?: (pointers.IUtxoPointer|null);
-
-        /** Utxo utxoData. */
-        public utxoData?: ("coin"|"contract"|"message");
+        /** Utxo data. */
+        public data?: ("coin"|"contract"|"message");
 
         /**
          * Creates a new Utxo instance using the specified properties.

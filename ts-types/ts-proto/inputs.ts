@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Metadata } from "./common";
-import { InputPointer, TxPointer } from "./pointers";
+import { InputPointer } from "./pointers";
 
 export const protobufPackage = "inputs";
 
@@ -57,8 +57,8 @@ export function inputTypeToJSON(object: InputType): string {
 }
 
 export interface Input {
-  subject: string;
   type: InputType;
+  pointer: InputPointer | undefined;
   coin?: InputCoin | undefined;
   contract?: InputContract | undefined;
   message?:
@@ -66,20 +66,18 @@ export interface Input {
     | undefined;
   /** Metadata */
   metadata: Metadata | undefined;
-  pointer: InputPointer | undefined;
 }
 
 export interface InputCoin {
   /** Fields matching fuel-core */
-  utxoId: Uint8Array;
-  owner: Uint8Array;
+  utxoId: string;
+  owner: string;
   amount: number;
-  assetId: Uint8Array;
-  txPointer: TxPointer | undefined;
+  assetId: string;
   witnessIndex: number;
   predicateGasUsed: number;
-  predicate: Uint8Array;
-  predicateData: Uint8Array;
+  predicate: string;
+  predicateData: string;
   /** Extra fields (not in fuel-core) */
   predicateLength: number;
   predicateDataLength: number;
@@ -88,26 +86,25 @@ export interface InputCoin {
 
 export interface InputContract {
   /** Fields matching fuel-core */
-  utxoId: Uint8Array;
-  balanceRoot: Uint8Array;
-  stateRoot: Uint8Array;
-  txPointer: TxPointer | undefined;
-  contractId: Uint8Array;
+  utxoId: string;
+  balanceRoot: string;
+  stateRoot: string;
+  contractId: string;
   /** Extra fields (not in fuel-core) */
   outputIndex: number;
 }
 
 export interface InputMessage {
   /** Fields matching fuel-core */
-  sender: Uint8Array;
-  recipient: Uint8Array;
+  sender: string;
+  recipient: string;
   amount: number;
-  nonce: Uint8Array;
+  nonce: string;
   witnessIndex: number;
   predicateGasUsed: number;
-  data: Uint8Array;
-  predicate: Uint8Array;
-  predicateData: Uint8Array;
+  data: string;
+  predicate: string;
+  predicateData: string;
   /** Extra fields (not in fuel-core) */
   dataLength: number;
   predicateLength: number;
@@ -115,24 +112,16 @@ export interface InputMessage {
 }
 
 function createBaseInput(): Input {
-  return {
-    subject: "",
-    type: 0,
-    coin: undefined,
-    contract: undefined,
-    message: undefined,
-    metadata: undefined,
-    pointer: undefined,
-  };
+  return { type: 0, pointer: undefined, coin: undefined, contract: undefined, message: undefined, metadata: undefined };
 }
 
 export const Input: MessageFns<Input> = {
   encode(message: Input, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
     if (message.type !== 0) {
-      writer.uint32(16).int32(message.type);
+      writer.uint32(8).int32(message.type);
+    }
+    if (message.pointer !== undefined) {
+      InputPointer.encode(message.pointer, writer.uint32(18).fork()).join();
     }
     if (message.coin !== undefined) {
       InputCoin.encode(message.coin, writer.uint32(26).fork()).join();
@@ -144,10 +133,7 @@ export const Input: MessageFns<Input> = {
       InputMessage.encode(message.message, writer.uint32(42).fork()).join();
     }
     if (message.metadata !== undefined) {
-      Metadata.encode(message.metadata, writer.uint32(58).fork()).join();
-    }
-    if (message.pointer !== undefined) {
-      InputPointer.encode(message.pointer, writer.uint32(66).fork()).join();
+      Metadata.encode(message.metadata, writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -160,19 +146,19 @@ export const Input: MessageFns<Input> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.subject = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
+          if (tag !== 8) {
             break;
           }
 
           message.type = reader.int32() as any;
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.pointer = InputPointer.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -199,20 +185,12 @@ export const Input: MessageFns<Input> = {
           message.message = InputMessage.decode(reader, reader.uint32());
           continue;
         }
-        case 7: {
-          if (tag !== 58) {
+        case 6: {
+          if (tag !== 50) {
             break;
           }
 
           message.metadata = Metadata.decode(reader, reader.uint32());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.pointer = InputPointer.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -226,23 +204,22 @@ export const Input: MessageFns<Input> = {
 
   fromJSON(object: any): Input {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       type: isSet(object.type) ? inputTypeFromJSON(object.type) : 0,
+      pointer: isSet(object.pointer) ? InputPointer.fromJSON(object.pointer) : undefined,
       coin: isSet(object.coin) ? InputCoin.fromJSON(object.coin) : undefined,
       contract: isSet(object.contract) ? InputContract.fromJSON(object.contract) : undefined,
       message: isSet(object.message) ? InputMessage.fromJSON(object.message) : undefined,
       metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
-      pointer: isSet(object.pointer) ? InputPointer.fromJSON(object.pointer) : undefined,
     };
   },
 
   toJSON(message: Input): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
     if (message.type !== 0) {
       obj.type = inputTypeToJSON(message.type);
+    }
+    if (message.pointer !== undefined) {
+      obj.pointer = InputPointer.toJSON(message.pointer);
     }
     if (message.coin !== undefined) {
       obj.coin = InputCoin.toJSON(message.coin);
@@ -256,9 +233,6 @@ export const Input: MessageFns<Input> = {
     if (message.metadata !== undefined) {
       obj.metadata = Metadata.toJSON(message.metadata);
     }
-    if (message.pointer !== undefined) {
-      obj.pointer = InputPointer.toJSON(message.pointer);
-    }
     return obj;
   },
 
@@ -267,8 +241,10 @@ export const Input: MessageFns<Input> = {
   },
   fromPartial<I extends Exact<DeepPartial<Input>, I>>(object: I): Input {
     const message = createBaseInput();
-    message.subject = object.subject ?? "";
     message.type = object.type ?? 0;
+    message.pointer = (object.pointer !== undefined && object.pointer !== null)
+      ? InputPointer.fromPartial(object.pointer)
+      : undefined;
     message.coin = (object.coin !== undefined && object.coin !== null) ? InputCoin.fromPartial(object.coin) : undefined;
     message.contract = (object.contract !== undefined && object.contract !== null)
       ? InputContract.fromPartial(object.contract)
@@ -279,24 +255,20 @@ export const Input: MessageFns<Input> = {
     message.metadata = (object.metadata !== undefined && object.metadata !== null)
       ? Metadata.fromPartial(object.metadata)
       : undefined;
-    message.pointer = (object.pointer !== undefined && object.pointer !== null)
-      ? InputPointer.fromPartial(object.pointer)
-      : undefined;
     return message;
   },
 };
 
 function createBaseInputCoin(): InputCoin {
   return {
-    utxoId: new Uint8Array(0),
-    owner: new Uint8Array(0),
+    utxoId: "",
+    owner: "",
     amount: 0,
-    assetId: new Uint8Array(0),
-    txPointer: undefined,
+    assetId: "",
     witnessIndex: 0,
     predicateGasUsed: 0,
-    predicate: new Uint8Array(0),
-    predicateData: new Uint8Array(0),
+    predicate: "",
+    predicateData: "",
     predicateLength: 0,
     predicateDataLength: 0,
     outputIndex: 0,
@@ -305,41 +277,38 @@ function createBaseInputCoin(): InputCoin {
 
 export const InputCoin: MessageFns<InputCoin> = {
   encode(message: InputCoin, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.utxoId.length !== 0) {
-      writer.uint32(10).bytes(message.utxoId);
+    if (message.utxoId !== "") {
+      writer.uint32(10).string(message.utxoId);
     }
-    if (message.owner.length !== 0) {
-      writer.uint32(18).bytes(message.owner);
+    if (message.owner !== "") {
+      writer.uint32(18).string(message.owner);
     }
     if (message.amount !== 0) {
       writer.uint32(24).int64(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      writer.uint32(34).bytes(message.assetId);
-    }
-    if (message.txPointer !== undefined) {
-      TxPointer.encode(message.txPointer, writer.uint32(42).fork()).join();
+    if (message.assetId !== "") {
+      writer.uint32(34).string(message.assetId);
     }
     if (message.witnessIndex !== 0) {
-      writer.uint32(48).int32(message.witnessIndex);
+      writer.uint32(40).int32(message.witnessIndex);
     }
     if (message.predicateGasUsed !== 0) {
-      writer.uint32(56).int64(message.predicateGasUsed);
+      writer.uint32(48).int64(message.predicateGasUsed);
     }
-    if (message.predicate.length !== 0) {
-      writer.uint32(66).bytes(message.predicate);
+    if (message.predicate !== "") {
+      writer.uint32(58).string(message.predicate);
     }
-    if (message.predicateData.length !== 0) {
-      writer.uint32(74).bytes(message.predicateData);
+    if (message.predicateData !== "") {
+      writer.uint32(66).string(message.predicateData);
     }
     if (message.predicateLength !== 0) {
-      writer.uint32(80).int64(message.predicateLength);
+      writer.uint32(72).int64(message.predicateLength);
     }
     if (message.predicateDataLength !== 0) {
-      writer.uint32(88).int64(message.predicateDataLength);
+      writer.uint32(80).int64(message.predicateDataLength);
     }
     if (message.outputIndex !== 0) {
-      writer.uint32(96).int32(message.outputIndex);
+      writer.uint32(88).int32(message.outputIndex);
     }
     return writer;
   },
@@ -356,7 +325,7 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.utxoId = reader.bytes();
+          message.utxoId = reader.string();
           continue;
         }
         case 2: {
@@ -364,7 +333,7 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.owner = reader.bytes();
+          message.owner = reader.string();
           continue;
         }
         case 3: {
@@ -380,15 +349,15 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.assetId = reader.string();
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 40) {
             break;
           }
 
-          message.txPointer = TxPointer.decode(reader, reader.uint32());
+          message.witnessIndex = reader.int32();
           continue;
         }
         case 6: {
@@ -396,15 +365,15 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.witnessIndex = reader.int32();
+          message.predicateGasUsed = longToNumber(reader.int64());
           continue;
         }
         case 7: {
-          if (tag !== 56) {
+          if (tag !== 58) {
             break;
           }
 
-          message.predicateGasUsed = longToNumber(reader.int64());
+          message.predicate = reader.string();
           continue;
         }
         case 8: {
@@ -412,15 +381,15 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.predicate = reader.bytes();
+          message.predicateData = reader.string();
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 72) {
             break;
           }
 
-          message.predicateData = reader.bytes();
+          message.predicateLength = longToNumber(reader.int64());
           continue;
         }
         case 10: {
@@ -428,19 +397,11 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.predicateLength = longToNumber(reader.int64());
+          message.predicateDataLength = longToNumber(reader.int64());
           continue;
         }
         case 11: {
           if (tag !== 88) {
-            break;
-          }
-
-          message.predicateDataLength = longToNumber(reader.int64());
-          continue;
-        }
-        case 12: {
-          if (tag !== 96) {
             break;
           }
 
@@ -458,15 +419,14 @@ export const InputCoin: MessageFns<InputCoin> = {
 
   fromJSON(object: any): InputCoin {
     return {
-      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
-      owner: isSet(object.owner) ? bytesFromBase64(object.owner) : new Uint8Array(0),
+      utxoId: isSet(object.utxoId) ? globalThis.String(object.utxoId) : "",
+      owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
-      txPointer: isSet(object.txPointer) ? TxPointer.fromJSON(object.txPointer) : undefined,
+      assetId: isSet(object.assetId) ? globalThis.String(object.assetId) : "",
       witnessIndex: isSet(object.witnessIndex) ? globalThis.Number(object.witnessIndex) : 0,
       predicateGasUsed: isSet(object.predicateGasUsed) ? globalThis.Number(object.predicateGasUsed) : 0,
-      predicate: isSet(object.predicate) ? bytesFromBase64(object.predicate) : new Uint8Array(0),
-      predicateData: isSet(object.predicateData) ? bytesFromBase64(object.predicateData) : new Uint8Array(0),
+      predicate: isSet(object.predicate) ? globalThis.String(object.predicate) : "",
+      predicateData: isSet(object.predicateData) ? globalThis.String(object.predicateData) : "",
       predicateLength: isSet(object.predicateLength) ? globalThis.Number(object.predicateLength) : 0,
       predicateDataLength: isSet(object.predicateDataLength) ? globalThis.Number(object.predicateDataLength) : 0,
       outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
@@ -475,20 +435,17 @@ export const InputCoin: MessageFns<InputCoin> = {
 
   toJSON(message: InputCoin): unknown {
     const obj: any = {};
-    if (message.utxoId.length !== 0) {
-      obj.utxoId = base64FromBytes(message.utxoId);
+    if (message.utxoId !== "") {
+      obj.utxoId = message.utxoId;
     }
-    if (message.owner.length !== 0) {
-      obj.owner = base64FromBytes(message.owner);
+    if (message.owner !== "") {
+      obj.owner = message.owner;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
-    if (message.assetId.length !== 0) {
-      obj.assetId = base64FromBytes(message.assetId);
-    }
-    if (message.txPointer !== undefined) {
-      obj.txPointer = TxPointer.toJSON(message.txPointer);
+    if (message.assetId !== "") {
+      obj.assetId = message.assetId;
     }
     if (message.witnessIndex !== 0) {
       obj.witnessIndex = Math.round(message.witnessIndex);
@@ -496,11 +453,11 @@ export const InputCoin: MessageFns<InputCoin> = {
     if (message.predicateGasUsed !== 0) {
       obj.predicateGasUsed = Math.round(message.predicateGasUsed);
     }
-    if (message.predicate.length !== 0) {
-      obj.predicate = base64FromBytes(message.predicate);
+    if (message.predicate !== "") {
+      obj.predicate = message.predicate;
     }
-    if (message.predicateData.length !== 0) {
-      obj.predicateData = base64FromBytes(message.predicateData);
+    if (message.predicateData !== "") {
+      obj.predicateData = message.predicateData;
     }
     if (message.predicateLength !== 0) {
       obj.predicateLength = Math.round(message.predicateLength);
@@ -519,17 +476,14 @@ export const InputCoin: MessageFns<InputCoin> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputCoin>, I>>(object: I): InputCoin {
     const message = createBaseInputCoin();
-    message.utxoId = object.utxoId ?? new Uint8Array(0);
-    message.owner = object.owner ?? new Uint8Array(0);
+    message.utxoId = object.utxoId ?? "";
+    message.owner = object.owner ?? "";
     message.amount = object.amount ?? 0;
-    message.assetId = object.assetId ?? new Uint8Array(0);
-    message.txPointer = (object.txPointer !== undefined && object.txPointer !== null)
-      ? TxPointer.fromPartial(object.txPointer)
-      : undefined;
+    message.assetId = object.assetId ?? "";
     message.witnessIndex = object.witnessIndex ?? 0;
     message.predicateGasUsed = object.predicateGasUsed ?? 0;
-    message.predicate = object.predicate ?? new Uint8Array(0);
-    message.predicateData = object.predicateData ?? new Uint8Array(0);
+    message.predicate = object.predicate ?? "";
+    message.predicateData = object.predicateData ?? "";
     message.predicateLength = object.predicateLength ?? 0;
     message.predicateDataLength = object.predicateDataLength ?? 0;
     message.outputIndex = object.outputIndex ?? 0;
@@ -538,35 +492,25 @@ export const InputCoin: MessageFns<InputCoin> = {
 };
 
 function createBaseInputContract(): InputContract {
-  return {
-    utxoId: new Uint8Array(0),
-    balanceRoot: new Uint8Array(0),
-    stateRoot: new Uint8Array(0),
-    txPointer: undefined,
-    contractId: new Uint8Array(0),
-    outputIndex: 0,
-  };
+  return { utxoId: "", balanceRoot: "", stateRoot: "", contractId: "", outputIndex: 0 };
 }
 
 export const InputContract: MessageFns<InputContract> = {
   encode(message: InputContract, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.utxoId.length !== 0) {
-      writer.uint32(10).bytes(message.utxoId);
+    if (message.utxoId !== "") {
+      writer.uint32(10).string(message.utxoId);
     }
-    if (message.balanceRoot.length !== 0) {
-      writer.uint32(18).bytes(message.balanceRoot);
+    if (message.balanceRoot !== "") {
+      writer.uint32(18).string(message.balanceRoot);
     }
-    if (message.stateRoot.length !== 0) {
-      writer.uint32(26).bytes(message.stateRoot);
+    if (message.stateRoot !== "") {
+      writer.uint32(26).string(message.stateRoot);
     }
-    if (message.txPointer !== undefined) {
-      TxPointer.encode(message.txPointer, writer.uint32(34).fork()).join();
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(42).bytes(message.contractId);
+    if (message.contractId !== "") {
+      writer.uint32(34).string(message.contractId);
     }
     if (message.outputIndex !== 0) {
-      writer.uint32(48).int32(message.outputIndex);
+      writer.uint32(40).int32(message.outputIndex);
     }
     return writer;
   },
@@ -583,7 +527,7 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.utxoId = reader.bytes();
+          message.utxoId = reader.string();
           continue;
         }
         case 2: {
@@ -591,7 +535,7 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.balanceRoot = reader.bytes();
+          message.balanceRoot = reader.string();
           continue;
         }
         case 3: {
@@ -599,7 +543,7 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.stateRoot = reader.bytes();
+          message.stateRoot = reader.string();
           continue;
         }
         case 4: {
@@ -607,19 +551,11 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.txPointer = TxPointer.decode(reader, reader.uint32());
+          message.contractId = reader.string();
           continue;
         }
         case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.contractId = reader.bytes();
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
+          if (tag !== 40) {
             break;
           }
 
@@ -637,31 +573,27 @@ export const InputContract: MessageFns<InputContract> = {
 
   fromJSON(object: any): InputContract {
     return {
-      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
-      balanceRoot: isSet(object.balanceRoot) ? bytesFromBase64(object.balanceRoot) : new Uint8Array(0),
-      stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
-      txPointer: isSet(object.txPointer) ? TxPointer.fromJSON(object.txPointer) : undefined,
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      utxoId: isSet(object.utxoId) ? globalThis.String(object.utxoId) : "",
+      balanceRoot: isSet(object.balanceRoot) ? globalThis.String(object.balanceRoot) : "",
+      stateRoot: isSet(object.stateRoot) ? globalThis.String(object.stateRoot) : "",
+      contractId: isSet(object.contractId) ? globalThis.String(object.contractId) : "",
       outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
     };
   },
 
   toJSON(message: InputContract): unknown {
     const obj: any = {};
-    if (message.utxoId.length !== 0) {
-      obj.utxoId = base64FromBytes(message.utxoId);
+    if (message.utxoId !== "") {
+      obj.utxoId = message.utxoId;
     }
-    if (message.balanceRoot.length !== 0) {
-      obj.balanceRoot = base64FromBytes(message.balanceRoot);
+    if (message.balanceRoot !== "") {
+      obj.balanceRoot = message.balanceRoot;
     }
-    if (message.stateRoot.length !== 0) {
-      obj.stateRoot = base64FromBytes(message.stateRoot);
+    if (message.stateRoot !== "") {
+      obj.stateRoot = message.stateRoot;
     }
-    if (message.txPointer !== undefined) {
-      obj.txPointer = TxPointer.toJSON(message.txPointer);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.contractId !== "") {
+      obj.contractId = message.contractId;
     }
     if (message.outputIndex !== 0) {
       obj.outputIndex = Math.round(message.outputIndex);
@@ -674,13 +606,10 @@ export const InputContract: MessageFns<InputContract> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputContract>, I>>(object: I): InputContract {
     const message = createBaseInputContract();
-    message.utxoId = object.utxoId ?? new Uint8Array(0);
-    message.balanceRoot = object.balanceRoot ?? new Uint8Array(0);
-    message.stateRoot = object.stateRoot ?? new Uint8Array(0);
-    message.txPointer = (object.txPointer !== undefined && object.txPointer !== null)
-      ? TxPointer.fromPartial(object.txPointer)
-      : undefined;
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.utxoId = object.utxoId ?? "";
+    message.balanceRoot = object.balanceRoot ?? "";
+    message.stateRoot = object.stateRoot ?? "";
+    message.contractId = object.contractId ?? "";
     message.outputIndex = object.outputIndex ?? 0;
     return message;
   },
@@ -688,15 +617,15 @@ export const InputContract: MessageFns<InputContract> = {
 
 function createBaseInputMessage(): InputMessage {
   return {
-    sender: new Uint8Array(0),
-    recipient: new Uint8Array(0),
+    sender: "",
+    recipient: "",
     amount: 0,
-    nonce: new Uint8Array(0),
+    nonce: "",
     witnessIndex: 0,
     predicateGasUsed: 0,
-    data: new Uint8Array(0),
-    predicate: new Uint8Array(0),
-    predicateData: new Uint8Array(0),
+    data: "",
+    predicate: "",
+    predicateData: "",
     dataLength: 0,
     predicateLength: 0,
     predicateDataLength: 0,
@@ -705,17 +634,17 @@ function createBaseInputMessage(): InputMessage {
 
 export const InputMessage: MessageFns<InputMessage> = {
   encode(message: InputMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.sender.length !== 0) {
-      writer.uint32(10).bytes(message.sender);
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
     }
-    if (message.recipient.length !== 0) {
-      writer.uint32(18).bytes(message.recipient);
+    if (message.recipient !== "") {
+      writer.uint32(18).string(message.recipient);
     }
     if (message.amount !== 0) {
       writer.uint32(24).int64(message.amount);
     }
-    if (message.nonce.length !== 0) {
-      writer.uint32(34).bytes(message.nonce);
+    if (message.nonce !== "") {
+      writer.uint32(34).string(message.nonce);
     }
     if (message.witnessIndex !== 0) {
       writer.uint32(40).int32(message.witnessIndex);
@@ -723,14 +652,14 @@ export const InputMessage: MessageFns<InputMessage> = {
     if (message.predicateGasUsed !== 0) {
       writer.uint32(48).int64(message.predicateGasUsed);
     }
-    if (message.data.length !== 0) {
-      writer.uint32(58).bytes(message.data);
+    if (message.data !== "") {
+      writer.uint32(58).string(message.data);
     }
-    if (message.predicate.length !== 0) {
-      writer.uint32(66).bytes(message.predicate);
+    if (message.predicate !== "") {
+      writer.uint32(66).string(message.predicate);
     }
-    if (message.predicateData.length !== 0) {
-      writer.uint32(74).bytes(message.predicateData);
+    if (message.predicateData !== "") {
+      writer.uint32(74).string(message.predicateData);
     }
     if (message.dataLength !== 0) {
       writer.uint32(80).int32(message.dataLength);
@@ -756,7 +685,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.sender = reader.bytes();
+          message.sender = reader.string();
           continue;
         }
         case 2: {
@@ -764,7 +693,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.recipient = reader.bytes();
+          message.recipient = reader.string();
           continue;
         }
         case 3: {
@@ -780,7 +709,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.nonce = reader.bytes();
+          message.nonce = reader.string();
           continue;
         }
         case 5: {
@@ -804,7 +733,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.data = reader.bytes();
+          message.data = reader.string();
           continue;
         }
         case 8: {
@@ -812,7 +741,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.predicate = reader.bytes();
+          message.predicate = reader.string();
           continue;
         }
         case 9: {
@@ -820,7 +749,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.predicateData = reader.bytes();
+          message.predicateData = reader.string();
           continue;
         }
         case 10: {
@@ -858,15 +787,15 @@ export const InputMessage: MessageFns<InputMessage> = {
 
   fromJSON(object: any): InputMessage {
     return {
-      sender: isSet(object.sender) ? bytesFromBase64(object.sender) : new Uint8Array(0),
-      recipient: isSet(object.recipient) ? bytesFromBase64(object.recipient) : new Uint8Array(0),
+      sender: isSet(object.sender) ? globalThis.String(object.sender) : "",
+      recipient: isSet(object.recipient) ? globalThis.String(object.recipient) : "",
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      nonce: isSet(object.nonce) ? bytesFromBase64(object.nonce) : new Uint8Array(0),
+      nonce: isSet(object.nonce) ? globalThis.String(object.nonce) : "",
       witnessIndex: isSet(object.witnessIndex) ? globalThis.Number(object.witnessIndex) : 0,
       predicateGasUsed: isSet(object.predicateGasUsed) ? globalThis.Number(object.predicateGasUsed) : 0,
-      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
-      predicate: isSet(object.predicate) ? bytesFromBase64(object.predicate) : new Uint8Array(0),
-      predicateData: isSet(object.predicateData) ? bytesFromBase64(object.predicateData) : new Uint8Array(0),
+      data: isSet(object.data) ? globalThis.String(object.data) : "",
+      predicate: isSet(object.predicate) ? globalThis.String(object.predicate) : "",
+      predicateData: isSet(object.predicateData) ? globalThis.String(object.predicateData) : "",
       dataLength: isSet(object.dataLength) ? globalThis.Number(object.dataLength) : 0,
       predicateLength: isSet(object.predicateLength) ? globalThis.Number(object.predicateLength) : 0,
       predicateDataLength: isSet(object.predicateDataLength) ? globalThis.Number(object.predicateDataLength) : 0,
@@ -875,17 +804,17 @@ export const InputMessage: MessageFns<InputMessage> = {
 
   toJSON(message: InputMessage): unknown {
     const obj: any = {};
-    if (message.sender.length !== 0) {
-      obj.sender = base64FromBytes(message.sender);
+    if (message.sender !== "") {
+      obj.sender = message.sender;
     }
-    if (message.recipient.length !== 0) {
-      obj.recipient = base64FromBytes(message.recipient);
+    if (message.recipient !== "") {
+      obj.recipient = message.recipient;
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
-    if (message.nonce.length !== 0) {
-      obj.nonce = base64FromBytes(message.nonce);
+    if (message.nonce !== "") {
+      obj.nonce = message.nonce;
     }
     if (message.witnessIndex !== 0) {
       obj.witnessIndex = Math.round(message.witnessIndex);
@@ -893,14 +822,14 @@ export const InputMessage: MessageFns<InputMessage> = {
     if (message.predicateGasUsed !== 0) {
       obj.predicateGasUsed = Math.round(message.predicateGasUsed);
     }
-    if (message.data.length !== 0) {
-      obj.data = base64FromBytes(message.data);
+    if (message.data !== "") {
+      obj.data = message.data;
     }
-    if (message.predicate.length !== 0) {
-      obj.predicate = base64FromBytes(message.predicate);
+    if (message.predicate !== "") {
+      obj.predicate = message.predicate;
     }
-    if (message.predicateData.length !== 0) {
-      obj.predicateData = base64FromBytes(message.predicateData);
+    if (message.predicateData !== "") {
+      obj.predicateData = message.predicateData;
     }
     if (message.dataLength !== 0) {
       obj.dataLength = Math.round(message.dataLength);
@@ -919,46 +848,21 @@ export const InputMessage: MessageFns<InputMessage> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputMessage>, I>>(object: I): InputMessage {
     const message = createBaseInputMessage();
-    message.sender = object.sender ?? new Uint8Array(0);
-    message.recipient = object.recipient ?? new Uint8Array(0);
+    message.sender = object.sender ?? "";
+    message.recipient = object.recipient ?? "";
     message.amount = object.amount ?? 0;
-    message.nonce = object.nonce ?? new Uint8Array(0);
+    message.nonce = object.nonce ?? "";
     message.witnessIndex = object.witnessIndex ?? 0;
     message.predicateGasUsed = object.predicateGasUsed ?? 0;
-    message.data = object.data ?? new Uint8Array(0);
-    message.predicate = object.predicate ?? new Uint8Array(0);
-    message.predicateData = object.predicateData ?? new Uint8Array(0);
+    message.data = object.data ?? "";
+    message.predicate = object.predicate ?? "";
+    message.predicateData = object.predicateData ?? "";
     message.dataLength = object.dataLength ?? 0;
     message.predicateLength = object.predicateLength ?? 0;
     message.predicateDataLength = object.predicateDataLength ?? 0;
     return message;
   },
 };
-
-function bytesFromBase64(b64: string): Uint8Array {
-  if ((globalThis as any).Buffer) {
-    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
-  } else {
-    const bin = globalThis.atob(b64);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; ++i) {
-      arr[i] = bin.charCodeAt(i);
-    }
-    return arr;
-  }
-}
-
-function base64FromBytes(arr: Uint8Array): string {
-  if ((globalThis as any).Buffer) {
-    return globalThis.Buffer.from(arr).toString("base64");
-  } else {
-    const bin: string[] = [];
-    arr.forEach((byte) => {
-      bin.push(globalThis.String.fromCharCode(byte));
-    });
-    return globalThis.btoa(bin.join(""));
-  }
-}
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
