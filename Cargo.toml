@@ -14,9 +14,14 @@ strum = { version = "0.27.1", features = ["derive"] }
 tonic = { version = "0.12.3", optional = true }
 serde = { version = "1.0.218", features = ["derive"] }
 serde_json = "1.0.140"
+derive_builder = "0.20.2"
+sqlx = { version = "0.8.3", features = ["runtime-tokio", "postgres", "json", "derive"] }
+proto-mapper = {version = "0.1.2", features = ["prost"] } 
+derive_more = { version = "2.0.1", features = ["full"] }
 
 [build-dependencies]
 prost-build = "0.13.5"
 prost-build-config = "0.6.3"
+proto-builder-trait = "0.6.2"
 serde_yaml = "0.9.34+deprecated"
 tonic-build = "0.12.3"

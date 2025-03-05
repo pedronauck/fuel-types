@@ -2,6 +2,8 @@ use std::io::Result;
 use std::path::Path;
 use std::process::Command;
 
+use proto_builder_trait::prost::BuilderAttributes;
+
 fn build_rust() -> Result<()> {
     let rust_out_dir = Path::new("src/proto");
     std::fs::create_dir_all(rust_out_dir)?;
@@ -24,7 +26,39 @@ fn build_rust() -> Result<()> {
     // Only add serde derives and the macro call
     config
         .type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
-        .message_attribute(".", "#[serde(default)]")
+        .message_attribute(".", "#[serde(rename_all = \"camelCase\")]")
+        .enum_attribute(".", "#[serde(rename_all = \"SCREAMING_SNAKE_CASE\")]")
+        .with_field_attributes(
+            &[
+                "accounts.Predicate.type",
+                "accounts.Contract.type",
+                "accounts.Script.type",
+                "blocks.BlockConsensusGenesis.type",
+                "blocks.BlockConsensusPoa.type",
+                "assets.Asset.type",
+                "inputs.Input.type",
+                "outputs.Output.type",
+                "receipts.Receipt.type",
+                "transactions.Transaction.type",
+                "utxos.Utxo.type",
+            ],
+            &["#[serde(rename = \"type\")]"],
+        )
+        .with_field_attributes(
+            &[
+                "accounts.Predicate.data",
+                "accounts.Contract.data",
+                "accounts.Script.data",
+                "assets.Asset.data",
+                "blocks.Block.data",
+                "inputs.Input.data",
+                "outputs.Output.data",
+                "receipts.Receipt.data",
+                "transactions.Transaction.data",
+                "utxos.Utxo.data",
+            ],
+            &["#[serde(flatten)]"],
+        )
         .out_dir(rust_out_dir)
         .compile_protos(&proto_files, &["proto/"])?;
 
@@ -70,6 +104,6 @@ fn _build_ts() -> Result<()> {
 
 fn main() -> Result<()> {
     build_rust()?;
-    // _build_ts()?;
+    // build_ts()?;
     Ok(())
 }

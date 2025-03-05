@@ -1,56 +1,44 @@
 // Re-export all generated protobuf modules from the proto directory
-mod accounts {
+pub mod accounts {
     include!("proto/accounts.rs");
 }
-mod assets {
+pub mod assets {
     include!("proto/assets.rs");
 }
-mod blocks {
+pub mod blocks {
     include!("proto/blocks.rs");
 }
-mod common {
+pub mod common {
     include!("proto/common.rs");
 }
-mod inputs {
+pub mod inputs {
     include!("proto/inputs.rs");
 }
-mod outputs {
+pub mod outputs {
     include!("proto/outputs.rs");
 }
-mod pointers {
+pub mod pointers {
     include!("proto/pointers.rs");
 }
-mod receipts {
+pub mod receipts {
     include!("proto/receipts.rs");
 }
-mod transactions {
+pub mod transactions {
     include!("proto/transactions.rs");
 }
-mod utxos {
+pub mod utxos {
     include!("proto/utxos.rs");
 }
 
-// Re-export all types
-pub use accounts::*;
-pub use assets::*;
-pub use blocks::*;
-pub use common::*;
-pub use inputs::*;
-pub use outputs::*;
-pub use pointers::*;
-pub use receipts::*;
-pub use transactions::*;
-pub use utxos::*;
-
 use crate::impl_serializable;
 
-impl_serializable!(Asset);
-impl_serializable!(Predicate);
-impl_serializable!(Contract);
-impl_serializable!(Script);
-impl_serializable!(Block);
-impl_serializable!(Transaction);
-impl_serializable!(Input);
-impl_serializable!(Output);
-impl_serializable!(Receipt);
-impl_serializable!(Utxo);
+impl_serializable!(assets::Asset);
+impl_serializable!(accounts::Predicate);
+impl_serializable!(accounts::Contract);
+impl_serializable!(accounts::Script);
+impl_serializable!(blocks::Block);
+impl_serializable!(transactions::Transaction);
+impl_serializable!(inputs::Input);
+impl_serializable!(outputs::Output);
+impl_serializable!(receipts::Receipt);
+impl_serializable!(utxos::Utxo);
