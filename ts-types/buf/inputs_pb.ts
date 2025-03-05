@@ -4,17 +4,17 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { InputPointer } from "./pointers_pb";
+import type { InputPointer, TxPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file inputs.proto.
  */
 export const file_inputs: GenFile = /*@__PURE__*/
-  fileDesc("CgxpbnB1dHMucHJvdG8SBmlucHV0cyKWAwoFSW5wdXQSDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAwSEAoIdHhfaW5kZXgYBCABKAUSEwoLaW5wdXRfaW5kZXgYBSABKAUSJQoKaW5wdXRfdHlwZRgGIAEoDjIRLmlucHV0cy5JbnB1dFR5cGUSIQoEY29pbhgHIAEoCzIRLmlucHV0cy5JbnB1dENvaW5IABIpCghjb250cmFjdBgIIAEoCzIVLmlucHV0cy5JbnB1dENvbnRyYWN0SAASJwoHbWVzc2FnZRgJIAEoCzIULmlucHV0cy5JbnB1dE1lc3NhZ2VIABIuCgpjcmVhdGVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEicKB3BvaW50ZXIYDCABKAsyFi5wb2ludGVycy5JbnB1dFBvaW50ZXJCBwoFaW5wdXQiwgMKCUlucHV0Q29pbhIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEg4KBmFtb3VudBgDIAEoAxIQCghhc3NldF9pZBgEIAEoDBIVCg1vd25lcl9hZGRyZXNzGAUgASgMEhQKDG91dHB1dF9pbmRleBgGIAEoBRIRCglwcmVkaWNhdGUYByABKAwSFgoOcHJlZGljYXRlX2RhdGEYCCABKAwSGgoScHJlZGljYXRlX2dhc191c2VkGAkgASgDEhgKEHByZWRpY2F0ZV9sZW5ndGgYCiABKAMSHQoVcHJlZGljYXRlX2RhdGFfbGVuZ3RoGAsgASgDEh8KF3R4X3BvaW50ZXJfYmxvY2tfaGVpZ2h0GAwgASgDEhsKE3R4X3BvaW50ZXJfdHhfaW5kZXgYDSABKAUSDwoHdXR4b19pZBgOIAEoDBIVCg13aXRuZXNzX2luZGV4GA8gASgFEi4KCmNyZWF0ZWRfYXQYECABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgRIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAitQIKDUlucHV0Q29udHJhY3QSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBIUCgxiYWxhbmNlX3Jvb3QYAyABKAwSEwoLY29udHJhY3RfaWQYBCABKAwSFAoMb3V0cHV0X2luZGV4GAUgASgFEhIKCnN0YXRlX3Jvb3QYBiABKAwSHwoXdHhfcG9pbnRlcl9ibG9ja19oZWlnaHQYByABKAMSGwoTdHhfcG9pbnRlcl90eF9pbmRleBgIIAEoBRIPCgd1dHhvX2lkGAkgASgMEi4KCmNyZWF0ZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAinAMKDElucHV0TWVzc2FnZRIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEg4KBmFtb3VudBgDIAEoAxIMCgRkYXRhGAQgASgMEhMKC2RhdGFfbGVuZ3RoGAUgASgFEg0KBW5vbmNlGAYgASgMEhEKCXByZWRpY2F0ZRgHIAEoDBIYChBwcmVkaWNhdGVfbGVuZ3RoGAggASgFEhYKDnByZWRpY2F0ZV9kYXRhGAkgASgMEh0KFXByZWRpY2F0ZV9kYXRhX2xlbmd0aBgKIAEoBRIaChJwcmVkaWNhdGVfZ2FzX3VzZWQYCyABKAMSGQoRcmVjaXBpZW50X2FkZHJlc3MYDCABKAwSFgoOc2VuZGVyX2FkZHJlc3MYDSABKAwSFQoNd2l0bmVzc19pbmRleBgOIAEoBRIuCgpjcmVhdGVkX2F0GA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYECABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKjAKCUlucHV0VHlwZRIMCghDT05UUkFDVBAAEggKBENPSU4QARILCgdNRVNTQUdFEAJiBnByb3RvMw", [file_google_protobuf_timestamp, file_pointers]);
+  fileDesc("CgxpbnB1dHMucHJvdG8SBmlucHV0cyKGAgoFSW5wdXQSDwoHc3ViamVjdBgBIAEoCRIfCgR0eXBlGAIgASgOMhEuaW5wdXRzLklucHV0VHlwZRIhCgRjb2luGAMgASgLMhEuaW5wdXRzLklucHV0Q29pbkgAEikKCGNvbnRyYWN0GAQgASgLMhUuaW5wdXRzLklucHV0Q29udHJhY3RIABInCgdtZXNzYWdlGAUgASgLMhQuaW5wdXRzLklucHV0TWVzc2FnZUgAEiIKCG1ldGFkYXRhGAcgASgLMhAuY29tbW9uLk1ldGFkYXRhEicKB3BvaW50ZXIYCCABKAsyFi5wb2ludGVycy5JbnB1dFBvaW50ZXJCBwoFaW5wdXQiowIKCUlucHV0Q29pbhIPCgd1dHhvX2lkGAEgASgMEg0KBW93bmVyGAIgASgMEg4KBmFtb3VudBgDIAEoAxIQCghhc3NldF9pZBgEIAEoDBInCgp0eF9wb2ludGVyGAUgASgLMhMucG9pbnRlcnMuVHhQb2ludGVyEhUKDXdpdG5lc3NfaW5kZXgYBiABKAUSGgoScHJlZGljYXRlX2dhc191c2VkGAcgASgDEhEKCXByZWRpY2F0ZRgIIAEoDBIWCg5wcmVkaWNhdGVfZGF0YRgJIAEoDBIYChBwcmVkaWNhdGVfbGVuZ3RoGAogASgDEh0KFXByZWRpY2F0ZV9kYXRhX2xlbmd0aBgLIAEoAxIUCgxvdXRwdXRfaW5kZXgYDCABKAUingEKDUlucHV0Q29udHJhY3QSDwoHdXR4b19pZBgBIAEoDBIUCgxiYWxhbmNlX3Jvb3QYAiABKAwSEgoKc3RhdGVfcm9vdBgDIAEoDBInCgp0eF9wb2ludGVyGAQgASgLMhMucG9pbnRlcnMuVHhQb2ludGVyEhMKC2NvbnRyYWN0X2lkGAUgASgMEhQKDG91dHB1dF9pbmRleBgGIAEoBSKKAgoMSW5wdXRNZXNzYWdlEg4KBnNlbmRlchgBIAEoDBIRCglyZWNpcGllbnQYAiABKAwSDgoGYW1vdW50GAMgASgDEg0KBW5vbmNlGAQgASgMEhUKDXdpdG5lc3NfaW5kZXgYBSABKAUSGgoScHJlZGljYXRlX2dhc191c2VkGAYgASgDEgwKBGRhdGEYByABKAwSEQoJcHJlZGljYXRlGAggASgMEhYKDnByZWRpY2F0ZV9kYXRhGAkgASgMEhMKC2RhdGFfbGVuZ3RoGAogASgFEhgKEHByZWRpY2F0ZV9sZW5ndGgYCyABKAUSHQoVcHJlZGljYXRlX2RhdGFfbGVuZ3RoGAwgASgFKkgKCUlucHV0VHlwZRIWChJVTktOT1dOX0lOUFVUX1RZUEUQABIMCghDT05UUkFDVBABEggKBENPSU4QAhILCgdNRVNTQUdFEANiBnByb3RvMw", [file_pointers, file_common]);
 
 /**
  * @generated from message inputs.Input
@@ -26,50 +26,28 @@ export type Input = Message<"inputs.Input"> & {
   subject: string;
 
   /**
-   * @generated from field: int64 block_height = 2;
+   * @generated from field: inputs.InputType type = 2;
    */
-  blockHeight: bigint;
+  type: InputType;
 
   /**
-   * @generated from field: bytes tx_id = 3;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int32 tx_index = 4;
-   */
-  txIndex: number;
-
-  /**
-   * @generated from field: int32 input_index = 5;
-   */
-  inputIndex: number;
-
-  /**
-   * @generated from field: inputs.InputType input_type = 6;
-   */
-  inputType: InputType;
-
-  /**
-   * Specific input type
-   *
    * @generated from oneof inputs.Input.input
    */
   input: {
     /**
-     * @generated from field: inputs.InputCoin coin = 7;
+     * @generated from field: inputs.InputCoin coin = 3;
      */
     value: InputCoin;
     case: "coin";
   } | {
     /**
-     * @generated from field: inputs.InputContract contract = 8;
+     * @generated from field: inputs.InputContract contract = 4;
      */
     value: InputContract;
     case: "contract";
   } | {
     /**
-     * @generated from field: inputs.InputMessage message = 9;
+     * @generated from field: inputs.InputMessage message = 5;
      */
     value: InputMessage;
     case: "message";
@@ -78,17 +56,12 @@ export type Input = Message<"inputs.Input"> & {
   /**
    * Metadata
    *
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
+   * @generated from field: common.Metadata metadata = 7;
    */
-  createdAt?: Timestamp;
+  metadata?: Metadata;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 11;
-   */
-  publishedAt?: Timestamp;
-
-  /**
-   * @generated from field: pointers.InputPointer pointer = 12;
+   * @generated from field: pointers.InputPointer pointer = 8;
    */
   pointer?: InputPointer;
 };
@@ -105,14 +78,16 @@ export const InputSchema: GenMessage<Input> = /*@__PURE__*/
  */
 export type InputCoin = Message<"inputs.InputCoin"> & {
   /**
-   * @generated from field: string subject = 1;
+   * Fields matching fuel-core
+   *
+   * @generated from field: bytes utxo_id = 1;
    */
-  subject: string;
+  utxoId: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: bytes owner = 2;
    */
-  txId: Uint8Array;
+  owner: Uint8Array;
 
   /**
    * @generated from field: int64 amount = 3;
@@ -125,31 +100,33 @@ export type InputCoin = Message<"inputs.InputCoin"> & {
   assetId: Uint8Array;
 
   /**
-   * @generated from field: bytes owner_address = 5;
+   * @generated from field: pointers.TxPointer tx_pointer = 5;
    */
-  ownerAddress: Uint8Array;
+  txPointer?: TxPointer;
 
   /**
-   * @generated from field: int32 output_index = 6;
+   * @generated from field: int32 witness_index = 6;
    */
-  outputIndex: number;
+  witnessIndex: number;
 
   /**
-   * @generated from field: bytes predicate = 7;
-   */
-  predicate: Uint8Array;
-
-  /**
-   * @generated from field: bytes predicate_data = 8;
-   */
-  predicateData: Uint8Array;
-
-  /**
-   * @generated from field: int64 predicate_gas_used = 9;
+   * @generated from field: int64 predicate_gas_used = 7;
    */
   predicateGasUsed: bigint;
 
   /**
+   * @generated from field: bytes predicate = 8;
+   */
+  predicate: Uint8Array;
+
+  /**
+   * @generated from field: bytes predicate_data = 9;
+   */
+  predicateData: Uint8Array;
+
+  /**
+   * Extra fields (not in fuel-core)
+   *
    * @generated from field: int64 predicate_length = 10;
    */
   predicateLength: bigint;
@@ -160,34 +137,9 @@ export type InputCoin = Message<"inputs.InputCoin"> & {
   predicateDataLength: bigint;
 
   /**
-   * @generated from field: int64 tx_pointer_block_height = 12;
+   * @generated from field: int32 output_index = 12;
    */
-  txPointerBlockHeight: bigint;
-
-  /**
-   * @generated from field: int32 tx_pointer_tx_index = 13;
-   */
-  txPointerTxIndex: number;
-
-  /**
-   * @generated from field: bytes utxo_id = 14;
-   */
-  utxoId: Uint8Array;
-
-  /**
-   * @generated from field: int32 witness_index = 15;
-   */
-  witnessIndex: number;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 16;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 17;
-   */
-  publishedAt?: Timestamp;
+  outputIndex: number;
 };
 
 /**
@@ -202,59 +154,38 @@ export const InputCoinSchema: GenMessage<InputCoin> = /*@__PURE__*/
  */
 export type InputContract = Message<"inputs.InputContract"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes balance_root = 3;
-   */
-  balanceRoot: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 4;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: int32 output_index = 5;
-   */
-  outputIndex: number;
-
-  /**
-   * @generated from field: bytes state_root = 6;
-   */
-  stateRoot: Uint8Array;
-
-  /**
-   * @generated from field: int64 tx_pointer_block_height = 7;
-   */
-  txPointerBlockHeight: bigint;
-
-  /**
-   * @generated from field: int32 tx_pointer_tx_index = 8;
-   */
-  txPointerTxIndex: number;
-
-  /**
-   * @generated from field: bytes utxo_id = 9;
+   * Fields matching fuel-core
+   *
+   * @generated from field: bytes utxo_id = 1;
    */
   utxoId: Uint8Array;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
+   * @generated from field: bytes balance_root = 2;
    */
-  createdAt?: Timestamp;
+  balanceRoot: Uint8Array;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 11;
+   * @generated from field: bytes state_root = 3;
    */
-  publishedAt?: Timestamp;
+  stateRoot: Uint8Array;
+
+  /**
+   * @generated from field: pointers.TxPointer tx_pointer = 4;
+   */
+  txPointer?: TxPointer;
+
+  /**
+   * @generated from field: bytes contract_id = 5;
+   */
+  contractId: Uint8Array;
+
+  /**
+   * Extra fields (not in fuel-core)
+   *
+   * @generated from field: int32 output_index = 6;
+   */
+  outputIndex: number;
 };
 
 /**
@@ -269,14 +200,16 @@ export const InputContractSchema: GenMessage<InputContract> = /*@__PURE__*/
  */
 export type InputMessage = Message<"inputs.InputMessage"> & {
   /**
-   * @generated from field: string subject = 1;
+   * Fields matching fuel-core
+   *
+   * @generated from field: bytes sender = 1;
    */
-  subject: string;
+  sender: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: bytes recipient = 2;
    */
-  txId: Uint8Array;
+  recipient: Uint8Array;
 
   /**
    * @generated from field: int64 amount = 3;
@@ -284,29 +217,29 @@ export type InputMessage = Message<"inputs.InputMessage"> & {
   amount: bigint;
 
   /**
-   * @generated from field: bytes data = 4;
-   */
-  data: Uint8Array;
-
-  /**
-   * @generated from field: int32 data_length = 5;
-   */
-  dataLength: number;
-
-  /**
-   * @generated from field: bytes nonce = 6;
+   * @generated from field: bytes nonce = 4;
    */
   nonce: Uint8Array;
 
   /**
-   * @generated from field: bytes predicate = 7;
+   * @generated from field: int32 witness_index = 5;
    */
-  predicate: Uint8Array;
+  witnessIndex: number;
 
   /**
-   * @generated from field: int32 predicate_length = 8;
+   * @generated from field: int64 predicate_gas_used = 6;
    */
-  predicateLength: number;
+  predicateGasUsed: bigint;
+
+  /**
+   * @generated from field: bytes data = 7;
+   */
+  data: Uint8Array;
+
+  /**
+   * @generated from field: bytes predicate = 8;
+   */
+  predicate: Uint8Array;
 
   /**
    * @generated from field: bytes predicate_data = 9;
@@ -314,39 +247,21 @@ export type InputMessage = Message<"inputs.InputMessage"> & {
   predicateData: Uint8Array;
 
   /**
-   * @generated from field: int32 predicate_data_length = 10;
+   * Extra fields (not in fuel-core)
+   *
+   * @generated from field: int32 data_length = 10;
+   */
+  dataLength: number;
+
+  /**
+   * @generated from field: int32 predicate_length = 11;
+   */
+  predicateLength: number;
+
+  /**
+   * @generated from field: int32 predicate_data_length = 12;
    */
   predicateDataLength: number;
-
-  /**
-   * @generated from field: int64 predicate_gas_used = 11;
-   */
-  predicateGasUsed: bigint;
-
-  /**
-   * @generated from field: bytes recipient_address = 12;
-   */
-  recipientAddress: Uint8Array;
-
-  /**
-   * @generated from field: bytes sender_address = 13;
-   */
-  senderAddress: Uint8Array;
-
-  /**
-   * @generated from field: int32 witness_index = 14;
-   */
-  witnessIndex: number;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 15;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 16;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -361,19 +276,24 @@ export const InputMessageSchema: GenMessage<InputMessage> = /*@__PURE__*/
  */
 export enum InputType {
   /**
-   * @generated from enum value: CONTRACT = 0;
+   * @generated from enum value: UNKNOWN_INPUT_TYPE = 0;
    */
-  CONTRACT = 0,
+  UNKNOWN_INPUT_TYPE = 0,
 
   /**
-   * @generated from enum value: COIN = 1;
+   * @generated from enum value: CONTRACT = 1;
    */
-  COIN = 1,
+  CONTRACT = 1,
 
   /**
-   * @generated from enum value: MESSAGE = 2;
+   * @generated from enum value: COIN = 2;
    */
-  MESSAGE = 2,
+  COIN = 2,
+
+  /**
+   * @generated from enum value: MESSAGE = 3;
+   */
+  MESSAGE = 3,
 }
 
 /**

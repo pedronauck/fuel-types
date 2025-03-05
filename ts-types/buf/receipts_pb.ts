@@ -4,17 +4,17 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { ReceiptPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file receipts.proto.
  */
 export const file_receipts: GenFile = /*@__PURE__*/
-  fileDesc("Cg5yZWNlaXB0cy5wcm90bxIIcmVjZWlwdHMi+QYKB1JlY2VpcHQSDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAwSEAoIdHhfaW5kZXgYBCABKAUSFQoNcmVjZWlwdF9pbmRleBgFIAEoBRIrCgxyZWNlaXB0X3R5cGUYBiABKA4yFS5yZWNlaXB0cy5SZWNlaXB0VHlwZRIlCgRjYWxsGAcgASgLMhUucmVjZWlwdHMuUmVjZWlwdENhbGxIABIpCgZyZXR1cm4YCCABKAsyFy5yZWNlaXB0cy5SZWNlaXB0UmV0dXJuSAASMgoLcmV0dXJuX2RhdGEYCSABKAsyGy5yZWNlaXB0cy5SZWNlaXB0UmV0dXJuRGF0YUgAEicKBXBhbmljGAogASgLMhYucmVjZWlwdHMuUmVjZWlwdFBhbmljSAASKQoGcmV2ZXJ0GAsgASgLMhcucmVjZWlwdHMuUmVjZWlwdFJldmVydEgAEiMKA2xvZxgMIAEoCzIULnJlY2VpcHRzLlJlY2VpcHRMb2dIABIsCghsb2dfZGF0YRgNIAEoCzIYLnJlY2VpcHRzLlJlY2VpcHRMb2dEYXRhSAASLQoIdHJhbnNmZXIYDiABKAsyGS5yZWNlaXB0cy5SZWNlaXB0VHJhbnNmZXJIABI0Cgx0cmFuc2Zlcl9vdXQYDyABKAsyHC5yZWNlaXB0cy5SZWNlaXB0VHJhbnNmZXJPdXRIABI2Cg1zY3JpcHRfcmVzdWx0GBAgASgLMh0ucmVjZWlwdHMuUmVjZWlwdFNjcmlwdFJlc3VsdEgAEjIKC21lc3NhZ2Vfb3V0GBEgASgLMhsucmVjZWlwdHMuUmVjZWlwdE1lc3NhZ2VPdXRIABIlCgRtaW50GBIgASgLMhUucmVjZWlwdHMuUmVjZWlwdE1pbnRIABIlCgRidXJuGBMgASgLMhUucmVjZWlwdHMuUmVjZWlwdEJ1cm5IABIuCgpjcmVhdGVkX2F0GBQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYFSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEikKB3BvaW50ZXIYFiABKAsyGC5wb2ludGVycy5SZWNlaXB0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DnRvX2NvbnRyYWN0X2lkGAQgASgMEg4KBmFtb3VudBgFIAEoAxIQCghhc3NldF9pZBgGIAEoDBIKCgJwYxgHIAEoAxIKCgJpcxgIIAEoAxIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIvkBChJSZWNlaXB0VHJhbnNmZXJPdXQSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBITCgtjb250cmFjdF9pZBgDIAEoDBISCgp0b19hZGRyZXNzGAQgASgMEg4KBmFtb3VudBgFIAEoAxIQCghhc3NldF9pZBgGIAEoDBIKCgJwYxgHIAEoAxIKCgJpcxgIIAEoAxIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wItUBChNSZWNlaXB0U2NyaXB0UmVzdWx0Eg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSKgoGcmVzdWx0GAMgASgOMhoucmVjZWlwdHMuU2NyaXB0UmVzdWx0VHlwZRIQCghnYXNfdXNlZBgEIAEoAxIuCgpjcmVhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIpICChFSZWNlaXB0TWVzc2FnZU91dBIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEhYKDnNlbmRlcl9hZGRyZXNzGAMgASgMEhkKEXJlY2lwaWVudF9hZGRyZXNzGAQgASgMEg4KBmFtb3VudBgFIAEoAxINCgVub25jZRgGIAEoDBILCgNsZW4YByABKAMSDgoGZGlnZXN0GAggASgMEgwKBGRhdGEYCSABKAwSLgoKY3JlYXRlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMcHVibGlzaGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCLrAQoLUmVjZWlwdE1pbnQSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBIOCgZzdWJfaWQYAyABKAwSEwoLY29udHJhY3RfaWQYBCABKAwSEAoIYXNzZXRfaWQYBSABKAwSCwoDdmFsGAYgASgDEgoKAnBjGAcgASgDEgoKAmlzGAggASgDEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAi6wEKC1JlY2VpcHRCdXJuEg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSDgoGc3ViX2lkGAMgASgMEhMKC2NvbnRyYWN0X2lkGAQgASgMEhAKCGFzc2V0X2lkGAUgASgMEgsKA3ZhbBgGIAEoAxIKCgJwYxgHIAEoAxIKCgJpcxgIIAEoAxIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKroBCgtSZWNlaXB0VHlwZRIICgRDQUxMEAASCgoGUkVUVVJOEAESDwoLUkVUVVJOX0RBVEEQAhIJCgVQQU5JQxADEgoKBlJFVkVSVBAEEgcKA0xPRxAFEgwKCExPR19EQVRBEAYSDAoIVFJBTlNGRVIQBxIQCgxUUkFOU0ZFUl9PVVQQCBIRCg1TQ1JJUFRfUkVTVUxUEAkSDwoLTUVTU0FHRV9PVVQQChIICgRNSU5UEAsSCAoEQlVSThAMKiwKEFNjcmlwdFJlc3VsdFR5cGUSCwoHU1VDQ0VTUxAAEgsKB0ZBSUxVUkUQAWIGcHJvdG8z", [file_google_protobuf_timestamp, file_pointers]);
+  fileDesc("Cg5yZWNlaXB0cy5wcm90bxIIcmVjZWlwdHMi5QUKB1JlY2VpcHQSDwoHc3ViamVjdBgBIAEoCRIjCgR0eXBlGAIgASgOMhUucmVjZWlwdHMuUmVjZWlwdFR5cGUSJQoEY2FsbBgDIAEoCzIVLnJlY2VpcHRzLlJlY2VpcHRDYWxsSAASKQoGcmV0dXJuGAQgASgLMhcucmVjZWlwdHMuUmVjZWlwdFJldHVybkgAEjIKC3JldHVybl9kYXRhGAUgASgLMhsucmVjZWlwdHMuUmVjZWlwdFJldHVybkRhdGFIABInCgVwYW5pYxgGIAEoCzIWLnJlY2VpcHRzLlJlY2VpcHRQYW5pY0gAEikKBnJldmVydBgHIAEoCzIXLnJlY2VpcHRzLlJlY2VpcHRSZXZlcnRIABIjCgNsb2cYCCABKAsyFC5yZWNlaXB0cy5SZWNlaXB0TG9nSAASLAoIbG9nX2RhdGEYCSABKAsyGC5yZWNlaXB0cy5SZWNlaXB0TG9nRGF0YUgAEi0KCHRyYW5zZmVyGAogASgLMhkucmVjZWlwdHMuUmVjZWlwdFRyYW5zZmVySAASNAoMdHJhbnNmZXJfb3V0GAsgASgLMhwucmVjZWlwdHMuUmVjZWlwdFRyYW5zZmVyT3V0SAASNgoNc2NyaXB0X3Jlc3VsdBgMIAEoCzIdLnJlY2VpcHRzLlJlY2VpcHRTY3JpcHRSZXN1bHRIABIyCgttZXNzYWdlX291dBgNIAEoCzIbLnJlY2VpcHRzLlJlY2VpcHRNZXNzYWdlT3V0SAASJQoEbWludBgOIAEoCzIVLnJlY2VpcHRzLlJlY2VpcHRNaW50SAASJQoEYnVybhgPIAEoCzIVLnJlY2VpcHRzLlJlY2VpcHRCdXJuSAASIgoIbWV0YWRhdGEYECABKAsyEC5jb21tb24uTWV0YWRhdGESKQoHcG9pbnRlchgRIAEoCzIYLnBvaW50ZXJzLlJlY2VpcHRQb2ludGVyQgkKB3JlY2VpcHQijAEKC1JlY2VpcHRDYWxsEgoKAmlkGAEgASgMEgoKAnRvGAIgASgMEg4KBmFtb3VudBgDIAEoAxIQCghhc3NldF9pZBgEIAEoDBILCgNnYXMYBSABKAMSDgoGcGFyYW0xGAYgASgDEg4KBnBhcmFtMhgHIAEoAxIKCgJwYxgIIAEo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", [file_pointers, file_common]);
 
 /**
  * @generated from message receipts.Receipt
@@ -26,110 +26,88 @@ export type Receipt = Message<"receipts.Receipt"> & {
   subject: string;
 
   /**
-   * @generated from field: int64 block_height = 2;
+   * @generated from field: receipts.ReceiptType type = 2;
    */
-  blockHeight: bigint;
+  type: ReceiptType;
 
   /**
-   * @generated from field: bytes tx_id = 3;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int32 tx_index = 4;
-   */
-  txIndex: number;
-
-  /**
-   * @generated from field: int32 receipt_index = 5;
-   */
-  receiptIndex: number;
-
-  /**
-   * @generated from field: receipts.ReceiptType receipt_type = 6;
-   */
-  receiptType: ReceiptType;
-
-  /**
-   * Specific receipt type
-   *
    * @generated from oneof receipts.Receipt.receipt
    */
   receipt: {
     /**
-     * @generated from field: receipts.ReceiptCall call = 7;
+     * @generated from field: receipts.ReceiptCall call = 3;
      */
     value: ReceiptCall;
     case: "call";
   } | {
     /**
-     * @generated from field: receipts.ReceiptReturn return = 8;
+     * @generated from field: receipts.ReceiptReturn return = 4;
      */
     value: ReceiptReturn;
     case: "return";
   } | {
     /**
-     * @generated from field: receipts.ReceiptReturnData return_data = 9;
+     * @generated from field: receipts.ReceiptReturnData return_data = 5;
      */
     value: ReceiptReturnData;
     case: "returnData";
   } | {
     /**
-     * @generated from field: receipts.ReceiptPanic panic = 10;
+     * @generated from field: receipts.ReceiptPanic panic = 6;
      */
     value: ReceiptPanic;
     case: "panic";
   } | {
     /**
-     * @generated from field: receipts.ReceiptRevert revert = 11;
+     * @generated from field: receipts.ReceiptRevert revert = 7;
      */
     value: ReceiptRevert;
     case: "revert";
   } | {
     /**
-     * @generated from field: receipts.ReceiptLog log = 12;
+     * @generated from field: receipts.ReceiptLog log = 8;
      */
     value: ReceiptLog;
     case: "log";
   } | {
     /**
-     * @generated from field: receipts.ReceiptLogData log_data = 13;
+     * @generated from field: receipts.ReceiptLogData log_data = 9;
      */
     value: ReceiptLogData;
     case: "logData";
   } | {
     /**
-     * @generated from field: receipts.ReceiptTransfer transfer = 14;
+     * @generated from field: receipts.ReceiptTransfer transfer = 10;
      */
     value: ReceiptTransfer;
     case: "transfer";
   } | {
     /**
-     * @generated from field: receipts.ReceiptTransferOut transfer_out = 15;
+     * @generated from field: receipts.ReceiptTransferOut transfer_out = 11;
      */
     value: ReceiptTransferOut;
     case: "transferOut";
   } | {
     /**
-     * @generated from field: receipts.ReceiptScriptResult script_result = 16;
+     * @generated from field: receipts.ReceiptScriptResult script_result = 12;
      */
     value: ReceiptScriptResult;
     case: "scriptResult";
   } | {
     /**
-     * @generated from field: receipts.ReceiptMessageOut message_out = 17;
+     * @generated from field: receipts.ReceiptMessageOut message_out = 13;
      */
     value: ReceiptMessageOut;
     case: "messageOut";
   } | {
     /**
-     * @generated from field: receipts.ReceiptMint mint = 18;
+     * @generated from field: receipts.ReceiptMint mint = 14;
      */
     value: ReceiptMint;
     case: "mint";
   } | {
     /**
-     * @generated from field: receipts.ReceiptBurn burn = 19;
+     * @generated from field: receipts.ReceiptBurn burn = 15;
      */
     value: ReceiptBurn;
     case: "burn";
@@ -138,17 +116,12 @@ export type Receipt = Message<"receipts.Receipt"> & {
   /**
    * Metadata
    *
-   * @generated from field: google.protobuf.Timestamp created_at = 20;
+   * @generated from field: common.Metadata metadata = 16;
    */
-  createdAt?: Timestamp;
+  metadata?: Metadata;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 21;
-   */
-  publishedAt?: Timestamp;
-
-  /**
-   * @generated from field: pointers.ReceiptPointer pointer = 22;
+   * @generated from field: pointers.ReceiptPointer pointer = 17;
    */
   pointer?: ReceiptPointer;
 };
@@ -165,69 +138,49 @@ export const ReceiptSchema: GenMessage<Receipt> = /*@__PURE__*/
  */
 export type ReceiptCall = Message<"receipts.ReceiptCall"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes id = 1;
    */
-  subject: string;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: bytes to = 2;
    */
-  txId: Uint8Array;
+  to: Uint8Array;
 
   /**
-   * @generated from field: bytes contract_id = 3;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: bytes to_contract_id = 4;
-   */
-  toContractId: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 5;
+   * @generated from field: int64 amount = 3;
    */
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 6;
+   * @generated from field: bytes asset_id = 4;
    */
   assetId: Uint8Array;
 
   /**
-   * @generated from field: int64 gas = 7;
+   * @generated from field: int64 gas = 5;
    */
   gas: bigint;
 
   /**
-   * @generated from field: int64 param1 = 8;
+   * @generated from field: int64 param1 = 6;
    */
   param1: bigint;
 
   /**
-   * @generated from field: int64 param2 = 9;
+   * @generated from field: int64 param2 = 7;
    */
   param2: bigint;
 
   /**
-   * @generated from field: int64 pc = 10;
+   * @generated from field: int64 pc = 8;
    */
   pc: bigint;
 
   /**
-   * @generated from field: int64 is = 11;
+   * @generated from field: int64 is = 9;
    */
   is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 12;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 13;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -242,44 +195,24 @@ export const ReceiptCallSchema: GenMessage<ReceiptCall> = /*@__PURE__*/
  */
 export type ReceiptReturn = Message<"receipts.ReceiptReturn"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes id = 1;
    */
-  subject: string;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 3;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: int64 val = 4;
+   * @generated from field: int64 val = 2;
    */
   val: bigint;
 
   /**
-   * @generated from field: int64 pc = 5;
+   * @generated from field: int64 pc = 3;
    */
   pc: bigint;
 
   /**
-   * @generated from field: int64 is = 6;
+   * @generated from field: int64 is = 4;
    */
   is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 7;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 8;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -294,19 +227,182 @@ export const ReceiptReturnSchema: GenMessage<ReceiptReturn> = /*@__PURE__*/
  */
 export type ReceiptReturnData = Message<"receipts.ReceiptReturnData"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes id = 1;
    */
-  subject: string;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: int64 ptr = 2;
    */
-  txId: Uint8Array;
+  ptr: bigint;
 
   /**
-   * @generated from field: bytes contract_id = 3;
+   * @generated from field: int64 len = 3;
+   */
+  len: bigint;
+
+  /**
+   * @generated from field: bytes digest = 4;
+   */
+  digest: Uint8Array;
+
+  /**
+   * @generated from field: bytes data = 5;
+   */
+  data: Uint8Array;
+
+  /**
+   * @generated from field: int64 pc = 6;
+   */
+  pc: bigint;
+
+  /**
+   * @generated from field: int64 is = 7;
+   */
+  is: bigint;
+};
+
+/**
+ * Describes the message receipts.ReceiptReturnData.
+ * Use `create(ReceiptReturnDataSchema)` to create a new message.
+ */
+export const ReceiptReturnDataSchema: GenMessage<ReceiptReturnData> = /*@__PURE__*/
+  messageDesc(file_receipts, 3);
+
+/**
+ * @generated from message receipts.ReceiptPanic
+ */
+export type ReceiptPanic = Message<"receipts.ReceiptPanic"> & {
+  /**
+   * @generated from field: bytes id = 1;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: int64 reason = 2;
+   */
+  reason: bigint;
+
+  /**
+   * @generated from field: int64 pc = 3;
+   */
+  pc: bigint;
+
+  /**
+   * @generated from field: int64 is = 4;
+   */
+  is: bigint;
+
+  /**
+   * @generated from field: bytes contract_id = 5;
    */
   contractId: Uint8Array;
+};
+
+/**
+ * Describes the message receipts.ReceiptPanic.
+ * Use `create(ReceiptPanicSchema)` to create a new message.
+ */
+export const ReceiptPanicSchema: GenMessage<ReceiptPanic> = /*@__PURE__*/
+  messageDesc(file_receipts, 4);
+
+/**
+ * @generated from message receipts.ReceiptRevert
+ */
+export type ReceiptRevert = Message<"receipts.ReceiptRevert"> & {
+  /**
+   * @generated from field: bytes id = 1;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: int64 ra = 2;
+   */
+  ra: bigint;
+
+  /**
+   * @generated from field: int64 pc = 3;
+   */
+  pc: bigint;
+
+  /**
+   * @generated from field: int64 is = 4;
+   */
+  is: bigint;
+};
+
+/**
+ * Describes the message receipts.ReceiptRevert.
+ * Use `create(ReceiptRevertSchema)` to create a new message.
+ */
+export const ReceiptRevertSchema: GenMessage<ReceiptRevert> = /*@__PURE__*/
+  messageDesc(file_receipts, 5);
+
+/**
+ * @generated from message receipts.ReceiptLog
+ */
+export type ReceiptLog = Message<"receipts.ReceiptLog"> & {
+  /**
+   * @generated from field: bytes id = 1;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: int64 ra = 2;
+   */
+  ra: bigint;
+
+  /**
+   * @generated from field: int64 rb = 3;
+   */
+  rb: bigint;
+
+  /**
+   * @generated from field: int64 rc = 4;
+   */
+  rc: bigint;
+
+  /**
+   * @generated from field: int64 rd = 5;
+   */
+  rd: bigint;
+
+  /**
+   * @generated from field: int64 pc = 6;
+   */
+  pc: bigint;
+
+  /**
+   * @generated from field: int64 is = 7;
+   */
+  is: bigint;
+};
+
+/**
+ * Describes the message receipts.ReceiptLog.
+ * Use `create(ReceiptLogSchema)` to create a new message.
+ */
+export const ReceiptLogSchema: GenMessage<ReceiptLog> = /*@__PURE__*/
+  messageDesc(file_receipts, 6);
+
+/**
+ * @generated from message receipts.ReceiptLogData
+ */
+export type ReceiptLogData = Message<"receipts.ReceiptLogData"> & {
+  /**
+   * @generated from field: bytes id = 1;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: int64 ra = 2;
+   */
+  ra: bigint;
+
+  /**
+   * @generated from field: int64 rb = 3;
+   */
+  rb: bigint;
 
   /**
    * @generated from field: int64 ptr = 4;
@@ -324,61 +420,51 @@ export type ReceiptReturnData = Message<"receipts.ReceiptReturnData"> & {
   digest: Uint8Array;
 
   /**
-   * @generated from field: int64 pc = 7;
-   */
-  pc: bigint;
-
-  /**
-   * @generated from field: int64 is = 8;
-   */
-  is: bigint;
-
-  /**
-   * @generated from field: bytes data = 9;
+   * @generated from field: bytes data = 7;
    */
   data: Uint8Array;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
+   * @generated from field: int64 pc = 8;
    */
-  createdAt?: Timestamp;
+  pc: bigint;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 11;
+   * @generated from field: int64 is = 9;
    */
-  publishedAt?: Timestamp;
+  is: bigint;
 };
 
 /**
- * Describes the message receipts.ReceiptReturnData.
- * Use `create(ReceiptReturnDataSchema)` to create a new message.
+ * Describes the message receipts.ReceiptLogData.
+ * Use `create(ReceiptLogDataSchema)` to create a new message.
  */
-export const ReceiptReturnDataSchema: GenMessage<ReceiptReturnData> = /*@__PURE__*/
-  messageDesc(file_receipts, 3);
+export const ReceiptLogDataSchema: GenMessage<ReceiptLogData> = /*@__PURE__*/
+  messageDesc(file_receipts, 7);
 
 /**
- * @generated from message receipts.ReceiptPanic
+ * @generated from message receipts.ReceiptTransfer
  */
-export type ReceiptPanic = Message<"receipts.ReceiptPanic"> & {
+export type ReceiptTransfer = Message<"receipts.ReceiptTransfer"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes id = 1;
    */
-  subject: string;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: bytes to = 2;
    */
-  txId: Uint8Array;
+  to: Uint8Array;
 
   /**
-   * @generated from field: bytes contract_id = 3;
+   * @generated from field: int64 amount = 3;
    */
-  contractId: Uint8Array;
+  amount: bigint;
 
   /**
-   * @generated from field: int64 reason = 4;
+   * @generated from field: bytes asset_id = 4;
    */
-  reason: bigint;
+  assetId: Uint8Array;
 
   /**
    * @generated from field: int64 pc = 5;
@@ -389,48 +475,144 @@ export type ReceiptPanic = Message<"receipts.ReceiptPanic"> & {
    * @generated from field: int64 is = 6;
    */
   is: bigint;
-
-  /**
-   * @generated from field: bytes panic_contract_id = 7;
-   */
-  panicContractId: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 8;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 9;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
- * Describes the message receipts.ReceiptPanic.
- * Use `create(ReceiptPanicSchema)` to create a new message.
+ * Describes the message receipts.ReceiptTransfer.
+ * Use `create(ReceiptTransferSchema)` to create a new message.
  */
-export const ReceiptPanicSchema: GenMessage<ReceiptPanic> = /*@__PURE__*/
-  messageDesc(file_receipts, 4);
+export const ReceiptTransferSchema: GenMessage<ReceiptTransfer> = /*@__PURE__*/
+  messageDesc(file_receipts, 8);
 
 /**
- * @generated from message receipts.ReceiptRevert
+ * @generated from message receipts.ReceiptTransferOut
  */
-export type ReceiptRevert = Message<"receipts.ReceiptRevert"> & {
+export type ReceiptTransferOut = Message<"receipts.ReceiptTransferOut"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes id = 1;
    */
-  subject: string;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
+   * @generated from field: bytes to_address = 2;
    */
-  txId: Uint8Array;
+  toAddress: Uint8Array;
 
   /**
-   * @generated from field: bytes contract_id = 3;
+   * @generated from field: int64 amount = 3;
    */
-  contractId: Uint8Array;
+  amount: bigint;
+
+  /**
+   * @generated from field: bytes asset_id = 4;
+   */
+  assetId: Uint8Array;
+
+  /**
+   * @generated from field: int64 pc = 5;
+   */
+  pc: bigint;
+
+  /**
+   * @generated from field: int64 is = 6;
+   */
+  is: bigint;
+};
+
+/**
+ * Describes the message receipts.ReceiptTransferOut.
+ * Use `create(ReceiptTransferOutSchema)` to create a new message.
+ */
+export const ReceiptTransferOutSchema: GenMessage<ReceiptTransferOut> = /*@__PURE__*/
+  messageDesc(file_receipts, 9);
+
+/**
+ * @generated from message receipts.ReceiptScriptResult
+ */
+export type ReceiptScriptResult = Message<"receipts.ReceiptScriptResult"> & {
+  /**
+   * @generated from field: receipts.ScriptResultType result = 1;
+   */
+  result: ScriptResultType;
+
+  /**
+   * @generated from field: int64 gas_used = 2;
+   */
+  gasUsed: bigint;
+};
+
+/**
+ * Describes the message receipts.ReceiptScriptResult.
+ * Use `create(ReceiptScriptResultSchema)` to create a new message.
+ */
+export const ReceiptScriptResultSchema: GenMessage<ReceiptScriptResult> = /*@__PURE__*/
+  messageDesc(file_receipts, 10);
+
+/**
+ * @generated from message receipts.ReceiptMessageOut
+ */
+export type ReceiptMessageOut = Message<"receipts.ReceiptMessageOut"> & {
+  /**
+   * @generated from field: bytes sender = 1;
+   */
+  sender: Uint8Array;
+
+  /**
+   * @generated from field: bytes recipient = 2;
+   */
+  recipient: Uint8Array;
+
+  /**
+   * @generated from field: int64 amount = 3;
+   */
+  amount: bigint;
+
+  /**
+   * @generated from field: bytes nonce = 4;
+   */
+  nonce: Uint8Array;
+
+  /**
+   * @generated from field: int64 len = 5;
+   */
+  len: bigint;
+
+  /**
+   * @generated from field: bytes digest = 6;
+   */
+  digest: Uint8Array;
+
+  /**
+   * @generated from field: bytes data = 7;
+   */
+  data: Uint8Array;
+};
+
+/**
+ * Describes the message receipts.ReceiptMessageOut.
+ * Use `create(ReceiptMessageOutSchema)` to create a new message.
+ */
+export const ReceiptMessageOutSchema: GenMessage<ReceiptMessageOut> = /*@__PURE__*/
+  messageDesc(file_receipts, 11);
+
+/**
+ * @generated from message receipts.ReceiptMint
+ */
+export type ReceiptMint = Message<"receipts.ReceiptMint"> & {
+  /**
+   * @generated from field: bytes sub_id = 1;
+   */
+  subId: Uint8Array;
+
+  /**
+   * @generated from field: bytes id = 2;
+   */
+  id: Uint8Array;
+
+  /**
+   * @generated from field: bytes asset_id = 3;
+   */
+  assetId: Uint8Array;
 
   /**
    * @generated from field: int64 val = 4;
@@ -446,455 +628,6 @@ export type ReceiptRevert = Message<"receipts.ReceiptRevert"> & {
    * @generated from field: int64 is = 6;
    */
   is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 7;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 8;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptRevert.
- * Use `create(ReceiptRevertSchema)` to create a new message.
- */
-export const ReceiptRevertSchema: GenMessage<ReceiptRevert> = /*@__PURE__*/
-  messageDesc(file_receipts, 5);
-
-/**
- * @generated from message receipts.ReceiptLog
- */
-export type ReceiptLog = Message<"receipts.ReceiptLog"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 3;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: int64 ra = 4;
-   */
-  ra: bigint;
-
-  /**
-   * @generated from field: int64 rb = 5;
-   */
-  rb: bigint;
-
-  /**
-   * @generated from field: int64 rc = 6;
-   */
-  rc: bigint;
-
-  /**
-   * @generated from field: int64 rd = 7;
-   */
-  rd: bigint;
-
-  /**
-   * @generated from field: int64 pc = 8;
-   */
-  pc: bigint;
-
-  /**
-   * @generated from field: int64 is = 9;
-   */
-  is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 11;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptLog.
- * Use `create(ReceiptLogSchema)` to create a new message.
- */
-export const ReceiptLogSchema: GenMessage<ReceiptLog> = /*@__PURE__*/
-  messageDesc(file_receipts, 6);
-
-/**
- * @generated from message receipts.ReceiptLogData
- */
-export type ReceiptLogData = Message<"receipts.ReceiptLogData"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 3;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: int64 ra = 4;
-   */
-  ra: bigint;
-
-  /**
-   * @generated from field: int64 rb = 5;
-   */
-  rb: bigint;
-
-  /**
-   * @generated from field: int64 ptr = 6;
-   */
-  ptr: bigint;
-
-  /**
-   * @generated from field: int64 len = 7;
-   */
-  len: bigint;
-
-  /**
-   * @generated from field: bytes digest = 8;
-   */
-  digest: Uint8Array;
-
-  /**
-   * @generated from field: int64 pc = 9;
-   */
-  pc: bigint;
-
-  /**
-   * @generated from field: int64 is = 10;
-   */
-  is: bigint;
-
-  /**
-   * @generated from field: bytes data = 11;
-   */
-  data: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 12;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 13;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptLogData.
- * Use `create(ReceiptLogDataSchema)` to create a new message.
- */
-export const ReceiptLogDataSchema: GenMessage<ReceiptLogData> = /*@__PURE__*/
-  messageDesc(file_receipts, 7);
-
-/**
- * @generated from message receipts.ReceiptTransfer
- */
-export type ReceiptTransfer = Message<"receipts.ReceiptTransfer"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 3;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: bytes to_contract_id = 4;
-   */
-  toContractId: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 5;
-   */
-  amount: bigint;
-
-  /**
-   * @generated from field: bytes asset_id = 6;
-   */
-  assetId: Uint8Array;
-
-  /**
-   * @generated from field: int64 pc = 7;
-   */
-  pc: bigint;
-
-  /**
-   * @generated from field: int64 is = 8;
-   */
-  is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 9;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 10;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptTransfer.
- * Use `create(ReceiptTransferSchema)` to create a new message.
- */
-export const ReceiptTransferSchema: GenMessage<ReceiptTransfer> = /*@__PURE__*/
-  messageDesc(file_receipts, 8);
-
-/**
- * @generated from message receipts.ReceiptTransferOut
- */
-export type ReceiptTransferOut = Message<"receipts.ReceiptTransferOut"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 3;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: bytes to_address = 4;
-   */
-  toAddress: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 5;
-   */
-  amount: bigint;
-
-  /**
-   * @generated from field: bytes asset_id = 6;
-   */
-  assetId: Uint8Array;
-
-  /**
-   * @generated from field: int64 pc = 7;
-   */
-  pc: bigint;
-
-  /**
-   * @generated from field: int64 is = 8;
-   */
-  is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 9;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 10;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptTransferOut.
- * Use `create(ReceiptTransferOutSchema)` to create a new message.
- */
-export const ReceiptTransferOutSchema: GenMessage<ReceiptTransferOut> = /*@__PURE__*/
-  messageDesc(file_receipts, 9);
-
-/**
- * @generated from message receipts.ReceiptScriptResult
- */
-export type ReceiptScriptResult = Message<"receipts.ReceiptScriptResult"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: receipts.ScriptResultType result = 3;
-   */
-  result: ScriptResultType;
-
-  /**
-   * @generated from field: int64 gas_used = 4;
-   */
-  gasUsed: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 5;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 6;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptScriptResult.
- * Use `create(ReceiptScriptResultSchema)` to create a new message.
- */
-export const ReceiptScriptResultSchema: GenMessage<ReceiptScriptResult> = /*@__PURE__*/
-  messageDesc(file_receipts, 10);
-
-/**
- * @generated from message receipts.ReceiptMessageOut
- */
-export type ReceiptMessageOut = Message<"receipts.ReceiptMessageOut"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes sender_address = 3;
-   */
-  senderAddress: Uint8Array;
-
-  /**
-   * @generated from field: bytes recipient_address = 4;
-   */
-  recipientAddress: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 5;
-   */
-  amount: bigint;
-
-  /**
-   * @generated from field: bytes nonce = 6;
-   */
-  nonce: Uint8Array;
-
-  /**
-   * @generated from field: int64 len = 7;
-   */
-  len: bigint;
-
-  /**
-   * @generated from field: bytes digest = 8;
-   */
-  digest: Uint8Array;
-
-  /**
-   * @generated from field: bytes data = 9;
-   */
-  data: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 11;
-   */
-  publishedAt?: Timestamp;
-};
-
-/**
- * Describes the message receipts.ReceiptMessageOut.
- * Use `create(ReceiptMessageOutSchema)` to create a new message.
- */
-export const ReceiptMessageOutSchema: GenMessage<ReceiptMessageOut> = /*@__PURE__*/
-  messageDesc(file_receipts, 11);
-
-/**
- * @generated from message receipts.ReceiptMint
- */
-export type ReceiptMint = Message<"receipts.ReceiptMint"> & {
-  /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes sub_id = 3;
-   */
-  subId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 4;
-   */
-  contractId: Uint8Array;
-
-  /**
-   * @generated from field: bytes asset_id = 5;
-   */
-  assetId: Uint8Array;
-
-  /**
-   * @generated from field: int64 val = 6;
-   */
-  val: bigint;
-
-  /**
-   * @generated from field: int64 pc = 7;
-   */
-  pc: bigint;
-
-  /**
-   * @generated from field: int64 is = 8;
-   */
-  is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 9;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 10;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -909,54 +642,34 @@ export const ReceiptMintSchema: GenMessage<ReceiptMint> = /*@__PURE__*/
  */
 export type ReceiptBurn = Message<"receipts.ReceiptBurn"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes sub_id = 3;
+   * @generated from field: bytes sub_id = 1;
    */
   subId: Uint8Array;
 
   /**
-   * @generated from field: bytes contract_id = 4;
+   * @generated from field: bytes id = 2;
    */
-  contractId: Uint8Array;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes asset_id = 5;
+   * @generated from field: bytes asset_id = 3;
    */
   assetId: Uint8Array;
 
   /**
-   * @generated from field: int64 val = 6;
+   * @generated from field: int64 val = 4;
    */
   val: bigint;
 
   /**
-   * @generated from field: int64 pc = 7;
+   * @generated from field: int64 pc = 5;
    */
   pc: bigint;
 
   /**
-   * @generated from field: int64 is = 8;
+   * @generated from field: int64 is = 6;
    */
   is: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 9;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 10;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -971,69 +684,74 @@ export const ReceiptBurnSchema: GenMessage<ReceiptBurn> = /*@__PURE__*/
  */
 export enum ReceiptType {
   /**
-   * @generated from enum value: CALL = 0;
+   * @generated from enum value: UNKNOWN_RECEIPT_TYPE = 0;
    */
-  CALL = 0,
+  UNKNOWN_RECEIPT_TYPE = 0,
 
   /**
-   * @generated from enum value: RETURN = 1;
+   * @generated from enum value: CALL = 1;
    */
-  RETURN = 1,
+  CALL = 1,
 
   /**
-   * @generated from enum value: RETURN_DATA = 2;
+   * @generated from enum value: RETURN = 2;
    */
-  RETURN_DATA = 2,
+  RETURN = 2,
 
   /**
-   * @generated from enum value: PANIC = 3;
+   * @generated from enum value: RETURN_DATA = 3;
    */
-  PANIC = 3,
+  RETURN_DATA = 3,
 
   /**
-   * @generated from enum value: REVERT = 4;
+   * @generated from enum value: PANIC = 4;
    */
-  REVERT = 4,
+  PANIC = 4,
 
   /**
-   * @generated from enum value: LOG = 5;
+   * @generated from enum value: REVERT = 5;
    */
-  LOG = 5,
+  REVERT = 5,
 
   /**
-   * @generated from enum value: LOG_DATA = 6;
+   * @generated from enum value: LOG = 6;
    */
-  LOG_DATA = 6,
+  LOG = 6,
 
   /**
-   * @generated from enum value: TRANSFER = 7;
+   * @generated from enum value: LOG_DATA = 7;
    */
-  TRANSFER = 7,
+  LOG_DATA = 7,
 
   /**
-   * @generated from enum value: TRANSFER_OUT = 8;
+   * @generated from enum value: TRANSFER = 8;
    */
-  TRANSFER_OUT = 8,
+  TRANSFER = 8,
 
   /**
-   * @generated from enum value: SCRIPT_RESULT = 9;
+   * @generated from enum value: TRANSFER_OUT = 9;
    */
-  SCRIPT_RESULT = 9,
+  TRANSFER_OUT = 9,
 
   /**
-   * @generated from enum value: MESSAGE_OUT = 10;
+   * @generated from enum value: SCRIPT_RESULT = 10;
    */
-  MESSAGE_OUT = 10,
+  SCRIPT_RESULT = 10,
 
   /**
-   * @generated from enum value: MINT = 11;
+   * @generated from enum value: MESSAGE_OUT = 11;
    */
-  MINT = 11,
+  MESSAGE_OUT = 11,
 
   /**
-   * @generated from enum value: BURN = 12;
+   * @generated from enum value: MINT = 12;
    */
-  BURN = 12,
+  MINT = 12,
+
+  /**
+   * @generated from enum value: BURN = 13;
+   */
+  BURN = 13,
 }
 
 /**
@@ -1047,14 +765,29 @@ export const ReceiptTypeSchema: GenEnum<ReceiptType> = /*@__PURE__*/
  */
 export enum ScriptResultType {
   /**
-   * @generated from enum value: SUCCESS = 0;
+   * @generated from enum value: UNKNOWN_SCRIPT_RESULT_TYPE = 0;
    */
-  SUCCESS = 0,
+  UNKNOWN_SCRIPT_RESULT_TYPE = 0,
 
   /**
-   * @generated from enum value: FAILURE = 1;
+   * @generated from enum value: SUCCESS = 1;
    */
-  FAILURE = 1,
+  SUCCESS = 1,
+
+  /**
+   * @generated from enum value: SCRIPT_REVERT = 2;
+   */
+  SCRIPT_REVERT = 2,
+
+  /**
+   * @generated from enum value: SCRIPT_PANIC = 3;
+   */
+  SCRIPT_PANIC = 3,
+
+  /**
+   * @generated from enum value: GENERIC_FAILURE = 4;
+   */
+  GENERIC_FAILURE = 4,
 }
 
 /**

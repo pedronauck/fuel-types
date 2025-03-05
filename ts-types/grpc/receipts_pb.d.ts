@@ -5,24 +5,14 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 import * as pointers_pb from "./pointers_pb";
+import * as common_pb from "./common_pb";
 
 export class Receipt extends jspb.Message { 
     getSubject(): string;
     setSubject(value: string): Receipt;
-    getBlockHeight(): number;
-    setBlockHeight(value: number): Receipt;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): Receipt;
-    getTxIndex(): number;
-    setTxIndex(value: number): Receipt;
-    getReceiptIndex(): number;
-    setReceiptIndex(value: number): Receipt;
-    getReceiptType(): ReceiptType;
-    setReceiptType(value: ReceiptType): Receipt;
+    getType(): ReceiptType;
+    setType(value: ReceiptType): Receipt;
 
     hasCall(): boolean;
     clearCall(): void;
@@ -89,15 +79,10 @@ export class Receipt extends jspb.Message {
     getBurn(): ReceiptBurn | undefined;
     setBurn(value?: ReceiptBurn): Receipt;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): Receipt;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): Receipt;
+    hasMetadata(): boolean;
+    clearMetadata(): void;
+    getMetadata(): common_pb.Metadata | undefined;
+    setMetadata(value?: common_pb.Metadata): Receipt;
 
     hasPointer(): boolean;
     clearPointer(): void;
@@ -119,11 +104,7 @@ export class Receipt extends jspb.Message {
 export namespace Receipt {
     export type AsObject = {
         subject: string,
-        blockHeight: number,
-        txId: Uint8Array | string,
-        txIndex: number,
-        receiptIndex: number,
-        receiptType: ReceiptType,
+        type: ReceiptType,
         call?: ReceiptCall.AsObject,
         pb_return?: ReceiptReturn.AsObject,
         returnData?: ReceiptReturnData.AsObject,
@@ -137,45 +118,38 @@ export namespace Receipt {
         messageOut?: ReceiptMessageOut.AsObject,
         mint?: ReceiptMint.AsObject,
         burn?: ReceiptBurn.AsObject,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+        metadata?: common_pb.Metadata.AsObject,
         pointer?: pointers_pb.ReceiptPointer.AsObject,
     }
 
     export enum ReceiptCase {
         RECEIPT_NOT_SET = 0,
-        CALL = 7,
-        RETURN = 8,
-        RETURN_DATA = 9,
-        PANIC = 10,
-        REVERT = 11,
-        LOG = 12,
-        LOG_DATA = 13,
-        TRANSFER = 14,
-        TRANSFER_OUT = 15,
-        SCRIPT_RESULT = 16,
-        MESSAGE_OUT = 17,
-        MINT = 18,
-        BURN = 19,
+        CALL = 3,
+        RETURN = 4,
+        RETURN_DATA = 5,
+        PANIC = 6,
+        REVERT = 7,
+        LOG = 8,
+        LOG_DATA = 9,
+        TRANSFER = 10,
+        TRANSFER_OUT = 11,
+        SCRIPT_RESULT = 12,
+        MESSAGE_OUT = 13,
+        MINT = 14,
+        BURN = 15,
     }
 
 }
 
 export class ReceiptCall extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptCall;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptCall;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptCall;
-    getToContractId(): Uint8Array | string;
-    getToContractId_asU8(): Uint8Array;
-    getToContractId_asB64(): string;
-    setToContractId(value: Uint8Array | string): ReceiptCall;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptCall;
+    getTo(): Uint8Array | string;
+    getTo_asU8(): Uint8Array;
+    getTo_asB64(): string;
+    setTo(value: Uint8Array | string): ReceiptCall;
     getAmount(): number;
     setAmount(value: number): ReceiptCall;
     getAssetId(): Uint8Array | string;
@@ -193,16 +167,6 @@ export class ReceiptCall extends jspb.Message {
     getIs(): number;
     setIs(value: number): ReceiptCall;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptCall;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptCall;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptCall.AsObject;
     static toObject(includeInstance: boolean, msg: ReceiptCall): ReceiptCall.AsObject;
@@ -215,10 +179,8 @@ export class ReceiptCall extends jspb.Message {
 
 export namespace ReceiptCall {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
-        toContractId: Uint8Array | string,
+        id: Uint8Array | string,
+        to: Uint8Array | string,
         amount: number,
         assetId: Uint8Array | string,
         gas: number,
@@ -226,38 +188,20 @@ export namespace ReceiptCall {
         param2: number,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptReturn extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptReturn;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptReturn;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptReturn;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptReturn;
     getVal(): number;
     setVal(value: number): ReceiptReturn;
     getPc(): number;
     setPc(value: number): ReceiptReturn;
     getIs(): number;
     setIs(value: number): ReceiptReturn;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptReturn;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptReturn;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptReturn.AsObject;
@@ -271,28 +215,18 @@ export class ReceiptReturn extends jspb.Message {
 
 export namespace ReceiptReturn {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         val: number,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptReturnData extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptReturnData;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptReturnData;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptReturnData;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptReturnData;
     getPtr(): number;
     setPtr(value: number): ReceiptReturnData;
     getLen(): number;
@@ -301,24 +235,14 @@ export class ReceiptReturnData extends jspb.Message {
     getDigest_asU8(): Uint8Array;
     getDigest_asB64(): string;
     setDigest(value: Uint8Array | string): ReceiptReturnData;
-    getPc(): number;
-    setPc(value: number): ReceiptReturnData;
-    getIs(): number;
-    setIs(value: number): ReceiptReturnData;
     getData(): Uint8Array | string;
     getData_asU8(): Uint8Array;
     getData_asB64(): string;
     setData(value: Uint8Array | string): ReceiptReturnData;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptReturnData;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptReturnData;
+    getPc(): number;
+    setPc(value: number): ReceiptReturnData;
+    getIs(): number;
+    setIs(value: number): ReceiptReturnData;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptReturnData.AsObject;
@@ -332,51 +256,31 @@ export class ReceiptReturnData extends jspb.Message {
 
 export namespace ReceiptReturnData {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         ptr: number,
         len: number,
         digest: Uint8Array | string,
+        data: Uint8Array | string,
         pc: number,
         is: number,
-        data: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptPanic extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptPanic;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptPanic;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptPanic;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptPanic;
     getReason(): number;
     setReason(value: number): ReceiptPanic;
     getPc(): number;
     setPc(value: number): ReceiptPanic;
     getIs(): number;
     setIs(value: number): ReceiptPanic;
-    getPanicContractId(): Uint8Array | string;
-    getPanicContractId_asU8(): Uint8Array;
-    getPanicContractId_asB64(): string;
-    setPanicContractId(value: Uint8Array | string): ReceiptPanic;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptPanic;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptPanic;
+    getContractId(): Uint8Array | string;
+    getContractId_asU8(): Uint8Array;
+    getContractId_asB64(): string;
+    setContractId(value: Uint8Array | string): ReceiptPanic;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptPanic.AsObject;
@@ -390,45 +294,25 @@ export class ReceiptPanic extends jspb.Message {
 
 export namespace ReceiptPanic {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         reason: number,
         pc: number,
         is: number,
-        panicContractId: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+        contractId: Uint8Array | string,
     }
 }
 
 export class ReceiptRevert extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptRevert;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptRevert;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptRevert;
-    getVal(): number;
-    setVal(value: number): ReceiptRevert;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptRevert;
+    getRa(): number;
+    setRa(value: number): ReceiptRevert;
     getPc(): number;
     setPc(value: number): ReceiptRevert;
     getIs(): number;
     setIs(value: number): ReceiptRevert;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptRevert;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptRevert;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptRevert.AsObject;
@@ -442,28 +326,18 @@ export class ReceiptRevert extends jspb.Message {
 
 export namespace ReceiptRevert {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
-        val: number,
+        id: Uint8Array | string,
+        ra: number,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptLog extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptLog;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptLog;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptLog;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptLog;
     getRa(): number;
     setRa(value: number): ReceiptLog;
     getRb(): number;
@@ -477,16 +351,6 @@ export class ReceiptLog extends jspb.Message {
     getIs(): number;
     setIs(value: number): ReceiptLog;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptLog;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptLog;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptLog.AsObject;
     static toObject(includeInstance: boolean, msg: ReceiptLog): ReceiptLog.AsObject;
@@ -499,31 +363,21 @@ export class ReceiptLog extends jspb.Message {
 
 export namespace ReceiptLog {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         ra: number,
         rb: number,
         rc: number,
         rd: number,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptLogData extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptLogData;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptLogData;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptLogData;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptLogData;
     getRa(): number;
     setRa(value: number): ReceiptLogData;
     getRb(): number;
@@ -536,24 +390,14 @@ export class ReceiptLogData extends jspb.Message {
     getDigest_asU8(): Uint8Array;
     getDigest_asB64(): string;
     setDigest(value: Uint8Array | string): ReceiptLogData;
-    getPc(): number;
-    setPc(value: number): ReceiptLogData;
-    getIs(): number;
-    setIs(value: number): ReceiptLogData;
     getData(): Uint8Array | string;
     getData_asU8(): Uint8Array;
     getData_asB64(): string;
     setData(value: Uint8Array | string): ReceiptLogData;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptLogData;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptLogData;
+    getPc(): number;
+    setPc(value: number): ReceiptLogData;
+    getIs(): number;
+    setIs(value: number): ReceiptLogData;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptLogData.AsObject;
@@ -567,37 +411,27 @@ export class ReceiptLogData extends jspb.Message {
 
 export namespace ReceiptLogData {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         ra: number,
         rb: number,
         ptr: number,
         len: number,
         digest: Uint8Array | string,
+        data: Uint8Array | string,
         pc: number,
         is: number,
-        data: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptTransfer extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptTransfer;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptTransfer;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptTransfer;
-    getToContractId(): Uint8Array | string;
-    getToContractId_asU8(): Uint8Array;
-    getToContractId_asB64(): string;
-    setToContractId(value: Uint8Array | string): ReceiptTransfer;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptTransfer;
+    getTo(): Uint8Array | string;
+    getTo_asU8(): Uint8Array;
+    getTo_asB64(): string;
+    setTo(value: Uint8Array | string): ReceiptTransfer;
     getAmount(): number;
     setAmount(value: number): ReceiptTransfer;
     getAssetId(): Uint8Array | string;
@@ -608,16 +442,6 @@ export class ReceiptTransfer extends jspb.Message {
     setPc(value: number): ReceiptTransfer;
     getIs(): number;
     setIs(value: number): ReceiptTransfer;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptTransfer;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptTransfer;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptTransfer.AsObject;
@@ -631,30 +455,20 @@ export class ReceiptTransfer extends jspb.Message {
 
 export namespace ReceiptTransfer {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
-        toContractId: Uint8Array | string,
+        id: Uint8Array | string,
+        to: Uint8Array | string,
         amount: number,
         assetId: Uint8Array | string,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptTransferOut extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptTransferOut;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptTransferOut;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptTransferOut;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptTransferOut;
     getToAddress(): Uint8Array | string;
     getToAddress_asU8(): Uint8Array;
     getToAddress_asB64(): string;
@@ -670,16 +484,6 @@ export class ReceiptTransferOut extends jspb.Message {
     getIs(): number;
     setIs(value: number): ReceiptTransferOut;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptTransferOut;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptTransferOut;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptTransferOut.AsObject;
     static toObject(includeInstance: boolean, msg: ReceiptTransferOut): ReceiptTransferOut.AsObject;
@@ -692,40 +496,20 @@ export class ReceiptTransferOut extends jspb.Message {
 
 export namespace ReceiptTransferOut {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         toAddress: Uint8Array | string,
         amount: number,
         assetId: Uint8Array | string,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptScriptResult extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptScriptResult;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptScriptResult;
     getResult(): ScriptResultType;
     setResult(value: ScriptResultType): ReceiptScriptResult;
     getGasUsed(): number;
     setGasUsed(value: number): ReceiptScriptResult;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptScriptResult;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptScriptResult;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptScriptResult.AsObject;
@@ -739,30 +523,20 @@ export class ReceiptScriptResult extends jspb.Message {
 
 export namespace ReceiptScriptResult {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
         result: ScriptResultType,
         gasUsed: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptMessageOut extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptMessageOut;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptMessageOut;
-    getSenderAddress(): Uint8Array | string;
-    getSenderAddress_asU8(): Uint8Array;
-    getSenderAddress_asB64(): string;
-    setSenderAddress(value: Uint8Array | string): ReceiptMessageOut;
-    getRecipientAddress(): Uint8Array | string;
-    getRecipientAddress_asU8(): Uint8Array;
-    getRecipientAddress_asB64(): string;
-    setRecipientAddress(value: Uint8Array | string): ReceiptMessageOut;
+    getSender(): Uint8Array | string;
+    getSender_asU8(): Uint8Array;
+    getSender_asB64(): string;
+    setSender(value: Uint8Array | string): ReceiptMessageOut;
+    getRecipient(): Uint8Array | string;
+    getRecipient_asU8(): Uint8Array;
+    getRecipient_asB64(): string;
+    setRecipient(value: Uint8Array | string): ReceiptMessageOut;
     getAmount(): number;
     setAmount(value: number): ReceiptMessageOut;
     getNonce(): Uint8Array | string;
@@ -780,16 +554,6 @@ export class ReceiptMessageOut extends jspb.Message {
     getData_asB64(): string;
     setData(value: Uint8Array | string): ReceiptMessageOut;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptMessageOut;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptMessageOut;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptMessageOut.AsObject;
     static toObject(includeInstance: boolean, msg: ReceiptMessageOut): ReceiptMessageOut.AsObject;
@@ -802,35 +566,25 @@ export class ReceiptMessageOut extends jspb.Message {
 
 export namespace ReceiptMessageOut {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
-        senderAddress: Uint8Array | string,
-        recipientAddress: Uint8Array | string,
+        sender: Uint8Array | string,
+        recipient: Uint8Array | string,
         amount: number,
         nonce: Uint8Array | string,
         len: number,
         digest: Uint8Array | string,
         data: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptMint extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptMint;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptMint;
     getSubId(): Uint8Array | string;
     getSubId_asU8(): Uint8Array;
     getSubId_asB64(): string;
     setSubId(value: Uint8Array | string): ReceiptMint;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptMint;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptMint;
     getAssetId(): Uint8Array | string;
     getAssetId_asU8(): Uint8Array;
     getAssetId_asB64(): string;
@@ -841,16 +595,6 @@ export class ReceiptMint extends jspb.Message {
     setPc(value: number): ReceiptMint;
     getIs(): number;
     setIs(value: number): ReceiptMint;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptMint;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptMint;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptMint.AsObject;
@@ -864,34 +608,24 @@ export class ReceiptMint extends jspb.Message {
 
 export namespace ReceiptMint {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
         subId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         assetId: Uint8Array | string,
         val: number,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class ReceiptBurn extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): ReceiptBurn;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): ReceiptBurn;
     getSubId(): Uint8Array | string;
     getSubId_asU8(): Uint8Array;
     getSubId_asB64(): string;
     setSubId(value: Uint8Array | string): ReceiptBurn;
-    getContractId(): Uint8Array | string;
-    getContractId_asU8(): Uint8Array;
-    getContractId_asB64(): string;
-    setContractId(value: Uint8Array | string): ReceiptBurn;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): ReceiptBurn;
     getAssetId(): Uint8Array | string;
     getAssetId_asU8(): Uint8Array;
     getAssetId_asB64(): string;
@@ -902,16 +636,6 @@ export class ReceiptBurn extends jspb.Message {
     setPc(value: number): ReceiptBurn;
     getIs(): number;
     setIs(value: number): ReceiptBurn;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptBurn;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ReceiptBurn;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ReceiptBurn.AsObject;
@@ -925,36 +649,36 @@ export class ReceiptBurn extends jspb.Message {
 
 export namespace ReceiptBurn {
     export type AsObject = {
-        subject: string,
-        txId: Uint8Array | string,
         subId: Uint8Array | string,
-        contractId: Uint8Array | string,
+        id: Uint8Array | string,
         assetId: Uint8Array | string,
         val: number,
         pc: number,
         is: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export enum ReceiptType {
-    CALL = 0,
-    RETURN = 1,
-    RETURN_DATA = 2,
-    PANIC = 3,
-    REVERT = 4,
-    LOG = 5,
-    LOG_DATA = 6,
-    TRANSFER = 7,
-    TRANSFER_OUT = 8,
-    SCRIPT_RESULT = 9,
-    MESSAGE_OUT = 10,
-    MINT = 11,
-    BURN = 12,
+    UNKNOWN_RECEIPT_TYPE = 0,
+    CALL = 1,
+    RETURN = 2,
+    RETURN_DATA = 3,
+    PANIC = 4,
+    REVERT = 5,
+    LOG = 6,
+    LOG_DATA = 7,
+    TRANSFER = 8,
+    TRANSFER_OUT = 9,
+    SCRIPT_RESULT = 10,
+    MESSAGE_OUT = 11,
+    MINT = 12,
+    BURN = 13,
 }
 
 export enum ScriptResultType {
-    SUCCESS = 0,
-    FAILURE = 1,
+    UNKNOWN_SCRIPT_RESULT_TYPE = 0,
+    SUCCESS = 1,
+    SCRIPT_REVERT = 2,
+    SCRIPT_PANIC = 3,
+    GENERIC_FAILURE = 4,
 }

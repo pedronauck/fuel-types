@@ -6,42 +6,45 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
+import { Metadata } from "./common";
 import { Input, InputContract } from "./inputs";
 import { Output, OutputContract } from "./outputs";
-import { TransactionPointer } from "./pointers";
-import { Receipt } from "./receipts";
+import { TxPointer } from "./pointers";
 
 export const protobufPackage = "transactions";
 
 export enum TransactionType {
-  SCRIPT = 0,
-  CREATE = 1,
-  MINT = 2,
-  UPGRADE = 3,
-  UPLOAD = 4,
-  BLOB = 5,
+  UNKNOWN_TRANSACTION_TYPE = 0,
+  SCRIPT = 1,
+  CREATE = 2,
+  MINT = 3,
+  UPGRADE = 4,
+  UPLOAD = 5,
+  BLOB = 6,
   UNRECOGNIZED = -1,
 }
 
 export function transactionTypeFromJSON(object: any): TransactionType {
   switch (object) {
     case 0:
+    case "UNKNOWN_TRANSACTION_TYPE":
+      return TransactionType.UNKNOWN_TRANSACTION_TYPE;
+    case 1:
     case "SCRIPT":
       return TransactionType.SCRIPT;
-    case 1:
+    case 2:
     case "CREATE":
       return TransactionType.CREATE;
-    case 2:
+    case 3:
     case "MINT":
       return TransactionType.MINT;
-    case 3:
+    case 4:
     case "UPGRADE":
       return TransactionType.UPGRADE;
-    case 4:
+    case 5:
     case "UPLOAD":
       return TransactionType.UPLOAD;
-    case 5:
+    case 6:
     case "BLOB":
       return TransactionType.BLOB;
     case -1:
@@ -53,6 +56,8 @@ export function transactionTypeFromJSON(object: any): TransactionType {
 
 export function transactionTypeToJSON(object: TransactionType): string {
   switch (object) {
+    case TransactionType.UNKNOWN_TRANSACTION_TYPE:
+      return "UNKNOWN_TRANSACTION_TYPE";
     case TransactionType.SCRIPT:
       return "SCRIPT";
     case TransactionType.CREATE:
@@ -72,23 +77,35 @@ export function transactionTypeToJSON(object: TransactionType): string {
 }
 
 export enum TransactionStatus {
-  SUCCESS = 0,
-  FAILURE = 1,
+  UNKNOWN_TRANSACTION_STATUS = 0,
+  FAILED = 1,
   SUBMITTED = 2,
+  SQUEEZED_OUT = 3,
+  SUCCESS = 4,
+  NONE = 5,
   UNRECOGNIZED = -1,
 }
 
 export function transactionStatusFromJSON(object: any): TransactionStatus {
   switch (object) {
     case 0:
-    case "SUCCESS":
-      return TransactionStatus.SUCCESS;
+    case "UNKNOWN_TRANSACTION_STATUS":
+      return TransactionStatus.UNKNOWN_TRANSACTION_STATUS;
     case 1:
-    case "FAILURE":
-      return TransactionStatus.FAILURE;
+    case "FAILED":
+      return TransactionStatus.FAILED;
     case 2:
     case "SUBMITTED":
       return TransactionStatus.SUBMITTED;
+    case 3:
+    case "SQUEEZED_OUT":
+      return TransactionStatus.SQUEEZED_OUT;
+    case 4:
+    case "SUCCESS":
+      return TransactionStatus.SUCCESS;
+    case 5:
+    case "NONE":
+      return TransactionStatus.NONE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -98,12 +115,18 @@ export function transactionStatusFromJSON(object: any): TransactionStatus {
 
 export function transactionStatusToJSON(object: TransactionStatus): string {
   switch (object) {
-    case TransactionStatus.SUCCESS:
-      return "SUCCESS";
-    case TransactionStatus.FAILURE:
-      return "FAILURE";
+    case TransactionStatus.UNKNOWN_TRANSACTION_STATUS:
+      return "UNKNOWN_TRANSACTION_STATUS";
+    case TransactionStatus.FAILED:
+      return "FAILED";
     case TransactionStatus.SUBMITTED:
       return "SUBMITTED";
+    case TransactionStatus.SQUEEZED_OUT:
+      return "SQUEEZED_OUT";
+    case TransactionStatus.SUCCESS:
+      return "SUCCESS";
+    case TransactionStatus.NONE:
+      return "NONE";
     case TransactionStatus.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -111,25 +134,29 @@ export function transactionStatusToJSON(object: TransactionStatus): string {
 }
 
 export enum PolicyType {
-  TIP = 0,
-  WITNESS_LIMIT = 1,
-  MATURITY = 2,
-  MAX_FEE = 3,
+  UNKNOWN_POLICY_TYPE = 0,
+  TIP = 1,
+  WITNESS_LIMIT = 2,
+  MATURITY = 3,
+  MAX_FEE = 4,
   UNRECOGNIZED = -1,
 }
 
 export function policyTypeFromJSON(object: any): PolicyType {
   switch (object) {
     case 0:
+    case "UNKNOWN_POLICY_TYPE":
+      return PolicyType.UNKNOWN_POLICY_TYPE;
+    case 1:
     case "TIP":
       return PolicyType.TIP;
-    case 1:
+    case 2:
     case "WITNESS_LIMIT":
       return PolicyType.WITNESS_LIMIT;
-    case 2:
+    case 3:
     case "MATURITY":
       return PolicyType.MATURITY;
-    case 3:
+    case 4:
     case "MAX_FEE":
       return PolicyType.MAX_FEE;
     case -1:
@@ -141,6 +168,8 @@ export function policyTypeFromJSON(object: any): PolicyType {
 
 export function policyTypeToJSON(object: PolicyType): string {
   switch (object) {
+    case PolicyType.UNKNOWN_POLICY_TYPE:
+      return "UNKNOWN_POLICY_TYPE";
     case PolicyType.TIP:
       return "TIP";
     case PolicyType.WITNESS_LIMIT:
@@ -157,55 +186,53 @@ export function policyTypeToJSON(object: PolicyType): string {
 
 export interface Transaction {
   subject: string;
-  blockHeight: number;
-  txId: Uint8Array;
-  txIndex: number;
-  type: TransactionType;
-  status: TransactionStatus;
-  root: Uint8Array;
-  witnessIndex: number;
-  blobId: Uint8Array;
+  /** Fields matching fuel-core */
+  id: Uint8Array;
+  scriptGasLimit: number;
+  txPointer: TxPointer | undefined;
   inputAssetIds: Uint8Array[];
+  inputContracts: Uint8Array[];
+  inputContract: InputContract | undefined;
+  inputs: Input[];
+  isScript: boolean;
   isCreate: boolean;
   isMint: boolean;
-  isScript: boolean;
   isUpgrade: boolean;
   isUpload: boolean;
-  maturity: number;
+  isBlob: boolean;
+  outputs: Output[];
+  outputContract: OutputContract | undefined;
   mintAmount: number;
   mintAssetId: Uint8Array;
   mintGasPrice: number;
-  policyType: number;
-  rawPayload: Uint8Array;
   receiptsRoot: Uint8Array;
-  salt: Uint8Array;
+  status: TransactionStatus;
+  witnesses: Uint8Array[];
   script: Uint8Array;
-  scriptLength: number;
   scriptData: Uint8Array;
-  scriptDataLength: number;
-  scriptGasLimit: number;
+  policies: Policy | undefined;
+  salt: Uint8Array;
+  storageSlots: Uint8Array[];
+  bytecodeWitnessIndex: number;
+  bytecodeRoot: Uint8Array;
   subsectionIndex: number;
   subsectionsNumber: number;
+  proofSet: Uint8Array[];
   upgradePurpose: number;
+  blobId: Uint8Array;
+  /** Extra fields (not in fuel-core) */
+  maturity: number;
+  policyType: number;
+  rawPayload: Uint8Array;
+  scriptLength: number;
+  scriptDataLength: number;
   storageSlotsCount: number;
   proofSetCount: number;
   witnessesCount: number;
   inputsCount: number;
   outputsCount: number;
-  /** Relationship fields */
-  inputContract: InputContract | undefined;
-  inputContracts: Uint8Array[];
-  inputs: Input[];
-  outputContract: OutputContract | undefined;
-  outputs: Output[];
-  proofSet: Uint8Array[];
-  receipts: Receipt[];
-  storageSlots: StorageSlot[];
-  witnesses: Uint8Array[];
   /** Metadata */
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
-  pointer: TransactionPointer | undefined;
+  metadata: Metadata | undefined;
 }
 
 export interface StorageSlot {
@@ -213,8 +240,6 @@ export interface StorageSlot {
   txId: Uint8Array;
   key: Uint8Array;
   value: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface Witness {
@@ -222,16 +247,12 @@ export interface Witness {
   txId: Uint8Array;
   witnessData: Uint8Array;
   witnessDataLength: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ProofSet {
   subject: string;
   txId: Uint8Array;
   proofHash: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface Policy {
@@ -239,60 +260,55 @@ export interface Policy {
   txId: Uint8Array;
   type: PolicyType;
   data: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 function createBaseTransaction(): Transaction {
   return {
     subject: "",
-    blockHeight: 0,
-    txId: new Uint8Array(0),
-    txIndex: 0,
-    type: 0,
-    status: 0,
-    root: new Uint8Array(0),
-    witnessIndex: 0,
-    blobId: new Uint8Array(0),
+    id: new Uint8Array(0),
+    scriptGasLimit: 0,
+    txPointer: undefined,
     inputAssetIds: [],
+    inputContracts: [],
+    inputContract: undefined,
+    inputs: [],
+    isScript: false,
     isCreate: false,
     isMint: false,
-    isScript: false,
     isUpgrade: false,
     isUpload: false,
-    maturity: 0,
+    isBlob: false,
+    outputs: [],
+    outputContract: undefined,
     mintAmount: 0,
     mintAssetId: new Uint8Array(0),
     mintGasPrice: 0,
-    policyType: 0,
-    rawPayload: new Uint8Array(0),
     receiptsRoot: new Uint8Array(0),
-    salt: new Uint8Array(0),
+    status: 0,
+    witnesses: [],
     script: new Uint8Array(0),
-    scriptLength: 0,
     scriptData: new Uint8Array(0),
-    scriptDataLength: 0,
-    scriptGasLimit: 0,
+    policies: undefined,
+    salt: new Uint8Array(0),
+    storageSlots: [],
+    bytecodeWitnessIndex: 0,
+    bytecodeRoot: new Uint8Array(0),
     subsectionIndex: 0,
     subsectionsNumber: 0,
+    proofSet: [],
     upgradePurpose: 0,
+    blobId: new Uint8Array(0),
+    maturity: 0,
+    policyType: 0,
+    rawPayload: new Uint8Array(0),
+    scriptLength: 0,
+    scriptDataLength: 0,
     storageSlotsCount: 0,
     proofSetCount: 0,
     witnessesCount: 0,
     inputsCount: 0,
     outputsCount: 0,
-    inputContract: undefined,
-    inputContracts: [],
-    inputs: [],
-    outputContract: undefined,
-    outputs: [],
-    proofSet: [],
-    receipts: [],
-    storageSlots: [],
-    witnesses: [],
-    createdAt: undefined,
-    publishedAt: undefined,
-    pointer: undefined,
+    metadata: undefined,
   };
 }
 
@@ -301,50 +317,50 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
+    if (message.id.length !== 0) {
+      writer.uint32(18).bytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(26).bytes(message.txId);
+    if (message.scriptGasLimit !== 0) {
+      writer.uint32(24).int64(message.scriptGasLimit);
     }
-    if (message.txIndex !== 0) {
-      writer.uint32(32).int32(message.txIndex);
-    }
-    if (message.type !== 0) {
-      writer.uint32(40).int32(message.type);
-    }
-    if (message.status !== 0) {
-      writer.uint32(48).int32(message.status);
-    }
-    if (message.root.length !== 0) {
-      writer.uint32(58).bytes(message.root);
-    }
-    if (message.witnessIndex !== 0) {
-      writer.uint32(64).int32(message.witnessIndex);
-    }
-    if (message.blobId.length !== 0) {
-      writer.uint32(74).bytes(message.blobId);
+    if (message.txPointer !== undefined) {
+      TxPointer.encode(message.txPointer, writer.uint32(34).fork()).join();
     }
     for (const v of message.inputAssetIds) {
-      writer.uint32(82).bytes(v!);
+      writer.uint32(42).bytes(v!);
     }
-    if (message.isCreate !== false) {
-      writer.uint32(88).bool(message.isCreate);
+    for (const v of message.inputContracts) {
+      writer.uint32(50).bytes(v!);
     }
-    if (message.isMint !== false) {
-      writer.uint32(96).bool(message.isMint);
+    if (message.inputContract !== undefined) {
+      InputContract.encode(message.inputContract, writer.uint32(58).fork()).join();
+    }
+    for (const v of message.inputs) {
+      Input.encode(v!, writer.uint32(66).fork()).join();
     }
     if (message.isScript !== false) {
-      writer.uint32(104).bool(message.isScript);
+      writer.uint32(72).bool(message.isScript);
+    }
+    if (message.isCreate !== false) {
+      writer.uint32(80).bool(message.isCreate);
+    }
+    if (message.isMint !== false) {
+      writer.uint32(88).bool(message.isMint);
     }
     if (message.isUpgrade !== false) {
-      writer.uint32(112).bool(message.isUpgrade);
+      writer.uint32(96).bool(message.isUpgrade);
     }
     if (message.isUpload !== false) {
-      writer.uint32(120).bool(message.isUpload);
+      writer.uint32(104).bool(message.isUpload);
     }
-    if (message.maturity !== 0) {
-      writer.uint32(128).int32(message.maturity);
+    if (message.isBlob !== false) {
+      writer.uint32(112).bool(message.isBlob);
+    }
+    for (const v of message.outputs) {
+      Output.encode(v!, writer.uint32(122).fork()).join();
+    }
+    if (message.outputContract !== undefined) {
+      OutputContract.encode(message.outputContract, writer.uint32(130).fork()).join();
     }
     if (message.mintAmount !== 0) {
       writer.uint32(136).int64(message.mintAmount);
@@ -355,92 +371,83 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.mintGasPrice !== 0) {
       writer.uint32(152).int64(message.mintGasPrice);
     }
-    if (message.policyType !== 0) {
-      writer.uint32(160).int32(message.policyType);
-    }
-    if (message.rawPayload.length !== 0) {
-      writer.uint32(170).bytes(message.rawPayload);
-    }
     if (message.receiptsRoot.length !== 0) {
-      writer.uint32(178).bytes(message.receiptsRoot);
+      writer.uint32(162).bytes(message.receiptsRoot);
     }
-    if (message.salt.length !== 0) {
-      writer.uint32(186).bytes(message.salt);
-    }
-    if (message.script.length !== 0) {
-      writer.uint32(194).bytes(message.script);
-    }
-    if (message.scriptLength !== 0) {
-      writer.uint32(200).int64(message.scriptLength);
-    }
-    if (message.scriptData.length !== 0) {
-      writer.uint32(210).bytes(message.scriptData);
-    }
-    if (message.scriptDataLength !== 0) {
-      writer.uint32(216).int64(message.scriptDataLength);
-    }
-    if (message.scriptGasLimit !== 0) {
-      writer.uint32(224).int64(message.scriptGasLimit);
-    }
-    if (message.subsectionIndex !== 0) {
-      writer.uint32(232).int32(message.subsectionIndex);
-    }
-    if (message.subsectionsNumber !== 0) {
-      writer.uint32(240).int32(message.subsectionsNumber);
-    }
-    if (message.upgradePurpose !== 0) {
-      writer.uint32(248).int32(message.upgradePurpose);
-    }
-    if (message.storageSlotsCount !== 0) {
-      writer.uint32(256).int64(message.storageSlotsCount);
-    }
-    if (message.proofSetCount !== 0) {
-      writer.uint32(264).int32(message.proofSetCount);
-    }
-    if (message.witnessesCount !== 0) {
-      writer.uint32(272).int32(message.witnessesCount);
-    }
-    if (message.inputsCount !== 0) {
-      writer.uint32(280).int32(message.inputsCount);
-    }
-    if (message.outputsCount !== 0) {
-      writer.uint32(288).int32(message.outputsCount);
-    }
-    if (message.inputContract !== undefined) {
-      InputContract.encode(message.inputContract, writer.uint32(298).fork()).join();
-    }
-    for (const v of message.inputContracts) {
-      writer.uint32(306).bytes(v!);
-    }
-    for (const v of message.inputs) {
-      Input.encode(v!, writer.uint32(314).fork()).join();
-    }
-    if (message.outputContract !== undefined) {
-      OutputContract.encode(message.outputContract, writer.uint32(322).fork()).join();
-    }
-    for (const v of message.outputs) {
-      Output.encode(v!, writer.uint32(330).fork()).join();
-    }
-    for (const v of message.proofSet) {
-      writer.uint32(338).bytes(v!);
-    }
-    for (const v of message.receipts) {
-      Receipt.encode(v!, writer.uint32(346).fork()).join();
-    }
-    for (const v of message.storageSlots) {
-      StorageSlot.encode(v!, writer.uint32(354).fork()).join();
+    if (message.status !== 0) {
+      writer.uint32(168).int32(message.status);
     }
     for (const v of message.witnesses) {
-      writer.uint32(362).bytes(v!);
+      writer.uint32(178).bytes(v!);
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(370).fork()).join();
+    if (message.script.length !== 0) {
+      writer.uint32(186).bytes(message.script);
     }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(378).fork()).join();
+    if (message.scriptData.length !== 0) {
+      writer.uint32(194).bytes(message.scriptData);
     }
-    if (message.pointer !== undefined) {
-      TransactionPointer.encode(message.pointer, writer.uint32(386).fork()).join();
+    if (message.policies !== undefined) {
+      Policy.encode(message.policies, writer.uint32(202).fork()).join();
+    }
+    if (message.salt.length !== 0) {
+      writer.uint32(210).bytes(message.salt);
+    }
+    for (const v of message.storageSlots) {
+      writer.uint32(218).bytes(v!);
+    }
+    if (message.bytecodeWitnessIndex !== 0) {
+      writer.uint32(224).int32(message.bytecodeWitnessIndex);
+    }
+    if (message.bytecodeRoot.length !== 0) {
+      writer.uint32(234).bytes(message.bytecodeRoot);
+    }
+    if (message.subsectionIndex !== 0) {
+      writer.uint32(240).int32(message.subsectionIndex);
+    }
+    if (message.subsectionsNumber !== 0) {
+      writer.uint32(248).int32(message.subsectionsNumber);
+    }
+    for (const v of message.proofSet) {
+      writer.uint32(258).bytes(v!);
+    }
+    if (message.upgradePurpose !== 0) {
+      writer.uint32(264).int32(message.upgradePurpose);
+    }
+    if (message.blobId.length !== 0) {
+      writer.uint32(274).bytes(message.blobId);
+    }
+    if (message.maturity !== 0) {
+      writer.uint32(280).int32(message.maturity);
+    }
+    if (message.policyType !== 0) {
+      writer.uint32(288).int32(message.policyType);
+    }
+    if (message.rawPayload.length !== 0) {
+      writer.uint32(298).bytes(message.rawPayload);
+    }
+    if (message.scriptLength !== 0) {
+      writer.uint32(304).int64(message.scriptLength);
+    }
+    if (message.scriptDataLength !== 0) {
+      writer.uint32(312).int64(message.scriptDataLength);
+    }
+    if (message.storageSlotsCount !== 0) {
+      writer.uint32(320).int64(message.storageSlotsCount);
+    }
+    if (message.proofSetCount !== 0) {
+      writer.uint32(328).int32(message.proofSetCount);
+    }
+    if (message.witnessesCount !== 0) {
+      writer.uint32(336).int32(message.witnessesCount);
+    }
+    if (message.inputsCount !== 0) {
+      writer.uint32(344).int32(message.inputsCount);
+    }
+    if (message.outputsCount !== 0) {
+      writer.uint32(352).int32(message.outputsCount);
+    }
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(362).fork()).join();
     }
     return writer;
   },
@@ -461,43 +468,43 @@ export const Transaction: MessageFns<Transaction> = {
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.id = reader.bytes();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.scriptGasLimit = longToNumber(reader.int64());
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.txPointer = TxPointer.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.type = reader.int32() as any;
+          message.inputAssetIds.push(reader.bytes());
           continue;
         }
         case 6: {
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.status = reader.int32() as any;
+          message.inputContracts.push(reader.bytes());
           continue;
         }
         case 7: {
@@ -505,31 +512,31 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.root = reader.bytes();
+          message.inputContract = InputContract.decode(reader, reader.uint32());
           continue;
         }
         case 8: {
-          if (tag !== 64) {
+          if (tag !== 66) {
             break;
           }
 
-          message.witnessIndex = reader.int32();
+          message.inputs.push(Input.decode(reader, reader.uint32()));
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 72) {
             break;
           }
 
-          message.blobId = reader.bytes();
+          message.isScript = reader.bool();
           continue;
         }
         case 10: {
-          if (tag !== 82) {
+          if (tag !== 80) {
             break;
           }
 
-          message.inputAssetIds.push(reader.bytes());
+          message.isCreate = reader.bool();
           continue;
         }
         case 11: {
@@ -537,7 +544,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.isCreate = reader.bool();
+          message.isMint = reader.bool();
           continue;
         }
         case 12: {
@@ -545,7 +552,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.isMint = reader.bool();
+          message.isUpgrade = reader.bool();
           continue;
         }
         case 13: {
@@ -553,7 +560,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.isScript = reader.bool();
+          message.isUpload = reader.bool();
           continue;
         }
         case 14: {
@@ -561,23 +568,23 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.isUpgrade = reader.bool();
+          message.isBlob = reader.bool();
           continue;
         }
         case 15: {
-          if (tag !== 120) {
+          if (tag !== 122) {
             break;
           }
 
-          message.isUpload = reader.bool();
+          message.outputs.push(Output.decode(reader, reader.uint32()));
           continue;
         }
         case 16: {
-          if (tag !== 128) {
+          if (tag !== 130) {
             break;
           }
 
-          message.maturity = reader.int32();
+          message.outputContract = OutputContract.decode(reader, reader.uint32());
           continue;
         }
         case 17: {
@@ -605,19 +612,19 @@ export const Transaction: MessageFns<Transaction> = {
           continue;
         }
         case 20: {
-          if (tag !== 160) {
+          if (tag !== 162) {
             break;
           }
 
-          message.policyType = reader.int32();
+          message.receiptsRoot = reader.bytes();
           continue;
         }
         case 21: {
-          if (tag !== 170) {
+          if (tag !== 168) {
             break;
           }
 
-          message.rawPayload = reader.bytes();
+          message.status = reader.int32() as any;
           continue;
         }
         case 22: {
@@ -625,7 +632,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.receiptsRoot = reader.bytes();
+          message.witnesses.push(reader.bytes());
           continue;
         }
         case 23: {
@@ -633,7 +640,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.salt = reader.bytes();
+          message.script = reader.bytes();
           continue;
         }
         case 24: {
@@ -641,15 +648,15 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.script = reader.bytes();
+          message.scriptData = reader.bytes();
           continue;
         }
         case 25: {
-          if (tag !== 200) {
+          if (tag !== 202) {
             break;
           }
 
-          message.scriptLength = longToNumber(reader.int64());
+          message.policies = Policy.decode(reader, reader.uint32());
           continue;
         }
         case 26: {
@@ -657,15 +664,15 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.scriptData = reader.bytes();
+          message.salt = reader.bytes();
           continue;
         }
         case 27: {
-          if (tag !== 216) {
+          if (tag !== 218) {
             break;
           }
 
-          message.scriptDataLength = longToNumber(reader.int64());
+          message.storageSlots.push(reader.bytes());
           continue;
         }
         case 28: {
@@ -673,15 +680,15 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.scriptGasLimit = longToNumber(reader.int64());
+          message.bytecodeWitnessIndex = reader.int32();
           continue;
         }
         case 29: {
-          if (tag !== 232) {
+          if (tag !== 234) {
             break;
           }
 
-          message.subsectionIndex = reader.int32();
+          message.bytecodeRoot = reader.bytes();
           continue;
         }
         case 30: {
@@ -689,7 +696,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.subsectionsNumber = reader.int32();
+          message.subsectionIndex = reader.int32();
           continue;
         }
         case 31: {
@@ -697,15 +704,15 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.upgradePurpose = reader.int32();
+          message.subsectionsNumber = reader.int32();
           continue;
         }
         case 32: {
-          if (tag !== 256) {
+          if (tag !== 258) {
             break;
           }
 
-          message.storageSlotsCount = longToNumber(reader.int64());
+          message.proofSet.push(reader.bytes());
           continue;
         }
         case 33: {
@@ -713,15 +720,15 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.proofSetCount = reader.int32();
+          message.upgradePurpose = reader.int32();
           continue;
         }
         case 34: {
-          if (tag !== 272) {
+          if (tag !== 274) {
             break;
           }
 
-          message.witnessesCount = reader.int32();
+          message.blobId = reader.bytes();
           continue;
         }
         case 35: {
@@ -729,7 +736,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.inputsCount = reader.int32();
+          message.maturity = reader.int32();
           continue;
         }
         case 36: {
@@ -737,7 +744,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.outputsCount = reader.int32();
+          message.policyType = reader.int32();
           continue;
         }
         case 37: {
@@ -745,63 +752,63 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.inputContract = InputContract.decode(reader, reader.uint32());
+          message.rawPayload = reader.bytes();
           continue;
         }
         case 38: {
-          if (tag !== 306) {
+          if (tag !== 304) {
             break;
           }
 
-          message.inputContracts.push(reader.bytes());
+          message.scriptLength = longToNumber(reader.int64());
           continue;
         }
         case 39: {
-          if (tag !== 314) {
+          if (tag !== 312) {
             break;
           }
 
-          message.inputs.push(Input.decode(reader, reader.uint32()));
+          message.scriptDataLength = longToNumber(reader.int64());
           continue;
         }
         case 40: {
-          if (tag !== 322) {
+          if (tag !== 320) {
             break;
           }
 
-          message.outputContract = OutputContract.decode(reader, reader.uint32());
+          message.storageSlotsCount = longToNumber(reader.int64());
           continue;
         }
         case 41: {
-          if (tag !== 330) {
+          if (tag !== 328) {
             break;
           }
 
-          message.outputs.push(Output.decode(reader, reader.uint32()));
+          message.proofSetCount = reader.int32();
           continue;
         }
         case 42: {
-          if (tag !== 338) {
+          if (tag !== 336) {
             break;
           }
 
-          message.proofSet.push(reader.bytes());
+          message.witnessesCount = reader.int32();
           continue;
         }
         case 43: {
-          if (tag !== 346) {
+          if (tag !== 344) {
             break;
           }
 
-          message.receipts.push(Receipt.decode(reader, reader.uint32()));
+          message.inputsCount = reader.int32();
           continue;
         }
         case 44: {
-          if (tag !== 354) {
+          if (tag !== 352) {
             break;
           }
 
-          message.storageSlots.push(StorageSlot.decode(reader, reader.uint32()));
+          message.outputsCount = reader.int32();
           continue;
         }
         case 45: {
@@ -809,31 +816,7 @@ export const Transaction: MessageFns<Transaction> = {
             break;
           }
 
-          message.witnesses.push(reader.bytes());
-          continue;
-        }
-        case 46: {
-          if (tag !== 370) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 47: {
-          if (tag !== 378) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 48: {
-          if (tag !== 386) {
-            break;
-          }
-
-          message.pointer = TransactionPointer.decode(reader, reader.uint32());
+          message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -848,61 +831,58 @@ export const Transaction: MessageFns<Transaction> = {
   fromJSON(object: any): Transaction {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
-      type: isSet(object.type) ? transactionTypeFromJSON(object.type) : 0,
-      status: isSet(object.status) ? transactionStatusFromJSON(object.status) : 0,
-      root: isSet(object.root) ? bytesFromBase64(object.root) : new Uint8Array(0),
-      witnessIndex: isSet(object.witnessIndex) ? globalThis.Number(object.witnessIndex) : 0,
-      blobId: isSet(object.blobId) ? bytesFromBase64(object.blobId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      scriptGasLimit: isSet(object.scriptGasLimit) ? globalThis.Number(object.scriptGasLimit) : 0,
+      txPointer: isSet(object.txPointer) ? TxPointer.fromJSON(object.txPointer) : undefined,
       inputAssetIds: globalThis.Array.isArray(object?.inputAssetIds)
         ? object.inputAssetIds.map((e: any) => bytesFromBase64(e))
         : [],
+      inputContracts: globalThis.Array.isArray(object?.inputContracts)
+        ? object.inputContracts.map((e: any) => bytesFromBase64(e))
+        : [],
+      inputContract: isSet(object.inputContract) ? InputContract.fromJSON(object.inputContract) : undefined,
+      inputs: globalThis.Array.isArray(object?.inputs) ? object.inputs.map((e: any) => Input.fromJSON(e)) : [],
+      isScript: isSet(object.isScript) ? globalThis.Boolean(object.isScript) : false,
       isCreate: isSet(object.isCreate) ? globalThis.Boolean(object.isCreate) : false,
       isMint: isSet(object.isMint) ? globalThis.Boolean(object.isMint) : false,
-      isScript: isSet(object.isScript) ? globalThis.Boolean(object.isScript) : false,
       isUpgrade: isSet(object.isUpgrade) ? globalThis.Boolean(object.isUpgrade) : false,
       isUpload: isSet(object.isUpload) ? globalThis.Boolean(object.isUpload) : false,
-      maturity: isSet(object.maturity) ? globalThis.Number(object.maturity) : 0,
+      isBlob: isSet(object.isBlob) ? globalThis.Boolean(object.isBlob) : false,
+      outputs: globalThis.Array.isArray(object?.outputs) ? object.outputs.map((e: any) => Output.fromJSON(e)) : [],
+      outputContract: isSet(object.outputContract) ? OutputContract.fromJSON(object.outputContract) : undefined,
       mintAmount: isSet(object.mintAmount) ? globalThis.Number(object.mintAmount) : 0,
       mintAssetId: isSet(object.mintAssetId) ? bytesFromBase64(object.mintAssetId) : new Uint8Array(0),
       mintGasPrice: isSet(object.mintGasPrice) ? globalThis.Number(object.mintGasPrice) : 0,
-      policyType: isSet(object.policyType) ? globalThis.Number(object.policyType) : 0,
-      rawPayload: isSet(object.rawPayload) ? bytesFromBase64(object.rawPayload) : new Uint8Array(0),
       receiptsRoot: isSet(object.receiptsRoot) ? bytesFromBase64(object.receiptsRoot) : new Uint8Array(0),
-      salt: isSet(object.salt) ? bytesFromBase64(object.salt) : new Uint8Array(0),
+      status: isSet(object.status) ? transactionStatusFromJSON(object.status) : 0,
+      witnesses: globalThis.Array.isArray(object?.witnesses)
+        ? object.witnesses.map((e: any) => bytesFromBase64(e))
+        : [],
       script: isSet(object.script) ? bytesFromBase64(object.script) : new Uint8Array(0),
-      scriptLength: isSet(object.scriptLength) ? globalThis.Number(object.scriptLength) : 0,
       scriptData: isSet(object.scriptData) ? bytesFromBase64(object.scriptData) : new Uint8Array(0),
-      scriptDataLength: isSet(object.scriptDataLength) ? globalThis.Number(object.scriptDataLength) : 0,
-      scriptGasLimit: isSet(object.scriptGasLimit) ? globalThis.Number(object.scriptGasLimit) : 0,
+      policies: isSet(object.policies) ? Policy.fromJSON(object.policies) : undefined,
+      salt: isSet(object.salt) ? bytesFromBase64(object.salt) : new Uint8Array(0),
+      storageSlots: globalThis.Array.isArray(object?.storageSlots)
+        ? object.storageSlots.map((e: any) => bytesFromBase64(e))
+        : [],
+      bytecodeWitnessIndex: isSet(object.bytecodeWitnessIndex) ? globalThis.Number(object.bytecodeWitnessIndex) : 0,
+      bytecodeRoot: isSet(object.bytecodeRoot) ? bytesFromBase64(object.bytecodeRoot) : new Uint8Array(0),
       subsectionIndex: isSet(object.subsectionIndex) ? globalThis.Number(object.subsectionIndex) : 0,
       subsectionsNumber: isSet(object.subsectionsNumber) ? globalThis.Number(object.subsectionsNumber) : 0,
+      proofSet: globalThis.Array.isArray(object?.proofSet) ? object.proofSet.map((e: any) => bytesFromBase64(e)) : [],
       upgradePurpose: isSet(object.upgradePurpose) ? globalThis.Number(object.upgradePurpose) : 0,
+      blobId: isSet(object.blobId) ? bytesFromBase64(object.blobId) : new Uint8Array(0),
+      maturity: isSet(object.maturity) ? globalThis.Number(object.maturity) : 0,
+      policyType: isSet(object.policyType) ? globalThis.Number(object.policyType) : 0,
+      rawPayload: isSet(object.rawPayload) ? bytesFromBase64(object.rawPayload) : new Uint8Array(0),
+      scriptLength: isSet(object.scriptLength) ? globalThis.Number(object.scriptLength) : 0,
+      scriptDataLength: isSet(object.scriptDataLength) ? globalThis.Number(object.scriptDataLength) : 0,
       storageSlotsCount: isSet(object.storageSlotsCount) ? globalThis.Number(object.storageSlotsCount) : 0,
       proofSetCount: isSet(object.proofSetCount) ? globalThis.Number(object.proofSetCount) : 0,
       witnessesCount: isSet(object.witnessesCount) ? globalThis.Number(object.witnessesCount) : 0,
       inputsCount: isSet(object.inputsCount) ? globalThis.Number(object.inputsCount) : 0,
       outputsCount: isSet(object.outputsCount) ? globalThis.Number(object.outputsCount) : 0,
-      inputContract: isSet(object.inputContract) ? InputContract.fromJSON(object.inputContract) : undefined,
-      inputContracts: globalThis.Array.isArray(object?.inputContracts)
-        ? object.inputContracts.map((e: any) => bytesFromBase64(e))
-        : [],
-      inputs: globalThis.Array.isArray(object?.inputs) ? object.inputs.map((e: any) => Input.fromJSON(e)) : [],
-      outputContract: isSet(object.outputContract) ? OutputContract.fromJSON(object.outputContract) : undefined,
-      outputs: globalThis.Array.isArray(object?.outputs) ? object.outputs.map((e: any) => Output.fromJSON(e)) : [],
-      proofSet: globalThis.Array.isArray(object?.proofSet) ? object.proofSet.map((e: any) => bytesFromBase64(e)) : [],
-      receipts: globalThis.Array.isArray(object?.receipts) ? object.receipts.map((e: any) => Receipt.fromJSON(e)) : [],
-      storageSlots: globalThis.Array.isArray(object?.storageSlots)
-        ? object.storageSlots.map((e: any) => StorageSlot.fromJSON(e))
-        : [],
-      witnesses: globalThis.Array.isArray(object?.witnesses)
-        ? object.witnesses.map((e: any) => bytesFromBase64(e))
-        : [],
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
-      pointer: isSet(object.pointer) ? TransactionPointer.fromJSON(object.pointer) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
     };
   },
 
@@ -911,32 +891,29 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.scriptGasLimit !== 0) {
+      obj.scriptGasLimit = Math.round(message.scriptGasLimit);
     }
-    if (message.txIndex !== 0) {
-      obj.txIndex = Math.round(message.txIndex);
-    }
-    if (message.type !== 0) {
-      obj.type = transactionTypeToJSON(message.type);
-    }
-    if (message.status !== 0) {
-      obj.status = transactionStatusToJSON(message.status);
-    }
-    if (message.root.length !== 0) {
-      obj.root = base64FromBytes(message.root);
-    }
-    if (message.witnessIndex !== 0) {
-      obj.witnessIndex = Math.round(message.witnessIndex);
-    }
-    if (message.blobId.length !== 0) {
-      obj.blobId = base64FromBytes(message.blobId);
+    if (message.txPointer !== undefined) {
+      obj.txPointer = TxPointer.toJSON(message.txPointer);
     }
     if (message.inputAssetIds?.length) {
       obj.inputAssetIds = message.inputAssetIds.map((e) => base64FromBytes(e));
+    }
+    if (message.inputContracts?.length) {
+      obj.inputContracts = message.inputContracts.map((e) => base64FromBytes(e));
+    }
+    if (message.inputContract !== undefined) {
+      obj.inputContract = InputContract.toJSON(message.inputContract);
+    }
+    if (message.inputs?.length) {
+      obj.inputs = message.inputs.map((e) => Input.toJSON(e));
+    }
+    if (message.isScript !== false) {
+      obj.isScript = message.isScript;
     }
     if (message.isCreate !== false) {
       obj.isCreate = message.isCreate;
@@ -944,17 +921,20 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.isMint !== false) {
       obj.isMint = message.isMint;
     }
-    if (message.isScript !== false) {
-      obj.isScript = message.isScript;
-    }
     if (message.isUpgrade !== false) {
       obj.isUpgrade = message.isUpgrade;
     }
     if (message.isUpload !== false) {
       obj.isUpload = message.isUpload;
     }
-    if (message.maturity !== 0) {
-      obj.maturity = Math.round(message.maturity);
+    if (message.isBlob !== false) {
+      obj.isBlob = message.isBlob;
+    }
+    if (message.outputs?.length) {
+      obj.outputs = message.outputs.map((e) => Output.toJSON(e));
+    }
+    if (message.outputContract !== undefined) {
+      obj.outputContract = OutputContract.toJSON(message.outputContract);
     }
     if (message.mintAmount !== 0) {
       obj.mintAmount = Math.round(message.mintAmount);
@@ -965,32 +945,35 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.mintGasPrice !== 0) {
       obj.mintGasPrice = Math.round(message.mintGasPrice);
     }
-    if (message.policyType !== 0) {
-      obj.policyType = Math.round(message.policyType);
-    }
-    if (message.rawPayload.length !== 0) {
-      obj.rawPayload = base64FromBytes(message.rawPayload);
-    }
     if (message.receiptsRoot.length !== 0) {
       obj.receiptsRoot = base64FromBytes(message.receiptsRoot);
     }
-    if (message.salt.length !== 0) {
-      obj.salt = base64FromBytes(message.salt);
+    if (message.status !== 0) {
+      obj.status = transactionStatusToJSON(message.status);
+    }
+    if (message.witnesses?.length) {
+      obj.witnesses = message.witnesses.map((e) => base64FromBytes(e));
     }
     if (message.script.length !== 0) {
       obj.script = base64FromBytes(message.script);
     }
-    if (message.scriptLength !== 0) {
-      obj.scriptLength = Math.round(message.scriptLength);
-    }
     if (message.scriptData.length !== 0) {
       obj.scriptData = base64FromBytes(message.scriptData);
     }
-    if (message.scriptDataLength !== 0) {
-      obj.scriptDataLength = Math.round(message.scriptDataLength);
+    if (message.policies !== undefined) {
+      obj.policies = Policy.toJSON(message.policies);
     }
-    if (message.scriptGasLimit !== 0) {
-      obj.scriptGasLimit = Math.round(message.scriptGasLimit);
+    if (message.salt.length !== 0) {
+      obj.salt = base64FromBytes(message.salt);
+    }
+    if (message.storageSlots?.length) {
+      obj.storageSlots = message.storageSlots.map((e) => base64FromBytes(e));
+    }
+    if (message.bytecodeWitnessIndex !== 0) {
+      obj.bytecodeWitnessIndex = Math.round(message.bytecodeWitnessIndex);
+    }
+    if (message.bytecodeRoot.length !== 0) {
+      obj.bytecodeRoot = base64FromBytes(message.bytecodeRoot);
     }
     if (message.subsectionIndex !== 0) {
       obj.subsectionIndex = Math.round(message.subsectionIndex);
@@ -998,8 +981,29 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.subsectionsNumber !== 0) {
       obj.subsectionsNumber = Math.round(message.subsectionsNumber);
     }
+    if (message.proofSet?.length) {
+      obj.proofSet = message.proofSet.map((e) => base64FromBytes(e));
+    }
     if (message.upgradePurpose !== 0) {
       obj.upgradePurpose = Math.round(message.upgradePurpose);
+    }
+    if (message.blobId.length !== 0) {
+      obj.blobId = base64FromBytes(message.blobId);
+    }
+    if (message.maturity !== 0) {
+      obj.maturity = Math.round(message.maturity);
+    }
+    if (message.policyType !== 0) {
+      obj.policyType = Math.round(message.policyType);
+    }
+    if (message.rawPayload.length !== 0) {
+      obj.rawPayload = base64FromBytes(message.rawPayload);
+    }
+    if (message.scriptLength !== 0) {
+      obj.scriptLength = Math.round(message.scriptLength);
+    }
+    if (message.scriptDataLength !== 0) {
+      obj.scriptDataLength = Math.round(message.scriptDataLength);
     }
     if (message.storageSlotsCount !== 0) {
       obj.storageSlotsCount = Math.round(message.storageSlotsCount);
@@ -1016,41 +1020,8 @@ export const Transaction: MessageFns<Transaction> = {
     if (message.outputsCount !== 0) {
       obj.outputsCount = Math.round(message.outputsCount);
     }
-    if (message.inputContract !== undefined) {
-      obj.inputContract = InputContract.toJSON(message.inputContract);
-    }
-    if (message.inputContracts?.length) {
-      obj.inputContracts = message.inputContracts.map((e) => base64FromBytes(e));
-    }
-    if (message.inputs?.length) {
-      obj.inputs = message.inputs.map((e) => Input.toJSON(e));
-    }
-    if (message.outputContract !== undefined) {
-      obj.outputContract = OutputContract.toJSON(message.outputContract);
-    }
-    if (message.outputs?.length) {
-      obj.outputs = message.outputs.map((e) => Output.toJSON(e));
-    }
-    if (message.proofSet?.length) {
-      obj.proofSet = message.proofSet.map((e) => base64FromBytes(e));
-    }
-    if (message.receipts?.length) {
-      obj.receipts = message.receipts.map((e) => Receipt.toJSON(e));
-    }
-    if (message.storageSlots?.length) {
-      obj.storageSlots = message.storageSlots.map((e) => StorageSlot.toJSON(e));
-    }
-    if (message.witnesses?.length) {
-      obj.witnesses = message.witnesses.map((e) => base64FromBytes(e));
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
-    if (message.pointer !== undefined) {
-      obj.pointer = TransactionPointer.toJSON(message.pointer);
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
     }
     return obj;
   },
@@ -1061,72 +1032,66 @@ export const Transaction: MessageFns<Transaction> = {
   fromPartial<I extends Exact<DeepPartial<Transaction>, I>>(object: I): Transaction {
     const message = createBaseTransaction();
     message.subject = object.subject ?? "";
-    message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.txIndex = object.txIndex ?? 0;
-    message.type = object.type ?? 0;
-    message.status = object.status ?? 0;
-    message.root = object.root ?? new Uint8Array(0);
-    message.witnessIndex = object.witnessIndex ?? 0;
-    message.blobId = object.blobId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
+    message.scriptGasLimit = object.scriptGasLimit ?? 0;
+    message.txPointer = (object.txPointer !== undefined && object.txPointer !== null)
+      ? TxPointer.fromPartial(object.txPointer)
+      : undefined;
     message.inputAssetIds = object.inputAssetIds?.map((e) => e) || [];
+    message.inputContracts = object.inputContracts?.map((e) => e) || [];
+    message.inputContract = (object.inputContract !== undefined && object.inputContract !== null)
+      ? InputContract.fromPartial(object.inputContract)
+      : undefined;
+    message.inputs = object.inputs?.map((e) => Input.fromPartial(e)) || [];
+    message.isScript = object.isScript ?? false;
     message.isCreate = object.isCreate ?? false;
     message.isMint = object.isMint ?? false;
-    message.isScript = object.isScript ?? false;
     message.isUpgrade = object.isUpgrade ?? false;
     message.isUpload = object.isUpload ?? false;
-    message.maturity = object.maturity ?? 0;
+    message.isBlob = object.isBlob ?? false;
+    message.outputs = object.outputs?.map((e) => Output.fromPartial(e)) || [];
+    message.outputContract = (object.outputContract !== undefined && object.outputContract !== null)
+      ? OutputContract.fromPartial(object.outputContract)
+      : undefined;
     message.mintAmount = object.mintAmount ?? 0;
     message.mintAssetId = object.mintAssetId ?? new Uint8Array(0);
     message.mintGasPrice = object.mintGasPrice ?? 0;
-    message.policyType = object.policyType ?? 0;
-    message.rawPayload = object.rawPayload ?? new Uint8Array(0);
     message.receiptsRoot = object.receiptsRoot ?? new Uint8Array(0);
-    message.salt = object.salt ?? new Uint8Array(0);
+    message.status = object.status ?? 0;
+    message.witnesses = object.witnesses?.map((e) => e) || [];
     message.script = object.script ?? new Uint8Array(0);
-    message.scriptLength = object.scriptLength ?? 0;
     message.scriptData = object.scriptData ?? new Uint8Array(0);
-    message.scriptDataLength = object.scriptDataLength ?? 0;
-    message.scriptGasLimit = object.scriptGasLimit ?? 0;
+    message.policies = (object.policies !== undefined && object.policies !== null)
+      ? Policy.fromPartial(object.policies)
+      : undefined;
+    message.salt = object.salt ?? new Uint8Array(0);
+    message.storageSlots = object.storageSlots?.map((e) => e) || [];
+    message.bytecodeWitnessIndex = object.bytecodeWitnessIndex ?? 0;
+    message.bytecodeRoot = object.bytecodeRoot ?? new Uint8Array(0);
     message.subsectionIndex = object.subsectionIndex ?? 0;
     message.subsectionsNumber = object.subsectionsNumber ?? 0;
+    message.proofSet = object.proofSet?.map((e) => e) || [];
     message.upgradePurpose = object.upgradePurpose ?? 0;
+    message.blobId = object.blobId ?? new Uint8Array(0);
+    message.maturity = object.maturity ?? 0;
+    message.policyType = object.policyType ?? 0;
+    message.rawPayload = object.rawPayload ?? new Uint8Array(0);
+    message.scriptLength = object.scriptLength ?? 0;
+    message.scriptDataLength = object.scriptDataLength ?? 0;
     message.storageSlotsCount = object.storageSlotsCount ?? 0;
     message.proofSetCount = object.proofSetCount ?? 0;
     message.witnessesCount = object.witnessesCount ?? 0;
     message.inputsCount = object.inputsCount ?? 0;
     message.outputsCount = object.outputsCount ?? 0;
-    message.inputContract = (object.inputContract !== undefined && object.inputContract !== null)
-      ? InputContract.fromPartial(object.inputContract)
-      : undefined;
-    message.inputContracts = object.inputContracts?.map((e) => e) || [];
-    message.inputs = object.inputs?.map((e) => Input.fromPartial(e)) || [];
-    message.outputContract = (object.outputContract !== undefined && object.outputContract !== null)
-      ? OutputContract.fromPartial(object.outputContract)
-      : undefined;
-    message.outputs = object.outputs?.map((e) => Output.fromPartial(e)) || [];
-    message.proofSet = object.proofSet?.map((e) => e) || [];
-    message.receipts = object.receipts?.map((e) => Receipt.fromPartial(e)) || [];
-    message.storageSlots = object.storageSlots?.map((e) => StorageSlot.fromPartial(e)) || [];
-    message.witnesses = object.witnesses?.map((e) => e) || [];
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
-    message.pointer = (object.pointer !== undefined && object.pointer !== null)
-      ? TransactionPointer.fromPartial(object.pointer)
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
       : undefined;
     return message;
   },
 };
 
 function createBaseStorageSlot(): StorageSlot {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    key: new Uint8Array(0),
-    value: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { subject: "", txId: new Uint8Array(0), key: new Uint8Array(0), value: new Uint8Array(0) };
 }
 
 export const StorageSlot: MessageFns<StorageSlot> = {
@@ -1142,12 +1107,6 @@ export const StorageSlot: MessageFns<StorageSlot> = {
     }
     if (message.value.length !== 0) {
       writer.uint32(34).bytes(message.value);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -1191,22 +1150,6 @@ export const StorageSlot: MessageFns<StorageSlot> = {
           message.value = reader.bytes();
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1222,8 +1165,6 @@ export const StorageSlot: MessageFns<StorageSlot> = {
       txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(0),
       value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
@@ -1241,12 +1182,6 @@ export const StorageSlot: MessageFns<StorageSlot> = {
     if (message.value.length !== 0) {
       obj.value = base64FromBytes(message.value);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -1259,21 +1194,12 @@ export const StorageSlot: MessageFns<StorageSlot> = {
     message.txId = object.txId ?? new Uint8Array(0);
     message.key = object.key ?? new Uint8Array(0);
     message.value = object.value ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseWitness(): Witness {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    witnessData: new Uint8Array(0),
-    witnessDataLength: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { subject: "", txId: new Uint8Array(0), witnessData: new Uint8Array(0), witnessDataLength: 0 };
 }
 
 export const Witness: MessageFns<Witness> = {
@@ -1289,12 +1215,6 @@ export const Witness: MessageFns<Witness> = {
     }
     if (message.witnessDataLength !== 0) {
       writer.uint32(32).int32(message.witnessDataLength);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -1338,22 +1258,6 @@ export const Witness: MessageFns<Witness> = {
           message.witnessDataLength = reader.int32();
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1369,8 +1273,6 @@ export const Witness: MessageFns<Witness> = {
       txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       witnessData: isSet(object.witnessData) ? bytesFromBase64(object.witnessData) : new Uint8Array(0),
       witnessDataLength: isSet(object.witnessDataLength) ? globalThis.Number(object.witnessDataLength) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
@@ -1388,12 +1290,6 @@ export const Witness: MessageFns<Witness> = {
     if (message.witnessDataLength !== 0) {
       obj.witnessDataLength = Math.round(message.witnessDataLength);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -1406,20 +1302,12 @@ export const Witness: MessageFns<Witness> = {
     message.txId = object.txId ?? new Uint8Array(0);
     message.witnessData = object.witnessData ?? new Uint8Array(0);
     message.witnessDataLength = object.witnessDataLength ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseProofSet(): ProofSet {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    proofHash: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { subject: "", txId: new Uint8Array(0), proofHash: new Uint8Array(0) };
 }
 
 export const ProofSet: MessageFns<ProofSet> = {
@@ -1432,12 +1320,6 @@ export const ProofSet: MessageFns<ProofSet> = {
     }
     if (message.proofHash.length !== 0) {
       writer.uint32(26).bytes(message.proofHash);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(34).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -1473,22 +1355,6 @@ export const ProofSet: MessageFns<ProofSet> = {
           message.proofHash = reader.bytes();
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1503,8 +1369,6 @@ export const ProofSet: MessageFns<ProofSet> = {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       proofHash: isSet(object.proofHash) ? bytesFromBase64(object.proofHash) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
@@ -1519,12 +1383,6 @@ export const ProofSet: MessageFns<ProofSet> = {
     if (message.proofHash.length !== 0) {
       obj.proofHash = base64FromBytes(message.proofHash);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -1536,14 +1394,12 @@ export const ProofSet: MessageFns<ProofSet> = {
     message.subject = object.subject ?? "";
     message.txId = object.txId ?? new Uint8Array(0);
     message.proofHash = object.proofHash ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBasePolicy(): Policy {
-  return { subject: "", txId: new Uint8Array(0), type: 0, data: 0, createdAt: undefined, publishedAt: undefined };
+  return { subject: "", txId: new Uint8Array(0), type: 0, data: 0 };
 }
 
 export const Policy: MessageFns<Policy> = {
@@ -1559,12 +1415,6 @@ export const Policy: MessageFns<Policy> = {
     }
     if (message.data !== 0) {
       writer.uint32(32).int64(message.data);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(50).fork()).join();
     }
     return writer;
   },
@@ -1608,22 +1458,6 @@ export const Policy: MessageFns<Policy> = {
           message.data = longToNumber(reader.int64());
           continue;
         }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1639,8 +1473,6 @@ export const Policy: MessageFns<Policy> = {
       txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       type: isSet(object.type) ? policyTypeFromJSON(object.type) : 0,
       data: isSet(object.data) ? globalThis.Number(object.data) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
@@ -1658,12 +1490,6 @@ export const Policy: MessageFns<Policy> = {
     if (message.data !== 0) {
       obj.data = Math.round(message.data);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -1676,8 +1502,6 @@ export const Policy: MessageFns<Policy> = {
     message.txId = object.txId ?? new Uint8Array(0);
     message.type = object.type ?? 0;
     message.data = object.data ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
@@ -1718,28 +1542,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());

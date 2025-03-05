@@ -4,15 +4,14 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { TransactionPointer } from "./pointers_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
+import type { TxPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
 import type { Input, InputContract } from "./inputs_pb";
 import { file_inputs } from "./inputs_pb";
 import type { Output, OutputContract } from "./outputs_pb";
 import { file_outputs } from "./outputs_pb";
-import type { Receipt } from "./receipts_pb";
 import { file_receipts } from "./receipts_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -20,7 +19,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file transactions.proto.
  */
 export const file_transactions: GenFile = /*@__PURE__*/
-  fileDesc("ChJ0cmFuc2FjdGlvbnMucHJvdG8SDHRyYW5zYWN0aW9ucyKLCgoLVHJhbnNhY3Rpb24SDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAwSEAoIdHhfaW5kZXgYBCABKAUSKwoEdHlwZRgFIAEoDjIdLnRyYW5zYWN0aW9ucy5UcmFuc2FjdGlvblR5cGUSLwoGc3RhdHVzGAYgASgOMh8udHJhbnNhY3Rpb25zLlRyYW5zYWN0aW9uU3RhdHVzEgwKBHJvb3QYByABKAwSFQoNd2l0bmVzc19pbmRleBgIIAEoBRIPCgdibG9iX2lkGAkgASgMEhcKD2lucHV0X2Fzc2V0X2lkcxgKIAMoDBIRCglpc19jcmVhdGUYCyABKAgSDwoHaXNfbWludBgMIAEoCBIRCglpc19zY3JpcHQYDSABKAgSEgoKaXNfdXBncmFkZRgOIAEoCBIRCglpc191cGxvYWQYDyABKAgSEAoIbWF0dXJpdHkYECABKAUSEwoLbWludF9hbW91bnQYESABKAMSFQoNbWludF9hc3NldF9pZBgSIAEoDBIWCg5taW50X2dhc19wcmljZRgTIAEoAxITCgtwb2xpY3lfdHlwZRgUIAEoBRITCgtyYXdfcGF5bG9hZBgVIAEoDBIVCg1yZWNlaXB0c19yb290GBYgASgMEgwKBHNhbHQYFyABKAwSDgoGc2NyaXB0GBggASgMEhUKDXNjcmlwdF9sZW5ndGgYGSABKAMSEwoLc2NyaXB0X2RhdGEYGiABKAwSGgoSc2NyaXB0X2RhdGFfbGVuZ3RoGBsgASgDEhgKEHNjcmlwdF9nYXNfbGltaXQYHCABKAMSGAoQc3Vic2VjdGlvbl9pbmRleBgdIAEoBRIaChJzdWJzZWN0aW9uc19udW1iZXIYHiABKAUSFwoPdXBncmFkZV9wdXJwb3NlGB8gASgFEhsKE3N0b3JhZ2Vfc2xvdHNfY291bnQYICABKAMSFwoPcHJvb2Zfc2V0X2NvdW50GCEgASgFEhcKD3dpdG5lc3Nlc19jb3VudBgiIAEoBRIUCgxpbnB1dHNfY291bnQYIyABKAUSFQoNb3V0cHV0c19jb3VudBgkIAEoBRItCg5pbnB1dF9jb250cmFjdBglIAEoCzIVLmlucHV0cy5JbnB1dENvbnRyYWN0EhcKD2lucHV0X2NvbnRyYWN0cxgmIAMoDBIdCgZpbnB1dHMYJyADKAsyDS5pbnB1dHMuSW5wdXQSMAoPb3V0cHV0X2NvbnRyYWN0GCggASgLMhcub3V0cHV0cy5PdXRwdXRDb250cmFjdBIgCgdvdXRwdXRzGCkgAygLMg8ub3V0cHV0cy5PdXRwdXQSEQoJcHJvb2Zfc2V0GCogAygMEiMKCHJlY2VpcHRzGCsgAygLMhEucmVjZWlwdHMuUmVjZWlwdBIwCg1zdG9yYWdlX3Nsb3RzGCwgAygLMhkudHJhbnNhY3Rpb25zLlN0b3JhZ2VTbG90EhEKCXdpdG5lc3NlcxgtIAMoDBIuCgpjcmVhdGVkX2F0GC4gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYLyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi0KB3BvaW50ZXIYMCABKAsyHC5wb2ludGVycy5UcmFuc2FjdGlvblBvaW50ZXIiqwEKC1N0b3JhZ2VTbG90Eg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSCwoDa2V5GAMgASgMEg0KBXZhbHVlGAQgASgMEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAivgEKB1dpdG5lc3MSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBIUCgx3aXRuZXNzX2RhdGEYAyABKAwSGwoTd2l0bmVzc19kYXRhX2xlbmd0aBgEIAEoBRIuCgpjcmVhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIqABCghQcm9vZlNldBIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEhIKCnByb29mX2hhc2gYAyABKAwSLgoKY3JlYXRlZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMcHVibGlzaGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCLAAQoGUG9saWN5Eg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSJgoEdHlwZRgDIAEoDjIYLnRyYW5zYWN0aW9ucy5Qb2xpY3lUeXBlEgwKBGRhdGEYBCABKAMSLgoKY3JlYXRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMcHVibGlzaGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCpWCg9UcmFuc2FjdGlvblR5cGUSCgoGU0NSSVBUEAASCgoGQ1JFQVRFEAESCAoETUlOVBACEgsKB1VQR1JBREUQAxIKCgZVUExPQUQQBBIICgRCTE9CEAUqPAoRVHJhbnNhY3Rpb25TdGF0dXMSCwoHU1VDQ0VTUxAAEgsKB0ZBSUxVUkUQARINCglTVUJNSVRURUQQAipDCgpQb2xpY3lUeXBlEgcKA1RJUBAAEhEKDVdJVE5FU1NfTElNSVQQARIMCghNQVRVUklUWRACEgsKB01BWF9GRUUQA2IGcHJvdG8z", [file_google_protobuf_timestamp, file_pointers, file_inputs, file_outputs, file_receipts]);
+  fileDesc("ChJ0cmFuc2FjdGlvbnMucHJvdG8SDHRyYW5zYWN0aW9ucyL6CAoLVHJhbnNhY3Rpb24SDwoHc3ViamVjdBgBIAEoCRIKCgJpZBgCIAEoDBIYChBzY3JpcHRfZ2FzX2xpbWl0GAMgASgDEicKCnR4X3BvaW50ZXIYBCABKAsyEy5wb2ludGVycy5UeFBvaW50ZXISFwoPaW5wdXRfYXNzZXRfaWRzGAUgAygMEhcKD2lucHV0X2NvbnRyYWN0cxgGIAMoDBItCg5pbnB1dF9jb250cmFjdBgHIAEoCzIVLmlucHV0cy5JbnB1dENvbnRyYWN0Eh0KBmlucHV0cxgIIAMoCzINLmlucHV0cy5JbnB1dBIRCglpc19zY3JpcHQYCSABKAgSEQoJaXNfY3JlYXRlGAogASgIEg8KB2lzX21pbnQYCyABKAgSEgoKaXNfdXBncmFkZRgMIAEoCBIRCglpc191cGxvYWQYDSABKAgSDwoHaXNfYmxvYhgOIAEoCBIgCgdvdXRwdXRzGA8gAygLMg8ub3V0cHV0cy5PdXRwdXQSMAoPb3V0cHV0X2NvbnRyYWN0GBAgASgLMhcub3V0cHV0cy5PdXRwdXRDb250cmFjdBITCgttaW50X2Ftb3VudBgRIAEoAxIVCg1taW50X2Fzc2V0X2lkGBIgASgMEhYKDm1pbnRfZ2FzX3ByaWNlGBMgASgDEhUKDXJlY2VpcHRzX3Jvb3QYFCABKAwSLwoGc3RhdHVzGBUgASgOMh8udHJhbnNhY3Rpb25zLlRyYW5zYWN0aW9uU3RhdHVzEhEKCXdpdG5lc3NlcxgWIAMoDBIOCgZzY3JpcHQYFyABKAwSEwoLc2NyaXB0X2RhdGEYGCABKAwSJgoIcG9saWNpZXMYGSABKAsyFC50cmFuc2FjdGlvbnMuUG9saWN5EgwKBHNhbHQYGiABKAwSFQoNc3RvcmFnZV9zbG90cxgbIAMoDBIeChZieXRlY29kZV93aXRuZXNzX2luZGV4GBwgASgFEhUKDWJ5dGVjb2RlX3Jvb3QYHSABKAwSGAoQc3Vic2VjdGlvbl9pbmRleBgeIAEoBRIaChJzdWJzZWN0aW9uc19udW1iZXIYHyABKAUSEQoJcHJvb2Zfc2V0GCAgAygMEhcKD3VwZ3JhZGVfcHVycG9zZRghIAEoBRIPCgdibG9iX2lkGCIgASgMEhAKCG1hdHVyaXR5GCMgASgFEhMKC3BvbGljeV90eXBlGCQgASgFEhMKC3Jhd19wYXlsb2FkGCUgASgMEhUKDXNjcmlwdF9sZW5ndGgYJiABKAMSGgoSc2NyaXB0X2RhdGFfbGVuZ3RoGCcgASgDEhsKE3N0b3JhZ2Vfc2xvdHNfY291bnQYKCABKAMSFwoPcHJvb2Zfc2V0X2NvdW50GCkgASgFEhcKD3dpdG5lc3Nlc19jb3VudBgqIAEoBRIUCgxpbnB1dHNfY291bnQYKyABKAUSFQoNb3V0cHV0c19jb3VudBgsIAEoBRIiCghtZXRhZGF0YRgtIAEoCzIQLmNvbW1vbi5NZXRhZGF0YSJJCgtTdG9yYWdlU2xvdBIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEgsKA2tleRgDIAEoDBINCgV2YWx1ZRgEIAEoDCJcCgdXaXRuZXNzEg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSFAoMd2l0bmVzc19kYXRhGAMgASgMEhsKE3dpdG5lc3NfZGF0YV9sZW5ndGgYBCABKAUiPgoIUHJvb2ZTZXQSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBISCgpwcm9vZl9oYXNoGAMgASgMIl4KBlBvbGljeRIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEiYKBHR5cGUYAyABKA4yGC50cmFuc2FjdGlvbnMuUG9saWN5VHlwZRIMCgRkYXRhGAQgASgDKnQKD1RyYW5zYWN0aW9uVHlwZRIcChhVTktOT1dOX1RSQU5TQUNUSU9OX1RZUEUQABIKCgZTQ1JJUFQQARIKCgZDUkVBVEUQAhIICgRNSU5UEAMSCwoHVVBHUkFERRAEEgoKBlVQTE9BRBAFEggKBEJMT0IQBip3ChFUcmFuc2FjdGlvblN0YXR1cxIeChpVTktOT1dOX1RSQU5TQUNUSU9OX1NUQVRVUxAAEgoKBkZBSUxFRBABEg0KCVNVQk1JVFRFRBACEhAKDFNRVUVFWkVEX09VVBADEgsKB1NVQ0NFU1MQBBIICgROT05FEAUqXAoKUG9saWN5VHlwZRIXChNVTktOT1dOX1BPTElDWV9UWVBFEAASBwoDVElQEAESEQoNV0lUTkVTU19MSU1JVBACEgwKCE1BVFVSSVRZEAMSCwoHTUFYX0ZFRRAEYgZwcm90bzM", [file_common, file_pointers, file_inputs, file_outputs, file_receipts]);
 
 /**
  * @generated from message transactions.Transaction
@@ -32,79 +31,81 @@ export type Transaction = Message<"transactions.Transaction"> & {
   subject: string;
 
   /**
-   * @generated from field: int64 block_height = 2;
+   * Fields matching fuel-core
+   *
+   * @generated from field: bytes id = 2;
    */
-  blockHeight: bigint;
+  id: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 3;
+   * @generated from field: int64 script_gas_limit = 3;
    */
-  txId: Uint8Array;
+  scriptGasLimit: bigint;
 
   /**
-   * @generated from field: int32 tx_index = 4;
+   * @generated from field: pointers.TxPointer tx_pointer = 4;
    */
-  txIndex: number;
+  txPointer?: TxPointer;
 
   /**
-   * @generated from field: transactions.TransactionType type = 5;
-   */
-  type: TransactionType;
-
-  /**
-   * @generated from field: transactions.TransactionStatus status = 6;
-   */
-  status: TransactionStatus;
-
-  /**
-   * @generated from field: bytes root = 7;
-   */
-  root: Uint8Array;
-
-  /**
-   * @generated from field: int32 witness_index = 8;
-   */
-  witnessIndex: number;
-
-  /**
-   * @generated from field: bytes blob_id = 9;
-   */
-  blobId: Uint8Array;
-
-  /**
-   * @generated from field: repeated bytes input_asset_ids = 10;
+   * @generated from field: repeated bytes input_asset_ids = 5;
    */
   inputAssetIds: Uint8Array[];
 
   /**
-   * @generated from field: bool is_create = 11;
+   * @generated from field: repeated bytes input_contracts = 6;
    */
-  isCreate: boolean;
+  inputContracts: Uint8Array[];
 
   /**
-   * @generated from field: bool is_mint = 12;
+   * @generated from field: inputs.InputContract input_contract = 7;
    */
-  isMint: boolean;
+  inputContract?: InputContract;
 
   /**
-   * @generated from field: bool is_script = 13;
+   * @generated from field: repeated inputs.Input inputs = 8;
+   */
+  inputs: Input[];
+
+  /**
+   * @generated from field: bool is_script = 9;
    */
   isScript: boolean;
 
   /**
-   * @generated from field: bool is_upgrade = 14;
+   * @generated from field: bool is_create = 10;
+   */
+  isCreate: boolean;
+
+  /**
+   * @generated from field: bool is_mint = 11;
+   */
+  isMint: boolean;
+
+  /**
+   * @generated from field: bool is_upgrade = 12;
    */
   isUpgrade: boolean;
 
   /**
-   * @generated from field: bool is_upload = 15;
+   * @generated from field: bool is_upload = 13;
    */
   isUpload: boolean;
 
   /**
-   * @generated from field: int32 maturity = 16;
+   * @generated from field: bool is_blob = 14;
    */
-  maturity: number;
+  isBlob: boolean;
+
+  /**
+   * @generated from field: repeated outputs.Output outputs = 15;
+   */
+  outputs: Output[];
+
+  /**
+   * @generated from field: outputs.OutputContract output_contract = 16;
+   */
+  outputContract?: OutputContract;
 
   /**
    * @generated from field: int64 mint_amount = 17;
@@ -122,153 +123,138 @@ export type Transaction = Message<"transactions.Transaction"> & {
   mintGasPrice: bigint;
 
   /**
-   * @generated from field: int32 policy_type = 20;
-   */
-  policyType: number;
-
-  /**
-   * @generated from field: bytes raw_payload = 21;
-   */
-  rawPayload: Uint8Array;
-
-  /**
-   * @generated from field: bytes receipts_root = 22;
+   * @generated from field: bytes receipts_root = 20;
    */
   receiptsRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes salt = 23;
+   * @generated from field: transactions.TransactionStatus status = 21;
    */
-  salt: Uint8Array;
+  status: TransactionStatus;
 
   /**
-   * @generated from field: bytes script = 24;
-   */
-  script: Uint8Array;
-
-  /**
-   * @generated from field: int64 script_length = 25;
-   */
-  scriptLength: bigint;
-
-  /**
-   * @generated from field: bytes script_data = 26;
-   */
-  scriptData: Uint8Array;
-
-  /**
-   * @generated from field: int64 script_data_length = 27;
-   */
-  scriptDataLength: bigint;
-
-  /**
-   * @generated from field: int64 script_gas_limit = 28;
-   */
-  scriptGasLimit: bigint;
-
-  /**
-   * @generated from field: int32 subsection_index = 29;
-   */
-  subsectionIndex: number;
-
-  /**
-   * @generated from field: int32 subsections_number = 30;
-   */
-  subsectionsNumber: number;
-
-  /**
-   * @generated from field: int32 upgrade_purpose = 31;
-   */
-  upgradePurpose: number;
-
-  /**
-   * @generated from field: int64 storage_slots_count = 32;
-   */
-  storageSlotsCount: bigint;
-
-  /**
-   * @generated from field: int32 proof_set_count = 33;
-   */
-  proofSetCount: number;
-
-  /**
-   * @generated from field: int32 witnesses_count = 34;
-   */
-  witnessesCount: number;
-
-  /**
-   * @generated from field: int32 inputs_count = 35;
-   */
-  inputsCount: number;
-
-  /**
-   * @generated from field: int32 outputs_count = 36;
-   */
-  outputsCount: number;
-
-  /**
-   * Relationship fields
-   *
-   * @generated from field: inputs.InputContract input_contract = 37;
-   */
-  inputContract?: InputContract;
-
-  /**
-   * @generated from field: repeated bytes input_contracts = 38;
-   */
-  inputContracts: Uint8Array[];
-
-  /**
-   * @generated from field: repeated inputs.Input inputs = 39;
-   */
-  inputs: Input[];
-
-  /**
-   * @generated from field: outputs.OutputContract output_contract = 40;
-   */
-  outputContract?: OutputContract;
-
-  /**
-   * @generated from field: repeated outputs.Output outputs = 41;
-   */
-  outputs: Output[];
-
-  /**
-   * @generated from field: repeated bytes proof_set = 42;
-   */
-  proofSet: Uint8Array[];
-
-  /**
-   * @generated from field: repeated receipts.Receipt receipts = 43;
-   */
-  receipts: Receipt[];
-
-  /**
-   * @generated from field: repeated transactions.StorageSlot storage_slots = 44;
-   */
-  storageSlots: StorageSlot[];
-
-  /**
-   * @generated from field: repeated bytes witnesses = 45;
+   * @generated from field: repeated bytes witnesses = 22;
    */
   witnesses: Uint8Array[];
 
   /**
+   * @generated from field: bytes script = 23;
+   */
+  script: Uint8Array;
+
+  /**
+   * @generated from field: bytes script_data = 24;
+   */
+  scriptData: Uint8Array;
+
+  /**
+   * @generated from field: transactions.Policy policies = 25;
+   */
+  policies?: Policy;
+
+  /**
+   * @generated from field: bytes salt = 26;
+   */
+  salt: Uint8Array;
+
+  /**
+   * @generated from field: repeated bytes storage_slots = 27;
+   */
+  storageSlots: Uint8Array[];
+
+  /**
+   * @generated from field: int32 bytecode_witness_index = 28;
+   */
+  bytecodeWitnessIndex: number;
+
+  /**
+   * @generated from field: bytes bytecode_root = 29;
+   */
+  bytecodeRoot: Uint8Array;
+
+  /**
+   * @generated from field: int32 subsection_index = 30;
+   */
+  subsectionIndex: number;
+
+  /**
+   * @generated from field: int32 subsections_number = 31;
+   */
+  subsectionsNumber: number;
+
+  /**
+   * @generated from field: repeated bytes proof_set = 32;
+   */
+  proofSet: Uint8Array[];
+
+  /**
+   * @generated from field: int32 upgrade_purpose = 33;
+   */
+  upgradePurpose: number;
+
+  /**
+   * @generated from field: bytes blob_id = 34;
+   */
+  blobId: Uint8Array;
+
+  /**
+   * Extra fields (not in fuel-core)
+   *
+   * @generated from field: int32 maturity = 35;
+   */
+  maturity: number;
+
+  /**
+   * @generated from field: int32 policy_type = 36;
+   */
+  policyType: number;
+
+  /**
+   * @generated from field: bytes raw_payload = 37;
+   */
+  rawPayload: Uint8Array;
+
+  /**
+   * @generated from field: int64 script_length = 38;
+   */
+  scriptLength: bigint;
+
+  /**
+   * @generated from field: int64 script_data_length = 39;
+   */
+  scriptDataLength: bigint;
+
+  /**
+   * @generated from field: int64 storage_slots_count = 40;
+   */
+  storageSlotsCount: bigint;
+
+  /**
+   * @generated from field: int32 proof_set_count = 41;
+   */
+  proofSetCount: number;
+
+  /**
+   * @generated from field: int32 witnesses_count = 42;
+   */
+  witnessesCount: number;
+
+  /**
+   * @generated from field: int32 inputs_count = 43;
+   */
+  inputsCount: number;
+
+  /**
+   * @generated from field: int32 outputs_count = 44;
+   */
+  outputsCount: number;
+
+  /**
    * Metadata
    *
-   * @generated from field: google.protobuf.Timestamp created_at = 46;
+   * @generated from field: common.Metadata metadata = 45;
    */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 47;
-   */
-  publishedAt?: Timestamp;
-
-  /**
-   * @generated from field: pointers.TransactionPointer pointer = 48;
-   */
-  pointer?: TransactionPointer;
+  metadata?: Metadata;
 };
 
 /**
@@ -301,16 +287,6 @@ export type StorageSlot = Message<"transactions.StorageSlot"> & {
    * @generated from field: bytes value = 4;
    */
   value: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 5;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 6;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -343,16 +319,6 @@ export type Witness = Message<"transactions.Witness"> & {
    * @generated from field: int32 witness_data_length = 4;
    */
   witnessDataLength: number;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 5;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 6;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -380,16 +346,6 @@ export type ProofSet = Message<"transactions.ProofSet"> & {
    * @generated from field: bytes proof_hash = 3;
    */
   proofHash: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 4;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 5;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -422,16 +378,6 @@ export type Policy = Message<"transactions.Policy"> & {
    * @generated from field: int64 data = 4;
    */
   data: bigint;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 5;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 6;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -446,34 +392,39 @@ export const PolicySchema: GenMessage<Policy> = /*@__PURE__*/
  */
 export enum TransactionType {
   /**
-   * @generated from enum value: SCRIPT = 0;
+   * @generated from enum value: UNKNOWN_TRANSACTION_TYPE = 0;
    */
-  SCRIPT = 0,
+  UNKNOWN_TRANSACTION_TYPE = 0,
 
   /**
-   * @generated from enum value: CREATE = 1;
+   * @generated from enum value: SCRIPT = 1;
    */
-  CREATE = 1,
+  SCRIPT = 1,
 
   /**
-   * @generated from enum value: MINT = 2;
+   * @generated from enum value: CREATE = 2;
    */
-  MINT = 2,
+  CREATE = 2,
 
   /**
-   * @generated from enum value: UPGRADE = 3;
+   * @generated from enum value: MINT = 3;
    */
-  UPGRADE = 3,
+  MINT = 3,
 
   /**
-   * @generated from enum value: UPLOAD = 4;
+   * @generated from enum value: UPGRADE = 4;
    */
-  UPLOAD = 4,
+  UPGRADE = 4,
 
   /**
-   * @generated from enum value: BLOB = 5;
+   * @generated from enum value: UPLOAD = 5;
    */
-  BLOB = 5,
+  UPLOAD = 5,
+
+  /**
+   * @generated from enum value: BLOB = 6;
+   */
+  BLOB = 6,
 }
 
 /**
@@ -487,19 +438,34 @@ export const TransactionTypeSchema: GenEnum<TransactionType> = /*@__PURE__*/
  */
 export enum TransactionStatus {
   /**
-   * @generated from enum value: SUCCESS = 0;
+   * @generated from enum value: UNKNOWN_TRANSACTION_STATUS = 0;
    */
-  SUCCESS = 0,
+  UNKNOWN_TRANSACTION_STATUS = 0,
 
   /**
-   * @generated from enum value: FAILURE = 1;
+   * @generated from enum value: FAILED = 1;
    */
-  FAILURE = 1,
+  FAILED = 1,
 
   /**
    * @generated from enum value: SUBMITTED = 2;
    */
   SUBMITTED = 2,
+
+  /**
+   * @generated from enum value: SQUEEZED_OUT = 3;
+   */
+  SQUEEZED_OUT = 3,
+
+  /**
+   * @generated from enum value: SUCCESS = 4;
+   */
+  SUCCESS = 4,
+
+  /**
+   * @generated from enum value: NONE = 5;
+   */
+  NONE = 5,
 }
 
 /**
@@ -513,24 +479,29 @@ export const TransactionStatusSchema: GenEnum<TransactionStatus> = /*@__PURE__*/
  */
 export enum PolicyType {
   /**
-   * @generated from enum value: TIP = 0;
+   * @generated from enum value: UNKNOWN_POLICY_TYPE = 0;
    */
-  TIP = 0,
+  UNKNOWN_POLICY_TYPE = 0,
 
   /**
-   * @generated from enum value: WITNESS_LIMIT = 1;
+   * @generated from enum value: TIP = 1;
    */
-  WITNESS_LIMIT = 1,
+  TIP = 1,
 
   /**
-   * @generated from enum value: MATURITY = 2;
+   * @generated from enum value: WITNESS_LIMIT = 2;
    */
-  MATURITY = 2,
+  WITNESS_LIMIT = 2,
 
   /**
-   * @generated from enum value: MAX_FEE = 3;
+   * @generated from enum value: MATURITY = 3;
    */
-  MAX_FEE = 3,
+  MATURITY = 3,
+
+  /**
+   * @generated from enum value: MAX_FEE = 4;
+   */
+  MAX_FEE = 4,
 }
 
 /**

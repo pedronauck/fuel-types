@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file pointers.proto.
  */
 export const file_pointers: GenFile = /*@__PURE__*/
-  fileDesc("Cg5wb2ludGVycy5wcm90bxIIcG9pbnRlcnMiJAoMQmxvY2tQb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAyJLChJUcmFuc2FjdGlvblBvaW50ZXISFAoMYmxvY2tfaGVpZ2h0GAEgASgDEg0KBXR4X2lkGAIgASgFEhAKCHR4X2luZGV4GAMgASgFIloKDElucHV0UG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSEwoLaW5wdXRfaW5kZXgYBCABKAUiXAoNT3V0cHV0UG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSFAoMb3V0cHV0X2luZGV4GAQgASgFIl4KDlJlY2VpcHRQb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAxINCgV0eF9pZBgCIAEoBRIQCgh0eF9pbmRleBgDIAEoBRIVCg1yZWNlaXB0X2luZGV4GAQgASgFIlUKC1V0eG9Qb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAxINCgV0eF9pZBgCIAEoBRIQCgh0eF9pbmRleBgDIAEoBRIPCgd1dHhvX2lkGAQgASgFYgZwcm90bzM");
+  fileDesc("Cg5wb2ludGVycy5wcm90bxIIcG9pbnRlcnMiJAoMQmxvY2tQb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAyJCCglUeFBvaW50ZXISFAoMYmxvY2tfaGVpZ2h0GAEgASgDEg0KBXR4X2lkGAIgASgFEhAKCHR4X2luZGV4GAMgASgFIloKDElucHV0UG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSEwoLaW5wdXRfaW5kZXgYBCABKAUiXAoNT3V0cHV0UG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSFAoMb3V0cHV0X2luZGV4GAQgASgFIl4KDlJlY2VpcHRQb2ludGVyEhQKDGJsb2NrX2hlaWdodBgBIAEoAxINCgV0eF9pZBgCIAEoBRIQCgh0eF9pbmRleBgDIAEoBRIVCg1yZWNlaXB0X2luZGV4GAQgASgFIoABCgtVdHhvUG9pbnRlchIUCgxibG9ja19oZWlnaHQYASABKAMSDQoFdHhfaWQYAiABKAUSEAoIdHhfaW5kZXgYAyABKAUSDwoHdXR4b19pZBgEIAEoBRITCgtpbnB1dF9pbmRleBgFIAEoBRIUCgxvdXRwdXRfaW5kZXgYBiABKAViBnByb3RvMw");
 
 /**
  * @generated from message pointers.BlockPointer
@@ -30,9 +30,9 @@ export const BlockPointerSchema: GenMessage<BlockPointer> = /*@__PURE__*/
   messageDesc(file_pointers, 0);
 
 /**
- * @generated from message pointers.TransactionPointer
+ * @generated from message pointers.TxPointer
  */
-export type TransactionPointer = Message<"pointers.TransactionPointer"> & {
+export type TxPointer = Message<"pointers.TxPointer"> & {
   /**
    * @generated from field: int64 block_height = 1;
    */
@@ -50,10 +50,10 @@ export type TransactionPointer = Message<"pointers.TransactionPointer"> & {
 };
 
 /**
- * Describes the message pointers.TransactionPointer.
- * Use `create(TransactionPointerSchema)` to create a new message.
+ * Describes the message pointers.TxPointer.
+ * Use `create(TxPointerSchema)` to create a new message.
  */
-export const TransactionPointerSchema: GenMessage<TransactionPointer> = /*@__PURE__*/
+export const TxPointerSchema: GenMessage<TxPointer> = /*@__PURE__*/
   messageDesc(file_pointers, 1);
 
 /**
@@ -175,6 +175,16 @@ export type UtxoPointer = Message<"pointers.UtxoPointer"> & {
    * @generated from field: int32 utxo_id = 4;
    */
   utxoId: number;
+
+  /**
+   * @generated from field: int32 input_index = 5;
+   */
+  inputIndex: number;
+
+  /**
+   * @generated from field: int32 output_index = 6;
+   */
+  outputIndex: number;
 };
 
 /**

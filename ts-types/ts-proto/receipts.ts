@@ -6,67 +6,71 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
+import { Metadata } from "./common";
 import { ReceiptPointer } from "./pointers";
 
 export const protobufPackage = "receipts";
 
 export enum ReceiptType {
-  CALL = 0,
-  RETURN = 1,
-  RETURN_DATA = 2,
-  PANIC = 3,
-  REVERT = 4,
-  LOG = 5,
-  LOG_DATA = 6,
-  TRANSFER = 7,
-  TRANSFER_OUT = 8,
-  SCRIPT_RESULT = 9,
-  MESSAGE_OUT = 10,
-  MINT = 11,
-  BURN = 12,
+  UNKNOWN_RECEIPT_TYPE = 0,
+  CALL = 1,
+  RETURN = 2,
+  RETURN_DATA = 3,
+  PANIC = 4,
+  REVERT = 5,
+  LOG = 6,
+  LOG_DATA = 7,
+  TRANSFER = 8,
+  TRANSFER_OUT = 9,
+  SCRIPT_RESULT = 10,
+  MESSAGE_OUT = 11,
+  MINT = 12,
+  BURN = 13,
   UNRECOGNIZED = -1,
 }
 
 export function receiptTypeFromJSON(object: any): ReceiptType {
   switch (object) {
     case 0:
+    case "UNKNOWN_RECEIPT_TYPE":
+      return ReceiptType.UNKNOWN_RECEIPT_TYPE;
+    case 1:
     case "CALL":
       return ReceiptType.CALL;
-    case 1:
+    case 2:
     case "RETURN":
       return ReceiptType.RETURN;
-    case 2:
+    case 3:
     case "RETURN_DATA":
       return ReceiptType.RETURN_DATA;
-    case 3:
+    case 4:
     case "PANIC":
       return ReceiptType.PANIC;
-    case 4:
+    case 5:
     case "REVERT":
       return ReceiptType.REVERT;
-    case 5:
+    case 6:
     case "LOG":
       return ReceiptType.LOG;
-    case 6:
+    case 7:
     case "LOG_DATA":
       return ReceiptType.LOG_DATA;
-    case 7:
+    case 8:
     case "TRANSFER":
       return ReceiptType.TRANSFER;
-    case 8:
+    case 9:
     case "TRANSFER_OUT":
       return ReceiptType.TRANSFER_OUT;
-    case 9:
+    case 10:
     case "SCRIPT_RESULT":
       return ReceiptType.SCRIPT_RESULT;
-    case 10:
+    case 11:
     case "MESSAGE_OUT":
       return ReceiptType.MESSAGE_OUT;
-    case 11:
+    case 12:
     case "MINT":
       return ReceiptType.MINT;
-    case 12:
+    case 13:
     case "BURN":
       return ReceiptType.BURN;
     case -1:
@@ -78,6 +82,8 @@ export function receiptTypeFromJSON(object: any): ReceiptType {
 
 export function receiptTypeToJSON(object: ReceiptType): string {
   switch (object) {
+    case ReceiptType.UNKNOWN_RECEIPT_TYPE:
+      return "UNKNOWN_RECEIPT_TYPE";
     case ReceiptType.CALL:
       return "CALL";
     case ReceiptType.RETURN:
@@ -111,19 +117,31 @@ export function receiptTypeToJSON(object: ReceiptType): string {
 }
 
 export enum ScriptResultType {
-  SUCCESS = 0,
-  FAILURE = 1,
+  UNKNOWN_SCRIPT_RESULT_TYPE = 0,
+  SUCCESS = 1,
+  SCRIPT_REVERT = 2,
+  SCRIPT_PANIC = 3,
+  GENERIC_FAILURE = 4,
   UNRECOGNIZED = -1,
 }
 
 export function scriptResultTypeFromJSON(object: any): ScriptResultType {
   switch (object) {
     case 0:
+    case "UNKNOWN_SCRIPT_RESULT_TYPE":
+      return ScriptResultType.UNKNOWN_SCRIPT_RESULT_TYPE;
+    case 1:
     case "SUCCESS":
       return ScriptResultType.SUCCESS;
-    case 1:
-    case "FAILURE":
-      return ScriptResultType.FAILURE;
+    case 2:
+    case "SCRIPT_REVERT":
+      return ScriptResultType.SCRIPT_REVERT;
+    case 3:
+    case "SCRIPT_PANIC":
+      return ScriptResultType.SCRIPT_PANIC;
+    case 4:
+    case "GENERIC_FAILURE":
+      return ScriptResultType.GENERIC_FAILURE;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -133,10 +151,16 @@ export function scriptResultTypeFromJSON(object: any): ScriptResultType {
 
 export function scriptResultTypeToJSON(object: ScriptResultType): string {
   switch (object) {
+    case ScriptResultType.UNKNOWN_SCRIPT_RESULT_TYPE:
+      return "UNKNOWN_SCRIPT_RESULT_TYPE";
     case ScriptResultType.SUCCESS:
       return "SUCCESS";
-    case ScriptResultType.FAILURE:
-      return "FAILURE";
+    case ScriptResultType.SCRIPT_REVERT:
+      return "SCRIPT_REVERT";
+    case ScriptResultType.SCRIPT_PANIC:
+      return "SCRIPT_PANIC";
+    case ScriptResultType.GENERIC_FAILURE:
+      return "GENERIC_FAILURE";
     case ScriptResultType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -145,11 +169,7 @@ export function scriptResultTypeToJSON(object: ScriptResultType): string {
 
 export interface Receipt {
   subject: string;
-  blockHeight: number;
-  txId: Uint8Array;
-  txIndex: number;
-  receiptIndex: number;
-  receiptType: ReceiptType;
+  type: ReceiptType;
   call?: ReceiptCall | undefined;
   return?: ReceiptReturn | undefined;
   returnData?: ReceiptReturnData | undefined;
@@ -166,16 +186,13 @@ export interface Receipt {
     | ReceiptBurn
     | undefined;
   /** Metadata */
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  metadata: Metadata | undefined;
   pointer: ReceiptPointer | undefined;
 }
 
 export interface ReceiptCall {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
-  toContractId: Uint8Array;
+  id: Uint8Array;
+  to: Uint8Array;
   amount: number;
   assetId: Uint8Array;
   gas: number;
@@ -183,171 +200,117 @@ export interface ReceiptCall {
   param2: number;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptReturn {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   val: number;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptReturnData {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   ptr: number;
   len: number;
   digest: Uint8Array;
+  data: Uint8Array;
   pc: number;
   is: number;
-  data: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptPanic {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   reason: number;
   pc: number;
   is: number;
-  panicContractId: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  contractId: Uint8Array;
 }
 
 export interface ReceiptRevert {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
-  val: number;
+  id: Uint8Array;
+  ra: number;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptLog {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   ra: number;
   rb: number;
   rc: number;
   rd: number;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptLogData {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   ra: number;
   rb: number;
   ptr: number;
   len: number;
   digest: Uint8Array;
+  data: Uint8Array;
   pc: number;
   is: number;
-  data: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptTransfer {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
-  toContractId: Uint8Array;
+  id: Uint8Array;
+  to: Uint8Array;
   amount: number;
   assetId: Uint8Array;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptTransferOut {
-  subject: string;
-  txId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   toAddress: Uint8Array;
   amount: number;
   assetId: Uint8Array;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptScriptResult {
-  subject: string;
-  txId: Uint8Array;
   result: ScriptResultType;
   gasUsed: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptMessageOut {
-  subject: string;
-  txId: Uint8Array;
-  senderAddress: Uint8Array;
-  recipientAddress: Uint8Array;
+  sender: Uint8Array;
+  recipient: Uint8Array;
   amount: number;
   nonce: Uint8Array;
   len: number;
   digest: Uint8Array;
   data: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptMint {
-  subject: string;
-  txId: Uint8Array;
   subId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   assetId: Uint8Array;
   val: number;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface ReceiptBurn {
-  subject: string;
-  txId: Uint8Array;
   subId: Uint8Array;
-  contractId: Uint8Array;
+  id: Uint8Array;
   assetId: Uint8Array;
   val: number;
   pc: number;
   is: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 function createBaseReceipt(): Receipt {
   return {
     subject: "",
-    blockHeight: 0,
-    txId: new Uint8Array(0),
-    txIndex: 0,
-    receiptIndex: 0,
-    receiptType: 0,
+    type: 0,
     call: undefined,
     return: undefined,
     returnData: undefined,
@@ -361,8 +324,7 @@ function createBaseReceipt(): Receipt {
     messageOut: undefined,
     mint: undefined,
     burn: undefined,
-    createdAt: undefined,
-    publishedAt: undefined,
+    metadata: undefined,
     pointer: undefined,
   };
 }
@@ -372,68 +334,53 @@ export const Receipt: MessageFns<Receipt> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(26).bytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      writer.uint32(32).int32(message.txIndex);
-    }
-    if (message.receiptIndex !== 0) {
-      writer.uint32(40).int32(message.receiptIndex);
-    }
-    if (message.receiptType !== 0) {
-      writer.uint32(48).int32(message.receiptType);
+    if (message.type !== 0) {
+      writer.uint32(16).int32(message.type);
     }
     if (message.call !== undefined) {
-      ReceiptCall.encode(message.call, writer.uint32(58).fork()).join();
+      ReceiptCall.encode(message.call, writer.uint32(26).fork()).join();
     }
     if (message.return !== undefined) {
-      ReceiptReturn.encode(message.return, writer.uint32(66).fork()).join();
+      ReceiptReturn.encode(message.return, writer.uint32(34).fork()).join();
     }
     if (message.returnData !== undefined) {
-      ReceiptReturnData.encode(message.returnData, writer.uint32(74).fork()).join();
+      ReceiptReturnData.encode(message.returnData, writer.uint32(42).fork()).join();
     }
     if (message.panic !== undefined) {
-      ReceiptPanic.encode(message.panic, writer.uint32(82).fork()).join();
+      ReceiptPanic.encode(message.panic, writer.uint32(50).fork()).join();
     }
     if (message.revert !== undefined) {
-      ReceiptRevert.encode(message.revert, writer.uint32(90).fork()).join();
+      ReceiptRevert.encode(message.revert, writer.uint32(58).fork()).join();
     }
     if (message.log !== undefined) {
-      ReceiptLog.encode(message.log, writer.uint32(98).fork()).join();
+      ReceiptLog.encode(message.log, writer.uint32(66).fork()).join();
     }
     if (message.logData !== undefined) {
-      ReceiptLogData.encode(message.logData, writer.uint32(106).fork()).join();
+      ReceiptLogData.encode(message.logData, writer.uint32(74).fork()).join();
     }
     if (message.transfer !== undefined) {
-      ReceiptTransfer.encode(message.transfer, writer.uint32(114).fork()).join();
+      ReceiptTransfer.encode(message.transfer, writer.uint32(82).fork()).join();
     }
     if (message.transferOut !== undefined) {
-      ReceiptTransferOut.encode(message.transferOut, writer.uint32(122).fork()).join();
+      ReceiptTransferOut.encode(message.transferOut, writer.uint32(90).fork()).join();
     }
     if (message.scriptResult !== undefined) {
-      ReceiptScriptResult.encode(message.scriptResult, writer.uint32(130).fork()).join();
+      ReceiptScriptResult.encode(message.scriptResult, writer.uint32(98).fork()).join();
     }
     if (message.messageOut !== undefined) {
-      ReceiptMessageOut.encode(message.messageOut, writer.uint32(138).fork()).join();
+      ReceiptMessageOut.encode(message.messageOut, writer.uint32(106).fork()).join();
     }
     if (message.mint !== undefined) {
-      ReceiptMint.encode(message.mint, writer.uint32(146).fork()).join();
+      ReceiptMint.encode(message.mint, writer.uint32(114).fork()).join();
     }
     if (message.burn !== undefined) {
-      ReceiptBurn.encode(message.burn, writer.uint32(154).fork()).join();
+      ReceiptBurn.encode(message.burn, writer.uint32(122).fork()).join();
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(162).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(170).fork()).join();
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(130).fork()).join();
     }
     if (message.pointer !== undefined) {
-      ReceiptPointer.encode(message.pointer, writer.uint32(178).fork()).join();
+      ReceiptPointer.encode(message.pointer, writer.uint32(138).fork()).join();
     }
     return writer;
   },
@@ -458,7 +405,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.type = reader.int32() as any;
           continue;
         }
         case 3: {
@@ -466,31 +413,31 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.call = ReceiptCall.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.return = ReceiptReturn.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.receiptIndex = reader.int32();
+          message.returnData = ReceiptReturnData.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.receiptType = reader.int32() as any;
+          message.panic = ReceiptPanic.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -498,7 +445,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.call = ReceiptCall.decode(reader, reader.uint32());
+          message.revert = ReceiptRevert.decode(reader, reader.uint32());
           continue;
         }
         case 8: {
@@ -506,7 +453,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.return = ReceiptReturn.decode(reader, reader.uint32());
+          message.log = ReceiptLog.decode(reader, reader.uint32());
           continue;
         }
         case 9: {
@@ -514,7 +461,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.returnData = ReceiptReturnData.decode(reader, reader.uint32());
+          message.logData = ReceiptLogData.decode(reader, reader.uint32());
           continue;
         }
         case 10: {
@@ -522,7 +469,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.panic = ReceiptPanic.decode(reader, reader.uint32());
+          message.transfer = ReceiptTransfer.decode(reader, reader.uint32());
           continue;
         }
         case 11: {
@@ -530,7 +477,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.revert = ReceiptRevert.decode(reader, reader.uint32());
+          message.transferOut = ReceiptTransferOut.decode(reader, reader.uint32());
           continue;
         }
         case 12: {
@@ -538,7 +485,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.log = ReceiptLog.decode(reader, reader.uint32());
+          message.scriptResult = ReceiptScriptResult.decode(reader, reader.uint32());
           continue;
         }
         case 13: {
@@ -546,7 +493,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.logData = ReceiptLogData.decode(reader, reader.uint32());
+          message.messageOut = ReceiptMessageOut.decode(reader, reader.uint32());
           continue;
         }
         case 14: {
@@ -554,7 +501,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.transfer = ReceiptTransfer.decode(reader, reader.uint32());
+          message.mint = ReceiptMint.decode(reader, reader.uint32());
           continue;
         }
         case 15: {
@@ -562,7 +509,7 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.transferOut = ReceiptTransferOut.decode(reader, reader.uint32());
+          message.burn = ReceiptBurn.decode(reader, reader.uint32());
           continue;
         }
         case 16: {
@@ -570,51 +517,11 @@ export const Receipt: MessageFns<Receipt> = {
             break;
           }
 
-          message.scriptResult = ReceiptScriptResult.decode(reader, reader.uint32());
+          message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
         case 17: {
           if (tag !== 138) {
-            break;
-          }
-
-          message.messageOut = ReceiptMessageOut.decode(reader, reader.uint32());
-          continue;
-        }
-        case 18: {
-          if (tag !== 146) {
-            break;
-          }
-
-          message.mint = ReceiptMint.decode(reader, reader.uint32());
-          continue;
-        }
-        case 19: {
-          if (tag !== 154) {
-            break;
-          }
-
-          message.burn = ReceiptBurn.decode(reader, reader.uint32());
-          continue;
-        }
-        case 20: {
-          if (tag !== 162) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 21: {
-          if (tag !== 170) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 22: {
-          if (tag !== 178) {
             break;
           }
 
@@ -633,11 +540,7 @@ export const Receipt: MessageFns<Receipt> = {
   fromJSON(object: any): Receipt {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
-      receiptIndex: isSet(object.receiptIndex) ? globalThis.Number(object.receiptIndex) : 0,
-      receiptType: isSet(object.receiptType) ? receiptTypeFromJSON(object.receiptType) : 0,
+      type: isSet(object.type) ? receiptTypeFromJSON(object.type) : 0,
       call: isSet(object.call) ? ReceiptCall.fromJSON(object.call) : undefined,
       return: isSet(object.return) ? ReceiptReturn.fromJSON(object.return) : undefined,
       returnData: isSet(object.returnData) ? ReceiptReturnData.fromJSON(object.returnData) : undefined,
@@ -651,8 +554,7 @@ export const Receipt: MessageFns<Receipt> = {
       messageOut: isSet(object.messageOut) ? ReceiptMessageOut.fromJSON(object.messageOut) : undefined,
       mint: isSet(object.mint) ? ReceiptMint.fromJSON(object.mint) : undefined,
       burn: isSet(object.burn) ? ReceiptBurn.fromJSON(object.burn) : undefined,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
       pointer: isSet(object.pointer) ? ReceiptPointer.fromJSON(object.pointer) : undefined,
     };
   },
@@ -662,20 +564,8 @@ export const Receipt: MessageFns<Receipt> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      obj.txIndex = Math.round(message.txIndex);
-    }
-    if (message.receiptIndex !== 0) {
-      obj.receiptIndex = Math.round(message.receiptIndex);
-    }
-    if (message.receiptType !== 0) {
-      obj.receiptType = receiptTypeToJSON(message.receiptType);
+    if (message.type !== 0) {
+      obj.type = receiptTypeToJSON(message.type);
     }
     if (message.call !== undefined) {
       obj.call = ReceiptCall.toJSON(message.call);
@@ -716,11 +606,8 @@ export const Receipt: MessageFns<Receipt> = {
     if (message.burn !== undefined) {
       obj.burn = ReceiptBurn.toJSON(message.burn);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.pointer !== undefined) {
       obj.pointer = ReceiptPointer.toJSON(message.pointer);
@@ -734,11 +621,7 @@ export const Receipt: MessageFns<Receipt> = {
   fromPartial<I extends Exact<DeepPartial<Receipt>, I>>(object: I): Receipt {
     const message = createBaseReceipt();
     message.subject = object.subject ?? "";
-    message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.txIndex = object.txIndex ?? 0;
-    message.receiptIndex = object.receiptIndex ?? 0;
-    message.receiptType = object.receiptType ?? 0;
+    message.type = object.type ?? 0;
     message.call = (object.call !== undefined && object.call !== null)
       ? ReceiptCall.fromPartial(object.call)
       : undefined;
@@ -776,8 +659,9 @@ export const Receipt: MessageFns<Receipt> = {
     message.burn = (object.burn !== undefined && object.burn !== null)
       ? ReceiptBurn.fromPartial(object.burn)
       : undefined;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
     message.pointer = (object.pointer !== undefined && object.pointer !== null)
       ? ReceiptPointer.fromPartial(object.pointer)
       : undefined;
@@ -787,10 +671,8 @@ export const Receipt: MessageFns<Receipt> = {
 
 function createBaseReceiptCall(): ReceiptCall {
   return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    toContractId: new Uint8Array(0),
+    id: new Uint8Array(0),
+    to: new Uint8Array(0),
     amount: 0,
     assetId: new Uint8Array(0),
     gas: 0,
@@ -798,51 +680,37 @@ function createBaseReceiptCall(): ReceiptCall {
     param2: 0,
     pc: 0,
     is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
   };
 }
 
 export const ReceiptCall: MessageFns<ReceiptCall> = {
   encode(message: ReceiptCall, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
-    }
-    if (message.toContractId.length !== 0) {
-      writer.uint32(34).bytes(message.toContractId);
+    if (message.to.length !== 0) {
+      writer.uint32(18).bytes(message.to);
     }
     if (message.amount !== 0) {
-      writer.uint32(40).int64(message.amount);
+      writer.uint32(24).int64(message.amount);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(50).bytes(message.assetId);
+      writer.uint32(34).bytes(message.assetId);
     }
     if (message.gas !== 0) {
-      writer.uint32(56).int64(message.gas);
+      writer.uint32(40).int64(message.gas);
     }
     if (message.param1 !== 0) {
-      writer.uint32(64).int64(message.param1);
+      writer.uint32(48).int64(message.param1);
     }
     if (message.param2 !== 0) {
-      writer.uint32(72).int64(message.param2);
+      writer.uint32(56).int64(message.param2);
     }
     if (message.pc !== 0) {
-      writer.uint32(80).int64(message.pc);
+      writer.uint32(64).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(88).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(98).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(106).fork()).join();
+      writer.uint32(72).int64(message.is);
     }
     return writer;
   },
@@ -859,7 +727,7 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
@@ -867,15 +735,15 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.to = reader.bytes();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.amount = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -883,7 +751,7 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.toContractId = reader.bytes();
+          message.assetId = reader.bytes();
           continue;
         }
         case 5: {
@@ -891,15 +759,15 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.amount = longToNumber(reader.int64());
+          message.gas = longToNumber(reader.int64());
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.param1 = longToNumber(reader.int64());
           continue;
         }
         case 7: {
@@ -907,7 +775,7 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.gas = longToNumber(reader.int64());
+          message.param2 = longToNumber(reader.int64());
           continue;
         }
         case 8: {
@@ -915,7 +783,7 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.param1 = longToNumber(reader.int64());
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 9: {
@@ -923,39 +791,7 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
             break;
           }
 
-          message.param2 = longToNumber(reader.int64());
-          continue;
-        }
-        case 10: {
-          if (tag !== 80) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 11: {
-          if (tag !== 88) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 12: {
-          if (tag !== 98) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 13: {
-          if (tag !== 106) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -969,10 +805,8 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
 
   fromJSON(object: any): ReceiptCall {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
-      toContractId: isSet(object.toContractId) ? bytesFromBase64(object.toContractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
       gas: isSet(object.gas) ? globalThis.Number(object.gas) : 0,
@@ -980,24 +814,16 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
       param2: isSet(object.param2) ? globalThis.Number(object.param2) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptCall): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
-    }
-    if (message.toContractId.length !== 0) {
-      obj.toContractId = base64FromBytes(message.toContractId);
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
@@ -1020,12 +846,6 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -1034,10 +854,8 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptCall>, I>>(object: I): ReceiptCall {
     const message = createBaseReceiptCall();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
-    message.toContractId = object.toContractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
+    message.to = object.to ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
     message.gas = object.gas ?? 0;
@@ -1045,50 +863,27 @@ export const ReceiptCall: MessageFns<ReceiptCall> = {
     message.param2 = object.param2 ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptReturn(): ReceiptReturn {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    val: 0,
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), val: 0, pc: 0, is: 0 };
 }
 
 export const ReceiptReturn: MessageFns<ReceiptReturn> = {
   encode(message: ReceiptReturn, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
     if (message.val !== 0) {
-      writer.uint32(32).int64(message.val);
+      writer.uint32(16).int64(message.val);
     }
     if (message.pc !== 0) {
-      writer.uint32(40).int64(message.pc);
+      writer.uint32(24).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(48).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(58).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(66).fork()).join();
+      writer.uint32(32).int64(message.is);
     }
     return writer;
   },
@@ -1105,23 +900,23 @@ export const ReceiptReturn: MessageFns<ReceiptReturn> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.val = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -1129,39 +924,7 @@ export const ReceiptReturn: MessageFns<ReceiptReturn> = {
             break;
           }
 
-          message.val = longToNumber(reader.int64());
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1175,27 +938,17 @@ export const ReceiptReturn: MessageFns<ReceiptReturn> = {
 
   fromJSON(object: any): ReceiptReturn {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       val: isSet(object.val) ? globalThis.Number(object.val) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptReturn): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.val !== 0) {
       obj.val = Math.round(message.val);
@@ -1206,12 +959,6 @@ export const ReceiptReturn: MessageFns<ReceiptReturn> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -1220,68 +967,40 @@ export const ReceiptReturn: MessageFns<ReceiptReturn> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptReturn>, I>>(object: I): ReceiptReturn {
     const message = createBaseReceiptReturn();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.val = object.val ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptReturnData(): ReceiptReturnData {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    ptr: 0,
-    len: 0,
-    digest: new Uint8Array(0),
-    pc: 0,
-    is: 0,
-    data: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), ptr: 0, len: 0, digest: new Uint8Array(0), data: new Uint8Array(0), pc: 0, is: 0 };
 }
 
 export const ReceiptReturnData: MessageFns<ReceiptReturnData> = {
   encode(message: ReceiptReturnData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
     if (message.ptr !== 0) {
-      writer.uint32(32).int64(message.ptr);
+      writer.uint32(16).int64(message.ptr);
     }
     if (message.len !== 0) {
-      writer.uint32(40).int64(message.len);
+      writer.uint32(24).int64(message.len);
     }
     if (message.digest.length !== 0) {
-      writer.uint32(50).bytes(message.digest);
-    }
-    if (message.pc !== 0) {
-      writer.uint32(56).int64(message.pc);
-    }
-    if (message.is !== 0) {
-      writer.uint32(64).int64(message.is);
+      writer.uint32(34).bytes(message.digest);
     }
     if (message.data.length !== 0) {
-      writer.uint32(74).bytes(message.data);
+      writer.uint32(42).bytes(message.data);
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(82).fork()).join();
+    if (message.pc !== 0) {
+      writer.uint32(48).int64(message.pc);
     }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(90).fork()).join();
+    if (message.is !== 0) {
+      writer.uint32(56).int64(message.is);
     }
     return writer;
   },
@@ -1298,47 +1017,47 @@ export const ReceiptReturnData: MessageFns<ReceiptReturnData> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.contractId = reader.bytes();
-          continue;
-        }
-        case 4: {
-          if (tag !== 32) {
+          if (tag !== 16) {
             break;
           }
 
           message.ptr = longToNumber(reader.int64());
           continue;
         }
-        case 5: {
-          if (tag !== 40) {
+        case 3: {
+          if (tag !== 24) {
             break;
           }
 
           message.len = longToNumber(reader.int64());
           continue;
         }
-        case 6: {
-          if (tag !== 50) {
+        case 4: {
+          if (tag !== 34) {
             break;
           }
 
           message.digest = reader.bytes();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 7: {
@@ -1346,39 +1065,7 @@ export const ReceiptReturnData: MessageFns<ReceiptReturnData> = {
             break;
           }
 
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.data = reader.bytes();
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1392,30 +1079,20 @@ export const ReceiptReturnData: MessageFns<ReceiptReturnData> = {
 
   fromJSON(object: any): ReceiptReturnData {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       ptr: isSet(object.ptr) ? globalThis.Number(object.ptr) : 0,
       len: isSet(object.len) ? globalThis.Number(object.len) : 0,
       digest: isSet(object.digest) ? bytesFromBase64(object.digest) : new Uint8Array(0),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptReturnData): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.ptr !== 0) {
       obj.ptr = Math.round(message.ptr);
@@ -1426,20 +1103,14 @@ export const ReceiptReturnData: MessageFns<ReceiptReturnData> = {
     if (message.digest.length !== 0) {
       obj.digest = base64FromBytes(message.digest);
     }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
     if (message.pc !== 0) {
       obj.pc = Math.round(message.pc);
     }
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
-    }
-    if (message.data.length !== 0) {
-      obj.data = base64FromBytes(message.data);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -1449,63 +1120,37 @@ export const ReceiptReturnData: MessageFns<ReceiptReturnData> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptReturnData>, I>>(object: I): ReceiptReturnData {
     const message = createBaseReceiptReturnData();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.ptr = object.ptr ?? 0;
     message.len = object.len ?? 0;
     message.digest = object.digest ?? new Uint8Array(0);
+    message.data = object.data ?? new Uint8Array(0);
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.data = object.data ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptPanic(): ReceiptPanic {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    reason: 0,
-    pc: 0,
-    is: 0,
-    panicContractId: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), reason: 0, pc: 0, is: 0, contractId: new Uint8Array(0) };
 }
 
 export const ReceiptPanic: MessageFns<ReceiptPanic> = {
   encode(message: ReceiptPanic, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
     if (message.reason !== 0) {
-      writer.uint32(32).int64(message.reason);
+      writer.uint32(16).int64(message.reason);
     }
     if (message.pc !== 0) {
-      writer.uint32(40).int64(message.pc);
+      writer.uint32(24).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(48).int64(message.is);
+      writer.uint32(32).int64(message.is);
     }
-    if (message.panicContractId.length !== 0) {
-      writer.uint32(58).bytes(message.panicContractId);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(66).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(74).fork()).join();
+    if (message.contractId.length !== 0) {
+      writer.uint32(42).bytes(message.contractId);
     }
     return writer;
   },
@@ -1522,23 +1167,23 @@ export const ReceiptPanic: MessageFns<ReceiptPanic> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.reason = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -1546,47 +1191,15 @@ export const ReceiptPanic: MessageFns<ReceiptPanic> = {
             break;
           }
 
-          message.reason = longToNumber(reader.int64());
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
           continue;
         }
-        case 7: {
-          if (tag !== 58) {
+        case 5: {
+          if (tag !== 42) {
             break;
           }
 
-          message.panicContractId = reader.bytes();
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.contractId = reader.bytes();
           continue;
         }
       }
@@ -1600,28 +1213,18 @@ export const ReceiptPanic: MessageFns<ReceiptPanic> = {
 
   fromJSON(object: any): ReceiptPanic {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       reason: isSet(object.reason) ? globalThis.Number(object.reason) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      panicContractId: isSet(object.panicContractId) ? bytesFromBase64(object.panicContractId) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
     };
   },
 
   toJSON(message: ReceiptPanic): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.reason !== 0) {
       obj.reason = Math.round(message.reason);
@@ -1632,14 +1235,8 @@ export const ReceiptPanic: MessageFns<ReceiptPanic> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.panicContractId.length !== 0) {
-      obj.panicContractId = base64FromBytes(message.panicContractId);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.contractId.length !== 0) {
+      obj.contractId = base64FromBytes(message.contractId);
     }
     return obj;
   },
@@ -1649,57 +1246,32 @@ export const ReceiptPanic: MessageFns<ReceiptPanic> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptPanic>, I>>(object: I): ReceiptPanic {
     const message = createBaseReceiptPanic();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.reason = object.reason ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.panicContractId = object.panicContractId ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.contractId = object.contractId ?? new Uint8Array(0);
     return message;
   },
 };
 
 function createBaseReceiptRevert(): ReceiptRevert {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    val: 0,
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), ra: 0, pc: 0, is: 0 };
 }
 
 export const ReceiptRevert: MessageFns<ReceiptRevert> = {
   encode(message: ReceiptRevert, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
-    }
-    if (message.val !== 0) {
-      writer.uint32(32).int64(message.val);
+    if (message.ra !== 0) {
+      writer.uint32(16).int64(message.ra);
     }
     if (message.pc !== 0) {
-      writer.uint32(40).int64(message.pc);
+      writer.uint32(24).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(48).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(58).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(66).fork()).join();
+      writer.uint32(32).int64(message.is);
     }
     return writer;
   },
@@ -1716,23 +1288,23 @@ export const ReceiptRevert: MessageFns<ReceiptRevert> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.ra = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -1740,39 +1312,7 @@ export const ReceiptRevert: MessageFns<ReceiptRevert> = {
             break;
           }
 
-          message.val = longToNumber(reader.int64());
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1786,42 +1326,26 @@ export const ReceiptRevert: MessageFns<ReceiptRevert> = {
 
   fromJSON(object: any): ReceiptRevert {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
-      val: isSet(object.val) ? globalThis.Number(object.val) : 0,
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      ra: isSet(object.ra) ? globalThis.Number(object.ra) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptRevert): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
-    }
-    if (message.val !== 0) {
-      obj.val = Math.round(message.val);
+    if (message.ra !== 0) {
+      obj.ra = Math.round(message.ra);
     }
     if (message.pc !== 0) {
       obj.pc = Math.round(message.pc);
     }
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -1831,68 +1355,40 @@ export const ReceiptRevert: MessageFns<ReceiptRevert> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptRevert>, I>>(object: I): ReceiptRevert {
     const message = createBaseReceiptRevert();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
-    message.val = object.val ?? 0;
+    message.id = object.id ?? new Uint8Array(0);
+    message.ra = object.ra ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptLog(): ReceiptLog {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    ra: 0,
-    rb: 0,
-    rc: 0,
-    rd: 0,
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), ra: 0, rb: 0, rc: 0, rd: 0, pc: 0, is: 0 };
 }
 
 export const ReceiptLog: MessageFns<ReceiptLog> = {
   encode(message: ReceiptLog, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
     if (message.ra !== 0) {
-      writer.uint32(32).int64(message.ra);
+      writer.uint32(16).int64(message.ra);
     }
     if (message.rb !== 0) {
-      writer.uint32(40).int64(message.rb);
+      writer.uint32(24).int64(message.rb);
     }
     if (message.rc !== 0) {
-      writer.uint32(48).int64(message.rc);
+      writer.uint32(32).int64(message.rc);
     }
     if (message.rd !== 0) {
-      writer.uint32(56).int64(message.rd);
+      writer.uint32(40).int64(message.rd);
     }
     if (message.pc !== 0) {
-      writer.uint32(64).int64(message.pc);
+      writer.uint32(48).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(72).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(82).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(90).fork()).join();
+      writer.uint32(56).int64(message.is);
     }
     return writer;
   },
@@ -1909,23 +1405,23 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.ra = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.rb = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -1933,7 +1429,7 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
             break;
           }
 
-          message.ra = longToNumber(reader.int64());
+          message.rc = longToNumber(reader.int64());
           continue;
         }
         case 5: {
@@ -1941,7 +1437,7 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
             break;
           }
 
-          message.rb = longToNumber(reader.int64());
+          message.rd = longToNumber(reader.int64());
           continue;
         }
         case 6: {
@@ -1949,7 +1445,7 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
             break;
           }
 
-          message.rc = longToNumber(reader.int64());
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 7: {
@@ -1957,39 +1453,7 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
             break;
           }
 
-          message.rd = longToNumber(reader.int64());
-          continue;
-        }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 9: {
-          if (tag !== 72) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2003,30 +1467,20 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
 
   fromJSON(object: any): ReceiptLog {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       ra: isSet(object.ra) ? globalThis.Number(object.ra) : 0,
       rb: isSet(object.rb) ? globalThis.Number(object.rb) : 0,
       rc: isSet(object.rc) ? globalThis.Number(object.rc) : 0,
       rd: isSet(object.rd) ? globalThis.Number(object.rd) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptLog): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.ra !== 0) {
       obj.ra = Math.round(message.ra);
@@ -2046,12 +1500,6 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -2060,79 +1508,59 @@ export const ReceiptLog: MessageFns<ReceiptLog> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptLog>, I>>(object: I): ReceiptLog {
     const message = createBaseReceiptLog();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.ra = object.ra ?? 0;
     message.rb = object.rb ?? 0;
     message.rc = object.rc ?? 0;
     message.rd = object.rd ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptLogData(): ReceiptLogData {
   return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
+    id: new Uint8Array(0),
     ra: 0,
     rb: 0,
     ptr: 0,
     len: 0,
     digest: new Uint8Array(0),
+    data: new Uint8Array(0),
     pc: 0,
     is: 0,
-    data: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
   };
 }
 
 export const ReceiptLogData: MessageFns<ReceiptLogData> = {
   encode(message: ReceiptLogData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
     if (message.ra !== 0) {
-      writer.uint32(32).int64(message.ra);
+      writer.uint32(16).int64(message.ra);
     }
     if (message.rb !== 0) {
-      writer.uint32(40).int64(message.rb);
+      writer.uint32(24).int64(message.rb);
     }
     if (message.ptr !== 0) {
-      writer.uint32(48).int64(message.ptr);
+      writer.uint32(32).int64(message.ptr);
     }
     if (message.len !== 0) {
-      writer.uint32(56).int64(message.len);
+      writer.uint32(40).int64(message.len);
     }
     if (message.digest.length !== 0) {
-      writer.uint32(66).bytes(message.digest);
-    }
-    if (message.pc !== 0) {
-      writer.uint32(72).int64(message.pc);
-    }
-    if (message.is !== 0) {
-      writer.uint32(80).int64(message.is);
+      writer.uint32(50).bytes(message.digest);
     }
     if (message.data.length !== 0) {
-      writer.uint32(90).bytes(message.data);
+      writer.uint32(58).bytes(message.data);
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(98).fork()).join();
+    if (message.pc !== 0) {
+      writer.uint32(64).int64(message.pc);
     }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(106).fork()).join();
+    if (message.is !== 0) {
+      writer.uint32(72).int64(message.is);
     }
     return writer;
   },
@@ -2149,23 +1577,23 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.ra = longToNumber(reader.int64());
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.rb = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -2173,7 +1601,7 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
             break;
           }
 
-          message.ra = longToNumber(reader.int64());
+          message.ptr = longToNumber(reader.int64());
           continue;
         }
         case 5: {
@@ -2181,31 +1609,31 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
             break;
           }
 
-          message.rb = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
-          message.ptr = longToNumber(reader.int64());
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
           message.len = longToNumber(reader.int64());
           continue;
         }
-        case 8: {
-          if (tag !== 66) {
+        case 6: {
+          if (tag !== 50) {
             break;
           }
 
           message.digest = reader.bytes();
+          continue;
+        }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 9: {
@@ -2213,39 +1641,7 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
             break;
           }
 
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 10: {
-          if (tag !== 80) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.data = reader.bytes();
-          continue;
-        }
-        case 12: {
-          if (tag !== 98) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 13: {
-          if (tag !== 106) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2259,32 +1655,22 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
 
   fromJSON(object: any): ReceiptLogData {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       ra: isSet(object.ra) ? globalThis.Number(object.ra) : 0,
       rb: isSet(object.rb) ? globalThis.Number(object.rb) : 0,
       ptr: isSet(object.ptr) ? globalThis.Number(object.ptr) : 0,
       len: isSet(object.len) ? globalThis.Number(object.len) : 0,
       digest: isSet(object.digest) ? bytesFromBase64(object.digest) : new Uint8Array(0),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptLogData): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.ra !== 0) {
       obj.ra = Math.round(message.ra);
@@ -2301,20 +1687,14 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
     if (message.digest.length !== 0) {
       obj.digest = base64FromBytes(message.digest);
     }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
     if (message.pc !== 0) {
       obj.pc = Math.round(message.pc);
     }
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
-    }
-    if (message.data.length !== 0) {
-      obj.data = base64FromBytes(message.data);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -2324,69 +1704,42 @@ export const ReceiptLogData: MessageFns<ReceiptLogData> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptLogData>, I>>(object: I): ReceiptLogData {
     const message = createBaseReceiptLogData();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.ra = object.ra ?? 0;
     message.rb = object.rb ?? 0;
     message.ptr = object.ptr ?? 0;
     message.len = object.len ?? 0;
     message.digest = object.digest ?? new Uint8Array(0);
+    message.data = object.data ?? new Uint8Array(0);
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.data = object.data ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptTransfer(): ReceiptTransfer {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    toContractId: new Uint8Array(0),
-    amount: 0,
-    assetId: new Uint8Array(0),
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0), pc: 0, is: 0 };
 }
 
 export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
   encode(message: ReceiptTransfer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
-    }
-    if (message.toContractId.length !== 0) {
-      writer.uint32(34).bytes(message.toContractId);
+    if (message.to.length !== 0) {
+      writer.uint32(18).bytes(message.to);
     }
     if (message.amount !== 0) {
-      writer.uint32(40).int64(message.amount);
+      writer.uint32(24).int64(message.amount);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(50).bytes(message.assetId);
+      writer.uint32(34).bytes(message.assetId);
     }
     if (message.pc !== 0) {
-      writer.uint32(56).int64(message.pc);
+      writer.uint32(40).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(64).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(74).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(82).fork()).join();
+      writer.uint32(48).int64(message.is);
     }
     return writer;
   },
@@ -2403,7 +1756,7 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
@@ -2411,15 +1764,15 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.to = reader.bytes();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.amount = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -2427,7 +1780,7 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
             break;
           }
 
-          message.toContractId = reader.bytes();
+          message.assetId = reader.bytes();
           continue;
         }
         case 5: {
@@ -2435,47 +1788,15 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
             break;
           }
 
-          message.amount = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.assetId = reader.bytes();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
           message.pc = longToNumber(reader.int64());
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
+        case 6: {
+          if (tag !== 48) {
             break;
           }
 
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2489,32 +1810,22 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
 
   fromJSON(object: any): ReceiptTransfer {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
-      toContractId: isSet(object.toContractId) ? bytesFromBase64(object.toContractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptTransfer): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
-    }
-    if (message.toContractId.length !== 0) {
-      obj.toContractId = base64FromBytes(message.toContractId);
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
@@ -2528,12 +1839,6 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -2542,66 +1847,39 @@ export const ReceiptTransfer: MessageFns<ReceiptTransfer> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptTransfer>, I>>(object: I): ReceiptTransfer {
     const message = createBaseReceiptTransfer();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
-    message.toContractId = object.toContractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
+    message.to = object.to ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptTransferOut(): ReceiptTransferOut {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    toAddress: new Uint8Array(0),
-    amount: 0,
-    assetId: new Uint8Array(0),
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { id: new Uint8Array(0), toAddress: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0), pc: 0, is: 0 };
 }
 
 export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
   encode(message: ReceiptTransferOut, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(10).bytes(message.id);
     }
     if (message.toAddress.length !== 0) {
-      writer.uint32(34).bytes(message.toAddress);
+      writer.uint32(18).bytes(message.toAddress);
     }
     if (message.amount !== 0) {
-      writer.uint32(40).int64(message.amount);
+      writer.uint32(24).int64(message.amount);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(50).bytes(message.assetId);
+      writer.uint32(34).bytes(message.assetId);
     }
     if (message.pc !== 0) {
-      writer.uint32(56).int64(message.pc);
+      writer.uint32(40).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(64).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(74).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(82).fork()).join();
+      writer.uint32(48).int64(message.is);
     }
     return writer;
   },
@@ -2618,7 +1896,7 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.id = reader.bytes();
           continue;
         }
         case 2: {
@@ -2626,15 +1904,15 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.toAddress = reader.bytes();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.amount = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -2642,7 +1920,7 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
             break;
           }
 
-          message.toAddress = reader.bytes();
+          message.assetId = reader.bytes();
           continue;
         }
         case 5: {
@@ -2650,47 +1928,15 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
             break;
           }
 
-          message.amount = longToNumber(reader.int64());
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.assetId = reader.bytes();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
           message.pc = longToNumber(reader.int64());
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
+        case 6: {
+          if (tag !== 48) {
             break;
           }
 
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2704,29 +1950,19 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
 
   fromJSON(object: any): ReceiptTransferOut {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       toAddress: isSet(object.toAddress) ? bytesFromBase64(object.toAddress) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptTransferOut): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.toAddress.length !== 0) {
       obj.toAddress = base64FromBytes(message.toAddress);
@@ -2743,12 +1979,6 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -2757,43 +1987,27 @@ export const ReceiptTransferOut: MessageFns<ReceiptTransferOut> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptTransferOut>, I>>(object: I): ReceiptTransferOut {
     const message = createBaseReceiptTransferOut();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.toAddress = object.toAddress ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptScriptResult(): ReceiptScriptResult {
-  return { subject: "", txId: new Uint8Array(0), result: 0, gasUsed: 0, createdAt: undefined, publishedAt: undefined };
+  return { result: 0, gasUsed: 0 };
 }
 
 export const ReceiptScriptResult: MessageFns<ReceiptScriptResult> = {
   encode(message: ReceiptScriptResult, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
     if (message.result !== 0) {
-      writer.uint32(24).int32(message.result);
+      writer.uint32(8).int32(message.result);
     }
     if (message.gasUsed !== 0) {
-      writer.uint32(32).int64(message.gasUsed);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(50).fork()).join();
+      writer.uint32(16).int64(message.gasUsed);
     }
     return writer;
   },
@@ -2806,51 +2020,19 @@ export const ReceiptScriptResult: MessageFns<ReceiptScriptResult> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.subject = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
+          if (tag !== 8) {
             break;
           }
 
           message.result = reader.int32() as any;
           continue;
         }
-        case 4: {
-          if (tag !== 32) {
+        case 2: {
+          if (tag !== 16) {
             break;
           }
 
           message.gasUsed = longToNumber(reader.int64());
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -2864,34 +2046,18 @@ export const ReceiptScriptResult: MessageFns<ReceiptScriptResult> = {
 
   fromJSON(object: any): ReceiptScriptResult {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       result: isSet(object.result) ? scriptResultTypeFromJSON(object.result) : 0,
       gasUsed: isSet(object.gasUsed) ? globalThis.Number(object.gasUsed) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptScriptResult): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
     if (message.result !== 0) {
       obj.result = scriptResultTypeToJSON(message.result);
     }
     if (message.gasUsed !== 0) {
       obj.gasUsed = Math.round(message.gasUsed);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -2901,66 +2067,46 @@ export const ReceiptScriptResult: MessageFns<ReceiptScriptResult> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptScriptResult>, I>>(object: I): ReceiptScriptResult {
     const message = createBaseReceiptScriptResult();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
     message.result = object.result ?? 0;
     message.gasUsed = object.gasUsed ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptMessageOut(): ReceiptMessageOut {
   return {
-    subject: "",
-    txId: new Uint8Array(0),
-    senderAddress: new Uint8Array(0),
-    recipientAddress: new Uint8Array(0),
+    sender: new Uint8Array(0),
+    recipient: new Uint8Array(0),
     amount: 0,
     nonce: new Uint8Array(0),
     len: 0,
     digest: new Uint8Array(0),
     data: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
   };
 }
 
 export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
   encode(message: ReceiptMessageOut, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.sender.length !== 0) {
+      writer.uint32(10).bytes(message.sender);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
-    if (message.senderAddress.length !== 0) {
-      writer.uint32(26).bytes(message.senderAddress);
-    }
-    if (message.recipientAddress.length !== 0) {
-      writer.uint32(34).bytes(message.recipientAddress);
+    if (message.recipient.length !== 0) {
+      writer.uint32(18).bytes(message.recipient);
     }
     if (message.amount !== 0) {
-      writer.uint32(40).int64(message.amount);
+      writer.uint32(24).int64(message.amount);
     }
     if (message.nonce.length !== 0) {
-      writer.uint32(50).bytes(message.nonce);
+      writer.uint32(34).bytes(message.nonce);
     }
     if (message.len !== 0) {
-      writer.uint32(56).int64(message.len);
+      writer.uint32(40).int64(message.len);
     }
     if (message.digest.length !== 0) {
-      writer.uint32(66).bytes(message.digest);
+      writer.uint32(50).bytes(message.digest);
     }
     if (message.data.length !== 0) {
-      writer.uint32(74).bytes(message.data);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(82).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(90).fork()).join();
+      writer.uint32(58).bytes(message.data);
     }
     return writer;
   },
@@ -2977,7 +2123,7 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.sender = reader.bytes();
           continue;
         }
         case 2: {
@@ -2985,15 +2131,15 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.recipient = reader.bytes();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.senderAddress = reader.bytes();
+          message.amount = longToNumber(reader.int64());
           continue;
         }
         case 4: {
@@ -3001,7 +2147,7 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
             break;
           }
 
-          message.recipientAddress = reader.bytes();
+          message.nonce = reader.bytes();
           continue;
         }
         case 5: {
@@ -3009,7 +2155,7 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
             break;
           }
 
-          message.amount = longToNumber(reader.int64());
+          message.len = longToNumber(reader.int64());
           continue;
         }
         case 6: {
@@ -3017,47 +2163,15 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
             break;
           }
 
-          message.nonce = reader.bytes();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.len = longToNumber(reader.int64());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
           message.digest = reader.bytes();
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 7: {
+          if (tag !== 58) {
             break;
           }
 
           message.data = reader.bytes();
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -3071,33 +2185,23 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
 
   fromJSON(object: any): ReceiptMessageOut {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      senderAddress: isSet(object.senderAddress) ? bytesFromBase64(object.senderAddress) : new Uint8Array(0),
-      recipientAddress: isSet(object.recipientAddress) ? bytesFromBase64(object.recipientAddress) : new Uint8Array(0),
+      sender: isSet(object.sender) ? bytesFromBase64(object.sender) : new Uint8Array(0),
+      recipient: isSet(object.recipient) ? bytesFromBase64(object.recipient) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       nonce: isSet(object.nonce) ? bytesFromBase64(object.nonce) : new Uint8Array(0),
       len: isSet(object.len) ? globalThis.Number(object.len) : 0,
       digest: isSet(object.digest) ? bytesFromBase64(object.digest) : new Uint8Array(0),
       data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptMessageOut): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.sender.length !== 0) {
+      obj.sender = base64FromBytes(message.sender);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.senderAddress.length !== 0) {
-      obj.senderAddress = base64FromBytes(message.senderAddress);
-    }
-    if (message.recipientAddress.length !== 0) {
-      obj.recipientAddress = base64FromBytes(message.recipientAddress);
+    if (message.recipient.length !== 0) {
+      obj.recipient = base64FromBytes(message.recipient);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
@@ -3114,12 +2218,6 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
     if (message.data.length !== 0) {
       obj.data = base64FromBytes(message.data);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -3128,67 +2226,40 @@ export const ReceiptMessageOut: MessageFns<ReceiptMessageOut> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptMessageOut>, I>>(object: I): ReceiptMessageOut {
     const message = createBaseReceiptMessageOut();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.senderAddress = object.senderAddress ?? new Uint8Array(0);
-    message.recipientAddress = object.recipientAddress ?? new Uint8Array(0);
+    message.sender = object.sender ?? new Uint8Array(0);
+    message.recipient = object.recipient ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.nonce = object.nonce ?? new Uint8Array(0);
     message.len = object.len ?? 0;
     message.digest = object.digest ?? new Uint8Array(0);
     message.data = object.data ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptMint(): ReceiptMint {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    subId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    assetId: new Uint8Array(0),
-    val: 0,
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { subId: new Uint8Array(0), id: new Uint8Array(0), assetId: new Uint8Array(0), val: 0, pc: 0, is: 0 };
 }
 
 export const ReceiptMint: MessageFns<ReceiptMint> = {
   encode(message: ReceiptMint, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
     if (message.subId.length !== 0) {
-      writer.uint32(26).bytes(message.subId);
+      writer.uint32(10).bytes(message.subId);
     }
-    if (message.contractId.length !== 0) {
-      writer.uint32(34).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(18).bytes(message.id);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(42).bytes(message.assetId);
+      writer.uint32(26).bytes(message.assetId);
     }
     if (message.val !== 0) {
-      writer.uint32(48).int64(message.val);
+      writer.uint32(32).int64(message.val);
     }
     if (message.pc !== 0) {
-      writer.uint32(56).int64(message.pc);
+      writer.uint32(40).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(64).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(74).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(82).fork()).join();
+      writer.uint32(48).int64(message.is);
     }
     return writer;
   },
@@ -3205,7 +2276,7 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.subId = reader.bytes();
           continue;
         }
         case 2: {
@@ -3213,7 +2284,7 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.id = reader.bytes();
           continue;
         }
         case 3: {
@@ -3221,23 +2292,23 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
             break;
           }
 
-          message.subId = reader.bytes();
+          message.assetId = reader.bytes();
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.val = longToNumber(reader.int64());
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 40) {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 6: {
@@ -3245,39 +2316,7 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
             break;
           }
 
-          message.val = longToNumber(reader.int64());
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -3291,32 +2330,22 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
 
   fromJSON(object: any): ReceiptMint {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       subId: isSet(object.subId) ? bytesFromBase64(object.subId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
       val: isSet(object.val) ? globalThis.Number(object.val) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptMint): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
     if (message.subId.length !== 0) {
       obj.subId = base64FromBytes(message.subId);
     }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.assetId.length !== 0) {
       obj.assetId = base64FromBytes(message.assetId);
@@ -3330,12 +2359,6 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -3344,66 +2367,39 @@ export const ReceiptMint: MessageFns<ReceiptMint> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptMint>, I>>(object: I): ReceiptMint {
     const message = createBaseReceiptMint();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
     message.subId = object.subId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.assetId = object.assetId ?? new Uint8Array(0);
     message.val = object.val ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseReceiptBurn(): ReceiptBurn {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    subId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    assetId: new Uint8Array(0),
-    val: 0,
-    pc: 0,
-    is: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { subId: new Uint8Array(0), id: new Uint8Array(0), assetId: new Uint8Array(0), val: 0, pc: 0, is: 0 };
 }
 
 export const ReceiptBurn: MessageFns<ReceiptBurn> = {
   encode(message: ReceiptBurn, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
     if (message.subId.length !== 0) {
-      writer.uint32(26).bytes(message.subId);
+      writer.uint32(10).bytes(message.subId);
     }
-    if (message.contractId.length !== 0) {
-      writer.uint32(34).bytes(message.contractId);
+    if (message.id.length !== 0) {
+      writer.uint32(18).bytes(message.id);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(42).bytes(message.assetId);
+      writer.uint32(26).bytes(message.assetId);
     }
     if (message.val !== 0) {
-      writer.uint32(48).int64(message.val);
+      writer.uint32(32).int64(message.val);
     }
     if (message.pc !== 0) {
-      writer.uint32(56).int64(message.pc);
+      writer.uint32(40).int64(message.pc);
     }
     if (message.is !== 0) {
-      writer.uint32(64).int64(message.is);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(74).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(82).fork()).join();
+      writer.uint32(48).int64(message.is);
     }
     return writer;
   },
@@ -3420,7 +2416,7 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.subId = reader.bytes();
           continue;
         }
         case 2: {
@@ -3428,7 +2424,7 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.id = reader.bytes();
           continue;
         }
         case 3: {
@@ -3436,23 +2432,23 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
             break;
           }
 
-          message.subId = reader.bytes();
+          message.assetId = reader.bytes();
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.val = longToNumber(reader.int64());
           continue;
         }
         case 5: {
-          if (tag !== 42) {
+          if (tag !== 40) {
             break;
           }
 
-          message.assetId = reader.bytes();
+          message.pc = longToNumber(reader.int64());
           continue;
         }
         case 6: {
@@ -3460,39 +2456,7 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
             break;
           }
 
-          message.val = longToNumber(reader.int64());
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.pc = longToNumber(reader.int64());
-          continue;
-        }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
           message.is = longToNumber(reader.int64());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -3506,32 +2470,22 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
 
   fromJSON(object: any): ReceiptBurn {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       subId: isSet(object.subId) ? bytesFromBase64(object.subId) : new Uint8Array(0),
-      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      id: isSet(object.id) ? bytesFromBase64(object.id) : new Uint8Array(0),
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
       val: isSet(object.val) ? globalThis.Number(object.val) : 0,
       pc: isSet(object.pc) ? globalThis.Number(object.pc) : 0,
       is: isSet(object.is) ? globalThis.Number(object.is) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: ReceiptBurn): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
     if (message.subId.length !== 0) {
       obj.subId = base64FromBytes(message.subId);
     }
-    if (message.contractId.length !== 0) {
-      obj.contractId = base64FromBytes(message.contractId);
+    if (message.id.length !== 0) {
+      obj.id = base64FromBytes(message.id);
     }
     if (message.assetId.length !== 0) {
       obj.assetId = base64FromBytes(message.assetId);
@@ -3545,12 +2499,6 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
     if (message.is !== 0) {
       obj.is = Math.round(message.is);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -3559,16 +2507,12 @@ export const ReceiptBurn: MessageFns<ReceiptBurn> = {
   },
   fromPartial<I extends Exact<DeepPartial<ReceiptBurn>, I>>(object: I): ReceiptBurn {
     const message = createBaseReceiptBurn();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
     message.subId = object.subId ?? new Uint8Array(0);
-    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.id = object.id ?? new Uint8Array(0);
     message.assetId = object.assetId ?? new Uint8Array(0);
     message.val = object.val ?? 0;
     message.pc = object.pc ?? 0;
     message.is = object.is ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
@@ -3609,28 +2553,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());

@@ -21,10 +21,10 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
-var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-goog.object.extend(proto, google_protobuf_timestamp_pb);
 var pointers_pb = require('./pointers_pb.js');
 goog.object.extend(proto, pointers_pb);
+var common_pb = require('./common_pb.js');
+goog.object.extend(proto, common_pb);
 goog.exportSymbol('proto.receipts.Receipt', null, global);
 goog.exportSymbol('proto.receipts.Receipt.ReceiptCase', null, global);
 goog.exportSymbol('proto.receipts.ReceiptBurn', null, global);
@@ -345,26 +345,26 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.receipts.Receipt.oneofGroups_ = [[7,8,9,10,11,12,13,14,15,16,17,18,19]];
+proto.receipts.Receipt.oneofGroups_ = [[3,4,5,6,7,8,9,10,11,12,13,14,15]];
 
 /**
  * @enum {number}
  */
 proto.receipts.Receipt.ReceiptCase = {
   RECEIPT_NOT_SET: 0,
-  CALL: 7,
-  RETURN: 8,
-  RETURN_DATA: 9,
-  PANIC: 10,
-  REVERT: 11,
-  LOG: 12,
-  LOG_DATA: 13,
-  TRANSFER: 14,
-  TRANSFER_OUT: 15,
-  SCRIPT_RESULT: 16,
-  MESSAGE_OUT: 17,
-  MINT: 18,
-  BURN: 19
+  CALL: 3,
+  RETURN: 4,
+  RETURN_DATA: 5,
+  PANIC: 6,
+  REVERT: 7,
+  LOG: 8,
+  LOG_DATA: 9,
+  TRANSFER: 10,
+  TRANSFER_OUT: 11,
+  SCRIPT_RESULT: 12,
+  MESSAGE_OUT: 13,
+  MINT: 14,
+  BURN: 15
 };
 
 /**
@@ -406,11 +406,7 @@ proto.receipts.Receipt.prototype.toObject = function(opt_includeInstance) {
 proto.receipts.Receipt.toObject = function(includeInstance, msg) {
   var f, obj = {
     subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    blockHeight: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    txId: msg.getTxId_asB64(),
-    txIndex: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    receiptIndex: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    receiptType: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    type: jspb.Message.getFieldWithDefault(msg, 2, 0),
     call: (f = msg.getCall()) && proto.receipts.ReceiptCall.toObject(includeInstance, f),
     pb_return: (f = msg.getReturn()) && proto.receipts.ReceiptReturn.toObject(includeInstance, f),
     returnData: (f = msg.getReturnData()) && proto.receipts.ReceiptReturnData.toObject(includeInstance, f),
@@ -424,8 +420,7 @@ proto.receipts.Receipt.toObject = function(includeInstance, msg) {
     messageOut: (f = msg.getMessageOut()) && proto.receipts.ReceiptMessageOut.toObject(includeInstance, f),
     mint: (f = msg.getMint()) && proto.receipts.ReceiptMint.toObject(includeInstance, f),
     burn: (f = msg.getBurn()) && proto.receipts.ReceiptBurn.toObject(includeInstance, f),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
+    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f),
     pointer: (f = msg.getPointer()) && pointers_pb.ReceiptPointer.toObject(includeInstance, f)
   };
 
@@ -468,101 +463,80 @@ proto.receipts.Receipt.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSubject(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setBlockHeight(value);
+      var value = /** @type {!proto.receipts.ReceiptType} */ (reader.readEnum());
+      msg.setType(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setTxIndex(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setReceiptIndex(value);
-      break;
-    case 6:
-      var value = /** @type {!proto.receipts.ReceiptType} */ (reader.readEnum());
-      msg.setReceiptType(value);
-      break;
-    case 7:
       var value = new proto.receipts.ReceiptCall;
       reader.readMessage(value,proto.receipts.ReceiptCall.deserializeBinaryFromReader);
       msg.setCall(value);
       break;
-    case 8:
+    case 4:
       var value = new proto.receipts.ReceiptReturn;
       reader.readMessage(value,proto.receipts.ReceiptReturn.deserializeBinaryFromReader);
       msg.setReturn(value);
       break;
-    case 9:
+    case 5:
       var value = new proto.receipts.ReceiptReturnData;
       reader.readMessage(value,proto.receipts.ReceiptReturnData.deserializeBinaryFromReader);
       msg.setReturnData(value);
       break;
-    case 10:
+    case 6:
       var value = new proto.receipts.ReceiptPanic;
       reader.readMessage(value,proto.receipts.ReceiptPanic.deserializeBinaryFromReader);
       msg.setPanic(value);
       break;
-    case 11:
+    case 7:
       var value = new proto.receipts.ReceiptRevert;
       reader.readMessage(value,proto.receipts.ReceiptRevert.deserializeBinaryFromReader);
       msg.setRevert(value);
       break;
-    case 12:
+    case 8:
       var value = new proto.receipts.ReceiptLog;
       reader.readMessage(value,proto.receipts.ReceiptLog.deserializeBinaryFromReader);
       msg.setLog(value);
       break;
-    case 13:
+    case 9:
       var value = new proto.receipts.ReceiptLogData;
       reader.readMessage(value,proto.receipts.ReceiptLogData.deserializeBinaryFromReader);
       msg.setLogData(value);
       break;
-    case 14:
+    case 10:
       var value = new proto.receipts.ReceiptTransfer;
       reader.readMessage(value,proto.receipts.ReceiptTransfer.deserializeBinaryFromReader);
       msg.setTransfer(value);
       break;
-    case 15:
+    case 11:
       var value = new proto.receipts.ReceiptTransferOut;
       reader.readMessage(value,proto.receipts.ReceiptTransferOut.deserializeBinaryFromReader);
       msg.setTransferOut(value);
       break;
-    case 16:
+    case 12:
       var value = new proto.receipts.ReceiptScriptResult;
       reader.readMessage(value,proto.receipts.ReceiptScriptResult.deserializeBinaryFromReader);
       msg.setScriptResult(value);
       break;
-    case 17:
+    case 13:
       var value = new proto.receipts.ReceiptMessageOut;
       reader.readMessage(value,proto.receipts.ReceiptMessageOut.deserializeBinaryFromReader);
       msg.setMessageOut(value);
       break;
-    case 18:
+    case 14:
       var value = new proto.receipts.ReceiptMint;
       reader.readMessage(value,proto.receipts.ReceiptMint.deserializeBinaryFromReader);
       msg.setMint(value);
       break;
-    case 19:
+    case 15:
       var value = new proto.receipts.ReceiptBurn;
       reader.readMessage(value,proto.receipts.ReceiptBurn.deserializeBinaryFromReader);
       msg.setBurn(value);
       break;
-    case 20:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
+    case 16:
+      var value = new common_pb.Metadata;
+      reader.readMessage(value,common_pb.Metadata.deserializeBinaryFromReader);
+      msg.setMetadata(value);
       break;
-    case 21:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
-      break;
-    case 22:
+    case 17:
       var value = new pointers_pb.ReceiptPointer;
       reader.readMessage(value,pointers_pb.ReceiptPointer.deserializeBinaryFromReader);
       msg.setPointer(value);
@@ -603,45 +577,17 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getBlockHeight();
-  if (f !== 0) {
-    writer.writeInt64(
-      2,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
-      f
-    );
-  }
-  f = message.getTxIndex();
-  if (f !== 0) {
-    writer.writeInt32(
-      4,
-      f
-    );
-  }
-  f = message.getReceiptIndex();
-  if (f !== 0) {
-    writer.writeInt32(
-      5,
-      f
-    );
-  }
-  f = message.getReceiptType();
+  f = message.getType();
   if (f !== 0.0) {
     writer.writeEnum(
-      6,
+      2,
       f
     );
   }
   f = message.getCall();
   if (f != null) {
     writer.writeMessage(
-      7,
+      3,
       f,
       proto.receipts.ReceiptCall.serializeBinaryToWriter
     );
@@ -649,7 +595,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getReturn();
   if (f != null) {
     writer.writeMessage(
-      8,
+      4,
       f,
       proto.receipts.ReceiptReturn.serializeBinaryToWriter
     );
@@ -657,7 +603,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getReturnData();
   if (f != null) {
     writer.writeMessage(
-      9,
+      5,
       f,
       proto.receipts.ReceiptReturnData.serializeBinaryToWriter
     );
@@ -665,7 +611,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getPanic();
   if (f != null) {
     writer.writeMessage(
-      10,
+      6,
       f,
       proto.receipts.ReceiptPanic.serializeBinaryToWriter
     );
@@ -673,7 +619,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getRevert();
   if (f != null) {
     writer.writeMessage(
-      11,
+      7,
       f,
       proto.receipts.ReceiptRevert.serializeBinaryToWriter
     );
@@ -681,7 +627,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getLog();
   if (f != null) {
     writer.writeMessage(
-      12,
+      8,
       f,
       proto.receipts.ReceiptLog.serializeBinaryToWriter
     );
@@ -689,7 +635,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getLogData();
   if (f != null) {
     writer.writeMessage(
-      13,
+      9,
       f,
       proto.receipts.ReceiptLogData.serializeBinaryToWriter
     );
@@ -697,7 +643,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getTransfer();
   if (f != null) {
     writer.writeMessage(
-      14,
+      10,
       f,
       proto.receipts.ReceiptTransfer.serializeBinaryToWriter
     );
@@ -705,7 +651,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getTransferOut();
   if (f != null) {
     writer.writeMessage(
-      15,
+      11,
       f,
       proto.receipts.ReceiptTransferOut.serializeBinaryToWriter
     );
@@ -713,7 +659,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getScriptResult();
   if (f != null) {
     writer.writeMessage(
-      16,
+      12,
       f,
       proto.receipts.ReceiptScriptResult.serializeBinaryToWriter
     );
@@ -721,7 +667,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getMessageOut();
   if (f != null) {
     writer.writeMessage(
-      17,
+      13,
       f,
       proto.receipts.ReceiptMessageOut.serializeBinaryToWriter
     );
@@ -729,7 +675,7 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getMint();
   if (f != null) {
     writer.writeMessage(
-      18,
+      14,
       f,
       proto.receipts.ReceiptMint.serializeBinaryToWriter
     );
@@ -737,31 +683,23 @@ proto.receipts.Receipt.serializeBinaryToWriter = function(message, writer) {
   f = message.getBurn();
   if (f != null) {
     writer.writeMessage(
-      19,
+      15,
       f,
       proto.receipts.ReceiptBurn.serializeBinaryToWriter
     );
   }
-  f = message.getCreatedAt();
+  f = message.getMetadata();
   if (f != null) {
     writer.writeMessage(
-      20,
+      16,
       f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      21,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+      common_pb.Metadata.serializeBinaryToWriter
     );
   }
   f = message.getPointer();
   if (f != null) {
     writer.writeMessage(
-      22,
+      17,
       f,
       pointers_pb.ReceiptPointer.serializeBinaryToWriter
     );
@@ -788,107 +726,11 @@ proto.receipts.Receipt.prototype.setSubject = function(value) {
 
 
 /**
- * optional int64 block_height = 2;
- * @return {number}
- */
-proto.receipts.Receipt.prototype.getBlockHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.setBlockHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional bytes tx_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.Receipt.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes tx_id = 3;
- * This is a type-conversion wrapper around `getTxId()`
- * @return {string}
- */
-proto.receipts.Receipt.prototype.getTxId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
-};
-
-
-/**
- * optional bytes tx_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
- * @return {!Uint8Array}
- */
-proto.receipts.Receipt.prototype.getTxId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int32 tx_index = 4;
- * @return {number}
- */
-proto.receipts.Receipt.prototype.getTxIndex = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.setTxIndex = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional int32 receipt_index = 5;
- * @return {number}
- */
-proto.receipts.Receipt.prototype.getReceiptIndex = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.setReceiptIndex = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-/**
- * optional ReceiptType receipt_type = 6;
+ * optional ReceiptType type = 2;
  * @return {!proto.receipts.ReceiptType}
  */
-proto.receipts.Receipt.prototype.getReceiptType = function() {
-  return /** @type {!proto.receipts.ReceiptType} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+proto.receipts.Receipt.prototype.getType = function() {
+  return /** @type {!proto.receipts.ReceiptType} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -896,18 +738,18 @@ proto.receipts.Receipt.prototype.getReceiptType = function() {
  * @param {!proto.receipts.ReceiptType} value
  * @return {!proto.receipts.Receipt} returns this
  */
-proto.receipts.Receipt.prototype.setReceiptType = function(value) {
-  return jspb.Message.setProto3EnumField(this, 6, value);
+proto.receipts.Receipt.prototype.setType = function(value) {
+  return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
 /**
- * optional ReceiptCall call = 7;
+ * optional ReceiptCall call = 3;
  * @return {?proto.receipts.ReceiptCall}
  */
 proto.receipts.Receipt.prototype.getCall = function() {
   return /** @type{?proto.receipts.ReceiptCall} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptCall, 7));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptCall, 3));
 };
 
 
@@ -916,7 +758,7 @@ proto.receipts.Receipt.prototype.getCall = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setCall = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 7, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 3, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -934,17 +776,17 @@ proto.receipts.Receipt.prototype.clearCall = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasCall = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional ReceiptReturn return = 8;
+ * optional ReceiptReturn return = 4;
  * @return {?proto.receipts.ReceiptReturn}
  */
 proto.receipts.Receipt.prototype.getReturn = function() {
   return /** @type{?proto.receipts.ReceiptReturn} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptReturn, 8));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptReturn, 4));
 };
 
 
@@ -953,7 +795,7 @@ proto.receipts.Receipt.prototype.getReturn = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setReturn = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 8, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 4, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -971,17 +813,17 @@ proto.receipts.Receipt.prototype.clearReturn = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasReturn = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
- * optional ReceiptReturnData return_data = 9;
+ * optional ReceiptReturnData return_data = 5;
  * @return {?proto.receipts.ReceiptReturnData}
  */
 proto.receipts.Receipt.prototype.getReturnData = function() {
   return /** @type{?proto.receipts.ReceiptReturnData} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptReturnData, 9));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptReturnData, 5));
 };
 
 
@@ -990,7 +832,7 @@ proto.receipts.Receipt.prototype.getReturnData = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setReturnData = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 9, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 5, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1008,17 +850,17 @@ proto.receipts.Receipt.prototype.clearReturnData = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasReturnData = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
- * optional ReceiptPanic panic = 10;
+ * optional ReceiptPanic panic = 6;
  * @return {?proto.receipts.ReceiptPanic}
  */
 proto.receipts.Receipt.prototype.getPanic = function() {
   return /** @type{?proto.receipts.ReceiptPanic} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptPanic, 10));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptPanic, 6));
 };
 
 
@@ -1027,7 +869,7 @@ proto.receipts.Receipt.prototype.getPanic = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setPanic = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 10, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 6, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1045,17 +887,17 @@ proto.receipts.Receipt.prototype.clearPanic = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasPanic = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
- * optional ReceiptRevert revert = 11;
+ * optional ReceiptRevert revert = 7;
  * @return {?proto.receipts.ReceiptRevert}
  */
 proto.receipts.Receipt.prototype.getRevert = function() {
   return /** @type{?proto.receipts.ReceiptRevert} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptRevert, 11));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptRevert, 7));
 };
 
 
@@ -1064,7 +906,7 @@ proto.receipts.Receipt.prototype.getRevert = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setRevert = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 11, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 7, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1082,17 +924,17 @@ proto.receipts.Receipt.prototype.clearRevert = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasRevert = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
 /**
- * optional ReceiptLog log = 12;
+ * optional ReceiptLog log = 8;
  * @return {?proto.receipts.ReceiptLog}
  */
 proto.receipts.Receipt.prototype.getLog = function() {
   return /** @type{?proto.receipts.ReceiptLog} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptLog, 12));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptLog, 8));
 };
 
 
@@ -1101,7 +943,7 @@ proto.receipts.Receipt.prototype.getLog = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setLog = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 12, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 8, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1119,17 +961,17 @@ proto.receipts.Receipt.prototype.clearLog = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasLog = function() {
-  return jspb.Message.getField(this, 12) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
 /**
- * optional ReceiptLogData log_data = 13;
+ * optional ReceiptLogData log_data = 9;
  * @return {?proto.receipts.ReceiptLogData}
  */
 proto.receipts.Receipt.prototype.getLogData = function() {
   return /** @type{?proto.receipts.ReceiptLogData} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptLogData, 13));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptLogData, 9));
 };
 
 
@@ -1138,7 +980,7 @@ proto.receipts.Receipt.prototype.getLogData = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setLogData = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 13, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 9, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1156,17 +998,17 @@ proto.receipts.Receipt.prototype.clearLogData = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasLogData = function() {
-  return jspb.Message.getField(this, 13) != null;
+  return jspb.Message.getField(this, 9) != null;
 };
 
 
 /**
- * optional ReceiptTransfer transfer = 14;
+ * optional ReceiptTransfer transfer = 10;
  * @return {?proto.receipts.ReceiptTransfer}
  */
 proto.receipts.Receipt.prototype.getTransfer = function() {
   return /** @type{?proto.receipts.ReceiptTransfer} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptTransfer, 14));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptTransfer, 10));
 };
 
 
@@ -1175,7 +1017,7 @@ proto.receipts.Receipt.prototype.getTransfer = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setTransfer = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 14, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 10, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1193,17 +1035,17 @@ proto.receipts.Receipt.prototype.clearTransfer = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasTransfer = function() {
-  return jspb.Message.getField(this, 14) != null;
+  return jspb.Message.getField(this, 10) != null;
 };
 
 
 /**
- * optional ReceiptTransferOut transfer_out = 15;
+ * optional ReceiptTransferOut transfer_out = 11;
  * @return {?proto.receipts.ReceiptTransferOut}
  */
 proto.receipts.Receipt.prototype.getTransferOut = function() {
   return /** @type{?proto.receipts.ReceiptTransferOut} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptTransferOut, 15));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptTransferOut, 11));
 };
 
 
@@ -1212,7 +1054,7 @@ proto.receipts.Receipt.prototype.getTransferOut = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setTransferOut = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 15, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 11, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1230,17 +1072,17 @@ proto.receipts.Receipt.prototype.clearTransferOut = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasTransferOut = function() {
-  return jspb.Message.getField(this, 15) != null;
+  return jspb.Message.getField(this, 11) != null;
 };
 
 
 /**
- * optional ReceiptScriptResult script_result = 16;
+ * optional ReceiptScriptResult script_result = 12;
  * @return {?proto.receipts.ReceiptScriptResult}
  */
 proto.receipts.Receipt.prototype.getScriptResult = function() {
   return /** @type{?proto.receipts.ReceiptScriptResult} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptScriptResult, 16));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptScriptResult, 12));
 };
 
 
@@ -1249,7 +1091,7 @@ proto.receipts.Receipt.prototype.getScriptResult = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setScriptResult = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 16, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 12, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1267,17 +1109,17 @@ proto.receipts.Receipt.prototype.clearScriptResult = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasScriptResult = function() {
-  return jspb.Message.getField(this, 16) != null;
+  return jspb.Message.getField(this, 12) != null;
 };
 
 
 /**
- * optional ReceiptMessageOut message_out = 17;
+ * optional ReceiptMessageOut message_out = 13;
  * @return {?proto.receipts.ReceiptMessageOut}
  */
 proto.receipts.Receipt.prototype.getMessageOut = function() {
   return /** @type{?proto.receipts.ReceiptMessageOut} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptMessageOut, 17));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptMessageOut, 13));
 };
 
 
@@ -1286,7 +1128,7 @@ proto.receipts.Receipt.prototype.getMessageOut = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setMessageOut = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 17, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 13, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1304,17 +1146,17 @@ proto.receipts.Receipt.prototype.clearMessageOut = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasMessageOut = function() {
-  return jspb.Message.getField(this, 17) != null;
+  return jspb.Message.getField(this, 13) != null;
 };
 
 
 /**
- * optional ReceiptMint mint = 18;
+ * optional ReceiptMint mint = 14;
  * @return {?proto.receipts.ReceiptMint}
  */
 proto.receipts.Receipt.prototype.getMint = function() {
   return /** @type{?proto.receipts.ReceiptMint} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptMint, 18));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptMint, 14));
 };
 
 
@@ -1323,7 +1165,7 @@ proto.receipts.Receipt.prototype.getMint = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setMint = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 18, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 14, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1341,17 +1183,17 @@ proto.receipts.Receipt.prototype.clearMint = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasMint = function() {
-  return jspb.Message.getField(this, 18) != null;
+  return jspb.Message.getField(this, 14) != null;
 };
 
 
 /**
- * optional ReceiptBurn burn = 19;
+ * optional ReceiptBurn burn = 15;
  * @return {?proto.receipts.ReceiptBurn}
  */
 proto.receipts.Receipt.prototype.getBurn = function() {
   return /** @type{?proto.receipts.ReceiptBurn} */ (
-    jspb.Message.getWrapperField(this, proto.receipts.ReceiptBurn, 19));
+    jspb.Message.getWrapperField(this, proto.receipts.ReceiptBurn, 15));
 };
 
 
@@ -1360,7 +1202,7 @@ proto.receipts.Receipt.prototype.getBurn = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setBurn = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 19, proto.receipts.Receipt.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 15, proto.receipts.Receipt.oneofGroups_[0], value);
 };
 
 
@@ -1378,26 +1220,26 @@ proto.receipts.Receipt.prototype.clearBurn = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasBurn = function() {
-  return jspb.Message.getField(this, 19) != null;
+  return jspb.Message.getField(this, 15) != null;
 };
 
 
 /**
- * optional google.protobuf.Timestamp created_at = 20;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional common.Metadata metadata = 16;
+ * @return {?proto.common.Metadata}
  */
-proto.receipts.Receipt.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 20));
+proto.receipts.Receipt.prototype.getMetadata = function() {
+  return /** @type{?proto.common.Metadata} */ (
+    jspb.Message.getWrapperField(this, common_pb.Metadata, 16));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @param {?proto.common.Metadata|undefined} value
  * @return {!proto.receipts.Receipt} returns this
 */
-proto.receipts.Receipt.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 20, value);
+proto.receipts.Receipt.prototype.setMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 16, value);
 };
 
 
@@ -1405,8 +1247,8 @@ proto.receipts.Receipt.prototype.setCreatedAt = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.receipts.Receipt} returns this
  */
-proto.receipts.Receipt.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
+proto.receipts.Receipt.prototype.clearMetadata = function() {
+  return this.setMetadata(undefined);
 };
 
 
@@ -1414,55 +1256,18 @@ proto.receipts.Receipt.prototype.clearCreatedAt = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.receipts.Receipt.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 20) != null;
+proto.receipts.Receipt.prototype.hasMetadata = function() {
+  return jspb.Message.getField(this, 16) != null;
 };
 
 
 /**
- * optional google.protobuf.Timestamp published_at = 21;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.Receipt.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 21));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.Receipt} returns this
-*/
-proto.receipts.Receipt.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 21, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.Receipt} returns this
- */
-proto.receipts.Receipt.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.Receipt.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 21) != null;
-};
-
-
-/**
- * optional pointers.ReceiptPointer pointer = 22;
+ * optional pointers.ReceiptPointer pointer = 17;
  * @return {?proto.pointers.ReceiptPointer}
  */
 proto.receipts.Receipt.prototype.getPointer = function() {
   return /** @type{?proto.pointers.ReceiptPointer} */ (
-    jspb.Message.getWrapperField(this, pointers_pb.ReceiptPointer, 22));
+    jspb.Message.getWrapperField(this, pointers_pb.ReceiptPointer, 17));
 };
 
 
@@ -1471,7 +1276,7 @@ proto.receipts.Receipt.prototype.getPointer = function() {
  * @return {!proto.receipts.Receipt} returns this
 */
 proto.receipts.Receipt.prototype.setPointer = function(value) {
-  return jspb.Message.setWrapperField(this, 22, value);
+  return jspb.Message.setWrapperField(this, 17, value);
 };
 
 
@@ -1489,7 +1294,7 @@ proto.receipts.Receipt.prototype.clearPointer = function() {
  * @return {boolean}
  */
 proto.receipts.Receipt.prototype.hasPointer = function() {
-  return jspb.Message.getField(this, 22) != null;
+  return jspb.Message.getField(this, 17) != null;
 };
 
 
@@ -1525,19 +1330,15 @@ proto.receipts.ReceiptCall.prototype.toObject = function(opt_includeInstance) {
  */
 proto.receipts.ReceiptCall.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    toContractId: msg.getToContractId_asB64(),
-    amount: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    id: msg.getId_asB64(),
+    to: msg.getTo_asB64(),
+    amount: jspb.Message.getFieldWithDefault(msg, 3, 0),
     assetId: msg.getAssetId_asB64(),
-    gas: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    param1: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    param2: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    gas: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    param1: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    param2: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -1575,58 +1376,40 @@ proto.receipts.ReceiptCall.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
+      msg.setTo(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setToContractId(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAmount(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAssetId(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setGas(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setParam1(value);
       break;
-    case 9:
+    case 7:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setParam2(value);
       break;
-    case 10:
+    case 8:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 11:
+    case 9:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 12:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 13:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -1657,150 +1440,144 @@ proto.receipts.ReceiptCall.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptCall.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getTxId_asU8();
+  f = message.getTo_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
-      f
-    );
-  }
-  f = message.getToContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
-  }
   f = message.getAmount();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getAssetId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      4,
       f
     );
   }
   f = message.getGas();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getParam1();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      6,
       f
     );
   }
   f = message.getParam2();
   if (f !== 0) {
     writer.writeInt64(
-      9,
+      7,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      10,
+      8,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      11,
+      9,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      12,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      13,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptCall.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptCall} returns this
- */
-proto.receipts.ReceiptCall.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptCall.prototype.getTxId = function() {
+proto.receipts.ReceiptCall.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
+ * @return {string}
+ */
+proto.receipts.ReceiptCall.prototype.getId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getId()));
+};
+
+
+/**
+ * optional bytes id = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getId()`
+ * @return {!Uint8Array}
+ */
+proto.receipts.ReceiptCall.prototype.getId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.receipts.ReceiptCall} returns this
+ */
+proto.receipts.ReceiptCall.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bytes to = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.receipts.ReceiptCall.prototype.getTo = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes to = 2;
+ * This is a type-conversion wrapper around `getTo()`
  * @return {string}
  */
-proto.receipts.ReceiptCall.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptCall.prototype.getTo_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getTo()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes to = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getTo()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptCall.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptCall.prototype.getTo_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getTo()));
 };
 
 
@@ -1808,101 +1585,17 @@ proto.receipts.ReceiptCall.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptCall} returns this
  */
-proto.receipts.ReceiptCall.prototype.setTxId = function(value) {
+proto.receipts.ReceiptCall.prototype.setTo = function(value) {
   return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptCall.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptCall.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptCall.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptCall} returns this
- */
-proto.receipts.ReceiptCall.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional bytes to_contract_id = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptCall.prototype.getToContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes to_contract_id = 4;
- * This is a type-conversion wrapper around `getToContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptCall.prototype.getToContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getToContractId()));
-};
-
-
-/**
- * optional bytes to_contract_id = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getToContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptCall.prototype.getToContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getToContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptCall} returns this
- */
-proto.receipts.ReceiptCall.prototype.setToContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
-};
-
-
-/**
- * optional int64 amount = 5;
+ * optional int64 amount = 3;
  * @return {number}
  */
 proto.receipts.ReceiptCall.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -1911,21 +1604,21 @@ proto.receipts.ReceiptCall.prototype.getAmount = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setAmount = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptCall.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * This is a type-conversion wrapper around `getAssetId()`
  * @return {string}
  */
@@ -1936,7 +1629,7 @@ proto.receipts.ReceiptCall.prototype.getAssetId_asB64 = function() {
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAssetId()`
@@ -1953,16 +1646,16 @@ proto.receipts.ReceiptCall.prototype.getAssetId_asU8 = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
 /**
- * optional int64 gas = 7;
+ * optional int64 gas = 5;
  * @return {number}
  */
 proto.receipts.ReceiptCall.prototype.getGas = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -1971,16 +1664,16 @@ proto.receipts.ReceiptCall.prototype.getGas = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setGas = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 param1 = 8;
+ * optional int64 param1 = 6;
  * @return {number}
  */
 proto.receipts.ReceiptCall.prototype.getParam1 = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
@@ -1989,16 +1682,16 @@ proto.receipts.ReceiptCall.prototype.getParam1 = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setParam1 = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * optional int64 param2 = 9;
+ * optional int64 param2 = 7;
  * @return {number}
  */
 proto.receipts.ReceiptCall.prototype.getParam2 = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
@@ -2007,16 +1700,16 @@ proto.receipts.ReceiptCall.prototype.getParam2 = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setParam2 = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * optional int64 pc = 10;
+ * optional int64 pc = 8;
  * @return {number}
  */
 proto.receipts.ReceiptCall.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
 };
 
 
@@ -2025,16 +1718,16 @@ proto.receipts.ReceiptCall.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 10, value);
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
- * optional int64 is = 11;
+ * optional int64 is = 9;
  * @return {number}
  */
 proto.receipts.ReceiptCall.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
 
@@ -2043,81 +1736,7 @@ proto.receipts.ReceiptCall.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptCall} returns this
  */
 proto.receipts.ReceiptCall.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 11, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 12;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptCall.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 12));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptCall} returns this
-*/
-proto.receipts.ReceiptCall.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 12, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptCall} returns this
- */
-proto.receipts.ReceiptCall.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptCall.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 12) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 13;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptCall.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 13));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptCall} returns this
-*/
-proto.receipts.ReceiptCall.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 13, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptCall} returns this
- */
-proto.receipts.ReceiptCall.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptCall.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 13) != null;
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
@@ -2153,14 +1772,10 @@ proto.receipts.ReceiptReturn.prototype.toObject = function(opt_includeInstance) 
  */
 proto.receipts.ReceiptReturn.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    val: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    id: msg.getId_asB64(),
+    val: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -2198,38 +1813,20 @@ proto.receipts.ReceiptReturn.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setVal(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 7:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 8:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -2260,115 +1857,67 @@ proto.receipts.ReceiptReturn.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptReturn.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
       f
     );
   }
   f = message.getVal();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      7,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      8,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptReturn.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptReturn} returns this
- */
-proto.receipts.ReceiptReturn.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptReturn.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.receipts.ReceiptReturn.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptReturn.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptReturn.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptReturn.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptReturn.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -2376,59 +1925,17 @@ proto.receipts.ReceiptReturn.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptReturn} returns this
  */
-proto.receipts.ReceiptReturn.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+proto.receipts.ReceiptReturn.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptReturn.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptReturn.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptReturn.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptReturn} returns this
- */
-proto.receipts.ReceiptReturn.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int64 val = 4;
+ * optional int64 val = 2;
  * @return {number}
  */
 proto.receipts.ReceiptReturn.prototype.getVal = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -2437,16 +1944,16 @@ proto.receipts.ReceiptReturn.prototype.getVal = function() {
  * @return {!proto.receipts.ReceiptReturn} returns this
  */
 proto.receipts.ReceiptReturn.prototype.setVal = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 pc = 5;
+ * optional int64 pc = 3;
  * @return {number}
  */
 proto.receipts.ReceiptReturn.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -2455,16 +1962,16 @@ proto.receipts.ReceiptReturn.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptReturn} returns this
  */
 proto.receipts.ReceiptReturn.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 is = 6;
+ * optional int64 is = 4;
  * @return {number}
  */
 proto.receipts.ReceiptReturn.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -2473,81 +1980,7 @@ proto.receipts.ReceiptReturn.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptReturn} returns this
  */
 proto.receipts.ReceiptReturn.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 7;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptReturn.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 7));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptReturn} returns this
-*/
-proto.receipts.ReceiptReturn.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 7, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptReturn} returns this
- */
-proto.receipts.ReceiptReturn.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptReturn.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 8;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptReturn.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 8));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptReturn} returns this
-*/
-proto.receipts.ReceiptReturn.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptReturn} returns this
- */
-proto.receipts.ReceiptReturn.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptReturn.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -2583,17 +2016,13 @@ proto.receipts.ReceiptReturnData.prototype.toObject = function(opt_includeInstan
  */
 proto.receipts.ReceiptReturnData.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    ptr: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    len: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    id: msg.getId_asB64(),
+    ptr: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    len: jspb.Message.getFieldWithDefault(msg, 3, 0),
     digest: msg.getDigest_asB64(),
-    pc: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 8, 0),
     data: msg.getData_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    pc: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -2631,50 +2060,32 @@ proto.receipts.ReceiptReturnData.deserializeBinaryFromReader = function(msg, rea
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPtr(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setLen(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setDigest(value);
       break;
-    case 7:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPc(value);
-      break;
-    case 8:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setIs(value);
-      break;
-    case 9:
+    case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setData(value);
       break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPc(value);
       break;
-    case 11:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
+    case 7:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setIs(value);
       break;
     default:
       reader.skipField();
@@ -2705,136 +2116,88 @@ proto.receipts.ReceiptReturnData.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptReturnData.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
       f
     );
   }
   f = message.getPtr();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
   f = message.getLen();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getDigest_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
-      f
-    );
-  }
-  f = message.getPc();
-  if (f !== 0) {
-    writer.writeInt64(
-      7,
-      f
-    );
-  }
-  f = message.getIs();
-  if (f !== 0) {
-    writer.writeInt64(
-      8,
+      4,
       f
     );
   }
   f = message.getData_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      9,
+      5,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+  f = message.getPc();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
+      f
     );
   }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      11,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+  f = message.getIs();
+  if (f !== 0) {
+    writer.writeInt64(
+      7,
+      f
     );
   }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptReturnData.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptReturnData} returns this
- */
-proto.receipts.ReceiptReturnData.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptReturnData.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.receipts.ReceiptReturnData.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptReturnData.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptReturnData.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptReturnData.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptReturnData.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -2842,59 +2205,17 @@ proto.receipts.ReceiptReturnData.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
-proto.receipts.ReceiptReturnData.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+proto.receipts.ReceiptReturnData.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptReturnData.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptReturnData.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptReturnData.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptReturnData} returns this
- */
-proto.receipts.ReceiptReturnData.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int64 ptr = 4;
+ * optional int64 ptr = 2;
  * @return {number}
  */
 proto.receipts.ReceiptReturnData.prototype.getPtr = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -2903,16 +2224,16 @@ proto.receipts.ReceiptReturnData.prototype.getPtr = function() {
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
 proto.receipts.ReceiptReturnData.prototype.setPtr = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 len = 5;
+ * optional int64 len = 3;
  * @return {number}
  */
 proto.receipts.ReceiptReturnData.prototype.getLen = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -2921,21 +2242,21 @@ proto.receipts.ReceiptReturnData.prototype.getLen = function() {
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
 proto.receipts.ReceiptReturnData.prototype.setLen = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes digest = 6;
+ * optional bytes digest = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptReturnData.prototype.getDigest = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes digest = 6;
+ * optional bytes digest = 4;
  * This is a type-conversion wrapper around `getDigest()`
  * @return {string}
  */
@@ -2946,7 +2267,7 @@ proto.receipts.ReceiptReturnData.prototype.getDigest_asB64 = function() {
 
 
 /**
- * optional bytes digest = 6;
+ * optional bytes digest = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getDigest()`
@@ -2963,57 +2284,21 @@ proto.receipts.ReceiptReturnData.prototype.getDigest_asU8 = function() {
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
 proto.receipts.ReceiptReturnData.prototype.setDigest = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
 /**
- * optional int64 pc = 7;
- * @return {number}
- */
-proto.receipts.ReceiptReturnData.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptReturnData} returns this
- */
-proto.receipts.ReceiptReturnData.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
-};
-
-
-/**
- * optional int64 is = 8;
- * @return {number}
- */
-proto.receipts.ReceiptReturnData.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptReturnData} returns this
- */
-proto.receipts.ReceiptReturnData.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional bytes data = 9;
+ * optional bytes data = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptReturnData.prototype.getData = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes data = 9;
+ * optional bytes data = 5;
  * This is a type-conversion wrapper around `getData()`
  * @return {string}
  */
@@ -3024,7 +2309,7 @@ proto.receipts.ReceiptReturnData.prototype.getData_asB64 = function() {
 
 
 /**
- * optional bytes data = 9;
+ * optional bytes data = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getData()`
@@ -3041,81 +2326,43 @@ proto.receipts.ReceiptReturnData.prototype.getData_asU8 = function() {
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
 proto.receipts.ReceiptReturnData.prototype.setData = function(value) {
-  return jspb.Message.setProto3BytesField(this, 9, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
 /**
- * optional google.protobuf.Timestamp created_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional int64 pc = 6;
+ * @return {number}
  */
-proto.receipts.ReceiptReturnData.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
+proto.receipts.ReceiptReturnData.prototype.getPc = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptReturnData} returns this
-*/
-proto.receipts.ReceiptReturnData.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {number} value
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
-proto.receipts.ReceiptReturnData.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
+proto.receipts.ReceiptReturnData.prototype.setPc = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional int64 is = 7;
+ * @return {number}
  */
-proto.receipts.ReceiptReturnData.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
+proto.receipts.ReceiptReturnData.prototype.getIs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
 /**
- * optional google.protobuf.Timestamp published_at = 11;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptReturnData.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 11));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptReturnData} returns this
-*/
-proto.receipts.ReceiptReturnData.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {number} value
  * @return {!proto.receipts.ReceiptReturnData} returns this
  */
-proto.receipts.ReceiptReturnData.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptReturnData.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 11) != null;
+proto.receipts.ReceiptReturnData.prototype.setIs = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -3151,15 +2398,11 @@ proto.receipts.ReceiptPanic.prototype.toObject = function(opt_includeInstance) {
  */
 proto.receipts.ReceiptPanic.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    reason: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    panicContractId: msg.getPanicContractId_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    id: msg.getId_asB64(),
+    reason: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    contractId: msg.getContractId_asB64()
   };
 
   if (includeInstance) {
@@ -3197,42 +2440,24 @@ proto.receipts.ReceiptPanic.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setReason(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setPanicContractId(value);
-      break;
-    case 8:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 9:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
+      msg.setContractId(value);
       break;
     default:
       reader.skipField();
@@ -3263,122 +2488,74 @@ proto.receipts.ReceiptPanic.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptPanic.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
       f
     );
   }
   f = message.getReason();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
-  f = message.getPanicContractId_asU8();
+  f = message.getContractId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      7,
+      5,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      8,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptPanic.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptPanic.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.receipts.ReceiptPanic.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptPanic.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptPanic.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptPanic.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptPanic.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -3386,22 +2563,76 @@ proto.receipts.ReceiptPanic.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptPanic} returns this
  */
-proto.receipts.ReceiptPanic.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+proto.receipts.ReceiptPanic.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
+ * optional int64 reason = 2;
+ * @return {number}
+ */
+proto.receipts.ReceiptPanic.prototype.getReason = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.receipts.ReceiptPanic} returns this
+ */
+proto.receipts.ReceiptPanic.prototype.setReason = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional int64 pc = 3;
+ * @return {number}
+ */
+proto.receipts.ReceiptPanic.prototype.getPc = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.receipts.ReceiptPanic} returns this
+ */
+proto.receipts.ReceiptPanic.prototype.setPc = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 is = 4;
+ * @return {number}
+ */
+proto.receipts.ReceiptPanic.prototype.getIs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.receipts.ReceiptPanic} returns this
+ */
+proto.receipts.ReceiptPanic.prototype.setIs = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional bytes contract_id = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptPanic.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes contract_id = 3;
+ * optional bytes contract_id = 5;
  * This is a type-conversion wrapper around `getContractId()`
  * @return {string}
  */
@@ -3412,7 +2643,7 @@ proto.receipts.ReceiptPanic.prototype.getContractId_asB64 = function() {
 
 
 /**
- * optional bytes contract_id = 3;
+ * optional bytes contract_id = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getContractId()`
@@ -3429,177 +2660,7 @@ proto.receipts.ReceiptPanic.prototype.getContractId_asU8 = function() {
  * @return {!proto.receipts.ReceiptPanic} returns this
  */
 proto.receipts.ReceiptPanic.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int64 reason = 4;
- * @return {number}
- */
-proto.receipts.ReceiptPanic.prototype.getReason = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.setReason = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional int64 pc = 5;
- * @return {number}
- */
-proto.receipts.ReceiptPanic.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-/**
- * optional int64 is = 6;
- * @return {number}
- */
-proto.receipts.ReceiptPanic.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
-};
-
-
-/**
- * optional bytes panic_contract_id = 7;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptPanic.prototype.getPanicContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * optional bytes panic_contract_id = 7;
- * This is a type-conversion wrapper around `getPanicContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptPanic.prototype.getPanicContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getPanicContractId()));
-};
-
-
-/**
- * optional bytes panic_contract_id = 7;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getPanicContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptPanic.prototype.getPanicContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getPanicContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.setPanicContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 7, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 8;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptPanic.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 8));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptPanic} returns this
-*/
-proto.receipts.ReceiptPanic.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptPanic.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 9;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptPanic.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 9));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptPanic} returns this
-*/
-proto.receipts.ReceiptPanic.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptPanic} returns this
- */
-proto.receipts.ReceiptPanic.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptPanic.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -3635,14 +2696,10 @@ proto.receipts.ReceiptRevert.prototype.toObject = function(opt_includeInstance) 
  */
 proto.receipts.ReceiptRevert.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    val: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    id: msg.getId_asB64(),
+    ra: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -3680,38 +2737,20 @@ proto.receipts.ReceiptRevert.deserializeBinaryFromReader = function(msg, reader)
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRa(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setVal(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 7:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 8:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -3742,115 +2781,67 @@ proto.receipts.ReceiptRevert.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptRevert.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
-      f
-    );
-  }
-  f = message.getVal();
+  f = message.getRa();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      7,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      8,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptRevert.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptRevert} returns this
- */
-proto.receipts.ReceiptRevert.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptRevert.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.receipts.ReceiptRevert.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptRevert.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptRevert.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptRevert.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptRevert.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -3858,59 +2849,17 @@ proto.receipts.ReceiptRevert.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptRevert} returns this
  */
-proto.receipts.ReceiptRevert.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+proto.receipts.ReceiptRevert.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptRevert.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptRevert.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptRevert.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptRevert} returns this
- */
-proto.receipts.ReceiptRevert.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int64 val = 4;
+ * optional int64 ra = 2;
  * @return {number}
  */
-proto.receipts.ReceiptRevert.prototype.getVal = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+proto.receipts.ReceiptRevert.prototype.getRa = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -3918,17 +2867,17 @@ proto.receipts.ReceiptRevert.prototype.getVal = function() {
  * @param {number} value
  * @return {!proto.receipts.ReceiptRevert} returns this
  */
-proto.receipts.ReceiptRevert.prototype.setVal = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+proto.receipts.ReceiptRevert.prototype.setRa = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 pc = 5;
+ * optional int64 pc = 3;
  * @return {number}
  */
 proto.receipts.ReceiptRevert.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -3937,16 +2886,16 @@ proto.receipts.ReceiptRevert.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptRevert} returns this
  */
 proto.receipts.ReceiptRevert.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 is = 6;
+ * optional int64 is = 4;
  * @return {number}
  */
 proto.receipts.ReceiptRevert.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -3955,81 +2904,7 @@ proto.receipts.ReceiptRevert.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptRevert} returns this
  */
 proto.receipts.ReceiptRevert.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 7;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptRevert.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 7));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptRevert} returns this
-*/
-proto.receipts.ReceiptRevert.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 7, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptRevert} returns this
- */
-proto.receipts.ReceiptRevert.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptRevert.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 7) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 8;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptRevert.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 8));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptRevert} returns this
-*/
-proto.receipts.ReceiptRevert.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptRevert} returns this
- */
-proto.receipts.ReceiptRevert.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptRevert.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -4065,17 +2940,13 @@ proto.receipts.ReceiptLog.prototype.toObject = function(opt_includeInstance) {
  */
 proto.receipts.ReceiptLog.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    ra: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    rb: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    rc: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    rd: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    id: msg.getId_asB64(),
+    ra: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    rb: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    rc: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    rd: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -4113,50 +2984,32 @@ proto.receipts.ReceiptLog.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRa(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRb(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRc(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRd(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 9:
+    case 7:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 11:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -4187,136 +3040,88 @@ proto.receipts.ReceiptLog.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptLog.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
       f
     );
   }
   f = message.getRa();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
   f = message.getRb();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getRc();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
   f = message.getRd();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      6,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      9,
+      7,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      11,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptLog.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptLog} returns this
- */
-proto.receipts.ReceiptLog.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptLog.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.receipts.ReceiptLog.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptLog.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptLog.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptLog.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptLog.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -4324,59 +3129,17 @@ proto.receipts.ReceiptLog.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptLog} returns this
  */
-proto.receipts.ReceiptLog.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+proto.receipts.ReceiptLog.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptLog.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptLog.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptLog.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptLog} returns this
- */
-proto.receipts.ReceiptLog.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int64 ra = 4;
+ * optional int64 ra = 2;
  * @return {number}
  */
 proto.receipts.ReceiptLog.prototype.getRa = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -4385,16 +3148,16 @@ proto.receipts.ReceiptLog.prototype.getRa = function() {
  * @return {!proto.receipts.ReceiptLog} returns this
  */
 proto.receipts.ReceiptLog.prototype.setRa = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 rb = 5;
+ * optional int64 rb = 3;
  * @return {number}
  */
 proto.receipts.ReceiptLog.prototype.getRb = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -4403,16 +3166,16 @@ proto.receipts.ReceiptLog.prototype.getRb = function() {
  * @return {!proto.receipts.ReceiptLog} returns this
  */
 proto.receipts.ReceiptLog.prototype.setRb = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 rc = 6;
+ * optional int64 rc = 4;
  * @return {number}
  */
 proto.receipts.ReceiptLog.prototype.getRc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -4421,16 +3184,16 @@ proto.receipts.ReceiptLog.prototype.getRc = function() {
  * @return {!proto.receipts.ReceiptLog} returns this
  */
 proto.receipts.ReceiptLog.prototype.setRc = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 rd = 7;
+ * optional int64 rd = 5;
  * @return {number}
  */
 proto.receipts.ReceiptLog.prototype.getRd = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -4439,16 +3202,16 @@ proto.receipts.ReceiptLog.prototype.getRd = function() {
  * @return {!proto.receipts.ReceiptLog} returns this
  */
 proto.receipts.ReceiptLog.prototype.setRd = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 pc = 8;
+ * optional int64 pc = 6;
  * @return {number}
  */
 proto.receipts.ReceiptLog.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
@@ -4457,16 +3220,16 @@ proto.receipts.ReceiptLog.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptLog} returns this
  */
 proto.receipts.ReceiptLog.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * optional int64 is = 9;
+ * optional int64 is = 7;
  * @return {number}
  */
 proto.receipts.ReceiptLog.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
@@ -4475,81 +3238,7 @@ proto.receipts.ReceiptLog.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptLog} returns this
  */
 proto.receipts.ReceiptLog.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptLog.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptLog} returns this
-*/
-proto.receipts.ReceiptLog.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptLog} returns this
- */
-proto.receipts.ReceiptLog.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptLog.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 11;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptLog.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 11));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptLog} returns this
-*/
-proto.receipts.ReceiptLog.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptLog} returns this
- */
-proto.receipts.ReceiptLog.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptLog.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
@@ -4585,19 +3274,15 @@ proto.receipts.ReceiptLogData.prototype.toObject = function(opt_includeInstance)
  */
 proto.receipts.ReceiptLogData.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    ra: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    rb: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    ptr: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    len: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    id: msg.getId_asB64(),
+    ra: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    rb: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    ptr: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    len: jspb.Message.getFieldWithDefault(msg, 5, 0),
     digest: msg.getDigest_asB64(),
-    pc: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 10, 0),
     data: msg.getData_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    pc: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -4635,58 +3320,40 @@ proto.receipts.ReceiptLogData.deserializeBinaryFromReader = function(msg, reader
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRa(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRb(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPtr(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setLen(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setDigest(value);
       break;
-    case 9:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPc(value);
-      break;
-    case 10:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setIs(value);
-      break;
-    case 11:
+    case 7:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setData(value);
       break;
-    case 12:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
+    case 8:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPc(value);
       break;
-    case 13:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
+    case 9:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setIs(value);
       break;
     default:
       reader.skipField();
@@ -4717,150 +3384,102 @@ proto.receipts.ReceiptLogData.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptLogData.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
       f
     );
   }
   f = message.getRa();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
   f = message.getRb();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getPtr();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
   f = message.getLen();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getDigest_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      8,
-      f
-    );
-  }
-  f = message.getPc();
-  if (f !== 0) {
-    writer.writeInt64(
-      9,
-      f
-    );
-  }
-  f = message.getIs();
-  if (f !== 0) {
-    writer.writeInt64(
-      10,
+      6,
       f
     );
   }
   f = message.getData_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      11,
+      7,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      12,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+  f = message.getPc();
+  if (f !== 0) {
+    writer.writeInt64(
+      8,
+      f
     );
   }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      13,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+  f = message.getIs();
+  if (f !== 0) {
+    writer.writeInt64(
+      9,
+      f
     );
   }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptLogData.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptLogData} returns this
- */
-proto.receipts.ReceiptLogData.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptLogData.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.receipts.ReceiptLogData.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptLogData.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptLogData.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptLogData.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptLogData.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -4868,59 +3487,17 @@ proto.receipts.ReceiptLogData.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
-proto.receipts.ReceiptLogData.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
+proto.receipts.ReceiptLogData.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptLogData.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptLogData.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptLogData.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptLogData} returns this
- */
-proto.receipts.ReceiptLogData.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int64 ra = 4;
+ * optional int64 ra = 2;
  * @return {number}
  */
 proto.receipts.ReceiptLogData.prototype.getRa = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -4929,16 +3506,16 @@ proto.receipts.ReceiptLogData.prototype.getRa = function() {
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
 proto.receipts.ReceiptLogData.prototype.setRa = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional int64 rb = 5;
+ * optional int64 rb = 3;
  * @return {number}
  */
 proto.receipts.ReceiptLogData.prototype.getRb = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -4947,16 +3524,16 @@ proto.receipts.ReceiptLogData.prototype.getRb = function() {
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
 proto.receipts.ReceiptLogData.prototype.setRb = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 ptr = 6;
+ * optional int64 ptr = 4;
  * @return {number}
  */
 proto.receipts.ReceiptLogData.prototype.getPtr = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -4965,16 +3542,16 @@ proto.receipts.ReceiptLogData.prototype.getPtr = function() {
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
 proto.receipts.ReceiptLogData.prototype.setPtr = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 len = 7;
+ * optional int64 len = 5;
  * @return {number}
  */
 proto.receipts.ReceiptLogData.prototype.getLen = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -4983,21 +3560,21 @@ proto.receipts.ReceiptLogData.prototype.getLen = function() {
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
 proto.receipts.ReceiptLogData.prototype.setLen = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional bytes digest = 8;
+ * optional bytes digest = 6;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptLogData.prototype.getDigest = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * optional bytes digest = 8;
+ * optional bytes digest = 6;
  * This is a type-conversion wrapper around `getDigest()`
  * @return {string}
  */
@@ -5008,7 +3585,7 @@ proto.receipts.ReceiptLogData.prototype.getDigest_asB64 = function() {
 
 
 /**
- * optional bytes digest = 8;
+ * optional bytes digest = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getDigest()`
@@ -5025,57 +3602,21 @@ proto.receipts.ReceiptLogData.prototype.getDigest_asU8 = function() {
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
 proto.receipts.ReceiptLogData.prototype.setDigest = function(value) {
-  return jspb.Message.setProto3BytesField(this, 8, value);
+  return jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
 /**
- * optional int64 pc = 9;
- * @return {number}
- */
-proto.receipts.ReceiptLogData.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptLogData} returns this
- */
-proto.receipts.ReceiptLogData.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
-};
-
-
-/**
- * optional int64 is = 10;
- * @return {number}
- */
-proto.receipts.ReceiptLogData.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.receipts.ReceiptLogData} returns this
- */
-proto.receipts.ReceiptLogData.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 10, value);
-};
-
-
-/**
- * optional bytes data = 11;
+ * optional bytes data = 7;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptLogData.prototype.getData = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
 /**
- * optional bytes data = 11;
+ * optional bytes data = 7;
  * This is a type-conversion wrapper around `getData()`
  * @return {string}
  */
@@ -5086,7 +3627,7 @@ proto.receipts.ReceiptLogData.prototype.getData_asB64 = function() {
 
 
 /**
- * optional bytes data = 11;
+ * optional bytes data = 7;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getData()`
@@ -5103,81 +3644,43 @@ proto.receipts.ReceiptLogData.prototype.getData_asU8 = function() {
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
 proto.receipts.ReceiptLogData.prototype.setData = function(value) {
-  return jspb.Message.setProto3BytesField(this, 11, value);
+  return jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
 /**
- * optional google.protobuf.Timestamp created_at = 12;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional int64 pc = 8;
+ * @return {number}
  */
-proto.receipts.ReceiptLogData.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 12));
+proto.receipts.ReceiptLogData.prototype.getPc = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptLogData} returns this
-*/
-proto.receipts.ReceiptLogData.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 12, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {number} value
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
-proto.receipts.ReceiptLogData.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
+proto.receipts.ReceiptLogData.prototype.setPc = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional int64 is = 9;
+ * @return {number}
  */
-proto.receipts.ReceiptLogData.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 12) != null;
+proto.receipts.ReceiptLogData.prototype.getIs = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
 
 /**
- * optional google.protobuf.Timestamp published_at = 13;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptLogData.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 13));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptLogData} returns this
-*/
-proto.receipts.ReceiptLogData.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 13, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {number} value
  * @return {!proto.receipts.ReceiptLogData} returns this
  */
-proto.receipts.ReceiptLogData.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptLogData.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 13) != null;
+proto.receipts.ReceiptLogData.prototype.setIs = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
@@ -5213,16 +3716,12 @@ proto.receipts.ReceiptTransfer.prototype.toObject = function(opt_includeInstance
  */
 proto.receipts.ReceiptTransfer.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
-    toContractId: msg.getToContractId_asB64(),
-    amount: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    id: msg.getId_asB64(),
+    to: msg.getTo_asB64(),
+    amount: jspb.Message.getFieldWithDefault(msg, 3, 0),
     assetId: msg.getAssetId_asB64(),
-    pc: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -5260,46 +3759,28 @@ proto.receipts.ReceiptTransfer.deserializeBinaryFromReader = function(msg, reade
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
+      msg.setTo(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setToContractId(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAmount(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAssetId(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 9:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -5330,129 +3811,123 @@ proto.receipts.ReceiptTransfer.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptTransfer.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getTxId_asU8();
+  f = message.getTo_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
-      f
-    );
-  }
-  f = message.getToContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
-  }
   f = message.getAmount();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getAssetId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      4,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      6,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptTransfer.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptTransfer} returns this
- */
-proto.receipts.ReceiptTransfer.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptTransfer.prototype.getTxId = function() {
+proto.receipts.ReceiptTransfer.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
+ * @return {string}
+ */
+proto.receipts.ReceiptTransfer.prototype.getId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getId()));
+};
+
+
+/**
+ * optional bytes id = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getId()`
+ * @return {!Uint8Array}
+ */
+proto.receipts.ReceiptTransfer.prototype.getId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.receipts.ReceiptTransfer} returns this
+ */
+proto.receipts.ReceiptTransfer.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bytes to = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.receipts.ReceiptTransfer.prototype.getTo = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes to = 2;
+ * This is a type-conversion wrapper around `getTo()`
  * @return {string}
  */
-proto.receipts.ReceiptTransfer.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptTransfer.prototype.getTo_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getTo()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes to = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getTo()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptTransfer.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptTransfer.prototype.getTo_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getTo()));
 };
 
 
@@ -5460,101 +3935,17 @@ proto.receipts.ReceiptTransfer.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptTransfer} returns this
  */
-proto.receipts.ReceiptTransfer.prototype.setTxId = function(value) {
+proto.receipts.ReceiptTransfer.prototype.setTo = function(value) {
   return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptTransfer.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptTransfer.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptTransfer.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptTransfer} returns this
- */
-proto.receipts.ReceiptTransfer.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional bytes to_contract_id = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptTransfer.prototype.getToContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes to_contract_id = 4;
- * This is a type-conversion wrapper around `getToContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptTransfer.prototype.getToContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getToContractId()));
-};
-
-
-/**
- * optional bytes to_contract_id = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getToContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptTransfer.prototype.getToContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getToContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptTransfer} returns this
- */
-proto.receipts.ReceiptTransfer.prototype.setToContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
-};
-
-
-/**
- * optional int64 amount = 5;
+ * optional int64 amount = 3;
  * @return {number}
  */
 proto.receipts.ReceiptTransfer.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -5563,21 +3954,21 @@ proto.receipts.ReceiptTransfer.prototype.getAmount = function() {
  * @return {!proto.receipts.ReceiptTransfer} returns this
  */
 proto.receipts.ReceiptTransfer.prototype.setAmount = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptTransfer.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * This is a type-conversion wrapper around `getAssetId()`
  * @return {string}
  */
@@ -5588,7 +3979,7 @@ proto.receipts.ReceiptTransfer.prototype.getAssetId_asB64 = function() {
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAssetId()`
@@ -5605,16 +3996,16 @@ proto.receipts.ReceiptTransfer.prototype.getAssetId_asU8 = function() {
  * @return {!proto.receipts.ReceiptTransfer} returns this
  */
 proto.receipts.ReceiptTransfer.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
 /**
- * optional int64 pc = 7;
+ * optional int64 pc = 5;
  * @return {number}
  */
 proto.receipts.ReceiptTransfer.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -5623,16 +4014,16 @@ proto.receipts.ReceiptTransfer.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptTransfer} returns this
  */
 proto.receipts.ReceiptTransfer.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 is = 8;
+ * optional int64 is = 6;
  * @return {number}
  */
 proto.receipts.ReceiptTransfer.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
@@ -5641,81 +4032,7 @@ proto.receipts.ReceiptTransfer.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptTransfer} returns this
  */
 proto.receipts.ReceiptTransfer.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 9;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptTransfer.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 9));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptTransfer} returns this
-*/
-proto.receipts.ReceiptTransfer.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptTransfer} returns this
- */
-proto.receipts.ReceiptTransfer.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptTransfer.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptTransfer.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptTransfer} returns this
-*/
-proto.receipts.ReceiptTransfer.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptTransfer} returns this
- */
-proto.receipts.ReceiptTransfer.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptTransfer.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -5751,16 +4068,12 @@ proto.receipts.ReceiptTransferOut.prototype.toObject = function(opt_includeInsta
  */
 proto.receipts.ReceiptTransferOut.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    contractId: msg.getContractId_asB64(),
+    id: msg.getId_asB64(),
     toAddress: msg.getToAddress_asB64(),
-    amount: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    amount: jspb.Message.getFieldWithDefault(msg, 3, 0),
     assetId: msg.getAssetId_asB64(),
-    pc: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -5798,46 +4111,28 @@ proto.receipts.ReceiptTransferOut.deserializeBinaryFromReader = function(msg, re
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setToAddress(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAmount(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAssetId(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 9:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -5868,194 +4163,104 @@ proto.receipts.ReceiptTransferOut.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptTransferOut.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
       f
     );
   }
   f = message.getToAddress_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      4,
+      2,
       f
     );
   }
   f = message.getAmount();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getAssetId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      4,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      6,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptTransferOut.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptTransferOut} returns this
- */
-proto.receipts.ReceiptTransferOut.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes id = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptTransferOut.prototype.getTxId = function() {
+proto.receipts.ReceiptTransferOut.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * optional bytes id = 1;
+ * This is a type-conversion wrapper around `getId()`
+ * @return {string}
+ */
+proto.receipts.ReceiptTransferOut.prototype.getId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getId()));
+};
+
+
+/**
+ * optional bytes id = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getId()`
+ * @return {!Uint8Array}
+ */
+proto.receipts.ReceiptTransferOut.prototype.getId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.receipts.ReceiptTransferOut} returns this
+ */
+proto.receipts.ReceiptTransferOut.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bytes to_address = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.receipts.ReceiptTransferOut.prototype.getToAddress = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
- * @return {string}
- */
-proto.receipts.ReceiptTransferOut.prototype.getTxId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptTransferOut.prototype.getTxId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptTransferOut} returns this
- */
-proto.receipts.ReceiptTransferOut.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptTransferOut.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * This is a type-conversion wrapper around `getContractId()`
- * @return {string}
- */
-proto.receipts.ReceiptTransferOut.prototype.getContractId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
-};
-
-
-/**
- * optional bytes contract_id = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptTransferOut.prototype.getContractId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptTransferOut} returns this
- */
-proto.receipts.ReceiptTransferOut.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional bytes to_address = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptTransferOut.prototype.getToAddress = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes to_address = 4;
+ * optional bytes to_address = 2;
  * This is a type-conversion wrapper around `getToAddress()`
  * @return {string}
  */
@@ -6066,7 +4271,7 @@ proto.receipts.ReceiptTransferOut.prototype.getToAddress_asB64 = function() {
 
 
 /**
- * optional bytes to_address = 4;
+ * optional bytes to_address = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getToAddress()`
@@ -6083,16 +4288,16 @@ proto.receipts.ReceiptTransferOut.prototype.getToAddress_asU8 = function() {
  * @return {!proto.receipts.ReceiptTransferOut} returns this
  */
 proto.receipts.ReceiptTransferOut.prototype.setToAddress = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional int64 amount = 5;
+ * optional int64 amount = 3;
  * @return {number}
  */
 proto.receipts.ReceiptTransferOut.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -6101,21 +4306,21 @@ proto.receipts.ReceiptTransferOut.prototype.getAmount = function() {
  * @return {!proto.receipts.ReceiptTransferOut} returns this
  */
 proto.receipts.ReceiptTransferOut.prototype.setAmount = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptTransferOut.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * This is a type-conversion wrapper around `getAssetId()`
  * @return {string}
  */
@@ -6126,7 +4331,7 @@ proto.receipts.ReceiptTransferOut.prototype.getAssetId_asB64 = function() {
 
 
 /**
- * optional bytes asset_id = 6;
+ * optional bytes asset_id = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAssetId()`
@@ -6143,16 +4348,16 @@ proto.receipts.ReceiptTransferOut.prototype.getAssetId_asU8 = function() {
  * @return {!proto.receipts.ReceiptTransferOut} returns this
  */
 proto.receipts.ReceiptTransferOut.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
 /**
- * optional int64 pc = 7;
+ * optional int64 pc = 5;
  * @return {number}
  */
 proto.receipts.ReceiptTransferOut.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -6161,16 +4366,16 @@ proto.receipts.ReceiptTransferOut.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptTransferOut} returns this
  */
 proto.receipts.ReceiptTransferOut.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 is = 8;
+ * optional int64 is = 6;
  * @return {number}
  */
 proto.receipts.ReceiptTransferOut.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
@@ -6179,81 +4384,7 @@ proto.receipts.ReceiptTransferOut.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptTransferOut} returns this
  */
 proto.receipts.ReceiptTransferOut.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 9;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptTransferOut.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 9));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptTransferOut} returns this
-*/
-proto.receipts.ReceiptTransferOut.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptTransferOut} returns this
- */
-proto.receipts.ReceiptTransferOut.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptTransferOut.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptTransferOut.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptTransferOut} returns this
-*/
-proto.receipts.ReceiptTransferOut.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptTransferOut} returns this
- */
-proto.receipts.ReceiptTransferOut.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptTransferOut.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -6289,12 +4420,8 @@ proto.receipts.ReceiptScriptResult.prototype.toObject = function(opt_includeInst
  */
 proto.receipts.ReceiptScriptResult.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    result: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    gasUsed: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    result: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    gasUsed: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -6332,30 +4459,12 @@ proto.receipts.ReceiptScriptResult.deserializeBinaryFromReader = function(msg, r
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
       var value = /** @type {!proto.receipts.ScriptResultType} */ (reader.readEnum());
       msg.setResult(value);
       break;
-    case 4:
+    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setGasUsed(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 6:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -6386,119 +4495,29 @@ proto.receipts.ReceiptScriptResult.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptScriptResult.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      2,
-      f
-    );
-  }
   f = message.getResult();
   if (f !== 0.0) {
     writer.writeEnum(
-      3,
+      1,
       f
     );
   }
   f = message.getGasUsed();
   if (f !== 0) {
     writer.writeInt64(
-      4,
+      2,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      6,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptScriptResult.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptScriptResult} returns this
- */
-proto.receipts.ReceiptScriptResult.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptScriptResult.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
- * @return {string}
- */
-proto.receipts.ReceiptScriptResult.prototype.getTxId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptScriptResult.prototype.getTxId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptScriptResult} returns this
- */
-proto.receipts.ReceiptScriptResult.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
-};
-
-
-/**
- * optional ScriptResultType result = 3;
+ * optional ScriptResultType result = 1;
  * @return {!proto.receipts.ScriptResultType}
  */
 proto.receipts.ReceiptScriptResult.prototype.getResult = function() {
-  return /** @type {!proto.receipts.ScriptResultType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {!proto.receipts.ScriptResultType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -6507,16 +4526,16 @@ proto.receipts.ReceiptScriptResult.prototype.getResult = function() {
  * @return {!proto.receipts.ReceiptScriptResult} returns this
  */
 proto.receipts.ReceiptScriptResult.prototype.setResult = function(value) {
-  return jspb.Message.setProto3EnumField(this, 3, value);
+  return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional int64 gas_used = 4;
+ * optional int64 gas_used = 2;
  * @return {number}
  */
 proto.receipts.ReceiptScriptResult.prototype.getGasUsed = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -6525,81 +4544,7 @@ proto.receipts.ReceiptScriptResult.prototype.getGasUsed = function() {
  * @return {!proto.receipts.ReceiptScriptResult} returns this
  */
 proto.receipts.ReceiptScriptResult.prototype.setGasUsed = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptScriptResult.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptScriptResult} returns this
-*/
-proto.receipts.ReceiptScriptResult.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptScriptResult} returns this
- */
-proto.receipts.ReceiptScriptResult.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptScriptResult.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 6;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptScriptResult.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 6));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptScriptResult} returns this
-*/
-proto.receipts.ReceiptScriptResult.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptScriptResult} returns this
- */
-proto.receipts.ReceiptScriptResult.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptScriptResult.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -6635,17 +4580,13 @@ proto.receipts.ReceiptMessageOut.prototype.toObject = function(opt_includeInstan
  */
 proto.receipts.ReceiptMessageOut.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
-    senderAddress: msg.getSenderAddress_asB64(),
-    recipientAddress: msg.getRecipientAddress_asB64(),
-    amount: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    sender: msg.getSender_asB64(),
+    recipient: msg.getRecipient_asB64(),
+    amount: jspb.Message.getFieldWithDefault(msg, 3, 0),
     nonce: msg.getNonce_asB64(),
-    len: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    len: jspb.Message.getFieldWithDefault(msg, 5, 0),
     digest: msg.getDigest_asB64(),
-    data: msg.getData_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    data: msg.getData_asB64()
   };
 
   if (includeInstance) {
@@ -6683,50 +4624,32 @@ proto.receipts.ReceiptMessageOut.deserializeBinaryFromReader = function(msg, rea
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setSender(value);
       break;
     case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
+      msg.setRecipient(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setSenderAddress(value);
-      break;
-    case 4:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setRecipientAddress(value);
-      break;
-    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAmount(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setNonce(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setLen(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setDigest(value);
       break;
-    case 9:
+    case 7:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setData(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 11:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -6757,136 +4680,130 @@ proto.receipts.ReceiptMessageOut.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptMessageOut.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getSender_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getTxId_asU8();
+  f = message.getRecipient_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getSenderAddress_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
-      f
-    );
-  }
-  f = message.getRecipientAddress_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
-  }
   f = message.getAmount();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      3,
       f
     );
   }
   f = message.getNonce_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      4,
       f
     );
   }
   f = message.getLen();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getDigest_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      8,
+      6,
       f
     );
   }
   f = message.getData_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      9,
+      7,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      11,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptMessageOut.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptMessageOut} returns this
- */
-proto.receipts.ReceiptMessageOut.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
+ * optional bytes sender = 1;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptMessageOut.prototype.getTxId = function() {
+proto.receipts.ReceiptMessageOut.prototype.getSender = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * optional bytes sender = 1;
+ * This is a type-conversion wrapper around `getSender()`
+ * @return {string}
+ */
+proto.receipts.ReceiptMessageOut.prototype.getSender_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getSender()));
+};
+
+
+/**
+ * optional bytes sender = 1;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getSender()`
+ * @return {!Uint8Array}
+ */
+proto.receipts.ReceiptMessageOut.prototype.getSender_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getSender()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.receipts.ReceiptMessageOut} returns this
+ */
+proto.receipts.ReceiptMessageOut.prototype.setSender = function(value) {
+  return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional bytes recipient = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.receipts.ReceiptMessageOut.prototype.getRecipient = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes recipient = 2;
+ * This is a type-conversion wrapper around `getRecipient()`
  * @return {string}
  */
-proto.receipts.ReceiptMessageOut.prototype.getTxId_asB64 = function() {
+proto.receipts.ReceiptMessageOut.prototype.getRecipient_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getRecipient()));
 };
 
 
 /**
- * optional bytes tx_id = 2;
+ * optional bytes recipient = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getRecipient()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptMessageOut.prototype.getTxId_asU8 = function() {
+proto.receipts.ReceiptMessageOut.prototype.getRecipient_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getRecipient()));
 };
 
 
@@ -6894,101 +4811,17 @@ proto.receipts.ReceiptMessageOut.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptMessageOut} returns this
  */
-proto.receipts.ReceiptMessageOut.prototype.setTxId = function(value) {
+proto.receipts.ReceiptMessageOut.prototype.setRecipient = function(value) {
   return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional bytes sender_address = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptMessageOut.prototype.getSenderAddress = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes sender_address = 3;
- * This is a type-conversion wrapper around `getSenderAddress()`
- * @return {string}
- */
-proto.receipts.ReceiptMessageOut.prototype.getSenderAddress_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getSenderAddress()));
-};
-
-
-/**
- * optional bytes sender_address = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getSenderAddress()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptMessageOut.prototype.getSenderAddress_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getSenderAddress()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptMessageOut} returns this
- */
-proto.receipts.ReceiptMessageOut.prototype.setSenderAddress = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional bytes recipient_address = 4;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptMessageOut.prototype.getRecipientAddress = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * optional bytes recipient_address = 4;
- * This is a type-conversion wrapper around `getRecipientAddress()`
- * @return {string}
- */
-proto.receipts.ReceiptMessageOut.prototype.getRecipientAddress_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getRecipientAddress()));
-};
-
-
-/**
- * optional bytes recipient_address = 4;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getRecipientAddress()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptMessageOut.prototype.getRecipientAddress_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getRecipientAddress()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptMessageOut} returns this
- */
-proto.receipts.ReceiptMessageOut.prototype.setRecipientAddress = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
-};
-
-
-/**
- * optional int64 amount = 5;
+ * optional int64 amount = 3;
  * @return {number}
  */
 proto.receipts.ReceiptMessageOut.prototype.getAmount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -6997,21 +4830,21 @@ proto.receipts.ReceiptMessageOut.prototype.getAmount = function() {
  * @return {!proto.receipts.ReceiptMessageOut} returns this
  */
 proto.receipts.ReceiptMessageOut.prototype.setAmount = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional bytes nonce = 6;
+ * optional bytes nonce = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptMessageOut.prototype.getNonce = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes nonce = 6;
+ * optional bytes nonce = 4;
  * This is a type-conversion wrapper around `getNonce()`
  * @return {string}
  */
@@ -7022,7 +4855,7 @@ proto.receipts.ReceiptMessageOut.prototype.getNonce_asB64 = function() {
 
 
 /**
- * optional bytes nonce = 6;
+ * optional bytes nonce = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getNonce()`
@@ -7039,16 +4872,16 @@ proto.receipts.ReceiptMessageOut.prototype.getNonce_asU8 = function() {
  * @return {!proto.receipts.ReceiptMessageOut} returns this
  */
 proto.receipts.ReceiptMessageOut.prototype.setNonce = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
 /**
- * optional int64 len = 7;
+ * optional int64 len = 5;
  * @return {number}
  */
 proto.receipts.ReceiptMessageOut.prototype.getLen = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -7057,21 +4890,21 @@ proto.receipts.ReceiptMessageOut.prototype.getLen = function() {
  * @return {!proto.receipts.ReceiptMessageOut} returns this
  */
 proto.receipts.ReceiptMessageOut.prototype.setLen = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional bytes digest = 8;
+ * optional bytes digest = 6;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptMessageOut.prototype.getDigest = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * optional bytes digest = 8;
+ * optional bytes digest = 6;
  * This is a type-conversion wrapper around `getDigest()`
  * @return {string}
  */
@@ -7082,7 +4915,7 @@ proto.receipts.ReceiptMessageOut.prototype.getDigest_asB64 = function() {
 
 
 /**
- * optional bytes digest = 8;
+ * optional bytes digest = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getDigest()`
@@ -7099,21 +4932,21 @@ proto.receipts.ReceiptMessageOut.prototype.getDigest_asU8 = function() {
  * @return {!proto.receipts.ReceiptMessageOut} returns this
  */
 proto.receipts.ReceiptMessageOut.prototype.setDigest = function(value) {
-  return jspb.Message.setProto3BytesField(this, 8, value);
+  return jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
 /**
- * optional bytes data = 9;
+ * optional bytes data = 7;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptMessageOut.prototype.getData = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
 /**
- * optional bytes data = 9;
+ * optional bytes data = 7;
  * This is a type-conversion wrapper around `getData()`
  * @return {string}
  */
@@ -7124,7 +4957,7 @@ proto.receipts.ReceiptMessageOut.prototype.getData_asB64 = function() {
 
 
 /**
- * optional bytes data = 9;
+ * optional bytes data = 7;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getData()`
@@ -7141,81 +4974,7 @@ proto.receipts.ReceiptMessageOut.prototype.getData_asU8 = function() {
  * @return {!proto.receipts.ReceiptMessageOut} returns this
  */
 proto.receipts.ReceiptMessageOut.prototype.setData = function(value) {
-  return jspb.Message.setProto3BytesField(this, 9, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptMessageOut.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptMessageOut} returns this
-*/
-proto.receipts.ReceiptMessageOut.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptMessageOut} returns this
- */
-proto.receipts.ReceiptMessageOut.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptMessageOut.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 11;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptMessageOut.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 11));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptMessageOut} returns this
-*/
-proto.receipts.ReceiptMessageOut.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptMessageOut} returns this
- */
-proto.receipts.ReceiptMessageOut.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptMessageOut.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
@@ -7251,16 +5010,12 @@ proto.receipts.ReceiptMint.prototype.toObject = function(opt_includeInstance) {
  */
 proto.receipts.ReceiptMint.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
     subId: msg.getSubId_asB64(),
-    contractId: msg.getContractId_asB64(),
+    id: msg.getId_asB64(),
     assetId: msg.getAssetId_asB64(),
-    val: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    val: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -7298,46 +5053,28 @@ proto.receipts.ReceiptMint.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSubId(value);
       break;
-    case 4:
+    case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
+      msg.setId(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAssetId(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setVal(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 9:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -7368,152 +5105,62 @@ proto.receipts.ReceiptMint.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptMint.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getSubId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getTxId_asU8();
+  f = message.getId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getSubId_asU8();
+  f = message.getAssetId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       3,
       f
     );
   }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
-  }
-  f = message.getAssetId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      5,
-      f
-    );
-  }
   f = message.getVal();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      6,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptMint.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptMint} returns this
- */
-proto.receipts.ReceiptMint.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptMint.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
- * @return {string}
- */
-proto.receipts.ReceiptMint.prototype.getTxId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptMint.prototype.getTxId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptMint} returns this
- */
-proto.receipts.ReceiptMint.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
-};
-
-
-/**
- * optional bytes sub_id = 3;
+ * optional bytes sub_id = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptMint.prototype.getSubId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes sub_id = 3;
+ * optional bytes sub_id = 1;
  * This is a type-conversion wrapper around `getSubId()`
  * @return {string}
  */
@@ -7524,7 +5171,7 @@ proto.receipts.ReceiptMint.prototype.getSubId_asB64 = function() {
 
 
 /**
- * optional bytes sub_id = 3;
+ * optional bytes sub_id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSubId()`
@@ -7541,40 +5188,40 @@ proto.receipts.ReceiptMint.prototype.getSubId_asU8 = function() {
  * @return {!proto.receipts.ReceiptMint} returns this
  */
 proto.receipts.ReceiptMint.prototype.setSubId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 4;
+ * optional bytes id = 2;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptMint.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.receipts.ReceiptMint.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes contract_id = 4;
- * This is a type-conversion wrapper around `getContractId()`
+ * optional bytes id = 2;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptMint.prototype.getContractId_asB64 = function() {
+proto.receipts.ReceiptMint.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes contract_id = 4;
+ * optional bytes id = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptMint.prototype.getContractId_asU8 = function() {
+proto.receipts.ReceiptMint.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
+      this.getId()));
 };
 
 
@@ -7582,22 +5229,22 @@ proto.receipts.ReceiptMint.prototype.getContractId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptMint} returns this
  */
-proto.receipts.ReceiptMint.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
+proto.receipts.ReceiptMint.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional bytes asset_id = 5;
+ * optional bytes asset_id = 3;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptMint.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes asset_id = 5;
+ * optional bytes asset_id = 3;
  * This is a type-conversion wrapper around `getAssetId()`
  * @return {string}
  */
@@ -7608,7 +5255,7 @@ proto.receipts.ReceiptMint.prototype.getAssetId_asB64 = function() {
 
 
 /**
- * optional bytes asset_id = 5;
+ * optional bytes asset_id = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAssetId()`
@@ -7625,16 +5272,16 @@ proto.receipts.ReceiptMint.prototype.getAssetId_asU8 = function() {
  * @return {!proto.receipts.ReceiptMint} returns this
  */
 proto.receipts.ReceiptMint.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 5, value);
+  return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
 /**
- * optional int64 val = 6;
+ * optional int64 val = 4;
  * @return {number}
  */
 proto.receipts.ReceiptMint.prototype.getVal = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -7643,16 +5290,16 @@ proto.receipts.ReceiptMint.prototype.getVal = function() {
  * @return {!proto.receipts.ReceiptMint} returns this
  */
 proto.receipts.ReceiptMint.prototype.setVal = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 pc = 7;
+ * optional int64 pc = 5;
  * @return {number}
  */
 proto.receipts.ReceiptMint.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -7661,16 +5308,16 @@ proto.receipts.ReceiptMint.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptMint} returns this
  */
 proto.receipts.ReceiptMint.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 is = 8;
+ * optional int64 is = 6;
  * @return {number}
  */
 proto.receipts.ReceiptMint.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
@@ -7679,81 +5326,7 @@ proto.receipts.ReceiptMint.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptMint} returns this
  */
 proto.receipts.ReceiptMint.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 9;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptMint.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 9));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptMint} returns this
-*/
-proto.receipts.ReceiptMint.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptMint} returns this
- */
-proto.receipts.ReceiptMint.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptMint.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptMint.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptMint} returns this
-*/
-proto.receipts.ReceiptMint.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptMint} returns this
- */
-proto.receipts.ReceiptMint.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptMint.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -7789,16 +5362,12 @@ proto.receipts.ReceiptBurn.prototype.toObject = function(opt_includeInstance) {
  */
 proto.receipts.ReceiptBurn.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    txId: msg.getTxId_asB64(),
     subId: msg.getSubId_asB64(),
-    contractId: msg.getContractId_asB64(),
+    id: msg.getId_asB64(),
     assetId: msg.getAssetId_asB64(),
-    val: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    pc: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    is: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    val: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    pc: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    is: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -7836,46 +5405,28 @@ proto.receipts.ReceiptBurn.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
-      break;
-    case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSubId(value);
       break;
-    case 4:
+    case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setContractId(value);
+      msg.setId(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setAssetId(value);
       break;
-    case 6:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setVal(value);
       break;
-    case 7:
+    case 5:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setPc(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setIs(value);
-      break;
-    case 9:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -7906,152 +5457,62 @@ proto.receipts.ReceiptBurn.prototype.serializeBinary = function() {
  */
 proto.receipts.ReceiptBurn.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
+  f = message.getSubId_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       1,
       f
     );
   }
-  f = message.getTxId_asU8();
+  f = message.getId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getSubId_asU8();
+  f = message.getAssetId_asU8();
   if (f.length > 0) {
     writer.writeBytes(
       3,
       f
     );
   }
-  f = message.getContractId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      4,
-      f
-    );
-  }
-  f = message.getAssetId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      5,
-      f
-    );
-  }
   f = message.getVal();
   if (f !== 0) {
     writer.writeInt64(
-      6,
+      4,
       f
     );
   }
   f = message.getPc();
   if (f !== 0) {
     writer.writeInt64(
-      7,
+      5,
       f
     );
   }
   f = message.getIs();
   if (f !== 0) {
     writer.writeInt64(
-      8,
+      6,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      9,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.receipts.ReceiptBurn.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.receipts.ReceiptBurn} returns this
- */
-proto.receipts.ReceiptBurn.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * @return {!(string|Uint8Array)}
- */
-proto.receipts.ReceiptBurn.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * This is a type-conversion wrapper around `getTxId()`
- * @return {string}
- */
-proto.receipts.ReceiptBurn.prototype.getTxId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
-};
-
-
-/**
- * optional bytes tx_id = 2;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
- * @return {!Uint8Array}
- */
-proto.receipts.ReceiptBurn.prototype.getTxId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.receipts.ReceiptBurn} returns this
- */
-proto.receipts.ReceiptBurn.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 2, value);
-};
-
-
-/**
- * optional bytes sub_id = 3;
+ * optional bytes sub_id = 1;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptBurn.prototype.getSubId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * optional bytes sub_id = 3;
+ * optional bytes sub_id = 1;
  * This is a type-conversion wrapper around `getSubId()`
  * @return {string}
  */
@@ -8062,7 +5523,7 @@ proto.receipts.ReceiptBurn.prototype.getSubId_asB64 = function() {
 
 
 /**
- * optional bytes sub_id = 3;
+ * optional bytes sub_id = 1;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSubId()`
@@ -8079,40 +5540,40 @@ proto.receipts.ReceiptBurn.prototype.getSubId_asU8 = function() {
  * @return {!proto.receipts.ReceiptBurn} returns this
  */
 proto.receipts.ReceiptBurn.prototype.setSubId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3BytesField(this, 1, value);
 };
 
 
 /**
- * optional bytes contract_id = 4;
+ * optional bytes id = 2;
  * @return {!(string|Uint8Array)}
  */
-proto.receipts.ReceiptBurn.prototype.getContractId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.receipts.ReceiptBurn.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes contract_id = 4;
- * This is a type-conversion wrapper around `getContractId()`
+ * optional bytes id = 2;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.receipts.ReceiptBurn.prototype.getContractId_asB64 = function() {
+proto.receipts.ReceiptBurn.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getContractId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes contract_id = 4;
+ * optional bytes id = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getContractId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.receipts.ReceiptBurn.prototype.getContractId_asU8 = function() {
+proto.receipts.ReceiptBurn.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getContractId()));
+      this.getId()));
 };
 
 
@@ -8120,22 +5581,22 @@ proto.receipts.ReceiptBurn.prototype.getContractId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.receipts.ReceiptBurn} returns this
  */
-proto.receipts.ReceiptBurn.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
+proto.receipts.ReceiptBurn.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional bytes asset_id = 5;
+ * optional bytes asset_id = 3;
  * @return {!(string|Uint8Array)}
  */
 proto.receipts.ReceiptBurn.prototype.getAssetId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * optional bytes asset_id = 5;
+ * optional bytes asset_id = 3;
  * This is a type-conversion wrapper around `getAssetId()`
  * @return {string}
  */
@@ -8146,7 +5607,7 @@ proto.receipts.ReceiptBurn.prototype.getAssetId_asB64 = function() {
 
 
 /**
- * optional bytes asset_id = 5;
+ * optional bytes asset_id = 3;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getAssetId()`
@@ -8163,16 +5624,16 @@ proto.receipts.ReceiptBurn.prototype.getAssetId_asU8 = function() {
  * @return {!proto.receipts.ReceiptBurn} returns this
  */
 proto.receipts.ReceiptBurn.prototype.setAssetId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 5, value);
+  return jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
 /**
- * optional int64 val = 6;
+ * optional int64 val = 4;
  * @return {number}
  */
 proto.receipts.ReceiptBurn.prototype.getVal = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -8181,16 +5642,16 @@ proto.receipts.ReceiptBurn.prototype.getVal = function() {
  * @return {!proto.receipts.ReceiptBurn} returns this
  */
 proto.receipts.ReceiptBurn.prototype.setVal = function(value) {
-  return jspb.Message.setProto3IntField(this, 6, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional int64 pc = 7;
+ * optional int64 pc = 5;
  * @return {number}
  */
 proto.receipts.ReceiptBurn.prototype.getPc = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
@@ -8199,16 +5660,16 @@ proto.receipts.ReceiptBurn.prototype.getPc = function() {
  * @return {!proto.receipts.ReceiptBurn} returns this
  */
 proto.receipts.ReceiptBurn.prototype.setPc = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional int64 is = 8;
+ * optional int64 is = 6;
  * @return {number}
  */
 proto.receipts.ReceiptBurn.prototype.getIs = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
@@ -8217,81 +5678,7 @@ proto.receipts.ReceiptBurn.prototype.getIs = function() {
  * @return {!proto.receipts.ReceiptBurn} returns this
  */
 proto.receipts.ReceiptBurn.prototype.setIs = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 9;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptBurn.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 9));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptBurn} returns this
-*/
-proto.receipts.ReceiptBurn.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptBurn} returns this
- */
-proto.receipts.ReceiptBurn.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptBurn.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 9) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.receipts.ReceiptBurn.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.receipts.ReceiptBurn} returns this
-*/
-proto.receipts.ReceiptBurn.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.receipts.ReceiptBurn} returns this
- */
-proto.receipts.ReceiptBurn.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.receipts.ReceiptBurn.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -8299,27 +5686,31 @@ proto.receipts.ReceiptBurn.prototype.hasPublishedAt = function() {
  * @enum {number}
  */
 proto.receipts.ReceiptType = {
-  CALL: 0,
-  RETURN: 1,
-  RETURN_DATA: 2,
-  PANIC: 3,
-  REVERT: 4,
-  LOG: 5,
-  LOG_DATA: 6,
-  TRANSFER: 7,
-  TRANSFER_OUT: 8,
-  SCRIPT_RESULT: 9,
-  MESSAGE_OUT: 10,
-  MINT: 11,
-  BURN: 12
+  UNKNOWN_RECEIPT_TYPE: 0,
+  CALL: 1,
+  RETURN: 2,
+  RETURN_DATA: 3,
+  PANIC: 4,
+  REVERT: 5,
+  LOG: 6,
+  LOG_DATA: 7,
+  TRANSFER: 8,
+  TRANSFER_OUT: 9,
+  SCRIPT_RESULT: 10,
+  MESSAGE_OUT: 11,
+  MINT: 12,
+  BURN: 13
 };
 
 /**
  * @enum {number}
  */
 proto.receipts.ScriptResultType = {
-  SUCCESS: 0,
-  FAILURE: 1
+  UNKNOWN_SCRIPT_RESULT_TYPE: 0,
+  SUCCESS: 1,
+  SCRIPT_REVERT: 2,
+  SCRIPT_PANIC: 3,
+  GENERIC_FAILURE: 4
 };
 
 goog.object.extend(exports, proto.receipts);

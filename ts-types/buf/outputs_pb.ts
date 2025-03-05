@@ -4,17 +4,17 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { OutputPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file outputs.proto.
  */
 export const file_outputs: GenFile = /*@__PURE__*/
-  fileDesc("Cg1vdXRwdXRzLnByb3RvEgdvdXRwdXRzIooECgZPdXRwdXQSDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAwSEAoIdHhfaW5kZXgYBCABKAUSFAoMb3V0cHV0X2luZGV4GAUgASgFEigKC291dHB1dF90eXBlGAYgASgOMhMub3V0cHV0cy5PdXRwdXRUeXBlEiMKBGNvaW4YByABKAsyEy5vdXRwdXRzLk91dHB1dENvaW5IABIrCghjb250cmFjdBgIIAEoCzIXLm91dHB1dHMuT3V0cHV0Q29udHJhY3RIABInCgZjaGFuZ2UYCSABKAsyFS5vdXRwdXRzLk91dHB1dENoYW5nZUgAEisKCHZhcmlhYmxlGAogASgLMhcub3V0cHV0cy5PdXRwdXRWYXJpYWJsZUgAEjoKEGNvbnRyYWN0X2NyZWF0ZWQYCyABKAsyHi5vdXRwdXRzLk91dHB1dENvbnRyYWN0Q3JlYXRlZEgAEi4KCmNyZWF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgNIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASKAoHcG9pbnRlchgOIAEoCzIXLnBvaW50ZXJzLk91dHB1dFBvaW50ZXJCCAoGb3V0cHV0IsQBCgpPdXRwdXRDb2luEg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSDgoGYW1vdW50GAMgASgDEhAKCGFzc2V0X2lkGAQgASgMEhIKCnRvX2FkZHJlc3MYBSABKAwSLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMcHVibGlzaGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCLRAQoOT3V0cHV0Q29udHJhY3QSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBIUCgxiYWxhbmNlX3Jvb3QYAyABKAwSEgoKc3RhdGVfcm9vdBgEIAEoDBITCgtpbnB1dF9pbmRleBgFIAEoBRIuCgpjcmVhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIsIBChVPdXRwdXRDb250cmFjdENyZWF0ZWQSDwoHc3ViamVjdBgBIAEoCRINCgV0eF9pZBgCIAEoDBITCgtjb250cmFjdF9pZBgDIAEoDBISCgpzdGF0ZV9yb290GAQgASgMEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAixgEKDE91dHB1dENoYW5nZRIPCgdzdWJqZWN0GAEgASgJEg0KBXR4X2lkGAIgASgMEg4KBmFtb3VudBgDIAEoAxIQCghhc3NldF9pZBgEIAEoDBISCgp0b19hZGRyZXNzGAUgASgMEi4KCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiyAEKDk91dHB1dFZhcmlhYmxlEg8KB3N1YmplY3QYASABKAkSDQoFdHhfaWQYAiABKAwSDgoGYW1vdW50GAMgASgDEhAKCGFzc2V0X2lkGAQgASgMEhIKCnRvX2FkZHJlc3MYBSABKAwSLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMcHVibGlzaGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCpUCgpPdXRwdXRUeXBlEggKBENPSU4QABIMCghDT05UUkFDVBABEgoKBkNIQU5HRRACEgwKCFZBUklBQkxFEAMSFAoQQ09OVFJBQ1RfQ1JFQVRFRBAEYgZwcm90bzM", [file_google_protobuf_timestamp, file_pointers]);
+  fileDesc("Cg1vdXRwdXRzLnByb3RvEgdvdXRwdXRzIvgCCgZPdXRwdXQSDwoHc3ViamVjdBgBIAEoCRIhCgR0eXBlGAIgASgOMhMub3V0cHV0cy5PdXRwdXRUeXBlEiMKBGNvaW4YAyABKAsyEy5vdXRwdXRzLk91dHB1dENvaW5IABIrCghjb250cmFjdBgEIAEoCzIXLm91dHB1dHMuT3V0cHV0Q29udHJhY3RIABInCgZjaGFuZ2UYBSABKAsyFS5vdXRwdXRzLk91dHB1dENoYW5nZUgAEisKCHZhcmlhYmxlGAYgASgLMhcub3V0cHV0cy5PdXRwdXRWYXJpYWJsZUgAEjoKEGNvbnRyYWN0X2NyZWF0ZWQYByABKAsyHi5vdXRwdXRzLk91dHB1dENvbnRyYWN0Q3JlYXRlZEgAEiIKCG1ldGFkYXRhGAkgASgLMhAuY29tbW9uLk1ldGFkYXRhEigKB3BvaW50ZXIYCiABKAsyFy5wb2ludGVycy5PdXRwdXRQb2ludGVyQggKBm91dHB1dCI6CgpPdXRwdXRDb2luEgoKAnRvGAEgASgMEg4KBmFtb3VudBgCIAEoAxIQCghhc3NldF9pZBgDIAEoDCJPCg5PdXRwdXRDb250cmFjdBIUCgxiYWxhbmNlX3Jvb3QYASABKAwSEgoKc3RhdGVfcm9vdBgCIAEoDBITCgtpbnB1dF9pbmRleBgDIAEoBSJAChVPdXRwdXRDb250cmFjdENyZWF0ZWQSEwoLY29udHJhY3RfaWQYASABKAwSEgoKc3RhdGVfcm9vdBgCIAEoDCI8CgxPdXRwdXRDaGFuZ2USCgoCdG8YASABKAwSDgoGYW1vdW50GAIgASgDEhAKCGFzc2V0X2lkGAMgASgMIj4KDk91dHB1dFZhcmlhYmxlEgoKAnRvGAEgASgMEg4KBmFtb3VudBgCIAEoAxIQCghhc3NldF9pZBgDIAEoDCptCgpPdXRwdXRUeXBlEhcKE1VOS05PV05fT1VUUFVUX1RZUEUQABIICgRDT0lOEAESDAoIQ09OVFJBQ1QQAhIKCgZDSEFOR0UQAxIMCghWQVJJQUJMRRAEEhQKEENPTlRSQUNUX0NSRUFURUQQBWIGcHJvdG8z", [file_pointers, file_common]);
 
 /**
  * @generated from message outputs.Output
@@ -26,62 +26,40 @@ export type Output = Message<"outputs.Output"> & {
   subject: string;
 
   /**
-   * @generated from field: int64 block_height = 2;
+   * @generated from field: outputs.OutputType type = 2;
    */
-  blockHeight: bigint;
+  type: OutputType;
 
   /**
-   * @generated from field: bytes tx_id = 3;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int32 tx_index = 4;
-   */
-  txIndex: number;
-
-  /**
-   * @generated from field: int32 output_index = 5;
-   */
-  outputIndex: number;
-
-  /**
-   * @generated from field: outputs.OutputType output_type = 6;
-   */
-  outputType: OutputType;
-
-  /**
-   * Specific output type
-   *
    * @generated from oneof outputs.Output.output
    */
   output: {
     /**
-     * @generated from field: outputs.OutputCoin coin = 7;
+     * @generated from field: outputs.OutputCoin coin = 3;
      */
     value: OutputCoin;
     case: "coin";
   } | {
     /**
-     * @generated from field: outputs.OutputContract contract = 8;
+     * @generated from field: outputs.OutputContract contract = 4;
      */
     value: OutputContract;
     case: "contract";
   } | {
     /**
-     * @generated from field: outputs.OutputChange change = 9;
+     * @generated from field: outputs.OutputChange change = 5;
      */
     value: OutputChange;
     case: "change";
   } | {
     /**
-     * @generated from field: outputs.OutputVariable variable = 10;
+     * @generated from field: outputs.OutputVariable variable = 6;
      */
     value: OutputVariable;
     case: "variable";
   } | {
     /**
-     * @generated from field: outputs.OutputContractCreated contract_created = 11;
+     * @generated from field: outputs.OutputContractCreated contract_created = 7;
      */
     value: OutputContractCreated;
     case: "contractCreated";
@@ -90,17 +68,12 @@ export type Output = Message<"outputs.Output"> & {
   /**
    * Metadata
    *
-   * @generated from field: google.protobuf.Timestamp created_at = 12;
+   * @generated from field: common.Metadata metadata = 9;
    */
-  createdAt?: Timestamp;
+  metadata?: Metadata;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 13;
-   */
-  publishedAt?: Timestamp;
-
-  /**
-   * @generated from field: pointers.OutputPointer pointer = 14;
+   * @generated from field: pointers.OutputPointer pointer = 10;
    */
   pointer?: OutputPointer;
 };
@@ -117,39 +90,19 @@ export const OutputSchema: GenMessage<Output> = /*@__PURE__*/
  */
 export type OutputCoin = Message<"outputs.OutputCoin"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes to = 1;
    */
-  subject: string;
+  to: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 3;
+   * @generated from field: int64 amount = 2;
    */
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 4;
+   * @generated from field: bytes asset_id = 3;
    */
   assetId: Uint8Array;
-
-  /**
-   * @generated from field: bytes to_address = 5;
-   */
-  toAddress: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 6;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 7;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -164,39 +117,19 @@ export const OutputCoinSchema: GenMessage<OutputCoin> = /*@__PURE__*/
  */
 export type OutputContract = Message<"outputs.OutputContract"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes balance_root = 3;
+   * @generated from field: bytes balance_root = 1;
    */
   balanceRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes state_root = 4;
+   * @generated from field: bytes state_root = 2;
    */
   stateRoot: Uint8Array;
 
   /**
-   * @generated from field: int32 input_index = 5;
+   * @generated from field: int32 input_index = 3;
    */
   inputIndex: number;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 6;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 7;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -211,34 +144,14 @@ export const OutputContractSchema: GenMessage<OutputContract> = /*@__PURE__*/
  */
 export type OutputContractCreated = Message<"outputs.OutputContractCreated"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: bytes contract_id = 3;
+   * @generated from field: bytes contract_id = 1;
    */
   contractId: Uint8Array;
 
   /**
-   * @generated from field: bytes state_root = 4;
+   * @generated from field: bytes state_root = 2;
    */
   stateRoot: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 5;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 6;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -253,39 +166,19 @@ export const OutputContractCreatedSchema: GenMessage<OutputContractCreated> = /*
  */
 export type OutputChange = Message<"outputs.OutputChange"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes to = 1;
    */
-  subject: string;
+  to: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 3;
+   * @generated from field: int64 amount = 2;
    */
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 4;
+   * @generated from field: bytes asset_id = 3;
    */
   assetId: Uint8Array;
-
-  /**
-   * @generated from field: bytes to_address = 5;
-   */
-  toAddress: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 6;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 7;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -300,39 +193,19 @@ export const OutputChangeSchema: GenMessage<OutputChange> = /*@__PURE__*/
  */
 export type OutputVariable = Message<"outputs.OutputVariable"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: bytes to = 1;
    */
-  subject: string;
+  to: Uint8Array;
 
   /**
-   * @generated from field: bytes tx_id = 2;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int64 amount = 3;
+   * @generated from field: int64 amount = 2;
    */
   amount: bigint;
 
   /**
-   * @generated from field: bytes asset_id = 4;
+   * @generated from field: bytes asset_id = 3;
    */
   assetId: Uint8Array;
-
-  /**
-   * @generated from field: bytes to_address = 5;
-   */
-  toAddress: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 6;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 7;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -347,29 +220,34 @@ export const OutputVariableSchema: GenMessage<OutputVariable> = /*@__PURE__*/
  */
 export enum OutputType {
   /**
-   * @generated from enum value: COIN = 0;
+   * @generated from enum value: UNKNOWN_OUTPUT_TYPE = 0;
    */
-  COIN = 0,
+  UNKNOWN_OUTPUT_TYPE = 0,
 
   /**
-   * @generated from enum value: CONTRACT = 1;
+   * @generated from enum value: COIN = 1;
    */
-  CONTRACT = 1,
+  COIN = 1,
 
   /**
-   * @generated from enum value: CHANGE = 2;
+   * @generated from enum value: CONTRACT = 2;
    */
-  CHANGE = 2,
+  CONTRACT = 2,
 
   /**
-   * @generated from enum value: VARIABLE = 3;
+   * @generated from enum value: CHANGE = 3;
    */
-  VARIABLE = 3,
+  CHANGE = 3,
 
   /**
-   * @generated from enum value: CONTRACT_CREATED = 4;
+   * @generated from enum value: VARIABLE = 4;
    */
-  CONTRACT_CREATED = 4,
+  VARIABLE = 4,
+
+  /**
+   * @generated from enum value: CONTRACT_CREATED = 5;
+   */
+  CONTRACT_CREATED = 5,
 }
 
 /**

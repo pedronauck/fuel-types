@@ -5,21 +5,16 @@ export namespace blocks {
 
     /** ConsensusType enum. */
     enum ConsensusType {
-        GENESIS = 0,
-        POA_CONSENSUS = 1
+        UNKNOWN_CONSENSUS_TYPE = 0,
+        GENESIS = 1,
+        POA_CONSENSUS = 2
     }
 
     /** Properties of a Block. */
     interface IBlock {
 
-        /** Block subject */
-        subject?: (string|null);
-
         /** Block blockHeight */
         blockHeight?: (number|Long|null);
-
-        /** Block producerAddress */
-        producerAddress?: (Uint8Array|null);
 
         /** Block blockId */
         blockId?: (number|null);
@@ -36,11 +31,8 @@ export namespace blocks {
         /** Block transactionIds */
         transactionIds?: (Uint8Array[]|null);
 
-        /** Block createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Block publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Block metadata */
+        metadata?: (common.IMetadata|null);
 
         /** Block pointer */
         pointer?: (pointers.IBlockPointer|null);
@@ -55,14 +47,8 @@ export namespace blocks {
          */
         constructor(properties?: blocks.IBlock);
 
-        /** Block subject. */
-        public subject: string;
-
         /** Block blockHeight. */
         public blockHeight: (number|Long);
-
-        /** Block producerAddress. */
-        public producerAddress: Uint8Array;
 
         /** Block blockId. */
         public blockId: number;
@@ -79,11 +65,8 @@ export namespace blocks {
         /** Block transactionIds. */
         public transactionIds: Uint8Array[];
 
-        /** Block createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Block publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Block metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /** Block pointer. */
         public pointer?: (pointers.IBlockPointer|null);
@@ -169,9 +152,6 @@ export namespace blocks {
     /** Properties of a BlockHeader. */
     interface IBlockHeader {
 
-        /** BlockHeader subject */
-        subject?: (string|null);
-
         /** BlockHeader blockHeight */
         blockHeight?: (number|Long|null);
 
@@ -210,12 +190,6 @@ export namespace blocks {
 
         /** BlockHeader version */
         version?: (number|null);
-
-        /** BlockHeader createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** BlockHeader publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a BlockHeader. */
@@ -226,9 +200,6 @@ export namespace blocks {
          * @param [properties] Properties to set
          */
         constructor(properties?: blocks.IBlockHeader);
-
-        /** BlockHeader subject. */
-        public subject: string;
 
         /** BlockHeader blockHeight. */
         public blockHeight: (number|Long);
@@ -268,12 +239,6 @@ export namespace blocks {
 
         /** BlockHeader version. */
         public version: number;
-
-        /** BlockHeader createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** BlockHeader publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new BlockHeader instance using the specified properties.
@@ -356,8 +321,11 @@ export namespace blocks {
     /** Properties of a BlockConsensus. */
     interface IBlockConsensus {
 
-        /** BlockConsensus subject */
-        subject?: (string|null);
+        /** BlockConsensus chainId */
+        chainId?: (number|Long|null);
+
+        /** BlockConsensus producer */
+        producer?: (Uint8Array|null);
 
         /** BlockConsensus blockHeight */
         blockHeight?: (number|Long|null);
@@ -382,12 +350,6 @@ export namespace blocks {
 
         /** BlockConsensus signature */
         signature?: (Uint8Array|null);
-
-        /** BlockConsensus createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** BlockConsensus publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a BlockConsensus. */
@@ -399,8 +361,11 @@ export namespace blocks {
          */
         constructor(properties?: blocks.IBlockConsensus);
 
-        /** BlockConsensus subject. */
-        public subject: string;
+        /** BlockConsensus chainId. */
+        public chainId: (number|Long);
+
+        /** BlockConsensus producer. */
+        public producer: Uint8Array;
 
         /** BlockConsensus blockHeight. */
         public blockHeight: (number|Long);
@@ -425,12 +390,6 @@ export namespace blocks {
 
         /** BlockConsensus signature. */
         public signature: Uint8Array;
-
-        /** BlockConsensus createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** BlockConsensus publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new BlockConsensus instance using the specified properties.
@@ -508,117 +467,6 @@ export namespace blocks {
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
-    }
-}
-
-/** Namespace google. */
-export namespace google {
-
-    /** Namespace protobuf. */
-    namespace protobuf {
-
-        /** Properties of a Timestamp. */
-        interface ITimestamp {
-
-            /** Timestamp seconds */
-            seconds?: (number|Long|null);
-
-            /** Timestamp nanos */
-            nanos?: (number|null);
-        }
-
-        /** Represents a Timestamp. */
-        class Timestamp implements ITimestamp {
-
-            /**
-             * Constructs a new Timestamp.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.protobuf.ITimestamp);
-
-            /** Timestamp seconds. */
-            public seconds: (number|Long);
-
-            /** Timestamp nanos. */
-            public nanos: number;
-
-            /**
-             * Creates a new Timestamp instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns Timestamp instance
-             */
-            public static create(properties?: google.protobuf.ITimestamp): google.protobuf.Timestamp;
-
-            /**
-             * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-             * @param message Timestamp message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-             * @param message Timestamp message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes a Timestamp message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns Timestamp
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Timestamp;
-
-            /**
-             * Decodes a Timestamp message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns Timestamp
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Timestamp;
-
-            /**
-             * Verifies a Timestamp message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns Timestamp
-             */
-            public static fromObject(object: { [k: string]: any }): google.protobuf.Timestamp;
-
-            /**
-             * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
-             * @param message Timestamp
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.protobuf.Timestamp, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this Timestamp to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
-
-            /**
-             * Gets the default type url for Timestamp
-             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-             * @returns The default type url
-             */
-            public static getTypeUrl(typeUrlPrefix?: string): string;
-        }
     }
 }
 
@@ -722,109 +570,109 @@ export namespace pointers {
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a TransactionPointer. */
-    interface ITransactionPointer {
+    /** Properties of a TxPointer. */
+    interface ITxPointer {
 
-        /** TransactionPointer blockHeight */
+        /** TxPointer blockHeight */
         blockHeight?: (number|Long|null);
 
-        /** TransactionPointer txId */
+        /** TxPointer txId */
         txId?: (number|null);
 
-        /** TransactionPointer txIndex */
+        /** TxPointer txIndex */
         txIndex?: (number|null);
     }
 
-    /** Represents a TransactionPointer. */
-    class TransactionPointer implements ITransactionPointer {
+    /** Represents a TxPointer. */
+    class TxPointer implements ITxPointer {
 
         /**
-         * Constructs a new TransactionPointer.
+         * Constructs a new TxPointer.
          * @param [properties] Properties to set
          */
-        constructor(properties?: pointers.ITransactionPointer);
+        constructor(properties?: pointers.ITxPointer);
 
-        /** TransactionPointer blockHeight. */
+        /** TxPointer blockHeight. */
         public blockHeight: (number|Long);
 
-        /** TransactionPointer txId. */
+        /** TxPointer txId. */
         public txId: number;
 
-        /** TransactionPointer txIndex. */
+        /** TxPointer txIndex. */
         public txIndex: number;
 
         /**
-         * Creates a new TransactionPointer instance using the specified properties.
+         * Creates a new TxPointer instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns TransactionPointer instance
+         * @returns TxPointer instance
          */
-        public static create(properties?: pointers.ITransactionPointer): pointers.TransactionPointer;
+        public static create(properties?: pointers.ITxPointer): pointers.TxPointer;
 
         /**
-         * Encodes the specified TransactionPointer message. Does not implicitly {@link pointers.TransactionPointer.verify|verify} messages.
-         * @param message TransactionPointer message or plain object to encode
+         * Encodes the specified TxPointer message. Does not implicitly {@link pointers.TxPointer.verify|verify} messages.
+         * @param message TxPointer message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: pointers.ITransactionPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: pointers.ITxPointer, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified TransactionPointer message, length delimited. Does not implicitly {@link pointers.TransactionPointer.verify|verify} messages.
-         * @param message TransactionPointer message or plain object to encode
+         * Encodes the specified TxPointer message, length delimited. Does not implicitly {@link pointers.TxPointer.verify|verify} messages.
+         * @param message TxPointer message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: pointers.ITransactionPointer, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: pointers.ITxPointer, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a TransactionPointer message from the specified reader or buffer.
+         * Decodes a TxPointer message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns TransactionPointer
+         * @returns TxPointer
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pointers.TransactionPointer;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): pointers.TxPointer;
 
         /**
-         * Decodes a TransactionPointer message from the specified reader or buffer, length delimited.
+         * Decodes a TxPointer message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns TransactionPointer
+         * @returns TxPointer
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pointers.TransactionPointer;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): pointers.TxPointer;
 
         /**
-         * Verifies a TransactionPointer message.
+         * Verifies a TxPointer message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a TransactionPointer message from a plain object. Also converts values to their respective internal types.
+         * Creates a TxPointer message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns TransactionPointer
+         * @returns TxPointer
          */
-        public static fromObject(object: { [k: string]: any }): pointers.TransactionPointer;
+        public static fromObject(object: { [k: string]: any }): pointers.TxPointer;
 
         /**
-         * Creates a plain object from a TransactionPointer message. Also converts values to other types if specified.
-         * @param message TransactionPointer
+         * Creates a plain object from a TxPointer message. Also converts values to other types if specified.
+         * @param message TxPointer
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: pointers.TransactionPointer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: pointers.TxPointer, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this TransactionPointer to JSON.
+         * Converts this TxPointer to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for TransactionPointer
+         * Gets the default type url for TxPointer
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
@@ -1190,6 +1038,12 @@ export namespace pointers {
 
         /** UtxoPointer utxoId */
         utxoId?: (number|null);
+
+        /** UtxoPointer inputIndex */
+        inputIndex?: (number|null);
+
+        /** UtxoPointer outputIndex */
+        outputIndex?: (number|null);
     }
 
     /** Represents an UtxoPointer. */
@@ -1212,6 +1066,12 @@ export namespace pointers {
 
         /** UtxoPointer utxoId. */
         public utxoId: number;
+
+        /** UtxoPointer inputIndex. */
+        public inputIndex: number;
+
+        /** UtxoPointer outputIndex. */
+        public outputIndex: number;
 
         /**
          * Creates a new UtxoPointer instance using the specified properties.
@@ -1292,14 +1152,233 @@ export namespace pointers {
     }
 }
 
+/** Namespace common. */
+export namespace common {
+
+    /** Properties of a Metadata. */
+    interface IMetadata {
+
+        /** Metadata blockTime */
+        blockTime?: (google.protobuf.ITimestamp|null);
+
+        /** Metadata publishedAt */
+        publishedAt?: (google.protobuf.ITimestamp|null);
+    }
+
+    /** Represents a Metadata. */
+    class Metadata implements IMetadata {
+
+        /**
+         * Constructs a new Metadata.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: common.IMetadata);
+
+        /** Metadata blockTime. */
+        public blockTime?: (google.protobuf.ITimestamp|null);
+
+        /** Metadata publishedAt. */
+        public publishedAt?: (google.protobuf.ITimestamp|null);
+
+        /**
+         * Creates a new Metadata instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Metadata instance
+         */
+        public static create(properties?: common.IMetadata): common.Metadata;
+
+        /**
+         * Encodes the specified Metadata message. Does not implicitly {@link common.Metadata.verify|verify} messages.
+         * @param message Metadata message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: common.IMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified Metadata message, length delimited. Does not implicitly {@link common.Metadata.verify|verify} messages.
+         * @param message Metadata message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: common.IMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a Metadata message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Metadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): common.Metadata;
+
+        /**
+         * Decodes a Metadata message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns Metadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): common.Metadata;
+
+        /**
+         * Verifies a Metadata message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a Metadata message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns Metadata
+         */
+        public static fromObject(object: { [k: string]: any }): common.Metadata;
+
+        /**
+         * Creates a plain object from a Metadata message. Also converts values to other types if specified.
+         * @param message Metadata
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: common.Metadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this Metadata to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for Metadata
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+}
+
+/** Namespace google. */
+export namespace google {
+
+    /** Namespace protobuf. */
+    namespace protobuf {
+
+        /** Properties of a Timestamp. */
+        interface ITimestamp {
+
+            /** Timestamp seconds */
+            seconds?: (number|Long|null);
+
+            /** Timestamp nanos */
+            nanos?: (number|null);
+        }
+
+        /** Represents a Timestamp. */
+        class Timestamp implements ITimestamp {
+
+            /**
+             * Constructs a new Timestamp.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: google.protobuf.ITimestamp);
+
+            /** Timestamp seconds. */
+            public seconds: (number|Long);
+
+            /** Timestamp nanos. */
+            public nanos: number;
+
+            /**
+             * Creates a new Timestamp instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns Timestamp instance
+             */
+            public static create(properties?: google.protobuf.ITimestamp): google.protobuf.Timestamp;
+
+            /**
+             * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
+             * @param message Timestamp message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
+             * @param message Timestamp message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: google.protobuf.ITimestamp, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a Timestamp message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns Timestamp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Timestamp;
+
+            /**
+             * Decodes a Timestamp message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns Timestamp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Timestamp;
+
+            /**
+             * Verifies a Timestamp message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns Timestamp
+             */
+            public static fromObject(object: { [k: string]: any }): google.protobuf.Timestamp;
+
+            /**
+             * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
+             * @param message Timestamp
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: google.protobuf.Timestamp, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this Timestamp to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for Timestamp
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+    }
+}
+
 /** Namespace inputs. */
 export namespace inputs {
 
     /** InputType enum. */
     enum InputType {
-        CONTRACT = 0,
-        COIN = 1,
-        MESSAGE = 2
+        UNKNOWN_INPUT_TYPE = 0,
+        CONTRACT = 1,
+        COIN = 2,
+        MESSAGE = 3
     }
 
     /** Properties of an Input. */
@@ -1308,20 +1387,8 @@ export namespace inputs {
         /** Input subject */
         subject?: (string|null);
 
-        /** Input blockHeight */
-        blockHeight?: (number|Long|null);
-
-        /** Input txId */
-        txId?: (Uint8Array|null);
-
-        /** Input txIndex */
-        txIndex?: (number|null);
-
-        /** Input inputIndex */
-        inputIndex?: (number|null);
-
-        /** Input inputType */
-        inputType?: (inputs.InputType|null);
+        /** Input type */
+        type?: (inputs.InputType|null);
 
         /** Input coin */
         coin?: (inputs.IInputCoin|null);
@@ -1332,11 +1399,8 @@ export namespace inputs {
         /** Input message */
         message?: (inputs.IInputMessage|null);
 
-        /** Input createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Input publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Input metadata */
+        metadata?: (common.IMetadata|null);
 
         /** Input pointer */
         pointer?: (pointers.IInputPointer|null);
@@ -1354,20 +1418,8 @@ export namespace inputs {
         /** Input subject. */
         public subject: string;
 
-        /** Input blockHeight. */
-        public blockHeight: (number|Long);
-
-        /** Input txId. */
-        public txId: Uint8Array;
-
-        /** Input txIndex. */
-        public txIndex: number;
-
-        /** Input inputIndex. */
-        public inputIndex: number;
-
-        /** Input inputType. */
-        public inputType: inputs.InputType;
+        /** Input type. */
+        public type: inputs.InputType;
 
         /** Input coin. */
         public coin?: (inputs.IInputCoin|null);
@@ -1378,11 +1430,8 @@ export namespace inputs {
         /** Input message. */
         public message?: (inputs.IInputMessage|null);
 
-        /** Input createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Input publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Input metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /** Input pointer. */
         public pointer?: (pointers.IInputPointer|null);
@@ -1471,11 +1520,11 @@ export namespace inputs {
     /** Properties of an InputCoin. */
     interface IInputCoin {
 
-        /** InputCoin subject */
-        subject?: (string|null);
+        /** InputCoin utxoId */
+        utxoId?: (Uint8Array|null);
 
-        /** InputCoin txId */
-        txId?: (Uint8Array|null);
+        /** InputCoin owner */
+        owner?: (Uint8Array|null);
 
         /** InputCoin amount */
         amount?: (number|Long|null);
@@ -1483,11 +1532,14 @@ export namespace inputs {
         /** InputCoin assetId */
         assetId?: (Uint8Array|null);
 
-        /** InputCoin ownerAddress */
-        ownerAddress?: (Uint8Array|null);
+        /** InputCoin txPointer */
+        txPointer?: (pointers.ITxPointer|null);
 
-        /** InputCoin outputIndex */
-        outputIndex?: (number|null);
+        /** InputCoin witnessIndex */
+        witnessIndex?: (number|null);
+
+        /** InputCoin predicateGasUsed */
+        predicateGasUsed?: (number|Long|null);
 
         /** InputCoin predicate */
         predicate?: (Uint8Array|null);
@@ -1495,32 +1547,14 @@ export namespace inputs {
         /** InputCoin predicateData */
         predicateData?: (Uint8Array|null);
 
-        /** InputCoin predicateGasUsed */
-        predicateGasUsed?: (number|Long|null);
-
         /** InputCoin predicateLength */
         predicateLength?: (number|Long|null);
 
         /** InputCoin predicateDataLength */
         predicateDataLength?: (number|Long|null);
 
-        /** InputCoin txPointerBlockHeight */
-        txPointerBlockHeight?: (number|Long|null);
-
-        /** InputCoin txPointerTxIndex */
-        txPointerTxIndex?: (number|null);
-
-        /** InputCoin utxoId */
-        utxoId?: (Uint8Array|null);
-
-        /** InputCoin witnessIndex */
-        witnessIndex?: (number|null);
-
-        /** InputCoin createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** InputCoin publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** InputCoin outputIndex */
+        outputIndex?: (number|null);
     }
 
     /** Represents an InputCoin. */
@@ -1532,11 +1566,11 @@ export namespace inputs {
          */
         constructor(properties?: inputs.IInputCoin);
 
-        /** InputCoin subject. */
-        public subject: string;
+        /** InputCoin utxoId. */
+        public utxoId: Uint8Array;
 
-        /** InputCoin txId. */
-        public txId: Uint8Array;
+        /** InputCoin owner. */
+        public owner: Uint8Array;
 
         /** InputCoin amount. */
         public amount: (number|Long);
@@ -1544,11 +1578,14 @@ export namespace inputs {
         /** InputCoin assetId. */
         public assetId: Uint8Array;
 
-        /** InputCoin ownerAddress. */
-        public ownerAddress: Uint8Array;
+        /** InputCoin txPointer. */
+        public txPointer?: (pointers.ITxPointer|null);
 
-        /** InputCoin outputIndex. */
-        public outputIndex: number;
+        /** InputCoin witnessIndex. */
+        public witnessIndex: number;
+
+        /** InputCoin predicateGasUsed. */
+        public predicateGasUsed: (number|Long);
 
         /** InputCoin predicate. */
         public predicate: Uint8Array;
@@ -1556,32 +1593,14 @@ export namespace inputs {
         /** InputCoin predicateData. */
         public predicateData: Uint8Array;
 
-        /** InputCoin predicateGasUsed. */
-        public predicateGasUsed: (number|Long);
-
         /** InputCoin predicateLength. */
         public predicateLength: (number|Long);
 
         /** InputCoin predicateDataLength. */
         public predicateDataLength: (number|Long);
 
-        /** InputCoin txPointerBlockHeight. */
-        public txPointerBlockHeight: (number|Long);
-
-        /** InputCoin txPointerTxIndex. */
-        public txPointerTxIndex: number;
-
-        /** InputCoin utxoId. */
-        public utxoId: Uint8Array;
-
-        /** InputCoin witnessIndex. */
-        public witnessIndex: number;
-
-        /** InputCoin createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** InputCoin publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** InputCoin outputIndex. */
+        public outputIndex: number;
 
         /**
          * Creates a new InputCoin instance using the specified properties.
@@ -1664,38 +1683,23 @@ export namespace inputs {
     /** Properties of an InputContract. */
     interface IInputContract {
 
-        /** InputContract subject */
-        subject?: (string|null);
-
-        /** InputContract txId */
-        txId?: (Uint8Array|null);
+        /** InputContract utxoId */
+        utxoId?: (Uint8Array|null);
 
         /** InputContract balanceRoot */
         balanceRoot?: (Uint8Array|null);
+
+        /** InputContract stateRoot */
+        stateRoot?: (Uint8Array|null);
+
+        /** InputContract txPointer */
+        txPointer?: (pointers.ITxPointer|null);
 
         /** InputContract contractId */
         contractId?: (Uint8Array|null);
 
         /** InputContract outputIndex */
         outputIndex?: (number|null);
-
-        /** InputContract stateRoot */
-        stateRoot?: (Uint8Array|null);
-
-        /** InputContract txPointerBlockHeight */
-        txPointerBlockHeight?: (number|Long|null);
-
-        /** InputContract txPointerTxIndex */
-        txPointerTxIndex?: (number|null);
-
-        /** InputContract utxoId */
-        utxoId?: (Uint8Array|null);
-
-        /** InputContract createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** InputContract publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents an InputContract. */
@@ -1707,38 +1711,23 @@ export namespace inputs {
          */
         constructor(properties?: inputs.IInputContract);
 
-        /** InputContract subject. */
-        public subject: string;
-
-        /** InputContract txId. */
-        public txId: Uint8Array;
+        /** InputContract utxoId. */
+        public utxoId: Uint8Array;
 
         /** InputContract balanceRoot. */
         public balanceRoot: Uint8Array;
+
+        /** InputContract stateRoot. */
+        public stateRoot: Uint8Array;
+
+        /** InputContract txPointer. */
+        public txPointer?: (pointers.ITxPointer|null);
 
         /** InputContract contractId. */
         public contractId: Uint8Array;
 
         /** InputContract outputIndex. */
         public outputIndex: number;
-
-        /** InputContract stateRoot. */
-        public stateRoot: Uint8Array;
-
-        /** InputContract txPointerBlockHeight. */
-        public txPointerBlockHeight: (number|Long);
-
-        /** InputContract txPointerTxIndex. */
-        public txPointerTxIndex: number;
-
-        /** InputContract utxoId. */
-        public utxoId: Uint8Array;
-
-        /** InputContract createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** InputContract publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new InputContract instance using the specified properties.
@@ -1821,53 +1810,41 @@ export namespace inputs {
     /** Properties of an InputMessage. */
     interface IInputMessage {
 
-        /** InputMessage subject */
-        subject?: (string|null);
+        /** InputMessage sender */
+        sender?: (Uint8Array|null);
 
-        /** InputMessage txId */
-        txId?: (Uint8Array|null);
+        /** InputMessage recipient */
+        recipient?: (Uint8Array|null);
 
         /** InputMessage amount */
         amount?: (number|Long|null);
 
-        /** InputMessage data */
-        data?: (Uint8Array|null);
-
-        /** InputMessage dataLength */
-        dataLength?: (number|null);
-
         /** InputMessage nonce */
         nonce?: (Uint8Array|null);
-
-        /** InputMessage predicate */
-        predicate?: (Uint8Array|null);
-
-        /** InputMessage predicateLength */
-        predicateLength?: (number|null);
-
-        /** InputMessage predicateData */
-        predicateData?: (Uint8Array|null);
-
-        /** InputMessage predicateDataLength */
-        predicateDataLength?: (number|null);
-
-        /** InputMessage predicateGasUsed */
-        predicateGasUsed?: (number|Long|null);
-
-        /** InputMessage recipientAddress */
-        recipientAddress?: (Uint8Array|null);
-
-        /** InputMessage senderAddress */
-        senderAddress?: (Uint8Array|null);
 
         /** InputMessage witnessIndex */
         witnessIndex?: (number|null);
 
-        /** InputMessage createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
+        /** InputMessage predicateGasUsed */
+        predicateGasUsed?: (number|Long|null);
 
-        /** InputMessage publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** InputMessage data */
+        data?: (Uint8Array|null);
+
+        /** InputMessage predicate */
+        predicate?: (Uint8Array|null);
+
+        /** InputMessage predicateData */
+        predicateData?: (Uint8Array|null);
+
+        /** InputMessage dataLength */
+        dataLength?: (number|null);
+
+        /** InputMessage predicateLength */
+        predicateLength?: (number|null);
+
+        /** InputMessage predicateDataLength */
+        predicateDataLength?: (number|null);
     }
 
     /** Represents an InputMessage. */
@@ -1879,53 +1856,41 @@ export namespace inputs {
          */
         constructor(properties?: inputs.IInputMessage);
 
-        /** InputMessage subject. */
-        public subject: string;
+        /** InputMessage sender. */
+        public sender: Uint8Array;
 
-        /** InputMessage txId. */
-        public txId: Uint8Array;
+        /** InputMessage recipient. */
+        public recipient: Uint8Array;
 
         /** InputMessage amount. */
         public amount: (number|Long);
 
-        /** InputMessage data. */
-        public data: Uint8Array;
-
-        /** InputMessage dataLength. */
-        public dataLength: number;
-
         /** InputMessage nonce. */
         public nonce: Uint8Array;
-
-        /** InputMessage predicate. */
-        public predicate: Uint8Array;
-
-        /** InputMessage predicateLength. */
-        public predicateLength: number;
-
-        /** InputMessage predicateData. */
-        public predicateData: Uint8Array;
-
-        /** InputMessage predicateDataLength. */
-        public predicateDataLength: number;
-
-        /** InputMessage predicateGasUsed. */
-        public predicateGasUsed: (number|Long);
-
-        /** InputMessage recipientAddress. */
-        public recipientAddress: Uint8Array;
-
-        /** InputMessage senderAddress. */
-        public senderAddress: Uint8Array;
 
         /** InputMessage witnessIndex. */
         public witnessIndex: number;
 
-        /** InputMessage createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
+        /** InputMessage predicateGasUsed. */
+        public predicateGasUsed: (number|Long);
 
-        /** InputMessage publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** InputMessage data. */
+        public data: Uint8Array;
+
+        /** InputMessage predicate. */
+        public predicate: Uint8Array;
+
+        /** InputMessage predicateData. */
+        public predicateData: Uint8Array;
+
+        /** InputMessage dataLength. */
+        public dataLength: number;
+
+        /** InputMessage predicateLength. */
+        public predicateLength: number;
+
+        /** InputMessage predicateDataLength. */
+        public predicateDataLength: number;
 
         /**
          * Creates a new InputMessage instance using the specified properties.
@@ -2011,11 +1976,12 @@ export namespace outputs {
 
     /** OutputType enum. */
     enum OutputType {
-        COIN = 0,
-        CONTRACT = 1,
-        CHANGE = 2,
-        VARIABLE = 3,
-        CONTRACT_CREATED = 4
+        UNKNOWN_OUTPUT_TYPE = 0,
+        COIN = 1,
+        CONTRACT = 2,
+        CHANGE = 3,
+        VARIABLE = 4,
+        CONTRACT_CREATED = 5
     }
 
     /** Properties of an Output. */
@@ -2024,20 +1990,8 @@ export namespace outputs {
         /** Output subject */
         subject?: (string|null);
 
-        /** Output blockHeight */
-        blockHeight?: (number|Long|null);
-
-        /** Output txId */
-        txId?: (Uint8Array|null);
-
-        /** Output txIndex */
-        txIndex?: (number|null);
-
-        /** Output outputIndex */
-        outputIndex?: (number|null);
-
-        /** Output outputType */
-        outputType?: (outputs.OutputType|null);
+        /** Output type */
+        type?: (outputs.OutputType|null);
 
         /** Output coin */
         coin?: (outputs.IOutputCoin|null);
@@ -2054,11 +2008,8 @@ export namespace outputs {
         /** Output contractCreated */
         contractCreated?: (outputs.IOutputContractCreated|null);
 
-        /** Output createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Output publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Output metadata */
+        metadata?: (common.IMetadata|null);
 
         /** Output pointer */
         pointer?: (pointers.IOutputPointer|null);
@@ -2076,20 +2027,8 @@ export namespace outputs {
         /** Output subject. */
         public subject: string;
 
-        /** Output blockHeight. */
-        public blockHeight: (number|Long);
-
-        /** Output txId. */
-        public txId: Uint8Array;
-
-        /** Output txIndex. */
-        public txIndex: number;
-
-        /** Output outputIndex. */
-        public outputIndex: number;
-
-        /** Output outputType. */
-        public outputType: outputs.OutputType;
+        /** Output type. */
+        public type: outputs.OutputType;
 
         /** Output coin. */
         public coin?: (outputs.IOutputCoin|null);
@@ -2106,11 +2045,8 @@ export namespace outputs {
         /** Output contractCreated. */
         public contractCreated?: (outputs.IOutputContractCreated|null);
 
-        /** Output createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Output publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Output metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /** Output pointer. */
         public pointer?: (pointers.IOutputPointer|null);
@@ -2199,26 +2135,14 @@ export namespace outputs {
     /** Properties of an OutputCoin. */
     interface IOutputCoin {
 
-        /** OutputCoin subject */
-        subject?: (string|null);
-
-        /** OutputCoin txId */
-        txId?: (Uint8Array|null);
+        /** OutputCoin to */
+        to?: (Uint8Array|null);
 
         /** OutputCoin amount */
         amount?: (number|Long|null);
 
         /** OutputCoin assetId */
         assetId?: (Uint8Array|null);
-
-        /** OutputCoin toAddress */
-        toAddress?: (Uint8Array|null);
-
-        /** OutputCoin createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputCoin publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents an OutputCoin. */
@@ -2230,26 +2154,14 @@ export namespace outputs {
          */
         constructor(properties?: outputs.IOutputCoin);
 
-        /** OutputCoin subject. */
-        public subject: string;
-
-        /** OutputCoin txId. */
-        public txId: Uint8Array;
+        /** OutputCoin to. */
+        public to: Uint8Array;
 
         /** OutputCoin amount. */
         public amount: (number|Long);
 
         /** OutputCoin assetId. */
         public assetId: Uint8Array;
-
-        /** OutputCoin toAddress. */
-        public toAddress: Uint8Array;
-
-        /** OutputCoin createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputCoin publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new OutputCoin instance using the specified properties.
@@ -2332,12 +2244,6 @@ export namespace outputs {
     /** Properties of an OutputContract. */
     interface IOutputContract {
 
-        /** OutputContract subject */
-        subject?: (string|null);
-
-        /** OutputContract txId */
-        txId?: (Uint8Array|null);
-
         /** OutputContract balanceRoot */
         balanceRoot?: (Uint8Array|null);
 
@@ -2346,12 +2252,6 @@ export namespace outputs {
 
         /** OutputContract inputIndex */
         inputIndex?: (number|null);
-
-        /** OutputContract createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputContract publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents an OutputContract. */
@@ -2363,12 +2263,6 @@ export namespace outputs {
          */
         constructor(properties?: outputs.IOutputContract);
 
-        /** OutputContract subject. */
-        public subject: string;
-
-        /** OutputContract txId. */
-        public txId: Uint8Array;
-
         /** OutputContract balanceRoot. */
         public balanceRoot: Uint8Array;
 
@@ -2377,12 +2271,6 @@ export namespace outputs {
 
         /** OutputContract inputIndex. */
         public inputIndex: number;
-
-        /** OutputContract createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputContract publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new OutputContract instance using the specified properties.
@@ -2465,23 +2353,11 @@ export namespace outputs {
     /** Properties of an OutputContractCreated. */
     interface IOutputContractCreated {
 
-        /** OutputContractCreated subject */
-        subject?: (string|null);
-
-        /** OutputContractCreated txId */
-        txId?: (Uint8Array|null);
-
         /** OutputContractCreated contractId */
         contractId?: (Uint8Array|null);
 
         /** OutputContractCreated stateRoot */
         stateRoot?: (Uint8Array|null);
-
-        /** OutputContractCreated createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputContractCreated publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents an OutputContractCreated. */
@@ -2493,23 +2369,11 @@ export namespace outputs {
          */
         constructor(properties?: outputs.IOutputContractCreated);
 
-        /** OutputContractCreated subject. */
-        public subject: string;
-
-        /** OutputContractCreated txId. */
-        public txId: Uint8Array;
-
         /** OutputContractCreated contractId. */
         public contractId: Uint8Array;
 
         /** OutputContractCreated stateRoot. */
         public stateRoot: Uint8Array;
-
-        /** OutputContractCreated createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputContractCreated publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new OutputContractCreated instance using the specified properties.
@@ -2592,26 +2456,14 @@ export namespace outputs {
     /** Properties of an OutputChange. */
     interface IOutputChange {
 
-        /** OutputChange subject */
-        subject?: (string|null);
-
-        /** OutputChange txId */
-        txId?: (Uint8Array|null);
+        /** OutputChange to */
+        to?: (Uint8Array|null);
 
         /** OutputChange amount */
         amount?: (number|Long|null);
 
         /** OutputChange assetId */
         assetId?: (Uint8Array|null);
-
-        /** OutputChange toAddress */
-        toAddress?: (Uint8Array|null);
-
-        /** OutputChange createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputChange publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents an OutputChange. */
@@ -2623,26 +2475,14 @@ export namespace outputs {
          */
         constructor(properties?: outputs.IOutputChange);
 
-        /** OutputChange subject. */
-        public subject: string;
-
-        /** OutputChange txId. */
-        public txId: Uint8Array;
+        /** OutputChange to. */
+        public to: Uint8Array;
 
         /** OutputChange amount. */
         public amount: (number|Long);
 
         /** OutputChange assetId. */
         public assetId: Uint8Array;
-
-        /** OutputChange toAddress. */
-        public toAddress: Uint8Array;
-
-        /** OutputChange createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputChange publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new OutputChange instance using the specified properties.
@@ -2725,26 +2565,14 @@ export namespace outputs {
     /** Properties of an OutputVariable. */
     interface IOutputVariable {
 
-        /** OutputVariable subject */
-        subject?: (string|null);
-
-        /** OutputVariable txId */
-        txId?: (Uint8Array|null);
+        /** OutputVariable to */
+        to?: (Uint8Array|null);
 
         /** OutputVariable amount */
         amount?: (number|Long|null);
 
         /** OutputVariable assetId */
         assetId?: (Uint8Array|null);
-
-        /** OutputVariable toAddress */
-        toAddress?: (Uint8Array|null);
-
-        /** OutputVariable createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputVariable publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents an OutputVariable. */
@@ -2756,26 +2584,14 @@ export namespace outputs {
          */
         constructor(properties?: outputs.IOutputVariable);
 
-        /** OutputVariable subject. */
-        public subject: string;
-
-        /** OutputVariable txId. */
-        public txId: Uint8Array;
+        /** OutputVariable to. */
+        public to: Uint8Array;
 
         /** OutputVariable amount. */
         public amount: (number|Long);
 
         /** OutputVariable assetId. */
         public assetId: Uint8Array;
-
-        /** OutputVariable toAddress. */
-        public toAddress: Uint8Array;
-
-        /** OutputVariable createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** OutputVariable publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new OutputVariable instance using the specified properties.
@@ -2861,25 +2677,29 @@ export namespace receipts {
 
     /** ReceiptType enum. */
     enum ReceiptType {
-        CALL = 0,
-        RETURN = 1,
-        RETURN_DATA = 2,
-        PANIC = 3,
-        REVERT = 4,
-        LOG = 5,
-        LOG_DATA = 6,
-        TRANSFER = 7,
-        TRANSFER_OUT = 8,
-        SCRIPT_RESULT = 9,
-        MESSAGE_OUT = 10,
-        MINT = 11,
-        BURN = 12
+        UNKNOWN_RECEIPT_TYPE = 0,
+        CALL = 1,
+        RETURN = 2,
+        RETURN_DATA = 3,
+        PANIC = 4,
+        REVERT = 5,
+        LOG = 6,
+        LOG_DATA = 7,
+        TRANSFER = 8,
+        TRANSFER_OUT = 9,
+        SCRIPT_RESULT = 10,
+        MESSAGE_OUT = 11,
+        MINT = 12,
+        BURN = 13
     }
 
     /** ScriptResultType enum. */
     enum ScriptResultType {
-        SUCCESS = 0,
-        FAILURE = 1
+        UNKNOWN_SCRIPT_RESULT_TYPE = 0,
+        SUCCESS = 1,
+        SCRIPT_REVERT = 2,
+        SCRIPT_PANIC = 3,
+        GENERIC_FAILURE = 4
     }
 
     /** Properties of a Receipt. */
@@ -2888,20 +2708,8 @@ export namespace receipts {
         /** Receipt subject */
         subject?: (string|null);
 
-        /** Receipt blockHeight */
-        blockHeight?: (number|Long|null);
-
-        /** Receipt txId */
-        txId?: (Uint8Array|null);
-
-        /** Receipt txIndex */
-        txIndex?: (number|null);
-
-        /** Receipt receiptIndex */
-        receiptIndex?: (number|null);
-
-        /** Receipt receiptType */
-        receiptType?: (receipts.ReceiptType|null);
+        /** Receipt type */
+        type?: (receipts.ReceiptType|null);
 
         /** Receipt call */
         call?: (receipts.IReceiptCall|null);
@@ -2942,11 +2750,8 @@ export namespace receipts {
         /** Receipt burn */
         burn?: (receipts.IReceiptBurn|null);
 
-        /** Receipt createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Receipt publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Receipt metadata */
+        metadata?: (common.IMetadata|null);
 
         /** Receipt pointer */
         pointer?: (pointers.IReceiptPointer|null);
@@ -2964,20 +2769,8 @@ export namespace receipts {
         /** Receipt subject. */
         public subject: string;
 
-        /** Receipt blockHeight. */
-        public blockHeight: (number|Long);
-
-        /** Receipt txId. */
-        public txId: Uint8Array;
-
-        /** Receipt txIndex. */
-        public txIndex: number;
-
-        /** Receipt receiptIndex. */
-        public receiptIndex: number;
-
-        /** Receipt receiptType. */
-        public receiptType: receipts.ReceiptType;
+        /** Receipt type. */
+        public type: receipts.ReceiptType;
 
         /** Receipt call. */
         public call?: (receipts.IReceiptCall|null);
@@ -3018,11 +2811,8 @@ export namespace receipts {
         /** Receipt burn. */
         public burn?: (receipts.IReceiptBurn|null);
 
-        /** Receipt createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Receipt publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** Receipt metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /** Receipt pointer. */
         public pointer?: (pointers.IReceiptPointer|null);
@@ -3111,17 +2901,11 @@ export namespace receipts {
     /** Properties of a ReceiptCall. */
     interface IReceiptCall {
 
-        /** ReceiptCall subject */
-        subject?: (string|null);
+        /** ReceiptCall id */
+        id?: (Uint8Array|null);
 
-        /** ReceiptCall txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptCall contractId */
-        contractId?: (Uint8Array|null);
-
-        /** ReceiptCall toContractId */
-        toContractId?: (Uint8Array|null);
+        /** ReceiptCall to */
+        to?: (Uint8Array|null);
 
         /** ReceiptCall amount */
         amount?: (number|Long|null);
@@ -3143,12 +2927,6 @@ export namespace receipts {
 
         /** ReceiptCall is */
         is?: (number|Long|null);
-
-        /** ReceiptCall createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptCall publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptCall. */
@@ -3160,17 +2938,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptCall);
 
-        /** ReceiptCall subject. */
-        public subject: string;
+        /** ReceiptCall id. */
+        public id: Uint8Array;
 
-        /** ReceiptCall txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptCall contractId. */
-        public contractId: Uint8Array;
-
-        /** ReceiptCall toContractId. */
-        public toContractId: Uint8Array;
+        /** ReceiptCall to. */
+        public to: Uint8Array;
 
         /** ReceiptCall amount. */
         public amount: (number|Long);
@@ -3192,12 +2964,6 @@ export namespace receipts {
 
         /** ReceiptCall is. */
         public is: (number|Long);
-
-        /** ReceiptCall createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptCall publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptCall instance using the specified properties.
@@ -3280,14 +3046,8 @@ export namespace receipts {
     /** Properties of a ReceiptReturn. */
     interface IReceiptReturn {
 
-        /** ReceiptReturn subject */
-        subject?: (string|null);
-
-        /** ReceiptReturn txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptReturn contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptReturn id */
+        id?: (Uint8Array|null);
 
         /** ReceiptReturn val */
         val?: (number|Long|null);
@@ -3297,12 +3057,6 @@ export namespace receipts {
 
         /** ReceiptReturn is */
         is?: (number|Long|null);
-
-        /** ReceiptReturn createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptReturn publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptReturn. */
@@ -3314,14 +3068,8 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptReturn);
 
-        /** ReceiptReturn subject. */
-        public subject: string;
-
-        /** ReceiptReturn txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptReturn contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptReturn id. */
+        public id: Uint8Array;
 
         /** ReceiptReturn val. */
         public val: (number|Long);
@@ -3331,12 +3079,6 @@ export namespace receipts {
 
         /** ReceiptReturn is. */
         public is: (number|Long);
-
-        /** ReceiptReturn createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptReturn publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptReturn instance using the specified properties.
@@ -3419,14 +3161,8 @@ export namespace receipts {
     /** Properties of a ReceiptReturnData. */
     interface IReceiptReturnData {
 
-        /** ReceiptReturnData subject */
-        subject?: (string|null);
-
-        /** ReceiptReturnData txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptReturnData contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptReturnData id */
+        id?: (Uint8Array|null);
 
         /** ReceiptReturnData ptr */
         ptr?: (number|Long|null);
@@ -3437,20 +3173,14 @@ export namespace receipts {
         /** ReceiptReturnData digest */
         digest?: (Uint8Array|null);
 
+        /** ReceiptReturnData data */
+        data?: (Uint8Array|null);
+
         /** ReceiptReturnData pc */
         pc?: (number|Long|null);
 
         /** ReceiptReturnData is */
         is?: (number|Long|null);
-
-        /** ReceiptReturnData data */
-        data?: (Uint8Array|null);
-
-        /** ReceiptReturnData createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptReturnData publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptReturnData. */
@@ -3462,14 +3192,8 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptReturnData);
 
-        /** ReceiptReturnData subject. */
-        public subject: string;
-
-        /** ReceiptReturnData txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptReturnData contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptReturnData id. */
+        public id: Uint8Array;
 
         /** ReceiptReturnData ptr. */
         public ptr: (number|Long);
@@ -3480,20 +3204,14 @@ export namespace receipts {
         /** ReceiptReturnData digest. */
         public digest: Uint8Array;
 
+        /** ReceiptReturnData data. */
+        public data: Uint8Array;
+
         /** ReceiptReturnData pc. */
         public pc: (number|Long);
 
         /** ReceiptReturnData is. */
         public is: (number|Long);
-
-        /** ReceiptReturnData data. */
-        public data: Uint8Array;
-
-        /** ReceiptReturnData createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptReturnData publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptReturnData instance using the specified properties.
@@ -3576,14 +3294,8 @@ export namespace receipts {
     /** Properties of a ReceiptPanic. */
     interface IReceiptPanic {
 
-        /** ReceiptPanic subject */
-        subject?: (string|null);
-
-        /** ReceiptPanic txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptPanic contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptPanic id */
+        id?: (Uint8Array|null);
 
         /** ReceiptPanic reason */
         reason?: (number|Long|null);
@@ -3594,14 +3306,8 @@ export namespace receipts {
         /** ReceiptPanic is */
         is?: (number|Long|null);
 
-        /** ReceiptPanic panicContractId */
-        panicContractId?: (Uint8Array|null);
-
-        /** ReceiptPanic createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptPanic publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
+        /** ReceiptPanic contractId */
+        contractId?: (Uint8Array|null);
     }
 
     /** Represents a ReceiptPanic. */
@@ -3613,14 +3319,8 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptPanic);
 
-        /** ReceiptPanic subject. */
-        public subject: string;
-
-        /** ReceiptPanic txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptPanic contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptPanic id. */
+        public id: Uint8Array;
 
         /** ReceiptPanic reason. */
         public reason: (number|Long);
@@ -3631,14 +3331,8 @@ export namespace receipts {
         /** ReceiptPanic is. */
         public is: (number|Long);
 
-        /** ReceiptPanic panicContractId. */
-        public panicContractId: Uint8Array;
-
-        /** ReceiptPanic createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptPanic publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
+        /** ReceiptPanic contractId. */
+        public contractId: Uint8Array;
 
         /**
          * Creates a new ReceiptPanic instance using the specified properties.
@@ -3721,29 +3415,17 @@ export namespace receipts {
     /** Properties of a ReceiptRevert. */
     interface IReceiptRevert {
 
-        /** ReceiptRevert subject */
-        subject?: (string|null);
+        /** ReceiptRevert id */
+        id?: (Uint8Array|null);
 
-        /** ReceiptRevert txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptRevert contractId */
-        contractId?: (Uint8Array|null);
-
-        /** ReceiptRevert val */
-        val?: (number|Long|null);
+        /** ReceiptRevert ra */
+        ra?: (number|Long|null);
 
         /** ReceiptRevert pc */
         pc?: (number|Long|null);
 
         /** ReceiptRevert is */
         is?: (number|Long|null);
-
-        /** ReceiptRevert createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptRevert publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptRevert. */
@@ -3755,29 +3437,17 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptRevert);
 
-        /** ReceiptRevert subject. */
-        public subject: string;
+        /** ReceiptRevert id. */
+        public id: Uint8Array;
 
-        /** ReceiptRevert txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptRevert contractId. */
-        public contractId: Uint8Array;
-
-        /** ReceiptRevert val. */
-        public val: (number|Long);
+        /** ReceiptRevert ra. */
+        public ra: (number|Long);
 
         /** ReceiptRevert pc. */
         public pc: (number|Long);
 
         /** ReceiptRevert is. */
         public is: (number|Long);
-
-        /** ReceiptRevert createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptRevert publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptRevert instance using the specified properties.
@@ -3860,14 +3530,8 @@ export namespace receipts {
     /** Properties of a ReceiptLog. */
     interface IReceiptLog {
 
-        /** ReceiptLog subject */
-        subject?: (string|null);
-
-        /** ReceiptLog txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptLog contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptLog id */
+        id?: (Uint8Array|null);
 
         /** ReceiptLog ra */
         ra?: (number|Long|null);
@@ -3886,12 +3550,6 @@ export namespace receipts {
 
         /** ReceiptLog is */
         is?: (number|Long|null);
-
-        /** ReceiptLog createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptLog publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptLog. */
@@ -3903,14 +3561,8 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptLog);
 
-        /** ReceiptLog subject. */
-        public subject: string;
-
-        /** ReceiptLog txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptLog contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptLog id. */
+        public id: Uint8Array;
 
         /** ReceiptLog ra. */
         public ra: (number|Long);
@@ -3929,12 +3581,6 @@ export namespace receipts {
 
         /** ReceiptLog is. */
         public is: (number|Long);
-
-        /** ReceiptLog createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptLog publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptLog instance using the specified properties.
@@ -4017,14 +3663,8 @@ export namespace receipts {
     /** Properties of a ReceiptLogData. */
     interface IReceiptLogData {
 
-        /** ReceiptLogData subject */
-        subject?: (string|null);
-
-        /** ReceiptLogData txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptLogData contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptLogData id */
+        id?: (Uint8Array|null);
 
         /** ReceiptLogData ra */
         ra?: (number|Long|null);
@@ -4041,20 +3681,14 @@ export namespace receipts {
         /** ReceiptLogData digest */
         digest?: (Uint8Array|null);
 
+        /** ReceiptLogData data */
+        data?: (Uint8Array|null);
+
         /** ReceiptLogData pc */
         pc?: (number|Long|null);
 
         /** ReceiptLogData is */
         is?: (number|Long|null);
-
-        /** ReceiptLogData data */
-        data?: (Uint8Array|null);
-
-        /** ReceiptLogData createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptLogData publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptLogData. */
@@ -4066,14 +3700,8 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptLogData);
 
-        /** ReceiptLogData subject. */
-        public subject: string;
-
-        /** ReceiptLogData txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptLogData contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptLogData id. */
+        public id: Uint8Array;
 
         /** ReceiptLogData ra. */
         public ra: (number|Long);
@@ -4090,20 +3718,14 @@ export namespace receipts {
         /** ReceiptLogData digest. */
         public digest: Uint8Array;
 
+        /** ReceiptLogData data. */
+        public data: Uint8Array;
+
         /** ReceiptLogData pc. */
         public pc: (number|Long);
 
         /** ReceiptLogData is. */
         public is: (number|Long);
-
-        /** ReceiptLogData data. */
-        public data: Uint8Array;
-
-        /** ReceiptLogData createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptLogData publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptLogData instance using the specified properties.
@@ -4186,17 +3808,11 @@ export namespace receipts {
     /** Properties of a ReceiptTransfer. */
     interface IReceiptTransfer {
 
-        /** ReceiptTransfer subject */
-        subject?: (string|null);
+        /** ReceiptTransfer id */
+        id?: (Uint8Array|null);
 
-        /** ReceiptTransfer txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptTransfer contractId */
-        contractId?: (Uint8Array|null);
-
-        /** ReceiptTransfer toContractId */
-        toContractId?: (Uint8Array|null);
+        /** ReceiptTransfer to */
+        to?: (Uint8Array|null);
 
         /** ReceiptTransfer amount */
         amount?: (number|Long|null);
@@ -4209,12 +3825,6 @@ export namespace receipts {
 
         /** ReceiptTransfer is */
         is?: (number|Long|null);
-
-        /** ReceiptTransfer createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptTransfer publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptTransfer. */
@@ -4226,17 +3836,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptTransfer);
 
-        /** ReceiptTransfer subject. */
-        public subject: string;
+        /** ReceiptTransfer id. */
+        public id: Uint8Array;
 
-        /** ReceiptTransfer txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptTransfer contractId. */
-        public contractId: Uint8Array;
-
-        /** ReceiptTransfer toContractId. */
-        public toContractId: Uint8Array;
+        /** ReceiptTransfer to. */
+        public to: Uint8Array;
 
         /** ReceiptTransfer amount. */
         public amount: (number|Long);
@@ -4249,12 +3853,6 @@ export namespace receipts {
 
         /** ReceiptTransfer is. */
         public is: (number|Long);
-
-        /** ReceiptTransfer createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptTransfer publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptTransfer instance using the specified properties.
@@ -4337,14 +3935,8 @@ export namespace receipts {
     /** Properties of a ReceiptTransferOut. */
     interface IReceiptTransferOut {
 
-        /** ReceiptTransferOut subject */
-        subject?: (string|null);
-
-        /** ReceiptTransferOut txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptTransferOut contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptTransferOut id */
+        id?: (Uint8Array|null);
 
         /** ReceiptTransferOut toAddress */
         toAddress?: (Uint8Array|null);
@@ -4360,12 +3952,6 @@ export namespace receipts {
 
         /** ReceiptTransferOut is */
         is?: (number|Long|null);
-
-        /** ReceiptTransferOut createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptTransferOut publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptTransferOut. */
@@ -4377,14 +3963,8 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptTransferOut);
 
-        /** ReceiptTransferOut subject. */
-        public subject: string;
-
-        /** ReceiptTransferOut txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptTransferOut contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptTransferOut id. */
+        public id: Uint8Array;
 
         /** ReceiptTransferOut toAddress. */
         public toAddress: Uint8Array;
@@ -4400,12 +3980,6 @@ export namespace receipts {
 
         /** ReceiptTransferOut is. */
         public is: (number|Long);
-
-        /** ReceiptTransferOut createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptTransferOut publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptTransferOut instance using the specified properties.
@@ -4488,23 +4062,11 @@ export namespace receipts {
     /** Properties of a ReceiptScriptResult. */
     interface IReceiptScriptResult {
 
-        /** ReceiptScriptResult subject */
-        subject?: (string|null);
-
-        /** ReceiptScriptResult txId */
-        txId?: (Uint8Array|null);
-
         /** ReceiptScriptResult result */
         result?: (receipts.ScriptResultType|null);
 
         /** ReceiptScriptResult gasUsed */
         gasUsed?: (number|Long|null);
-
-        /** ReceiptScriptResult createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptScriptResult publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptScriptResult. */
@@ -4516,23 +4078,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptScriptResult);
 
-        /** ReceiptScriptResult subject. */
-        public subject: string;
-
-        /** ReceiptScriptResult txId. */
-        public txId: Uint8Array;
-
         /** ReceiptScriptResult result. */
         public result: receipts.ScriptResultType;
 
         /** ReceiptScriptResult gasUsed. */
         public gasUsed: (number|Long);
-
-        /** ReceiptScriptResult createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptScriptResult publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptScriptResult instance using the specified properties.
@@ -4615,17 +4165,11 @@ export namespace receipts {
     /** Properties of a ReceiptMessageOut. */
     interface IReceiptMessageOut {
 
-        /** ReceiptMessageOut subject */
-        subject?: (string|null);
+        /** ReceiptMessageOut sender */
+        sender?: (Uint8Array|null);
 
-        /** ReceiptMessageOut txId */
-        txId?: (Uint8Array|null);
-
-        /** ReceiptMessageOut senderAddress */
-        senderAddress?: (Uint8Array|null);
-
-        /** ReceiptMessageOut recipientAddress */
-        recipientAddress?: (Uint8Array|null);
+        /** ReceiptMessageOut recipient */
+        recipient?: (Uint8Array|null);
 
         /** ReceiptMessageOut amount */
         amount?: (number|Long|null);
@@ -4641,12 +4185,6 @@ export namespace receipts {
 
         /** ReceiptMessageOut data */
         data?: (Uint8Array|null);
-
-        /** ReceiptMessageOut createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptMessageOut publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptMessageOut. */
@@ -4658,17 +4196,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptMessageOut);
 
-        /** ReceiptMessageOut subject. */
-        public subject: string;
+        /** ReceiptMessageOut sender. */
+        public sender: Uint8Array;
 
-        /** ReceiptMessageOut txId. */
-        public txId: Uint8Array;
-
-        /** ReceiptMessageOut senderAddress. */
-        public senderAddress: Uint8Array;
-
-        /** ReceiptMessageOut recipientAddress. */
-        public recipientAddress: Uint8Array;
+        /** ReceiptMessageOut recipient. */
+        public recipient: Uint8Array;
 
         /** ReceiptMessageOut amount. */
         public amount: (number|Long);
@@ -4684,12 +4216,6 @@ export namespace receipts {
 
         /** ReceiptMessageOut data. */
         public data: Uint8Array;
-
-        /** ReceiptMessageOut createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptMessageOut publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptMessageOut instance using the specified properties.
@@ -4772,17 +4298,11 @@ export namespace receipts {
     /** Properties of a ReceiptMint. */
     interface IReceiptMint {
 
-        /** ReceiptMint subject */
-        subject?: (string|null);
-
-        /** ReceiptMint txId */
-        txId?: (Uint8Array|null);
-
         /** ReceiptMint subId */
         subId?: (Uint8Array|null);
 
-        /** ReceiptMint contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptMint id */
+        id?: (Uint8Array|null);
 
         /** ReceiptMint assetId */
         assetId?: (Uint8Array|null);
@@ -4795,12 +4315,6 @@ export namespace receipts {
 
         /** ReceiptMint is */
         is?: (number|Long|null);
-
-        /** ReceiptMint createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptMint publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptMint. */
@@ -4812,17 +4326,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptMint);
 
-        /** ReceiptMint subject. */
-        public subject: string;
-
-        /** ReceiptMint txId. */
-        public txId: Uint8Array;
-
         /** ReceiptMint subId. */
         public subId: Uint8Array;
 
-        /** ReceiptMint contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptMint id. */
+        public id: Uint8Array;
 
         /** ReceiptMint assetId. */
         public assetId: Uint8Array;
@@ -4835,12 +4343,6 @@ export namespace receipts {
 
         /** ReceiptMint is. */
         public is: (number|Long);
-
-        /** ReceiptMint createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptMint publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptMint instance using the specified properties.
@@ -4923,17 +4425,11 @@ export namespace receipts {
     /** Properties of a ReceiptBurn. */
     interface IReceiptBurn {
 
-        /** ReceiptBurn subject */
-        subject?: (string|null);
-
-        /** ReceiptBurn txId */
-        txId?: (Uint8Array|null);
-
         /** ReceiptBurn subId */
         subId?: (Uint8Array|null);
 
-        /** ReceiptBurn contractId */
-        contractId?: (Uint8Array|null);
+        /** ReceiptBurn id */
+        id?: (Uint8Array|null);
 
         /** ReceiptBurn assetId */
         assetId?: (Uint8Array|null);
@@ -4946,12 +4442,6 @@ export namespace receipts {
 
         /** ReceiptBurn is */
         is?: (number|Long|null);
-
-        /** ReceiptBurn createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptBurn publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ReceiptBurn. */
@@ -4963,17 +4453,11 @@ export namespace receipts {
          */
         constructor(properties?: receipts.IReceiptBurn);
 
-        /** ReceiptBurn subject. */
-        public subject: string;
-
-        /** ReceiptBurn txId. */
-        public txId: Uint8Array;
-
         /** ReceiptBurn subId. */
         public subId: Uint8Array;
 
-        /** ReceiptBurn contractId. */
-        public contractId: Uint8Array;
+        /** ReceiptBurn id. */
+        public id: Uint8Array;
 
         /** ReceiptBurn assetId. */
         public assetId: Uint8Array;
@@ -4986,12 +4470,6 @@ export namespace receipts {
 
         /** ReceiptBurn is. */
         public is: (number|Long);
-
-        /** ReceiptBurn createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ReceiptBurn publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ReceiptBurn instance using the specified properties.
@@ -5077,27 +4555,32 @@ export namespace transactions {
 
     /** TransactionType enum. */
     enum TransactionType {
-        SCRIPT = 0,
-        CREATE = 1,
-        MINT = 2,
-        UPGRADE = 3,
-        UPLOAD = 4,
-        BLOB = 5
+        UNKNOWN_TRANSACTION_TYPE = 0,
+        SCRIPT = 1,
+        CREATE = 2,
+        MINT = 3,
+        UPGRADE = 4,
+        UPLOAD = 5,
+        BLOB = 6
     }
 
     /** TransactionStatus enum. */
     enum TransactionStatus {
-        SUCCESS = 0,
-        FAILURE = 1,
-        SUBMITTED = 2
+        UNKNOWN_TRANSACTION_STATUS = 0,
+        FAILED = 1,
+        SUBMITTED = 2,
+        SQUEEZED_OUT = 3,
+        SUCCESS = 4,
+        NONE = 5
     }
 
     /** PolicyType enum. */
     enum PolicyType {
-        TIP = 0,
-        WITNESS_LIMIT = 1,
-        MATURITY = 2,
-        MAX_FEE = 3
+        UNKNOWN_POLICY_TYPE = 0,
+        TIP = 1,
+        WITNESS_LIMIT = 2,
+        MATURITY = 3,
+        MAX_FEE = 4
     }
 
     /** Properties of a Transaction. */
@@ -5106,32 +4589,29 @@ export namespace transactions {
         /** Transaction subject */
         subject?: (string|null);
 
-        /** Transaction blockHeight */
-        blockHeight?: (number|Long|null);
+        /** Transaction id */
+        id?: (Uint8Array|null);
 
-        /** Transaction txId */
-        txId?: (Uint8Array|null);
+        /** Transaction scriptGasLimit */
+        scriptGasLimit?: (number|Long|null);
 
-        /** Transaction txIndex */
-        txIndex?: (number|null);
-
-        /** Transaction type */
-        type?: (transactions.TransactionType|null);
-
-        /** Transaction status */
-        status?: (transactions.TransactionStatus|null);
-
-        /** Transaction root */
-        root?: (Uint8Array|null);
-
-        /** Transaction witnessIndex */
-        witnessIndex?: (number|null);
-
-        /** Transaction blobId */
-        blobId?: (Uint8Array|null);
+        /** Transaction txPointer */
+        txPointer?: (pointers.ITxPointer|null);
 
         /** Transaction inputAssetIds */
         inputAssetIds?: (Uint8Array[]|null);
+
+        /** Transaction inputContracts */
+        inputContracts?: (Uint8Array[]|null);
+
+        /** Transaction inputContract */
+        inputContract?: (inputs.IInputContract|null);
+
+        /** Transaction inputs */
+        inputs?: (inputs.IInput[]|null);
+
+        /** Transaction isScript */
+        isScript?: (boolean|null);
 
         /** Transaction isCreate */
         isCreate?: (boolean|null);
@@ -5139,17 +4619,20 @@ export namespace transactions {
         /** Transaction isMint */
         isMint?: (boolean|null);
 
-        /** Transaction isScript */
-        isScript?: (boolean|null);
-
         /** Transaction isUpgrade */
         isUpgrade?: (boolean|null);
 
         /** Transaction isUpload */
         isUpload?: (boolean|null);
 
-        /** Transaction maturity */
-        maturity?: (number|null);
+        /** Transaction isBlob */
+        isBlob?: (boolean|null);
+
+        /** Transaction outputs */
+        outputs?: (outputs.IOutput[]|null);
+
+        /** Transaction outputContract */
+        outputContract?: (outputs.IOutputContract|null);
 
         /** Transaction mintAmount */
         mintAmount?: (number|Long|null);
@@ -5160,32 +4643,35 @@ export namespace transactions {
         /** Transaction mintGasPrice */
         mintGasPrice?: (number|Long|null);
 
-        /** Transaction policyType */
-        policyType?: (number|null);
-
-        /** Transaction rawPayload */
-        rawPayload?: (Uint8Array|null);
-
         /** Transaction receiptsRoot */
         receiptsRoot?: (Uint8Array|null);
 
-        /** Transaction salt */
-        salt?: (Uint8Array|null);
+        /** Transaction status */
+        status?: (transactions.TransactionStatus|null);
+
+        /** Transaction witnesses */
+        witnesses?: (Uint8Array[]|null);
 
         /** Transaction script */
         script?: (Uint8Array|null);
 
-        /** Transaction scriptLength */
-        scriptLength?: (number|Long|null);
-
         /** Transaction scriptData */
         scriptData?: (Uint8Array|null);
 
-        /** Transaction scriptDataLength */
-        scriptDataLength?: (number|Long|null);
+        /** Transaction policies */
+        policies?: (transactions.IPolicy|null);
 
-        /** Transaction scriptGasLimit */
-        scriptGasLimit?: (number|Long|null);
+        /** Transaction salt */
+        salt?: (Uint8Array|null);
+
+        /** Transaction storageSlots */
+        storageSlots?: (Uint8Array[]|null);
+
+        /** Transaction bytecodeWitnessIndex */
+        bytecodeWitnessIndex?: (number|null);
+
+        /** Transaction bytecodeRoot */
+        bytecodeRoot?: (Uint8Array|null);
 
         /** Transaction subsectionIndex */
         subsectionIndex?: (number|null);
@@ -5193,8 +4679,29 @@ export namespace transactions {
         /** Transaction subsectionsNumber */
         subsectionsNumber?: (number|null);
 
+        /** Transaction proofSet */
+        proofSet?: (Uint8Array[]|null);
+
         /** Transaction upgradePurpose */
         upgradePurpose?: (number|null);
+
+        /** Transaction blobId */
+        blobId?: (Uint8Array|null);
+
+        /** Transaction maturity */
+        maturity?: (number|null);
+
+        /** Transaction policyType */
+        policyType?: (number|null);
+
+        /** Transaction rawPayload */
+        rawPayload?: (Uint8Array|null);
+
+        /** Transaction scriptLength */
+        scriptLength?: (number|Long|null);
+
+        /** Transaction scriptDataLength */
+        scriptDataLength?: (number|Long|null);
 
         /** Transaction storageSlotsCount */
         storageSlotsCount?: (number|Long|null);
@@ -5211,41 +4718,8 @@ export namespace transactions {
         /** Transaction outputsCount */
         outputsCount?: (number|null);
 
-        /** Transaction inputContract */
-        inputContract?: (inputs.IInputContract|null);
-
-        /** Transaction inputContracts */
-        inputContracts?: (Uint8Array[]|null);
-
-        /** Transaction inputs */
-        inputs?: (inputs.IInput[]|null);
-
-        /** Transaction outputContract */
-        outputContract?: (outputs.IOutputContract|null);
-
-        /** Transaction outputs */
-        outputs?: (outputs.IOutput[]|null);
-
-        /** Transaction proofSet */
-        proofSet?: (Uint8Array[]|null);
-
-        /** Transaction receipts */
-        receipts?: (receipts.IReceipt[]|null);
-
-        /** Transaction storageSlots */
-        storageSlots?: (transactions.IStorageSlot[]|null);
-
-        /** Transaction witnesses */
-        witnesses?: (Uint8Array[]|null);
-
-        /** Transaction createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Transaction publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
-
-        /** Transaction pointer */
-        pointer?: (pointers.ITransactionPointer|null);
+        /** Transaction metadata */
+        metadata?: (common.IMetadata|null);
     }
 
     /** Represents a Transaction. */
@@ -5260,32 +4734,29 @@ export namespace transactions {
         /** Transaction subject. */
         public subject: string;
 
-        /** Transaction blockHeight. */
-        public blockHeight: (number|Long);
+        /** Transaction id. */
+        public id: Uint8Array;
 
-        /** Transaction txId. */
-        public txId: Uint8Array;
+        /** Transaction scriptGasLimit. */
+        public scriptGasLimit: (number|Long);
 
-        /** Transaction txIndex. */
-        public txIndex: number;
-
-        /** Transaction type. */
-        public type: transactions.TransactionType;
-
-        /** Transaction status. */
-        public status: transactions.TransactionStatus;
-
-        /** Transaction root. */
-        public root: Uint8Array;
-
-        /** Transaction witnessIndex. */
-        public witnessIndex: number;
-
-        /** Transaction blobId. */
-        public blobId: Uint8Array;
+        /** Transaction txPointer. */
+        public txPointer?: (pointers.ITxPointer|null);
 
         /** Transaction inputAssetIds. */
         public inputAssetIds: Uint8Array[];
+
+        /** Transaction inputContracts. */
+        public inputContracts: Uint8Array[];
+
+        /** Transaction inputContract. */
+        public inputContract?: (inputs.IInputContract|null);
+
+        /** Transaction inputs. */
+        public inputs: inputs.IInput[];
+
+        /** Transaction isScript. */
+        public isScript: boolean;
 
         /** Transaction isCreate. */
         public isCreate: boolean;
@@ -5293,17 +4764,20 @@ export namespace transactions {
         /** Transaction isMint. */
         public isMint: boolean;
 
-        /** Transaction isScript. */
-        public isScript: boolean;
-
         /** Transaction isUpgrade. */
         public isUpgrade: boolean;
 
         /** Transaction isUpload. */
         public isUpload: boolean;
 
-        /** Transaction maturity. */
-        public maturity: number;
+        /** Transaction isBlob. */
+        public isBlob: boolean;
+
+        /** Transaction outputs. */
+        public outputs: outputs.IOutput[];
+
+        /** Transaction outputContract. */
+        public outputContract?: (outputs.IOutputContract|null);
 
         /** Transaction mintAmount. */
         public mintAmount: (number|Long);
@@ -5314,32 +4788,35 @@ export namespace transactions {
         /** Transaction mintGasPrice. */
         public mintGasPrice: (number|Long);
 
-        /** Transaction policyType. */
-        public policyType: number;
-
-        /** Transaction rawPayload. */
-        public rawPayload: Uint8Array;
-
         /** Transaction receiptsRoot. */
         public receiptsRoot: Uint8Array;
 
-        /** Transaction salt. */
-        public salt: Uint8Array;
+        /** Transaction status. */
+        public status: transactions.TransactionStatus;
+
+        /** Transaction witnesses. */
+        public witnesses: Uint8Array[];
 
         /** Transaction script. */
         public script: Uint8Array;
 
-        /** Transaction scriptLength. */
-        public scriptLength: (number|Long);
-
         /** Transaction scriptData. */
         public scriptData: Uint8Array;
 
-        /** Transaction scriptDataLength. */
-        public scriptDataLength: (number|Long);
+        /** Transaction policies. */
+        public policies?: (transactions.IPolicy|null);
 
-        /** Transaction scriptGasLimit. */
-        public scriptGasLimit: (number|Long);
+        /** Transaction salt. */
+        public salt: Uint8Array;
+
+        /** Transaction storageSlots. */
+        public storageSlots: Uint8Array[];
+
+        /** Transaction bytecodeWitnessIndex. */
+        public bytecodeWitnessIndex: number;
+
+        /** Transaction bytecodeRoot. */
+        public bytecodeRoot: Uint8Array;
 
         /** Transaction subsectionIndex. */
         public subsectionIndex: number;
@@ -5347,8 +4824,29 @@ export namespace transactions {
         /** Transaction subsectionsNumber. */
         public subsectionsNumber: number;
 
+        /** Transaction proofSet. */
+        public proofSet: Uint8Array[];
+
         /** Transaction upgradePurpose. */
         public upgradePurpose: number;
+
+        /** Transaction blobId. */
+        public blobId: Uint8Array;
+
+        /** Transaction maturity. */
+        public maturity: number;
+
+        /** Transaction policyType. */
+        public policyType: number;
+
+        /** Transaction rawPayload. */
+        public rawPayload: Uint8Array;
+
+        /** Transaction scriptLength. */
+        public scriptLength: (number|Long);
+
+        /** Transaction scriptDataLength. */
+        public scriptDataLength: (number|Long);
 
         /** Transaction storageSlotsCount. */
         public storageSlotsCount: (number|Long);
@@ -5365,41 +4863,8 @@ export namespace transactions {
         /** Transaction outputsCount. */
         public outputsCount: number;
 
-        /** Transaction inputContract. */
-        public inputContract?: (inputs.IInputContract|null);
-
-        /** Transaction inputContracts. */
-        public inputContracts: Uint8Array[];
-
-        /** Transaction inputs. */
-        public inputs: inputs.IInput[];
-
-        /** Transaction outputContract. */
-        public outputContract?: (outputs.IOutputContract|null);
-
-        /** Transaction outputs. */
-        public outputs: outputs.IOutput[];
-
-        /** Transaction proofSet. */
-        public proofSet: Uint8Array[];
-
-        /** Transaction receipts. */
-        public receipts: receipts.IReceipt[];
-
-        /** Transaction storageSlots. */
-        public storageSlots: transactions.IStorageSlot[];
-
-        /** Transaction witnesses. */
-        public witnesses: Uint8Array[];
-
-        /** Transaction createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Transaction publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
-
-        /** Transaction pointer. */
-        public pointer?: (pointers.ITransactionPointer|null);
+        /** Transaction metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /**
          * Creates a new Transaction instance using the specified properties.
@@ -5493,12 +4958,6 @@ export namespace transactions {
 
         /** StorageSlot value */
         value?: (Uint8Array|null);
-
-        /** StorageSlot createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** StorageSlot publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a StorageSlot. */
@@ -5521,12 +4980,6 @@ export namespace transactions {
 
         /** StorageSlot value. */
         public value: Uint8Array;
-
-        /** StorageSlot createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** StorageSlot publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new StorageSlot instance using the specified properties.
@@ -5620,12 +5073,6 @@ export namespace transactions {
 
         /** Witness witnessDataLength */
         witnessDataLength?: (number|null);
-
-        /** Witness createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Witness publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a Witness. */
@@ -5648,12 +5095,6 @@ export namespace transactions {
 
         /** Witness witnessDataLength. */
         public witnessDataLength: number;
-
-        /** Witness createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Witness publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new Witness instance using the specified properties.
@@ -5744,12 +5185,6 @@ export namespace transactions {
 
         /** ProofSet proofHash */
         proofHash?: (Uint8Array|null);
-
-        /** ProofSet createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ProofSet publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a ProofSet. */
@@ -5769,12 +5204,6 @@ export namespace transactions {
 
         /** ProofSet proofHash. */
         public proofHash: Uint8Array;
-
-        /** ProofSet createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** ProofSet publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new ProofSet instance using the specified properties.
@@ -5868,12 +5297,6 @@ export namespace transactions {
 
         /** Policy data */
         data?: (number|Long|null);
-
-        /** Policy createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Policy publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
     }
 
     /** Represents a Policy. */
@@ -5896,12 +5319,6 @@ export namespace transactions {
 
         /** Policy data. */
         public data: (number|Long);
-
-        /** Policy createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Policy publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
 
         /**
          * Creates a new Policy instance using the specified properties.
@@ -5985,11 +5402,18 @@ export namespace transactions {
 /** Namespace utxos. */
 export namespace utxos {
 
+    /** UtxoStatus enum. */
+    enum UtxoStatus {
+        UNSPENT = 0,
+        SPENT = 2
+    }
+
     /** UtxoType enum. */
     enum UtxoType {
-        CONTRACT = 0,
-        COIN = 1,
-        MESSAGE = 2
+        UNKNOWN = 0,
+        CONTRACT = 1,
+        COIN = 2,
+        MESSAGE = 3
     }
 
     /** Properties of an Utxo. */
@@ -5998,50 +5422,26 @@ export namespace utxos {
         /** Utxo subject */
         subject?: (string|null);
 
-        /** Utxo blockHeight */
-        blockHeight?: (number|Long|null);
-
-        /** Utxo txId */
-        txId?: (Uint8Array|null);
-
-        /** Utxo txIndex */
-        txIndex?: (number|null);
-
-        /** Utxo inputIndex */
-        inputIndex?: (number|null);
-
-        /** Utxo utxoType */
-        utxoType?: (utxos.UtxoType|null);
-
         /** Utxo utxoId */
         utxoId?: (Uint8Array|null);
 
-        /** Utxo value */
-        value?: (Uint8Array|null);
+        /** Utxo type */
+        type?: (utxos.UtxoType|null);
 
-        /** Utxo senderAddress */
-        senderAddress?: (Uint8Array|null);
+        /** Utxo status */
+        status?: (utxos.UtxoStatus|null);
 
-        /** Utxo recipientAddress */
-        recipientAddress?: (Uint8Array|null);
+        /** Utxo coin */
+        coin?: (utxos.IUtxoCoin|null);
 
-        /** Utxo nonce */
-        nonce?: (Uint8Array|null);
+        /** Utxo contract */
+        contract?: (utxos.IUtxoContract|null);
 
-        /** Utxo amount */
-        amount?: (number|Long|null);
+        /** Utxo message */
+        message?: (utxos.IUtxoMessage|null);
 
-        /** Utxo data */
-        data?: (Uint8Array|null);
-
-        /** Utxo createdAt */
-        createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Utxo publishedAt */
-        publishedAt?: (google.protobuf.ITimestamp|null);
-
-        /** Utxo updatedAt */
-        updatedAt?: (google.protobuf.ITimestamp|null);
+        /** Utxo metadata */
+        metadata?: (common.IMetadata|null);
 
         /** Utxo pointer */
         pointer?: (pointers.IUtxoPointer|null);
@@ -6059,53 +5459,32 @@ export namespace utxos {
         /** Utxo subject. */
         public subject: string;
 
-        /** Utxo blockHeight. */
-        public blockHeight: (number|Long);
-
-        /** Utxo txId. */
-        public txId: Uint8Array;
-
-        /** Utxo txIndex. */
-        public txIndex: number;
-
-        /** Utxo inputIndex. */
-        public inputIndex: number;
-
-        /** Utxo utxoType. */
-        public utxoType: utxos.UtxoType;
-
         /** Utxo utxoId. */
         public utxoId: Uint8Array;
 
-        /** Utxo value. */
-        public value: Uint8Array;
+        /** Utxo type. */
+        public type: utxos.UtxoType;
 
-        /** Utxo senderAddress. */
-        public senderAddress: Uint8Array;
+        /** Utxo status. */
+        public status: utxos.UtxoStatus;
 
-        /** Utxo recipientAddress. */
-        public recipientAddress: Uint8Array;
+        /** Utxo coin. */
+        public coin?: (utxos.IUtxoCoin|null);
 
-        /** Utxo nonce. */
-        public nonce: Uint8Array;
+        /** Utxo contract. */
+        public contract?: (utxos.IUtxoContract|null);
 
-        /** Utxo amount. */
-        public amount: (number|Long);
+        /** Utxo message. */
+        public message?: (utxos.IUtxoMessage|null);
 
-        /** Utxo data. */
-        public data: Uint8Array;
-
-        /** Utxo createdAt. */
-        public createdAt?: (google.protobuf.ITimestamp|null);
-
-        /** Utxo publishedAt. */
-        public publishedAt?: (google.protobuf.ITimestamp|null);
-
-        /** Utxo updatedAt. */
-        public updatedAt?: (google.protobuf.ITimestamp|null);
+        /** Utxo metadata. */
+        public metadata?: (common.IMetadata|null);
 
         /** Utxo pointer. */
         public pointer?: (pointers.IUtxoPointer|null);
+
+        /** Utxo utxoData. */
+        public utxoData?: ("coin"|"contract"|"message");
 
         /**
          * Creates a new Utxo instance using the specified properties.
@@ -6179,6 +5558,321 @@ export namespace utxos {
 
         /**
          * Gets the default type url for Utxo
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of an UtxoCoin. */
+    interface IUtxoCoin {
+
+        /** UtxoCoin amount */
+        amount?: (number|Long|null);
+    }
+
+    /** Represents an UtxoCoin. */
+    class UtxoCoin implements IUtxoCoin {
+
+        /**
+         * Constructs a new UtxoCoin.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: utxos.IUtxoCoin);
+
+        /** UtxoCoin amount. */
+        public amount: (number|Long);
+
+        /**
+         * Creates a new UtxoCoin instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns UtxoCoin instance
+         */
+        public static create(properties?: utxos.IUtxoCoin): utxos.UtxoCoin;
+
+        /**
+         * Encodes the specified UtxoCoin message. Does not implicitly {@link utxos.UtxoCoin.verify|verify} messages.
+         * @param message UtxoCoin message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: utxos.IUtxoCoin, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified UtxoCoin message, length delimited. Does not implicitly {@link utxos.UtxoCoin.verify|verify} messages.
+         * @param message UtxoCoin message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: utxos.IUtxoCoin, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an UtxoCoin message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns UtxoCoin
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): utxos.UtxoCoin;
+
+        /**
+         * Decodes an UtxoCoin message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns UtxoCoin
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): utxos.UtxoCoin;
+
+        /**
+         * Verifies an UtxoCoin message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an UtxoCoin message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns UtxoCoin
+         */
+        public static fromObject(object: { [k: string]: any }): utxos.UtxoCoin;
+
+        /**
+         * Creates a plain object from an UtxoCoin message. Also converts values to other types if specified.
+         * @param message UtxoCoin
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: utxos.UtxoCoin, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this UtxoCoin to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for UtxoCoin
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of an UtxoContract. */
+    interface IUtxoContract {
+
+        /** UtxoContract contractId */
+        contractId?: (Uint8Array|null);
+
+        /** UtxoContract value */
+        value?: (Uint8Array|null);
+    }
+
+    /** Represents an UtxoContract. */
+    class UtxoContract implements IUtxoContract {
+
+        /**
+         * Constructs a new UtxoContract.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: utxos.IUtxoContract);
+
+        /** UtxoContract contractId. */
+        public contractId: Uint8Array;
+
+        /** UtxoContract value. */
+        public value: Uint8Array;
+
+        /**
+         * Creates a new UtxoContract instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns UtxoContract instance
+         */
+        public static create(properties?: utxos.IUtxoContract): utxos.UtxoContract;
+
+        /**
+         * Encodes the specified UtxoContract message. Does not implicitly {@link utxos.UtxoContract.verify|verify} messages.
+         * @param message UtxoContract message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: utxos.IUtxoContract, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified UtxoContract message, length delimited. Does not implicitly {@link utxos.UtxoContract.verify|verify} messages.
+         * @param message UtxoContract message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: utxos.IUtxoContract, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an UtxoContract message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns UtxoContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): utxos.UtxoContract;
+
+        /**
+         * Decodes an UtxoContract message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns UtxoContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): utxos.UtxoContract;
+
+        /**
+         * Verifies an UtxoContract message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an UtxoContract message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns UtxoContract
+         */
+        public static fromObject(object: { [k: string]: any }): utxos.UtxoContract;
+
+        /**
+         * Creates a plain object from an UtxoContract message. Also converts values to other types if specified.
+         * @param message UtxoContract
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: utxos.UtxoContract, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this UtxoContract to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for UtxoContract
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of an UtxoMessage. */
+    interface IUtxoMessage {
+
+        /** UtxoMessage sender */
+        sender?: (Uint8Array|null);
+
+        /** UtxoMessage recipient */
+        recipient?: (Uint8Array|null);
+
+        /** UtxoMessage nonce */
+        nonce?: (Uint8Array|null);
+
+        /** UtxoMessage data */
+        data?: (Uint8Array|null);
+    }
+
+    /** Represents an UtxoMessage. */
+    class UtxoMessage implements IUtxoMessage {
+
+        /**
+         * Constructs a new UtxoMessage.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: utxos.IUtxoMessage);
+
+        /** UtxoMessage sender. */
+        public sender: Uint8Array;
+
+        /** UtxoMessage recipient. */
+        public recipient: Uint8Array;
+
+        /** UtxoMessage nonce. */
+        public nonce: Uint8Array;
+
+        /** UtxoMessage data. */
+        public data: Uint8Array;
+
+        /**
+         * Creates a new UtxoMessage instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns UtxoMessage instance
+         */
+        public static create(properties?: utxos.IUtxoMessage): utxos.UtxoMessage;
+
+        /**
+         * Encodes the specified UtxoMessage message. Does not implicitly {@link utxos.UtxoMessage.verify|verify} messages.
+         * @param message UtxoMessage message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: utxos.IUtxoMessage, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified UtxoMessage message, length delimited. Does not implicitly {@link utxos.UtxoMessage.verify|verify} messages.
+         * @param message UtxoMessage message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: utxos.IUtxoMessage, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an UtxoMessage message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns UtxoMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): utxos.UtxoMessage;
+
+        /**
+         * Decodes an UtxoMessage message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns UtxoMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): utxos.UtxoMessage;
+
+        /**
+         * Verifies an UtxoMessage message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an UtxoMessage message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns UtxoMessage
+         */
+        public static fromObject(object: { [k: string]: any }): utxos.UtxoMessage;
+
+        /**
+         * Creates a plain object from an UtxoMessage message. Also converts values to other types if specified.
+         * @param message UtxoMessage
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: utxos.UtxoMessage, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this UtxoMessage to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for UtxoMessage
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */

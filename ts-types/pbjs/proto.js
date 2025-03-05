@@ -20,13 +20,15 @@ export const blocks = $root.blocks = (() => {
      * ConsensusType enum.
      * @name blocks.ConsensusType
      * @enum {number}
-     * @property {number} GENESIS=0 GENESIS value
-     * @property {number} POA_CONSENSUS=1 POA_CONSENSUS value
+     * @property {number} UNKNOWN_CONSENSUS_TYPE=0 UNKNOWN_CONSENSUS_TYPE value
+     * @property {number} GENESIS=1 GENESIS value
+     * @property {number} POA_CONSENSUS=2 POA_CONSENSUS value
      */
     blocks.ConsensusType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "GENESIS"] = 0;
-        values[valuesById[1] = "POA_CONSENSUS"] = 1;
+        values[valuesById[0] = "UNKNOWN_CONSENSUS_TYPE"] = 0;
+        values[valuesById[1] = "GENESIS"] = 1;
+        values[valuesById[2] = "POA_CONSENSUS"] = 2;
         return values;
     })();
 
@@ -36,16 +38,13 @@ export const blocks = $root.blocks = (() => {
          * Properties of a Block.
          * @memberof blocks
          * @interface IBlock
-         * @property {string|null} [subject] Block subject
          * @property {number|Long|null} [blockHeight] Block blockHeight
-         * @property {Uint8Array|null} [producerAddress] Block producerAddress
          * @property {number|null} [blockId] Block blockId
          * @property {string|null} [version] Block version
          * @property {blocks.IBlockHeader|null} [header] Block header
          * @property {blocks.IBlockConsensus|null} [consensus] Block consensus
          * @property {Array.<Uint8Array>|null} [transactionIds] Block transactionIds
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Block createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Block publishedAt
+         * @property {common.IMetadata|null} [metadata] Block metadata
          * @property {pointers.IBlockPointer|null} [pointer] Block pointer
          */
 
@@ -66,28 +65,12 @@ export const blocks = $root.blocks = (() => {
         }
 
         /**
-         * Block subject.
-         * @member {string} subject
-         * @memberof blocks.Block
-         * @instance
-         */
-        Block.prototype.subject = "";
-
-        /**
          * Block blockHeight.
          * @member {number|Long} blockHeight
          * @memberof blocks.Block
          * @instance
          */
         Block.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Block producerAddress.
-         * @member {Uint8Array} producerAddress
-         * @memberof blocks.Block
-         * @instance
-         */
-        Block.prototype.producerAddress = $util.newBuffer([]);
 
         /**
          * Block blockId.
@@ -130,20 +113,12 @@ export const blocks = $root.blocks = (() => {
         Block.prototype.transactionIds = $util.emptyArray;
 
         /**
-         * Block createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
+         * Block metadata.
+         * @member {common.IMetadata|null|undefined} metadata
          * @memberof blocks.Block
          * @instance
          */
-        Block.prototype.createdAt = null;
-
-        /**
-         * Block publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof blocks.Block
-         * @instance
-         */
-        Block.prototype.publishedAt = null;
+        Block.prototype.metadata = null;
 
         /**
          * Block pointer.
@@ -177,29 +152,23 @@ export const blocks = $root.blocks = (() => {
         Block.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
             if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
-            if (message.producerAddress != null && Object.hasOwnProperty.call(message, "producerAddress"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.producerAddress);
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.blockHeight);
             if (message.blockId != null && Object.hasOwnProperty.call(message, "blockId"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.blockId);
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.blockId);
             if (message.version != null && Object.hasOwnProperty.call(message, "version"))
-                writer.uint32(/* id 5, wireType 2 =*/42).string(message.version);
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.version);
             if (message.header != null && Object.hasOwnProperty.call(message, "header"))
-                $root.blocks.BlockHeader.encode(message.header, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                $root.blocks.BlockHeader.encode(message.header, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.consensus != null && Object.hasOwnProperty.call(message, "consensus"))
-                $root.blocks.BlockConsensus.encode(message.consensus, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.blocks.BlockConsensus.encode(message.consensus, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.transactionIds != null && message.transactionIds.length)
                 for (let i = 0; i < message.transactionIds.length; ++i)
-                    writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.transactionIds[i]);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                    writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.transactionIds[i]);
+            if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                $root.common.Metadata.encode(message.metadata, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.pointer != null && Object.hasOwnProperty.call(message, "pointer"))
-                $root.pointers.BlockPointer.encode(message.pointer, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                $root.pointers.BlockPointer.encode(message.pointer, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             return writer;
         };
 
@@ -235,48 +204,36 @@ export const blocks = $root.blocks = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
                         message.blockHeight = reader.int64();
                         break;
                     }
-                case 3: {
-                        message.producerAddress = reader.bytes();
-                        break;
-                    }
-                case 4: {
+                case 2: {
                         message.blockId = reader.int32();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.version = reader.string();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.header = $root.blocks.BlockHeader.decode(reader, reader.uint32());
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.consensus = $root.blocks.BlockConsensus.decode(reader, reader.uint32());
                         break;
                     }
-                case 8: {
+                case 6: {
                         if (!(message.transactionIds && message.transactionIds.length))
                             message.transactionIds = [];
                         message.transactionIds.push(reader.bytes());
                         break;
                     }
-                case 9: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 7: {
+                        message.metadata = $root.common.Metadata.decode(reader, reader.uint32());
                         break;
                     }
-                case 10: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 11: {
+                case 8: {
                         message.pointer = $root.pointers.BlockPointer.decode(reader, reader.uint32());
                         break;
                     }
@@ -315,15 +272,9 @@ export const blocks = $root.blocks = (() => {
         Block.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
                     return "blockHeight: integer|Long expected";
-            if (message.producerAddress != null && message.hasOwnProperty("producerAddress"))
-                if (!(message.producerAddress && typeof message.producerAddress.length === "number" || $util.isString(message.producerAddress)))
-                    return "producerAddress: buffer expected";
             if (message.blockId != null && message.hasOwnProperty("blockId"))
                 if (!$util.isInteger(message.blockId))
                     return "blockId: integer expected";
@@ -347,15 +298,10 @@ export const blocks = $root.blocks = (() => {
                     if (!(message.transactionIds[i] && typeof message.transactionIds[i].length === "number" || $util.isString(message.transactionIds[i])))
                         return "transactionIds: buffer[] expected";
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                let error = $root.common.Metadata.verify(message.metadata);
                 if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
+                    return "metadata." + error;
             }
             if (message.pointer != null && message.hasOwnProperty("pointer")) {
                 let error = $root.pointers.BlockPointer.verify(message.pointer);
@@ -377,8 +323,6 @@ export const blocks = $root.blocks = (() => {
             if (object instanceof $root.blocks.Block)
                 return object;
             let message = new $root.blocks.Block();
-            if (object.subject != null)
-                message.subject = String(object.subject);
             if (object.blockHeight != null)
                 if ($util.Long)
                     (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
@@ -388,11 +332,6 @@ export const blocks = $root.blocks = (() => {
                     message.blockHeight = object.blockHeight;
                 else if (typeof object.blockHeight === "object")
                     message.blockHeight = new $util.LongBits(object.blockHeight.low >>> 0, object.blockHeight.high >>> 0).toNumber();
-            if (object.producerAddress != null)
-                if (typeof object.producerAddress === "string")
-                    $util.base64.decode(object.producerAddress, message.producerAddress = $util.newBuffer($util.base64.length(object.producerAddress)), 0);
-                else if (object.producerAddress.length >= 0)
-                    message.producerAddress = object.producerAddress;
             if (object.blockId != null)
                 message.blockId = object.blockId | 0;
             if (object.version != null)
@@ -417,15 +356,10 @@ export const blocks = $root.blocks = (() => {
                     else if (object.transactionIds[i].length >= 0)
                         message.transactionIds[i] = object.transactionIds[i];
             }
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".blocks.Block.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".blocks.Block.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".blocks.Block.metadata: object expected");
+                message.metadata = $root.common.Metadata.fromObject(object.metadata);
             }
             if (object.pointer != null) {
                 if (typeof object.pointer !== "object")
@@ -451,36 +385,23 @@ export const blocks = $root.blocks = (() => {
             if (options.arrays || options.defaults)
                 object.transactionIds = [];
             if (options.defaults) {
-                object.subject = "";
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.blockHeight = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.producerAddress = "";
-                else {
-                    object.producerAddress = [];
-                    if (options.bytes !== Array)
-                        object.producerAddress = $util.newBuffer(object.producerAddress);
-                }
                 object.blockId = 0;
                 object.version = "";
                 object.header = null;
                 object.consensus = null;
-                object.createdAt = null;
-                object.publishedAt = null;
+                object.metadata = null;
                 object.pointer = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (typeof message.blockHeight === "number")
                     object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
                 else
                     object.blockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.blockHeight) : options.longs === Number ? new $util.LongBits(message.blockHeight.low >>> 0, message.blockHeight.high >>> 0).toNumber() : message.blockHeight;
-            if (message.producerAddress != null && message.hasOwnProperty("producerAddress"))
-                object.producerAddress = options.bytes === String ? $util.base64.encode(message.producerAddress, 0, message.producerAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.producerAddress) : message.producerAddress;
             if (message.blockId != null && message.hasOwnProperty("blockId"))
                 object.blockId = message.blockId;
             if (message.version != null && message.hasOwnProperty("version"))
@@ -494,10 +415,8 @@ export const blocks = $root.blocks = (() => {
                 for (let j = 0; j < message.transactionIds.length; ++j)
                     object.transactionIds[j] = options.bytes === String ? $util.base64.encode(message.transactionIds[j], 0, message.transactionIds[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.transactionIds[j]) : message.transactionIds[j];
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.common.Metadata.toObject(message.metadata, options);
             if (message.pointer != null && message.hasOwnProperty("pointer"))
                 object.pointer = $root.pointers.BlockPointer.toObject(message.pointer, options);
             return object;
@@ -538,7 +457,6 @@ export const blocks = $root.blocks = (() => {
          * Properties of a BlockHeader.
          * @memberof blocks
          * @interface IBlockHeader
-         * @property {string|null} [subject] BlockHeader subject
          * @property {number|Long|null} [blockHeight] BlockHeader blockHeight
          * @property {Uint8Array|null} [applicationHash] BlockHeader applicationHash
          * @property {number|null} [consensusParametersVersion] BlockHeader consensusParametersVersion
@@ -552,8 +470,6 @@ export const blocks = $root.blocks = (() => {
          * @property {number|null} [transactionsCount] BlockHeader transactionsCount
          * @property {Uint8Array|null} [transactionsRoot] BlockHeader transactionsRoot
          * @property {number|null} [version] BlockHeader version
-         * @property {google.protobuf.ITimestamp|null} [createdAt] BlockHeader createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] BlockHeader publishedAt
          */
 
         /**
@@ -570,14 +486,6 @@ export const blocks = $root.blocks = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
-
-        /**
-         * BlockHeader subject.
-         * @member {string} subject
-         * @memberof blocks.BlockHeader
-         * @instance
-         */
-        BlockHeader.prototype.subject = "";
 
         /**
          * BlockHeader blockHeight.
@@ -684,22 +592,6 @@ export const blocks = $root.blocks = (() => {
         BlockHeader.prototype.version = 0;
 
         /**
-         * BlockHeader createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof blocks.BlockHeader
-         * @instance
-         */
-        BlockHeader.prototype.createdAt = null;
-
-        /**
-         * BlockHeader publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof blocks.BlockHeader
-         * @instance
-         */
-        BlockHeader.prototype.publishedAt = null;
-
-        /**
          * Creates a new BlockHeader instance using the specified properties.
          * @function create
          * @memberof blocks.BlockHeader
@@ -723,38 +615,32 @@ export const blocks = $root.blocks = (() => {
         BlockHeader.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
             if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.blockHeight);
             if (message.applicationHash != null && Object.hasOwnProperty.call(message, "applicationHash"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.applicationHash);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.applicationHash);
             if (message.consensusParametersVersion != null && Object.hasOwnProperty.call(message, "consensusParametersVersion"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.consensusParametersVersion);
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.consensusParametersVersion);
             if (message.daHeight != null && Object.hasOwnProperty.call(message, "daHeight"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.daHeight);
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.daHeight);
             if (message.eventInboxRoot != null && Object.hasOwnProperty.call(message, "eventInboxRoot"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.eventInboxRoot);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.eventInboxRoot);
             if (message.messageOutboxRoot != null && Object.hasOwnProperty.call(message, "messageOutboxRoot"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.messageOutboxRoot);
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.messageOutboxRoot);
             if (message.messageReceiptCount != null && Object.hasOwnProperty.call(message, "messageReceiptCount"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.messageReceiptCount);
+                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.messageReceiptCount);
             if (message.prevRoot != null && Object.hasOwnProperty.call(message, "prevRoot"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.prevRoot);
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.prevRoot);
             if (message.stateTransitionBytecodeVersion != null && Object.hasOwnProperty.call(message, "stateTransitionBytecodeVersion"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.stateTransitionBytecodeVersion);
+                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.stateTransitionBytecodeVersion);
             if (message.time != null && Object.hasOwnProperty.call(message, "time"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int64(message.time);
+                writer.uint32(/* id 10, wireType 0 =*/80).int64(message.time);
             if (message.transactionsCount != null && Object.hasOwnProperty.call(message, "transactionsCount"))
-                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.transactionsCount);
+                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.transactionsCount);
             if (message.transactionsRoot != null && Object.hasOwnProperty.call(message, "transactionsRoot"))
-                writer.uint32(/* id 13, wireType 2 =*/106).bytes(message.transactionsRoot);
+                writer.uint32(/* id 12, wireType 2 =*/98).bytes(message.transactionsRoot);
             if (message.version != null && Object.hasOwnProperty.call(message, "version"))
-                writer.uint32(/* id 14, wireType 0 =*/112).int32(message.version);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
+                writer.uint32(/* id 13, wireType 0 =*/104).int32(message.version);
             return writer;
         };
 
@@ -790,67 +676,55 @@ export const blocks = $root.blocks = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
                         message.blockHeight = reader.int64();
                         break;
                     }
-                case 3: {
+                case 2: {
                         message.applicationHash = reader.bytes();
                         break;
                     }
-                case 4: {
+                case 3: {
                         message.consensusParametersVersion = reader.int32();
                         break;
                     }
-                case 5: {
+                case 4: {
                         message.daHeight = reader.int64();
                         break;
                     }
-                case 6: {
+                case 5: {
                         message.eventInboxRoot = reader.bytes();
                         break;
                     }
-                case 7: {
+                case 6: {
                         message.messageOutboxRoot = reader.bytes();
                         break;
                     }
-                case 8: {
+                case 7: {
                         message.messageReceiptCount = reader.int32();
                         break;
                     }
-                case 9: {
+                case 8: {
                         message.prevRoot = reader.bytes();
                         break;
                     }
-                case 10: {
+                case 9: {
                         message.stateTransitionBytecodeVersion = reader.int32();
                         break;
                     }
-                case 11: {
+                case 10: {
                         message.time = reader.int64();
                         break;
                     }
-                case 12: {
+                case 11: {
                         message.transactionsCount = reader.int32();
                         break;
                     }
-                case 13: {
+                case 12: {
                         message.transactionsRoot = reader.bytes();
                         break;
                     }
-                case 14: {
+                case 13: {
                         message.version = reader.int32();
-                        break;
-                    }
-                case 15: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 16: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -888,9 +762,6 @@ export const blocks = $root.blocks = (() => {
         BlockHeader.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
                     return "blockHeight: integer|Long expected";
@@ -930,16 +801,6 @@ export const blocks = $root.blocks = (() => {
             if (message.version != null && message.hasOwnProperty("version"))
                 if (!$util.isInteger(message.version))
                     return "version: integer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -955,8 +816,6 @@ export const blocks = $root.blocks = (() => {
             if (object instanceof $root.blocks.BlockHeader)
                 return object;
             let message = new $root.blocks.BlockHeader();
-            if (object.subject != null)
-                message.subject = String(object.subject);
             if (object.blockHeight != null)
                 if ($util.Long)
                     (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
@@ -1019,16 +878,6 @@ export const blocks = $root.blocks = (() => {
                     message.transactionsRoot = object.transactionsRoot;
             if (object.version != null)
                 message.version = object.version | 0;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".blocks.BlockHeader.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".blocks.BlockHeader.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -1046,7 +895,6 @@ export const blocks = $root.blocks = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -1102,11 +950,7 @@ export const blocks = $root.blocks = (() => {
                         object.transactionsRoot = $util.newBuffer(object.transactionsRoot);
                 }
                 object.version = 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (typeof message.blockHeight === "number")
                     object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
@@ -1142,10 +986,6 @@ export const blocks = $root.blocks = (() => {
                 object.transactionsRoot = options.bytes === String ? $util.base64.encode(message.transactionsRoot, 0, message.transactionsRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.transactionsRoot) : message.transactionsRoot;
             if (message.version != null && message.hasOwnProperty("version"))
                 object.version = message.version;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -1184,7 +1024,8 @@ export const blocks = $root.blocks = (() => {
          * Properties of a BlockConsensus.
          * @memberof blocks
          * @interface IBlockConsensus
-         * @property {string|null} [subject] BlockConsensus subject
+         * @property {number|Long|null} [chainId] BlockConsensus chainId
+         * @property {Uint8Array|null} [producer] BlockConsensus producer
          * @property {number|Long|null} [blockHeight] BlockConsensus blockHeight
          * @property {blocks.ConsensusType|null} [consensusType] BlockConsensus consensusType
          * @property {Uint8Array|null} [chainConfigHash] BlockConsensus chainConfigHash
@@ -1193,8 +1034,6 @@ export const blocks = $root.blocks = (() => {
          * @property {Uint8Array|null} [messagesRoot] BlockConsensus messagesRoot
          * @property {Uint8Array|null} [transactionsRoot] BlockConsensus transactionsRoot
          * @property {Uint8Array|null} [signature] BlockConsensus signature
-         * @property {google.protobuf.ITimestamp|null} [createdAt] BlockConsensus createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] BlockConsensus publishedAt
          */
 
         /**
@@ -1213,12 +1052,20 @@ export const blocks = $root.blocks = (() => {
         }
 
         /**
-         * BlockConsensus subject.
-         * @member {string} subject
+         * BlockConsensus chainId.
+         * @member {number|Long} chainId
          * @memberof blocks.BlockConsensus
          * @instance
          */
-        BlockConsensus.prototype.subject = "";
+        BlockConsensus.prototype.chainId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * BlockConsensus producer.
+         * @member {Uint8Array} producer
+         * @memberof blocks.BlockConsensus
+         * @instance
+         */
+        BlockConsensus.prototype.producer = $util.newBuffer([]);
 
         /**
          * BlockConsensus blockHeight.
@@ -1285,22 +1132,6 @@ export const blocks = $root.blocks = (() => {
         BlockConsensus.prototype.signature = $util.newBuffer([]);
 
         /**
-         * BlockConsensus createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof blocks.BlockConsensus
-         * @instance
-         */
-        BlockConsensus.prototype.createdAt = null;
-
-        /**
-         * BlockConsensus publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof blocks.BlockConsensus
-         * @instance
-         */
-        BlockConsensus.prototype.publishedAt = null;
-
-        /**
          * Creates a new BlockConsensus instance using the specified properties.
          * @function create
          * @memberof blocks.BlockConsensus
@@ -1324,28 +1155,26 @@ export const blocks = $root.blocks = (() => {
         BlockConsensus.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
+            if (message.chainId != null && Object.hasOwnProperty.call(message, "chainId"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.chainId);
+            if (message.producer != null && Object.hasOwnProperty.call(message, "producer"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.producer);
             if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.blockHeight);
             if (message.consensusType != null && Object.hasOwnProperty.call(message, "consensusType"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.consensusType);
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.consensusType);
             if (message.chainConfigHash != null && Object.hasOwnProperty.call(message, "chainConfigHash"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.chainConfigHash);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.chainConfigHash);
             if (message.coinsRoot != null && Object.hasOwnProperty.call(message, "coinsRoot"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.coinsRoot);
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.coinsRoot);
             if (message.contractsRoot != null && Object.hasOwnProperty.call(message, "contractsRoot"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.contractsRoot);
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.contractsRoot);
             if (message.messagesRoot != null && Object.hasOwnProperty.call(message, "messagesRoot"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.messagesRoot);
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.messagesRoot);
             if (message.transactionsRoot != null && Object.hasOwnProperty.call(message, "transactionsRoot"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.transactionsRoot);
+                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.transactionsRoot);
             if (message.signature != null && Object.hasOwnProperty.call(message, "signature"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.signature);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                writer.uint32(/* id 10, wireType 2 =*/82).bytes(message.signature);
             return writer;
         };
 
@@ -1381,47 +1210,43 @@ export const blocks = $root.blocks = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.chainId = reader.int64();
                         break;
                     }
                 case 2: {
-                        message.blockHeight = reader.int64();
+                        message.producer = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.consensusType = reader.int32();
+                        message.blockHeight = reader.int64();
                         break;
                     }
                 case 4: {
-                        message.chainConfigHash = reader.bytes();
+                        message.consensusType = reader.int32();
                         break;
                     }
                 case 5: {
-                        message.coinsRoot = reader.bytes();
+                        message.chainConfigHash = reader.bytes();
                         break;
                     }
                 case 6: {
-                        message.contractsRoot = reader.bytes();
+                        message.coinsRoot = reader.bytes();
                         break;
                     }
                 case 7: {
-                        message.messagesRoot = reader.bytes();
+                        message.contractsRoot = reader.bytes();
                         break;
                     }
                 case 8: {
-                        message.transactionsRoot = reader.bytes();
+                        message.messagesRoot = reader.bytes();
                         break;
                     }
                 case 9: {
-                        message.signature = reader.bytes();
+                        message.transactionsRoot = reader.bytes();
                         break;
                     }
                 case 10: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 11: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                        message.signature = reader.bytes();
                         break;
                     }
                 default:
@@ -1459,9 +1284,12 @@ export const blocks = $root.blocks = (() => {
         BlockConsensus.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
+            if (message.chainId != null && message.hasOwnProperty("chainId"))
+                if (!$util.isInteger(message.chainId) && !(message.chainId && $util.isInteger(message.chainId.low) && $util.isInteger(message.chainId.high)))
+                    return "chainId: integer|Long expected";
+            if (message.producer != null && message.hasOwnProperty("producer"))
+                if (!(message.producer && typeof message.producer.length === "number" || $util.isString(message.producer)))
+                    return "producer: buffer expected";
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
                     return "blockHeight: integer|Long expected";
@@ -1471,6 +1299,7 @@ export const blocks = $root.blocks = (() => {
                     return "consensusType: enum value expected";
                 case 0:
                 case 1:
+                case 2:
                     break;
                 }
             if (message.chainConfigHash != null && message.hasOwnProperty("chainConfigHash"))
@@ -1491,16 +1320,6 @@ export const blocks = $root.blocks = (() => {
             if (message.signature != null && message.hasOwnProperty("signature"))
                 if (!(message.signature && typeof message.signature.length === "number" || $util.isString(message.signature)))
                     return "signature: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -1516,8 +1335,20 @@ export const blocks = $root.blocks = (() => {
             if (object instanceof $root.blocks.BlockConsensus)
                 return object;
             let message = new $root.blocks.BlockConsensus();
-            if (object.subject != null)
-                message.subject = String(object.subject);
+            if (object.chainId != null)
+                if ($util.Long)
+                    (message.chainId = $util.Long.fromValue(object.chainId)).unsigned = false;
+                else if (typeof object.chainId === "string")
+                    message.chainId = parseInt(object.chainId, 10);
+                else if (typeof object.chainId === "number")
+                    message.chainId = object.chainId;
+                else if (typeof object.chainId === "object")
+                    message.chainId = new $util.LongBits(object.chainId.low >>> 0, object.chainId.high >>> 0).toNumber();
+            if (object.producer != null)
+                if (typeof object.producer === "string")
+                    $util.base64.decode(object.producer, message.producer = $util.newBuffer($util.base64.length(object.producer)), 0);
+                else if (object.producer.length >= 0)
+                    message.producer = object.producer;
             if (object.blockHeight != null)
                 if ($util.Long)
                     (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
@@ -1534,13 +1365,17 @@ export const blocks = $root.blocks = (() => {
                     break;
                 }
                 break;
-            case "GENESIS":
+            case "UNKNOWN_CONSENSUS_TYPE":
             case 0:
                 message.consensusType = 0;
                 break;
-            case "POA_CONSENSUS":
+            case "GENESIS":
             case 1:
                 message.consensusType = 1;
+                break;
+            case "POA_CONSENSUS":
+            case 2:
+                message.consensusType = 2;
                 break;
             }
             if (object.chainConfigHash != null)
@@ -1573,16 +1408,6 @@ export const blocks = $root.blocks = (() => {
                     $util.base64.decode(object.signature, message.signature = $util.newBuffer($util.base64.length(object.signature)), 0);
                 else if (object.signature.length >= 0)
                     message.signature = object.signature;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".blocks.BlockConsensus.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".blocks.BlockConsensus.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -1600,13 +1425,24 @@ export const blocks = $root.blocks = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, false);
+                    object.chainId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.chainId = options.longs === String ? "0" : 0;
+                if (options.bytes === String)
+                    object.producer = "";
+                else {
+                    object.producer = [];
+                    if (options.bytes !== Array)
+                        object.producer = $util.newBuffer(object.producer);
+                }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.blockHeight = options.longs === String ? "0" : 0;
-                object.consensusType = options.enums === String ? "GENESIS" : 0;
+                object.consensusType = options.enums === String ? "UNKNOWN_CONSENSUS_TYPE" : 0;
                 if (options.bytes === String)
                     object.chainConfigHash = "";
                 else {
@@ -1649,11 +1485,14 @@ export const blocks = $root.blocks = (() => {
                     if (options.bytes !== Array)
                         object.signature = $util.newBuffer(object.signature);
                 }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
+            if (message.chainId != null && message.hasOwnProperty("chainId"))
+                if (typeof message.chainId === "number")
+                    object.chainId = options.longs === String ? String(message.chainId) : message.chainId;
+                else
+                    object.chainId = options.longs === String ? $util.Long.prototype.toString.call(message.chainId) : options.longs === Number ? new $util.LongBits(message.chainId.low >>> 0, message.chainId.high >>> 0).toNumber() : message.chainId;
+            if (message.producer != null && message.hasOwnProperty("producer"))
+                object.producer = options.bytes === String ? $util.base64.encode(message.producer, 0, message.producer.length) : options.bytes === Array ? Array.prototype.slice.call(message.producer) : message.producer;
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (typeof message.blockHeight === "number")
                     object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
@@ -1673,10 +1512,6 @@ export const blocks = $root.blocks = (() => {
                 object.transactionsRoot = options.bytes === String ? $util.base64.encode(message.transactionsRoot, 0, message.transactionsRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.transactionsRoot) : message.transactionsRoot;
             if (message.signature != null && message.hasOwnProperty("signature"))
                 object.signature = options.bytes === String ? $util.base64.encode(message.signature, 0, message.signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.signature) : message.signature;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -1710,271 +1545,6 @@ export const blocks = $root.blocks = (() => {
     })();
 
     return blocks;
-})();
-
-export const google = $root.google = (() => {
-
-    /**
-     * Namespace google.
-     * @exports google
-     * @namespace
-     */
-    const google = {};
-
-    google.protobuf = (function() {
-
-        /**
-         * Namespace protobuf.
-         * @memberof google
-         * @namespace
-         */
-        const protobuf = {};
-
-        protobuf.Timestamp = (function() {
-
-            /**
-             * Properties of a Timestamp.
-             * @memberof google.protobuf
-             * @interface ITimestamp
-             * @property {number|Long|null} [seconds] Timestamp seconds
-             * @property {number|null} [nanos] Timestamp nanos
-             */
-
-            /**
-             * Constructs a new Timestamp.
-             * @memberof google.protobuf
-             * @classdesc Represents a Timestamp.
-             * @implements ITimestamp
-             * @constructor
-             * @param {google.protobuf.ITimestamp=} [properties] Properties to set
-             */
-            function Timestamp(properties) {
-                if (properties)
-                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * Timestamp seconds.
-             * @member {number|Long} seconds
-             * @memberof google.protobuf.Timestamp
-             * @instance
-             */
-            Timestamp.prototype.seconds = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-            /**
-             * Timestamp nanos.
-             * @member {number} nanos
-             * @memberof google.protobuf.Timestamp
-             * @instance
-             */
-            Timestamp.prototype.nanos = 0;
-
-            /**
-             * Creates a new Timestamp instance using the specified properties.
-             * @function create
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {google.protobuf.ITimestamp=} [properties] Properties to set
-             * @returns {google.protobuf.Timestamp} Timestamp instance
-             */
-            Timestamp.create = function create(properties) {
-                return new Timestamp(properties);
-            };
-
-            /**
-             * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-             * @function encode
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {google.protobuf.ITimestamp} message Timestamp message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            Timestamp.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.seconds != null && Object.hasOwnProperty.call(message, "seconds"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.seconds);
-                if (message.nanos != null && Object.hasOwnProperty.call(message, "nanos"))
-                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.nanos);
-                return writer;
-            };
-
-            /**
-             * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {google.protobuf.ITimestamp} message Timestamp message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            Timestamp.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-
-            /**
-             * Decodes a Timestamp message from the specified reader or buffer.
-             * @function decode
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {google.protobuf.Timestamp} Timestamp
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            Timestamp.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Timestamp();
-                while (reader.pos < end) {
-                    let tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1: {
-                            message.seconds = reader.int64();
-                            break;
-                        }
-                    case 2: {
-                            message.nanos = reader.int32();
-                            break;
-                        }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            /**
-             * Decodes a Timestamp message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {google.protobuf.Timestamp} Timestamp
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            Timestamp.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-
-            /**
-             * Verifies a Timestamp message.
-             * @function verify
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            Timestamp.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.seconds != null && message.hasOwnProperty("seconds"))
-                    if (!$util.isInteger(message.seconds) && !(message.seconds && $util.isInteger(message.seconds.low) && $util.isInteger(message.seconds.high)))
-                        return "seconds: integer|Long expected";
-                if (message.nanos != null && message.hasOwnProperty("nanos"))
-                    if (!$util.isInteger(message.nanos))
-                        return "nanos: integer expected";
-                return null;
-            };
-
-            /**
-             * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {google.protobuf.Timestamp} Timestamp
-             */
-            Timestamp.fromObject = function fromObject(object) {
-                if (object instanceof $root.google.protobuf.Timestamp)
-                    return object;
-                let message = new $root.google.protobuf.Timestamp();
-                if (object.seconds != null)
-                    if ($util.Long)
-                        (message.seconds = $util.Long.fromValue(object.seconds)).unsigned = false;
-                    else if (typeof object.seconds === "string")
-                        message.seconds = parseInt(object.seconds, 10);
-                    else if (typeof object.seconds === "number")
-                        message.seconds = object.seconds;
-                    else if (typeof object.seconds === "object")
-                        message.seconds = new $util.LongBits(object.seconds.low >>> 0, object.seconds.high >>> 0).toNumber();
-                if (object.nanos != null)
-                    message.nanos = object.nanos | 0;
-                return message;
-            };
-
-            /**
-             * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {google.protobuf.Timestamp} message Timestamp
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            Timestamp.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.defaults) {
-                    if ($util.Long) {
-                        let long = new $util.Long(0, 0, false);
-                        object.seconds = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                    } else
-                        object.seconds = options.longs === String ? "0" : 0;
-                    object.nanos = 0;
-                }
-                if (message.seconds != null && message.hasOwnProperty("seconds"))
-                    if (typeof message.seconds === "number")
-                        object.seconds = options.longs === String ? String(message.seconds) : message.seconds;
-                    else
-                        object.seconds = options.longs === String ? $util.Long.prototype.toString.call(message.seconds) : options.longs === Number ? new $util.LongBits(message.seconds.low >>> 0, message.seconds.high >>> 0).toNumber() : message.seconds;
-                if (message.nanos != null && message.hasOwnProperty("nanos"))
-                    object.nanos = message.nanos;
-                return object;
-            };
-
-            /**
-             * Converts this Timestamp to JSON.
-             * @function toJSON
-             * @memberof google.protobuf.Timestamp
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            Timestamp.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-
-            /**
-             * Gets the default type url for Timestamp
-             * @function getTypeUrl
-             * @memberof google.protobuf.Timestamp
-             * @static
-             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-             * @returns {string} The default type url
-             */
-            Timestamp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
-                }
-                return typeUrlPrefix + "/google.protobuf.Timestamp";
-            };
-
-            return Timestamp;
-        })();
-
-        return protobuf;
-    })();
-
-    return google;
 })();
 
 export const pointers = $root.pointers = (() => {
@@ -2203,26 +1773,26 @@ export const pointers = $root.pointers = (() => {
         return BlockPointer;
     })();
 
-    pointers.TransactionPointer = (function() {
+    pointers.TxPointer = (function() {
 
         /**
-         * Properties of a TransactionPointer.
+         * Properties of a TxPointer.
          * @memberof pointers
-         * @interface ITransactionPointer
-         * @property {number|Long|null} [blockHeight] TransactionPointer blockHeight
-         * @property {number|null} [txId] TransactionPointer txId
-         * @property {number|null} [txIndex] TransactionPointer txIndex
+         * @interface ITxPointer
+         * @property {number|Long|null} [blockHeight] TxPointer blockHeight
+         * @property {number|null} [txId] TxPointer txId
+         * @property {number|null} [txIndex] TxPointer txIndex
          */
 
         /**
-         * Constructs a new TransactionPointer.
+         * Constructs a new TxPointer.
          * @memberof pointers
-         * @classdesc Represents a TransactionPointer.
-         * @implements ITransactionPointer
+         * @classdesc Represents a TxPointer.
+         * @implements ITxPointer
          * @constructor
-         * @param {pointers.ITransactionPointer=} [properties] Properties to set
+         * @param {pointers.ITxPointer=} [properties] Properties to set
          */
-        function TransactionPointer(properties) {
+        function TxPointer(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -2230,51 +1800,51 @@ export const pointers = $root.pointers = (() => {
         }
 
         /**
-         * TransactionPointer blockHeight.
+         * TxPointer blockHeight.
          * @member {number|Long} blockHeight
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @instance
          */
-        TransactionPointer.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        TxPointer.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * TransactionPointer txId.
+         * TxPointer txId.
          * @member {number} txId
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @instance
          */
-        TransactionPointer.prototype.txId = 0;
+        TxPointer.prototype.txId = 0;
 
         /**
-         * TransactionPointer txIndex.
+         * TxPointer txIndex.
          * @member {number} txIndex
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @instance
          */
-        TransactionPointer.prototype.txIndex = 0;
+        TxPointer.prototype.txIndex = 0;
 
         /**
-         * Creates a new TransactionPointer instance using the specified properties.
+         * Creates a new TxPointer instance using the specified properties.
          * @function create
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
-         * @param {pointers.ITransactionPointer=} [properties] Properties to set
-         * @returns {pointers.TransactionPointer} TransactionPointer instance
+         * @param {pointers.ITxPointer=} [properties] Properties to set
+         * @returns {pointers.TxPointer} TxPointer instance
          */
-        TransactionPointer.create = function create(properties) {
-            return new TransactionPointer(properties);
+        TxPointer.create = function create(properties) {
+            return new TxPointer(properties);
         };
 
         /**
-         * Encodes the specified TransactionPointer message. Does not implicitly {@link pointers.TransactionPointer.verify|verify} messages.
+         * Encodes the specified TxPointer message. Does not implicitly {@link pointers.TxPointer.verify|verify} messages.
          * @function encode
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
-         * @param {pointers.ITransactionPointer} message TransactionPointer message or plain object to encode
+         * @param {pointers.ITxPointer} message TxPointer message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        TransactionPointer.encode = function encode(message, writer) {
+        TxPointer.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
@@ -2287,33 +1857,33 @@ export const pointers = $root.pointers = (() => {
         };
 
         /**
-         * Encodes the specified TransactionPointer message, length delimited. Does not implicitly {@link pointers.TransactionPointer.verify|verify} messages.
+         * Encodes the specified TxPointer message, length delimited. Does not implicitly {@link pointers.TxPointer.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
-         * @param {pointers.ITransactionPointer} message TransactionPointer message or plain object to encode
+         * @param {pointers.ITxPointer} message TxPointer message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        TransactionPointer.encodeDelimited = function encodeDelimited(message, writer) {
+        TxPointer.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a TransactionPointer message from the specified reader or buffer.
+         * Decodes a TxPointer message from the specified reader or buffer.
          * @function decode
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {pointers.TransactionPointer} TransactionPointer
+         * @returns {pointers.TxPointer} TxPointer
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        TransactionPointer.decode = function decode(reader, length) {
+        TxPointer.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pointers.TransactionPointer();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.pointers.TxPointer();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -2338,30 +1908,30 @@ export const pointers = $root.pointers = (() => {
         };
 
         /**
-         * Decodes a TransactionPointer message from the specified reader or buffer, length delimited.
+         * Decodes a TxPointer message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {pointers.TransactionPointer} TransactionPointer
+         * @returns {pointers.TxPointer} TxPointer
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        TransactionPointer.decodeDelimited = function decodeDelimited(reader) {
+        TxPointer.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a TransactionPointer message.
+         * Verifies a TxPointer message.
          * @function verify
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        TransactionPointer.verify = function verify(message) {
+        TxPointer.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
@@ -2377,17 +1947,17 @@ export const pointers = $root.pointers = (() => {
         };
 
         /**
-         * Creates a TransactionPointer message from a plain object. Also converts values to their respective internal types.
+         * Creates a TxPointer message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {pointers.TransactionPointer} TransactionPointer
+         * @returns {pointers.TxPointer} TxPointer
          */
-        TransactionPointer.fromObject = function fromObject(object) {
-            if (object instanceof $root.pointers.TransactionPointer)
+        TxPointer.fromObject = function fromObject(object) {
+            if (object instanceof $root.pointers.TxPointer)
                 return object;
-            let message = new $root.pointers.TransactionPointer();
+            let message = new $root.pointers.TxPointer();
             if (object.blockHeight != null)
                 if ($util.Long)
                     (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
@@ -2405,15 +1975,15 @@ export const pointers = $root.pointers = (() => {
         };
 
         /**
-         * Creates a plain object from a TransactionPointer message. Also converts values to other types if specified.
+         * Creates a plain object from a TxPointer message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
-         * @param {pointers.TransactionPointer} message TransactionPointer
+         * @param {pointers.TxPointer} message TxPointer
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        TransactionPointer.toObject = function toObject(message, options) {
+        TxPointer.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
@@ -2439,32 +2009,32 @@ export const pointers = $root.pointers = (() => {
         };
 
         /**
-         * Converts this TransactionPointer to JSON.
+         * Converts this TxPointer to JSON.
          * @function toJSON
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        TransactionPointer.prototype.toJSON = function toJSON() {
+        TxPointer.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for TransactionPointer
+         * Gets the default type url for TxPointer
          * @function getTypeUrl
-         * @memberof pointers.TransactionPointer
+         * @memberof pointers.TxPointer
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        TransactionPointer.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        TxPointer.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/pointers.TransactionPointer";
+            return typeUrlPrefix + "/pointers.TxPointer";
         };
 
-        return TransactionPointer;
+        return TxPointer;
     })();
 
     pointers.InputPointer = (function() {
@@ -3338,6 +2908,8 @@ export const pointers = $root.pointers = (() => {
          * @property {number|null} [txId] UtxoPointer txId
          * @property {number|null} [txIndex] UtxoPointer txIndex
          * @property {number|null} [utxoId] UtxoPointer utxoId
+         * @property {number|null} [inputIndex] UtxoPointer inputIndex
+         * @property {number|null} [outputIndex] UtxoPointer outputIndex
          */
 
         /**
@@ -3388,6 +2960,22 @@ export const pointers = $root.pointers = (() => {
         UtxoPointer.prototype.utxoId = 0;
 
         /**
+         * UtxoPointer inputIndex.
+         * @member {number} inputIndex
+         * @memberof pointers.UtxoPointer
+         * @instance
+         */
+        UtxoPointer.prototype.inputIndex = 0;
+
+        /**
+         * UtxoPointer outputIndex.
+         * @member {number} outputIndex
+         * @memberof pointers.UtxoPointer
+         * @instance
+         */
+        UtxoPointer.prototype.outputIndex = 0;
+
+        /**
          * Creates a new UtxoPointer instance using the specified properties.
          * @function create
          * @memberof pointers.UtxoPointer
@@ -3419,6 +3007,10 @@ export const pointers = $root.pointers = (() => {
                 writer.uint32(/* id 3, wireType 0 =*/24).int32(message.txIndex);
             if (message.utxoId != null && Object.hasOwnProperty.call(message, "utxoId"))
                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.utxoId);
+            if (message.inputIndex != null && Object.hasOwnProperty.call(message, "inputIndex"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.inputIndex);
+            if (message.outputIndex != null && Object.hasOwnProperty.call(message, "outputIndex"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.outputIndex);
             return writer;
         };
 
@@ -3469,6 +3061,14 @@ export const pointers = $root.pointers = (() => {
                         message.utxoId = reader.int32();
                         break;
                     }
+                case 5: {
+                        message.inputIndex = reader.int32();
+                        break;
+                    }
+                case 6: {
+                        message.outputIndex = reader.int32();
+                        break;
+                    }
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -3516,6 +3116,12 @@ export const pointers = $root.pointers = (() => {
             if (message.utxoId != null && message.hasOwnProperty("utxoId"))
                 if (!$util.isInteger(message.utxoId))
                     return "utxoId: integer expected";
+            if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
+                if (!$util.isInteger(message.inputIndex))
+                    return "inputIndex: integer expected";
+            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
+                if (!$util.isInteger(message.outputIndex))
+                    return "outputIndex: integer expected";
             return null;
         };
 
@@ -3546,6 +3152,10 @@ export const pointers = $root.pointers = (() => {
                 message.txIndex = object.txIndex | 0;
             if (object.utxoId != null)
                 message.utxoId = object.utxoId | 0;
+            if (object.inputIndex != null)
+                message.inputIndex = object.inputIndex | 0;
+            if (object.outputIndex != null)
+                message.outputIndex = object.outputIndex | 0;
             return message;
         };
 
@@ -3571,6 +3181,8 @@ export const pointers = $root.pointers = (() => {
                 object.txId = 0;
                 object.txIndex = 0;
                 object.utxoId = 0;
+                object.inputIndex = 0;
+                object.outputIndex = 0;
             }
             if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
                 if (typeof message.blockHeight === "number")
@@ -3583,6 +3195,10 @@ export const pointers = $root.pointers = (() => {
                 object.txIndex = message.txIndex;
             if (message.utxoId != null && message.hasOwnProperty("utxoId"))
                 object.utxoId = message.utxoId;
+            if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
+                object.inputIndex = message.inputIndex;
+            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
+                object.outputIndex = message.outputIndex;
             return object;
         };
 
@@ -3618,6 +3234,520 @@ export const pointers = $root.pointers = (() => {
     return pointers;
 })();
 
+export const common = $root.common = (() => {
+
+    /**
+     * Namespace common.
+     * @exports common
+     * @namespace
+     */
+    const common = {};
+
+    common.Metadata = (function() {
+
+        /**
+         * Properties of a Metadata.
+         * @memberof common
+         * @interface IMetadata
+         * @property {google.protobuf.ITimestamp|null} [blockTime] Metadata blockTime
+         * @property {google.protobuf.ITimestamp|null} [publishedAt] Metadata publishedAt
+         */
+
+        /**
+         * Constructs a new Metadata.
+         * @memberof common
+         * @classdesc Represents a Metadata.
+         * @implements IMetadata
+         * @constructor
+         * @param {common.IMetadata=} [properties] Properties to set
+         */
+        function Metadata(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Metadata blockTime.
+         * @member {google.protobuf.ITimestamp|null|undefined} blockTime
+         * @memberof common.Metadata
+         * @instance
+         */
+        Metadata.prototype.blockTime = null;
+
+        /**
+         * Metadata publishedAt.
+         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
+         * @memberof common.Metadata
+         * @instance
+         */
+        Metadata.prototype.publishedAt = null;
+
+        /**
+         * Creates a new Metadata instance using the specified properties.
+         * @function create
+         * @memberof common.Metadata
+         * @static
+         * @param {common.IMetadata=} [properties] Properties to set
+         * @returns {common.Metadata} Metadata instance
+         */
+        Metadata.create = function create(properties) {
+            return new Metadata(properties);
+        };
+
+        /**
+         * Encodes the specified Metadata message. Does not implicitly {@link common.Metadata.verify|verify} messages.
+         * @function encode
+         * @memberof common.Metadata
+         * @static
+         * @param {common.IMetadata} message Metadata message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Metadata.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.blockTime != null && Object.hasOwnProperty.call(message, "blockTime"))
+                $root.google.protobuf.Timestamp.encode(message.blockTime, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
+                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Metadata message, length delimited. Does not implicitly {@link common.Metadata.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof common.Metadata
+         * @static
+         * @param {common.IMetadata} message Metadata message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Metadata.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a Metadata message from the specified reader or buffer.
+         * @function decode
+         * @memberof common.Metadata
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {common.Metadata} Metadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Metadata.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.common.Metadata();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.blockTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                        break;
+                    }
+                case 2: {
+                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a Metadata message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof common.Metadata
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {common.Metadata} Metadata
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Metadata.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a Metadata message.
+         * @function verify
+         * @memberof common.Metadata
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Metadata.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.blockTime != null && message.hasOwnProperty("blockTime")) {
+                let error = $root.google.protobuf.Timestamp.verify(message.blockTime);
+                if (error)
+                    return "blockTime." + error;
+            }
+            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
+                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
+                if (error)
+                    return "publishedAt." + error;
+            }
+            return null;
+        };
+
+        /**
+         * Creates a Metadata message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof common.Metadata
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {common.Metadata} Metadata
+         */
+        Metadata.fromObject = function fromObject(object) {
+            if (object instanceof $root.common.Metadata)
+                return object;
+            let message = new $root.common.Metadata();
+            if (object.blockTime != null) {
+                if (typeof object.blockTime !== "object")
+                    throw TypeError(".common.Metadata.blockTime: object expected");
+                message.blockTime = $root.google.protobuf.Timestamp.fromObject(object.blockTime);
+            }
+            if (object.publishedAt != null) {
+                if (typeof object.publishedAt !== "object")
+                    throw TypeError(".common.Metadata.publishedAt: object expected");
+                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a Metadata message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof common.Metadata
+         * @static
+         * @param {common.Metadata} message Metadata
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Metadata.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.blockTime = null;
+                object.publishedAt = null;
+            }
+            if (message.blockTime != null && message.hasOwnProperty("blockTime"))
+                object.blockTime = $root.google.protobuf.Timestamp.toObject(message.blockTime, options);
+            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
+                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            return object;
+        };
+
+        /**
+         * Converts this Metadata to JSON.
+         * @function toJSON
+         * @memberof common.Metadata
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Metadata.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for Metadata
+         * @function getTypeUrl
+         * @memberof common.Metadata
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        Metadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/common.Metadata";
+        };
+
+        return Metadata;
+    })();
+
+    return common;
+})();
+
+export const google = $root.google = (() => {
+
+    /**
+     * Namespace google.
+     * @exports google
+     * @namespace
+     */
+    const google = {};
+
+    google.protobuf = (function() {
+
+        /**
+         * Namespace protobuf.
+         * @memberof google
+         * @namespace
+         */
+        const protobuf = {};
+
+        protobuf.Timestamp = (function() {
+
+            /**
+             * Properties of a Timestamp.
+             * @memberof google.protobuf
+             * @interface ITimestamp
+             * @property {number|Long|null} [seconds] Timestamp seconds
+             * @property {number|null} [nanos] Timestamp nanos
+             */
+
+            /**
+             * Constructs a new Timestamp.
+             * @memberof google.protobuf
+             * @classdesc Represents a Timestamp.
+             * @implements ITimestamp
+             * @constructor
+             * @param {google.protobuf.ITimestamp=} [properties] Properties to set
+             */
+            function Timestamp(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * Timestamp seconds.
+             * @member {number|Long} seconds
+             * @memberof google.protobuf.Timestamp
+             * @instance
+             */
+            Timestamp.prototype.seconds = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+            /**
+             * Timestamp nanos.
+             * @member {number} nanos
+             * @memberof google.protobuf.Timestamp
+             * @instance
+             */
+            Timestamp.prototype.nanos = 0;
+
+            /**
+             * Creates a new Timestamp instance using the specified properties.
+             * @function create
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {google.protobuf.ITimestamp=} [properties] Properties to set
+             * @returns {google.protobuf.Timestamp} Timestamp instance
+             */
+            Timestamp.create = function create(properties) {
+                return new Timestamp(properties);
+            };
+
+            /**
+             * Encodes the specified Timestamp message. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
+             * @function encode
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {google.protobuf.ITimestamp} message Timestamp message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Timestamp.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.seconds != null && Object.hasOwnProperty.call(message, "seconds"))
+                    writer.uint32(/* id 1, wireType 0 =*/8).int64(message.seconds);
+                if (message.nanos != null && Object.hasOwnProperty.call(message, "nanos"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.nanos);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified Timestamp message, length delimited. Does not implicitly {@link google.protobuf.Timestamp.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {google.protobuf.ITimestamp} message Timestamp message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            Timestamp.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a Timestamp message from the specified reader or buffer.
+             * @function decode
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {google.protobuf.Timestamp} Timestamp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Timestamp.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Timestamp();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1: {
+                            message.seconds = reader.int64();
+                            break;
+                        }
+                    case 2: {
+                            message.nanos = reader.int32();
+                            break;
+                        }
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a Timestamp message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {google.protobuf.Timestamp} Timestamp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Timestamp.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a Timestamp message.
+             * @function verify
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            Timestamp.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.seconds != null && message.hasOwnProperty("seconds"))
+                    if (!$util.isInteger(message.seconds) && !(message.seconds && $util.isInteger(message.seconds.low) && $util.isInteger(message.seconds.high)))
+                        return "seconds: integer|Long expected";
+                if (message.nanos != null && message.hasOwnProperty("nanos"))
+                    if (!$util.isInteger(message.nanos))
+                        return "nanos: integer expected";
+                return null;
+            };
+
+            /**
+             * Creates a Timestamp message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {google.protobuf.Timestamp} Timestamp
+             */
+            Timestamp.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.Timestamp)
+                    return object;
+                let message = new $root.google.protobuf.Timestamp();
+                if (object.seconds != null)
+                    if ($util.Long)
+                        (message.seconds = $util.Long.fromValue(object.seconds)).unsigned = false;
+                    else if (typeof object.seconds === "string")
+                        message.seconds = parseInt(object.seconds, 10);
+                    else if (typeof object.seconds === "number")
+                        message.seconds = object.seconds;
+                    else if (typeof object.seconds === "object")
+                        message.seconds = new $util.LongBits(object.seconds.low >>> 0, object.seconds.high >>> 0).toNumber();
+                if (object.nanos != null)
+                    message.nanos = object.nanos | 0;
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a Timestamp message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {google.protobuf.Timestamp} message Timestamp
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            Timestamp.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    if ($util.Long) {
+                        let long = new $util.Long(0, 0, false);
+                        object.seconds = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    } else
+                        object.seconds = options.longs === String ? "0" : 0;
+                    object.nanos = 0;
+                }
+                if (message.seconds != null && message.hasOwnProperty("seconds"))
+                    if (typeof message.seconds === "number")
+                        object.seconds = options.longs === String ? String(message.seconds) : message.seconds;
+                    else
+                        object.seconds = options.longs === String ? $util.Long.prototype.toString.call(message.seconds) : options.longs === Number ? new $util.LongBits(message.seconds.low >>> 0, message.seconds.high >>> 0).toNumber() : message.seconds;
+                if (message.nanos != null && message.hasOwnProperty("nanos"))
+                    object.nanos = message.nanos;
+                return object;
+            };
+
+            /**
+             * Converts this Timestamp to JSON.
+             * @function toJSON
+             * @memberof google.protobuf.Timestamp
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            Timestamp.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            /**
+             * Gets the default type url for Timestamp
+             * @function getTypeUrl
+             * @memberof google.protobuf.Timestamp
+             * @static
+             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns {string} The default type url
+             */
+            Timestamp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                if (typeUrlPrefix === undefined) {
+                    typeUrlPrefix = "type.googleapis.com";
+                }
+                return typeUrlPrefix + "/google.protobuf.Timestamp";
+            };
+
+            return Timestamp;
+        })();
+
+        return protobuf;
+    })();
+
+    return google;
+})();
+
 export const inputs = $root.inputs = (() => {
 
     /**
@@ -3631,15 +3761,17 @@ export const inputs = $root.inputs = (() => {
      * InputType enum.
      * @name inputs.InputType
      * @enum {number}
-     * @property {number} CONTRACT=0 CONTRACT value
-     * @property {number} COIN=1 COIN value
-     * @property {number} MESSAGE=2 MESSAGE value
+     * @property {number} UNKNOWN_INPUT_TYPE=0 UNKNOWN_INPUT_TYPE value
+     * @property {number} CONTRACT=1 CONTRACT value
+     * @property {number} COIN=2 COIN value
+     * @property {number} MESSAGE=3 MESSAGE value
      */
     inputs.InputType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "CONTRACT"] = 0;
-        values[valuesById[1] = "COIN"] = 1;
-        values[valuesById[2] = "MESSAGE"] = 2;
+        values[valuesById[0] = "UNKNOWN_INPUT_TYPE"] = 0;
+        values[valuesById[1] = "CONTRACT"] = 1;
+        values[valuesById[2] = "COIN"] = 2;
+        values[valuesById[3] = "MESSAGE"] = 3;
         return values;
     })();
 
@@ -3650,16 +3782,11 @@ export const inputs = $root.inputs = (() => {
          * @memberof inputs
          * @interface IInput
          * @property {string|null} [subject] Input subject
-         * @property {number|Long|null} [blockHeight] Input blockHeight
-         * @property {Uint8Array|null} [txId] Input txId
-         * @property {number|null} [txIndex] Input txIndex
-         * @property {number|null} [inputIndex] Input inputIndex
-         * @property {inputs.InputType|null} [inputType] Input inputType
+         * @property {inputs.InputType|null} [type] Input type
          * @property {inputs.IInputCoin|null} [coin] Input coin
          * @property {inputs.IInputContract|null} [contract] Input contract
          * @property {inputs.IInputMessage|null} [message] Input message
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Input createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Input publishedAt
+         * @property {common.IMetadata|null} [metadata] Input metadata
          * @property {pointers.IInputPointer|null} [pointer] Input pointer
          */
 
@@ -3687,44 +3814,12 @@ export const inputs = $root.inputs = (() => {
         Input.prototype.subject = "";
 
         /**
-         * Input blockHeight.
-         * @member {number|Long} blockHeight
+         * Input type.
+         * @member {inputs.InputType} type
          * @memberof inputs.Input
          * @instance
          */
-        Input.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Input txId.
-         * @member {Uint8Array} txId
-         * @memberof inputs.Input
-         * @instance
-         */
-        Input.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * Input txIndex.
-         * @member {number} txIndex
-         * @memberof inputs.Input
-         * @instance
-         */
-        Input.prototype.txIndex = 0;
-
-        /**
-         * Input inputIndex.
-         * @member {number} inputIndex
-         * @memberof inputs.Input
-         * @instance
-         */
-        Input.prototype.inputIndex = 0;
-
-        /**
-         * Input inputType.
-         * @member {inputs.InputType} inputType
-         * @memberof inputs.Input
-         * @instance
-         */
-        Input.prototype.inputType = 0;
+        Input.prototype.type = 0;
 
         /**
          * Input coin.
@@ -3751,20 +3846,12 @@ export const inputs = $root.inputs = (() => {
         Input.prototype.message = null;
 
         /**
-         * Input createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
+         * Input metadata.
+         * @member {common.IMetadata|null|undefined} metadata
          * @memberof inputs.Input
          * @instance
          */
-        Input.prototype.createdAt = null;
-
-        /**
-         * Input publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof inputs.Input
-         * @instance
-         */
-        Input.prototype.publishedAt = null;
+        Input.prototype.metadata = null;
 
         /**
          * Input pointer.
@@ -3814,28 +3901,18 @@ export const inputs = $root.inputs = (() => {
                 writer = $Writer.create();
             if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.txId);
-            if (message.txIndex != null && Object.hasOwnProperty.call(message, "txIndex"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.txIndex);
-            if (message.inputIndex != null && Object.hasOwnProperty.call(message, "inputIndex"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.inputIndex);
-            if (message.inputType != null && Object.hasOwnProperty.call(message, "inputType"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.inputType);
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.type);
             if (message.coin != null && Object.hasOwnProperty.call(message, "coin"))
-                $root.inputs.InputCoin.encode(message.coin, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.inputs.InputCoin.encode(message.coin, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.contract != null && Object.hasOwnProperty.call(message, "contract"))
-                $root.inputs.InputContract.encode(message.contract, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                $root.inputs.InputContract.encode(message.contract, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.message != null && Object.hasOwnProperty.call(message, "message"))
-                $root.inputs.InputMessage.encode(message.message, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                $root.inputs.InputMessage.encode(message.message, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                $root.common.Metadata.encode(message.metadata, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.pointer != null && Object.hasOwnProperty.call(message, "pointer"))
-                $root.pointers.InputPointer.encode(message.pointer, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                $root.pointers.InputPointer.encode(message.pointer, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             return writer;
         };
 
@@ -3875,46 +3952,26 @@ export const inputs = $root.inputs = (() => {
                         break;
                     }
                 case 2: {
-                        message.blockHeight = reader.int64();
+                        message.type = reader.int32();
                         break;
                     }
                 case 3: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.txIndex = reader.int32();
-                        break;
-                    }
-                case 5: {
-                        message.inputIndex = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.inputType = reader.int32();
-                        break;
-                    }
-                case 7: {
                         message.coin = $root.inputs.InputCoin.decode(reader, reader.uint32());
                         break;
                     }
-                case 8: {
+                case 4: {
                         message.contract = $root.inputs.InputContract.decode(reader, reader.uint32());
                         break;
                     }
-                case 9: {
+                case 5: {
                         message.message = $root.inputs.InputMessage.decode(reader, reader.uint32());
                         break;
                     }
-                case 10: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 7: {
+                        message.metadata = $root.common.Metadata.decode(reader, reader.uint32());
                         break;
                     }
-                case 11: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 12: {
+                case 8: {
                         message.pointer = $root.pointers.InputPointer.decode(reader, reader.uint32());
                         break;
                     }
@@ -3957,25 +4014,14 @@ export const inputs = $root.inputs = (() => {
             if (message.subject != null && message.hasOwnProperty("subject"))
                 if (!$util.isString(message.subject))
                     return "subject: string expected";
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
-                    return "blockHeight: integer|Long expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                if (!$util.isInteger(message.txIndex))
-                    return "txIndex: integer expected";
-            if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
-                if (!$util.isInteger(message.inputIndex))
-                    return "inputIndex: integer expected";
-            if (message.inputType != null && message.hasOwnProperty("inputType"))
-                switch (message.inputType) {
+            if (message.type != null && message.hasOwnProperty("type"))
+                switch (message.type) {
                 default:
-                    return "inputType: enum value expected";
+                    return "type: enum value expected";
                 case 0:
                 case 1:
                 case 2:
+                case 3:
                     break;
                 }
             if (message.coin != null && message.hasOwnProperty("coin")) {
@@ -4006,15 +4052,10 @@ export const inputs = $root.inputs = (() => {
                         return "message." + error;
                 }
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                let error = $root.common.Metadata.verify(message.metadata);
                 if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
+                    return "metadata." + error;
             }
             if (message.pointer != null && message.hasOwnProperty("pointer")) {
                 let error = $root.pointers.InputPointer.verify(message.pointer);
@@ -4038,42 +4079,28 @@ export const inputs = $root.inputs = (() => {
             let message = new $root.inputs.Input();
             if (object.subject != null)
                 message.subject = String(object.subject);
-            if (object.blockHeight != null)
-                if ($util.Long)
-                    (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
-                else if (typeof object.blockHeight === "string")
-                    message.blockHeight = parseInt(object.blockHeight, 10);
-                else if (typeof object.blockHeight === "number")
-                    message.blockHeight = object.blockHeight;
-                else if (typeof object.blockHeight === "object")
-                    message.blockHeight = new $util.LongBits(object.blockHeight.low >>> 0, object.blockHeight.high >>> 0).toNumber();
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.txIndex != null)
-                message.txIndex = object.txIndex | 0;
-            if (object.inputIndex != null)
-                message.inputIndex = object.inputIndex | 0;
-            switch (object.inputType) {
+            switch (object.type) {
             default:
-                if (typeof object.inputType === "number") {
-                    message.inputType = object.inputType;
+                if (typeof object.type === "number") {
+                    message.type = object.type;
                     break;
                 }
                 break;
-            case "CONTRACT":
+            case "UNKNOWN_INPUT_TYPE":
             case 0:
-                message.inputType = 0;
+                message.type = 0;
+                break;
+            case "CONTRACT":
+            case 1:
+                message.type = 1;
                 break;
             case "COIN":
-            case 1:
-                message.inputType = 1;
+            case 2:
+                message.type = 2;
                 break;
             case "MESSAGE":
-            case 2:
-                message.inputType = 2;
+            case 3:
+                message.type = 3;
                 break;
             }
             if (object.coin != null) {
@@ -4091,15 +4118,10 @@ export const inputs = $root.inputs = (() => {
                     throw TypeError(".inputs.Input.message: object expected");
                 message.message = $root.inputs.InputMessage.fromObject(object.message);
             }
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".inputs.Input.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".inputs.Input.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".inputs.Input.metadata: object expected");
+                message.metadata = $root.common.Metadata.fromObject(object.metadata);
             }
             if (object.pointer != null) {
                 if (typeof object.pointer !== "object")
@@ -4124,40 +4146,14 @@ export const inputs = $root.inputs = (() => {
             let object = {};
             if (options.defaults) {
                 object.subject = "";
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.blockHeight = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                object.txIndex = 0;
-                object.inputIndex = 0;
-                object.inputType = options.enums === String ? "CONTRACT" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
+                object.type = options.enums === String ? "UNKNOWN_INPUT_TYPE" : 0;
+                object.metadata = null;
                 object.pointer = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (typeof message.blockHeight === "number")
-                    object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
-                else
-                    object.blockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.blockHeight) : options.longs === Number ? new $util.LongBits(message.blockHeight.low >>> 0, message.blockHeight.high >>> 0).toNumber() : message.blockHeight;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                object.txIndex = message.txIndex;
-            if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
-                object.inputIndex = message.inputIndex;
-            if (message.inputType != null && message.hasOwnProperty("inputType"))
-                object.inputType = options.enums === String ? $root.inputs.InputType[message.inputType] === undefined ? message.inputType : $root.inputs.InputType[message.inputType] : message.inputType;
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = options.enums === String ? $root.inputs.InputType[message.type] === undefined ? message.type : $root.inputs.InputType[message.type] : message.type;
             if (message.coin != null && message.hasOwnProperty("coin")) {
                 object.coin = $root.inputs.InputCoin.toObject(message.coin, options);
                 if (options.oneofs)
@@ -4173,10 +4169,8 @@ export const inputs = $root.inputs = (() => {
                 if (options.oneofs)
                     object.input = "message";
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.common.Metadata.toObject(message.metadata, options);
             if (message.pointer != null && message.hasOwnProperty("pointer"))
                 object.pointer = $root.pointers.InputPointer.toObject(message.pointer, options);
             return object;
@@ -4217,23 +4211,18 @@ export const inputs = $root.inputs = (() => {
          * Properties of an InputCoin.
          * @memberof inputs
          * @interface IInputCoin
-         * @property {string|null} [subject] InputCoin subject
-         * @property {Uint8Array|null} [txId] InputCoin txId
+         * @property {Uint8Array|null} [utxoId] InputCoin utxoId
+         * @property {Uint8Array|null} [owner] InputCoin owner
          * @property {number|Long|null} [amount] InputCoin amount
          * @property {Uint8Array|null} [assetId] InputCoin assetId
-         * @property {Uint8Array|null} [ownerAddress] InputCoin ownerAddress
-         * @property {number|null} [outputIndex] InputCoin outputIndex
+         * @property {pointers.ITxPointer|null} [txPointer] InputCoin txPointer
+         * @property {number|null} [witnessIndex] InputCoin witnessIndex
+         * @property {number|Long|null} [predicateGasUsed] InputCoin predicateGasUsed
          * @property {Uint8Array|null} [predicate] InputCoin predicate
          * @property {Uint8Array|null} [predicateData] InputCoin predicateData
-         * @property {number|Long|null} [predicateGasUsed] InputCoin predicateGasUsed
          * @property {number|Long|null} [predicateLength] InputCoin predicateLength
          * @property {number|Long|null} [predicateDataLength] InputCoin predicateDataLength
-         * @property {number|Long|null} [txPointerBlockHeight] InputCoin txPointerBlockHeight
-         * @property {number|null} [txPointerTxIndex] InputCoin txPointerTxIndex
-         * @property {Uint8Array|null} [utxoId] InputCoin utxoId
-         * @property {number|null} [witnessIndex] InputCoin witnessIndex
-         * @property {google.protobuf.ITimestamp|null} [createdAt] InputCoin createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] InputCoin publishedAt
+         * @property {number|null} [outputIndex] InputCoin outputIndex
          */
 
         /**
@@ -4252,20 +4241,20 @@ export const inputs = $root.inputs = (() => {
         }
 
         /**
-         * InputCoin subject.
-         * @member {string} subject
+         * InputCoin utxoId.
+         * @member {Uint8Array} utxoId
          * @memberof inputs.InputCoin
          * @instance
          */
-        InputCoin.prototype.subject = "";
+        InputCoin.prototype.utxoId = $util.newBuffer([]);
 
         /**
-         * InputCoin txId.
-         * @member {Uint8Array} txId
+         * InputCoin owner.
+         * @member {Uint8Array} owner
          * @memberof inputs.InputCoin
          * @instance
          */
-        InputCoin.prototype.txId = $util.newBuffer([]);
+        InputCoin.prototype.owner = $util.newBuffer([]);
 
         /**
          * InputCoin amount.
@@ -4284,20 +4273,28 @@ export const inputs = $root.inputs = (() => {
         InputCoin.prototype.assetId = $util.newBuffer([]);
 
         /**
-         * InputCoin ownerAddress.
-         * @member {Uint8Array} ownerAddress
+         * InputCoin txPointer.
+         * @member {pointers.ITxPointer|null|undefined} txPointer
          * @memberof inputs.InputCoin
          * @instance
          */
-        InputCoin.prototype.ownerAddress = $util.newBuffer([]);
+        InputCoin.prototype.txPointer = null;
 
         /**
-         * InputCoin outputIndex.
-         * @member {number} outputIndex
+         * InputCoin witnessIndex.
+         * @member {number} witnessIndex
          * @memberof inputs.InputCoin
          * @instance
          */
-        InputCoin.prototype.outputIndex = 0;
+        InputCoin.prototype.witnessIndex = 0;
+
+        /**
+         * InputCoin predicateGasUsed.
+         * @member {number|Long} predicateGasUsed
+         * @memberof inputs.InputCoin
+         * @instance
+         */
+        InputCoin.prototype.predicateGasUsed = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
          * InputCoin predicate.
@@ -4316,14 +4313,6 @@ export const inputs = $root.inputs = (() => {
         InputCoin.prototype.predicateData = $util.newBuffer([]);
 
         /**
-         * InputCoin predicateGasUsed.
-         * @member {number|Long} predicateGasUsed
-         * @memberof inputs.InputCoin
-         * @instance
-         */
-        InputCoin.prototype.predicateGasUsed = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
          * InputCoin predicateLength.
          * @member {number|Long} predicateLength
          * @memberof inputs.InputCoin
@@ -4340,52 +4329,12 @@ export const inputs = $root.inputs = (() => {
         InputCoin.prototype.predicateDataLength = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * InputCoin txPointerBlockHeight.
-         * @member {number|Long} txPointerBlockHeight
+         * InputCoin outputIndex.
+         * @member {number} outputIndex
          * @memberof inputs.InputCoin
          * @instance
          */
-        InputCoin.prototype.txPointerBlockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * InputCoin txPointerTxIndex.
-         * @member {number} txPointerTxIndex
-         * @memberof inputs.InputCoin
-         * @instance
-         */
-        InputCoin.prototype.txPointerTxIndex = 0;
-
-        /**
-         * InputCoin utxoId.
-         * @member {Uint8Array} utxoId
-         * @memberof inputs.InputCoin
-         * @instance
-         */
-        InputCoin.prototype.utxoId = $util.newBuffer([]);
-
-        /**
-         * InputCoin witnessIndex.
-         * @member {number} witnessIndex
-         * @memberof inputs.InputCoin
-         * @instance
-         */
-        InputCoin.prototype.witnessIndex = 0;
-
-        /**
-         * InputCoin createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof inputs.InputCoin
-         * @instance
-         */
-        InputCoin.prototype.createdAt = null;
-
-        /**
-         * InputCoin publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof inputs.InputCoin
-         * @instance
-         */
-        InputCoin.prototype.publishedAt = null;
+        InputCoin.prototype.outputIndex = 0;
 
         /**
          * Creates a new InputCoin instance using the specified properties.
@@ -4411,40 +4360,30 @@ export const inputs = $root.inputs = (() => {
         InputCoin.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
+            if (message.utxoId != null && Object.hasOwnProperty.call(message, "utxoId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.utxoId);
+            if (message.owner != null && Object.hasOwnProperty.call(message, "owner"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.owner);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
                 writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
                 writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
-            if (message.ownerAddress != null && Object.hasOwnProperty.call(message, "ownerAddress"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.ownerAddress);
-            if (message.outputIndex != null && Object.hasOwnProperty.call(message, "outputIndex"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.outputIndex);
-            if (message.predicate != null && Object.hasOwnProperty.call(message, "predicate"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.predicate);
-            if (message.predicateData != null && Object.hasOwnProperty.call(message, "predicateData"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.predicateData);
+            if (message.txPointer != null && Object.hasOwnProperty.call(message, "txPointer"))
+                $root.pointers.TxPointer.encode(message.txPointer, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.witnessIndex != null && Object.hasOwnProperty.call(message, "witnessIndex"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.witnessIndex);
             if (message.predicateGasUsed != null && Object.hasOwnProperty.call(message, "predicateGasUsed"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.predicateGasUsed);
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.predicateGasUsed);
+            if (message.predicate != null && Object.hasOwnProperty.call(message, "predicate"))
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.predicate);
+            if (message.predicateData != null && Object.hasOwnProperty.call(message, "predicateData"))
+                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.predicateData);
             if (message.predicateLength != null && Object.hasOwnProperty.call(message, "predicateLength"))
                 writer.uint32(/* id 10, wireType 0 =*/80).int64(message.predicateLength);
             if (message.predicateDataLength != null && Object.hasOwnProperty.call(message, "predicateDataLength"))
                 writer.uint32(/* id 11, wireType 0 =*/88).int64(message.predicateDataLength);
-            if (message.txPointerBlockHeight != null && Object.hasOwnProperty.call(message, "txPointerBlockHeight"))
-                writer.uint32(/* id 12, wireType 0 =*/96).int64(message.txPointerBlockHeight);
-            if (message.txPointerTxIndex != null && Object.hasOwnProperty.call(message, "txPointerTxIndex"))
-                writer.uint32(/* id 13, wireType 0 =*/104).int32(message.txPointerTxIndex);
-            if (message.utxoId != null && Object.hasOwnProperty.call(message, "utxoId"))
-                writer.uint32(/* id 14, wireType 2 =*/114).bytes(message.utxoId);
-            if (message.witnessIndex != null && Object.hasOwnProperty.call(message, "witnessIndex"))
-                writer.uint32(/* id 15, wireType 0 =*/120).int32(message.witnessIndex);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
+            if (message.outputIndex != null && Object.hasOwnProperty.call(message, "outputIndex"))
+                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.outputIndex);
             return writer;
         };
 
@@ -4480,11 +4419,11 @@ export const inputs = $root.inputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.utxoId = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
+                        message.owner = reader.bytes();
                         break;
                     }
                 case 3: {
@@ -4496,23 +4435,23 @@ export const inputs = $root.inputs = (() => {
                         break;
                     }
                 case 5: {
-                        message.ownerAddress = reader.bytes();
+                        message.txPointer = $root.pointers.TxPointer.decode(reader, reader.uint32());
                         break;
                     }
                 case 6: {
-                        message.outputIndex = reader.int32();
+                        message.witnessIndex = reader.int32();
                         break;
                     }
                 case 7: {
-                        message.predicate = reader.bytes();
+                        message.predicateGasUsed = reader.int64();
                         break;
                     }
                 case 8: {
-                        message.predicateData = reader.bytes();
+                        message.predicate = reader.bytes();
                         break;
                     }
                 case 9: {
-                        message.predicateGasUsed = reader.int64();
+                        message.predicateData = reader.bytes();
                         break;
                     }
                 case 10: {
@@ -4524,27 +4463,7 @@ export const inputs = $root.inputs = (() => {
                         break;
                     }
                 case 12: {
-                        message.txPointerBlockHeight = reader.int64();
-                        break;
-                    }
-                case 13: {
-                        message.txPointerTxIndex = reader.int32();
-                        break;
-                    }
-                case 14: {
-                        message.utxoId = reader.bytes();
-                        break;
-                    }
-                case 15: {
-                        message.witnessIndex = reader.int32();
-                        break;
-                    }
-                case 16: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 17: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                        message.outputIndex = reader.int32();
                         break;
                     }
                 default:
@@ -4582,61 +4501,44 @@ export const inputs = $root.inputs = (() => {
         InputCoin.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
+            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
+                if (!(message.utxoId && typeof message.utxoId.length === "number" || $util.isString(message.utxoId)))
+                    return "utxoId: buffer expected";
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                if (!(message.owner && typeof message.owner.length === "number" || $util.isString(message.owner)))
+                    return "owner: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 if (!(message.assetId && typeof message.assetId.length === "number" || $util.isString(message.assetId)))
                     return "assetId: buffer expected";
-            if (message.ownerAddress != null && message.hasOwnProperty("ownerAddress"))
-                if (!(message.ownerAddress && typeof message.ownerAddress.length === "number" || $util.isString(message.ownerAddress)))
-                    return "ownerAddress: buffer expected";
-            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
-                if (!$util.isInteger(message.outputIndex))
-                    return "outputIndex: integer expected";
+            if (message.txPointer != null && message.hasOwnProperty("txPointer")) {
+                let error = $root.pointers.TxPointer.verify(message.txPointer);
+                if (error)
+                    return "txPointer." + error;
+            }
+            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
+                if (!$util.isInteger(message.witnessIndex))
+                    return "witnessIndex: integer expected";
+            if (message.predicateGasUsed != null && message.hasOwnProperty("predicateGasUsed"))
+                if (!$util.isInteger(message.predicateGasUsed) && !(message.predicateGasUsed && $util.isInteger(message.predicateGasUsed.low) && $util.isInteger(message.predicateGasUsed.high)))
+                    return "predicateGasUsed: integer|Long expected";
             if (message.predicate != null && message.hasOwnProperty("predicate"))
                 if (!(message.predicate && typeof message.predicate.length === "number" || $util.isString(message.predicate)))
                     return "predicate: buffer expected";
             if (message.predicateData != null && message.hasOwnProperty("predicateData"))
                 if (!(message.predicateData && typeof message.predicateData.length === "number" || $util.isString(message.predicateData)))
                     return "predicateData: buffer expected";
-            if (message.predicateGasUsed != null && message.hasOwnProperty("predicateGasUsed"))
-                if (!$util.isInteger(message.predicateGasUsed) && !(message.predicateGasUsed && $util.isInteger(message.predicateGasUsed.low) && $util.isInteger(message.predicateGasUsed.high)))
-                    return "predicateGasUsed: integer|Long expected";
             if (message.predicateLength != null && message.hasOwnProperty("predicateLength"))
                 if (!$util.isInteger(message.predicateLength) && !(message.predicateLength && $util.isInteger(message.predicateLength.low) && $util.isInteger(message.predicateLength.high)))
                     return "predicateLength: integer|Long expected";
             if (message.predicateDataLength != null && message.hasOwnProperty("predicateDataLength"))
                 if (!$util.isInteger(message.predicateDataLength) && !(message.predicateDataLength && $util.isInteger(message.predicateDataLength.low) && $util.isInteger(message.predicateDataLength.high)))
                     return "predicateDataLength: integer|Long expected";
-            if (message.txPointerBlockHeight != null && message.hasOwnProperty("txPointerBlockHeight"))
-                if (!$util.isInteger(message.txPointerBlockHeight) && !(message.txPointerBlockHeight && $util.isInteger(message.txPointerBlockHeight.low) && $util.isInteger(message.txPointerBlockHeight.high)))
-                    return "txPointerBlockHeight: integer|Long expected";
-            if (message.txPointerTxIndex != null && message.hasOwnProperty("txPointerTxIndex"))
-                if (!$util.isInteger(message.txPointerTxIndex))
-                    return "txPointerTxIndex: integer expected";
-            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
-                if (!(message.utxoId && typeof message.utxoId.length === "number" || $util.isString(message.utxoId)))
-                    return "utxoId: buffer expected";
-            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
-                if (!$util.isInteger(message.witnessIndex))
-                    return "witnessIndex: integer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
+            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
+                if (!$util.isInteger(message.outputIndex))
+                    return "outputIndex: integer expected";
             return null;
         };
 
@@ -4652,13 +4554,16 @@ export const inputs = $root.inputs = (() => {
             if (object instanceof $root.inputs.InputCoin)
                 return object;
             let message = new $root.inputs.InputCoin();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
+            if (object.utxoId != null)
+                if (typeof object.utxoId === "string")
+                    $util.base64.decode(object.utxoId, message.utxoId = $util.newBuffer($util.base64.length(object.utxoId)), 0);
+                else if (object.utxoId.length >= 0)
+                    message.utxoId = object.utxoId;
+            if (object.owner != null)
+                if (typeof object.owner === "string")
+                    $util.base64.decode(object.owner, message.owner = $util.newBuffer($util.base64.length(object.owner)), 0);
+                else if (object.owner.length >= 0)
+                    message.owner = object.owner;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -4673,13 +4578,22 @@ export const inputs = $root.inputs = (() => {
                     $util.base64.decode(object.assetId, message.assetId = $util.newBuffer($util.base64.length(object.assetId)), 0);
                 else if (object.assetId.length >= 0)
                     message.assetId = object.assetId;
-            if (object.ownerAddress != null)
-                if (typeof object.ownerAddress === "string")
-                    $util.base64.decode(object.ownerAddress, message.ownerAddress = $util.newBuffer($util.base64.length(object.ownerAddress)), 0);
-                else if (object.ownerAddress.length >= 0)
-                    message.ownerAddress = object.ownerAddress;
-            if (object.outputIndex != null)
-                message.outputIndex = object.outputIndex | 0;
+            if (object.txPointer != null) {
+                if (typeof object.txPointer !== "object")
+                    throw TypeError(".inputs.InputCoin.txPointer: object expected");
+                message.txPointer = $root.pointers.TxPointer.fromObject(object.txPointer);
+            }
+            if (object.witnessIndex != null)
+                message.witnessIndex = object.witnessIndex | 0;
+            if (object.predicateGasUsed != null)
+                if ($util.Long)
+                    (message.predicateGasUsed = $util.Long.fromValue(object.predicateGasUsed)).unsigned = false;
+                else if (typeof object.predicateGasUsed === "string")
+                    message.predicateGasUsed = parseInt(object.predicateGasUsed, 10);
+                else if (typeof object.predicateGasUsed === "number")
+                    message.predicateGasUsed = object.predicateGasUsed;
+                else if (typeof object.predicateGasUsed === "object")
+                    message.predicateGasUsed = new $util.LongBits(object.predicateGasUsed.low >>> 0, object.predicateGasUsed.high >>> 0).toNumber();
             if (object.predicate != null)
                 if (typeof object.predicate === "string")
                     $util.base64.decode(object.predicate, message.predicate = $util.newBuffer($util.base64.length(object.predicate)), 0);
@@ -4690,15 +4604,6 @@ export const inputs = $root.inputs = (() => {
                     $util.base64.decode(object.predicateData, message.predicateData = $util.newBuffer($util.base64.length(object.predicateData)), 0);
                 else if (object.predicateData.length >= 0)
                     message.predicateData = object.predicateData;
-            if (object.predicateGasUsed != null)
-                if ($util.Long)
-                    (message.predicateGasUsed = $util.Long.fromValue(object.predicateGasUsed)).unsigned = false;
-                else if (typeof object.predicateGasUsed === "string")
-                    message.predicateGasUsed = parseInt(object.predicateGasUsed, 10);
-                else if (typeof object.predicateGasUsed === "number")
-                    message.predicateGasUsed = object.predicateGasUsed;
-                else if (typeof object.predicateGasUsed === "object")
-                    message.predicateGasUsed = new $util.LongBits(object.predicateGasUsed.low >>> 0, object.predicateGasUsed.high >>> 0).toNumber();
             if (object.predicateLength != null)
                 if ($util.Long)
                     (message.predicateLength = $util.Long.fromValue(object.predicateLength)).unsigned = false;
@@ -4717,34 +4622,8 @@ export const inputs = $root.inputs = (() => {
                     message.predicateDataLength = object.predicateDataLength;
                 else if (typeof object.predicateDataLength === "object")
                     message.predicateDataLength = new $util.LongBits(object.predicateDataLength.low >>> 0, object.predicateDataLength.high >>> 0).toNumber();
-            if (object.txPointerBlockHeight != null)
-                if ($util.Long)
-                    (message.txPointerBlockHeight = $util.Long.fromValue(object.txPointerBlockHeight)).unsigned = false;
-                else if (typeof object.txPointerBlockHeight === "string")
-                    message.txPointerBlockHeight = parseInt(object.txPointerBlockHeight, 10);
-                else if (typeof object.txPointerBlockHeight === "number")
-                    message.txPointerBlockHeight = object.txPointerBlockHeight;
-                else if (typeof object.txPointerBlockHeight === "object")
-                    message.txPointerBlockHeight = new $util.LongBits(object.txPointerBlockHeight.low >>> 0, object.txPointerBlockHeight.high >>> 0).toNumber();
-            if (object.txPointerTxIndex != null)
-                message.txPointerTxIndex = object.txPointerTxIndex | 0;
-            if (object.utxoId != null)
-                if (typeof object.utxoId === "string")
-                    $util.base64.decode(object.utxoId, message.utxoId = $util.newBuffer($util.base64.length(object.utxoId)), 0);
-                else if (object.utxoId.length >= 0)
-                    message.utxoId = object.utxoId;
-            if (object.witnessIndex != null)
-                message.witnessIndex = object.witnessIndex | 0;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".inputs.InputCoin.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".inputs.InputCoin.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
+            if (object.outputIndex != null)
+                message.outputIndex = object.outputIndex | 0;
             return message;
         };
 
@@ -4762,13 +4641,19 @@ export const inputs = $root.inputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.utxoId = "";
                 else {
-                    object.txId = [];
+                    object.utxoId = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.utxoId = $util.newBuffer(object.utxoId);
+                }
+                if (options.bytes === String)
+                    object.owner = "";
+                else {
+                    object.owner = [];
+                    if (options.bytes !== Array)
+                        object.owner = $util.newBuffer(object.owner);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -4782,14 +4667,13 @@ export const inputs = $root.inputs = (() => {
                     if (options.bytes !== Array)
                         object.assetId = $util.newBuffer(object.assetId);
                 }
-                if (options.bytes === String)
-                    object.ownerAddress = "";
-                else {
-                    object.ownerAddress = [];
-                    if (options.bytes !== Array)
-                        object.ownerAddress = $util.newBuffer(object.ownerAddress);
-                }
-                object.outputIndex = 0;
+                object.txPointer = null;
+                object.witnessIndex = 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, false);
+                    object.predicateGasUsed = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.predicateGasUsed = options.longs === String ? "0" : 0;
                 if (options.bytes === String)
                     object.predicate = "";
                 else {
@@ -4806,11 +4690,6 @@ export const inputs = $root.inputs = (() => {
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
-                    object.predicateGasUsed = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.predicateGasUsed = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
                     object.predicateLength = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.predicateLength = options.longs === String ? "0" : 0;
@@ -4819,27 +4698,12 @@ export const inputs = $root.inputs = (() => {
                     object.predicateDataLength = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.predicateDataLength = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.txPointerBlockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.txPointerBlockHeight = options.longs === String ? "0" : 0;
-                object.txPointerTxIndex = 0;
-                if (options.bytes === String)
-                    object.utxoId = "";
-                else {
-                    object.utxoId = [];
-                    if (options.bytes !== Array)
-                        object.utxoId = $util.newBuffer(object.utxoId);
-                }
-                object.witnessIndex = 0;
-                object.createdAt = null;
-                object.publishedAt = null;
+                object.outputIndex = 0;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
+            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
+                object.utxoId = options.bytes === String ? $util.base64.encode(message.utxoId, 0, message.utxoId.length) : options.bytes === Array ? Array.prototype.slice.call(message.utxoId) : message.utxoId;
+            if (message.owner != null && message.hasOwnProperty("owner"))
+                object.owner = options.bytes === String ? $util.base64.encode(message.owner, 0, message.owner.length) : options.bytes === Array ? Array.prototype.slice.call(message.owner) : message.owner;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -4847,19 +4711,19 @@ export const inputs = $root.inputs = (() => {
                     object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 object.assetId = options.bytes === String ? $util.base64.encode(message.assetId, 0, message.assetId.length) : options.bytes === Array ? Array.prototype.slice.call(message.assetId) : message.assetId;
-            if (message.ownerAddress != null && message.hasOwnProperty("ownerAddress"))
-                object.ownerAddress = options.bytes === String ? $util.base64.encode(message.ownerAddress, 0, message.ownerAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.ownerAddress) : message.ownerAddress;
-            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
-                object.outputIndex = message.outputIndex;
-            if (message.predicate != null && message.hasOwnProperty("predicate"))
-                object.predicate = options.bytes === String ? $util.base64.encode(message.predicate, 0, message.predicate.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicate) : message.predicate;
-            if (message.predicateData != null && message.hasOwnProperty("predicateData"))
-                object.predicateData = options.bytes === String ? $util.base64.encode(message.predicateData, 0, message.predicateData.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicateData) : message.predicateData;
+            if (message.txPointer != null && message.hasOwnProperty("txPointer"))
+                object.txPointer = $root.pointers.TxPointer.toObject(message.txPointer, options);
+            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
+                object.witnessIndex = message.witnessIndex;
             if (message.predicateGasUsed != null && message.hasOwnProperty("predicateGasUsed"))
                 if (typeof message.predicateGasUsed === "number")
                     object.predicateGasUsed = options.longs === String ? String(message.predicateGasUsed) : message.predicateGasUsed;
                 else
                     object.predicateGasUsed = options.longs === String ? $util.Long.prototype.toString.call(message.predicateGasUsed) : options.longs === Number ? new $util.LongBits(message.predicateGasUsed.low >>> 0, message.predicateGasUsed.high >>> 0).toNumber() : message.predicateGasUsed;
+            if (message.predicate != null && message.hasOwnProperty("predicate"))
+                object.predicate = options.bytes === String ? $util.base64.encode(message.predicate, 0, message.predicate.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicate) : message.predicate;
+            if (message.predicateData != null && message.hasOwnProperty("predicateData"))
+                object.predicateData = options.bytes === String ? $util.base64.encode(message.predicateData, 0, message.predicateData.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicateData) : message.predicateData;
             if (message.predicateLength != null && message.hasOwnProperty("predicateLength"))
                 if (typeof message.predicateLength === "number")
                     object.predicateLength = options.longs === String ? String(message.predicateLength) : message.predicateLength;
@@ -4870,21 +4734,8 @@ export const inputs = $root.inputs = (() => {
                     object.predicateDataLength = options.longs === String ? String(message.predicateDataLength) : message.predicateDataLength;
                 else
                     object.predicateDataLength = options.longs === String ? $util.Long.prototype.toString.call(message.predicateDataLength) : options.longs === Number ? new $util.LongBits(message.predicateDataLength.low >>> 0, message.predicateDataLength.high >>> 0).toNumber() : message.predicateDataLength;
-            if (message.txPointerBlockHeight != null && message.hasOwnProperty("txPointerBlockHeight"))
-                if (typeof message.txPointerBlockHeight === "number")
-                    object.txPointerBlockHeight = options.longs === String ? String(message.txPointerBlockHeight) : message.txPointerBlockHeight;
-                else
-                    object.txPointerBlockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.txPointerBlockHeight) : options.longs === Number ? new $util.LongBits(message.txPointerBlockHeight.low >>> 0, message.txPointerBlockHeight.high >>> 0).toNumber() : message.txPointerBlockHeight;
-            if (message.txPointerTxIndex != null && message.hasOwnProperty("txPointerTxIndex"))
-                object.txPointerTxIndex = message.txPointerTxIndex;
-            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
-                object.utxoId = options.bytes === String ? $util.base64.encode(message.utxoId, 0, message.utxoId.length) : options.bytes === Array ? Array.prototype.slice.call(message.utxoId) : message.utxoId;
-            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
-                object.witnessIndex = message.witnessIndex;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
+                object.outputIndex = message.outputIndex;
             return object;
         };
 
@@ -4923,17 +4774,12 @@ export const inputs = $root.inputs = (() => {
          * Properties of an InputContract.
          * @memberof inputs
          * @interface IInputContract
-         * @property {string|null} [subject] InputContract subject
-         * @property {Uint8Array|null} [txId] InputContract txId
+         * @property {Uint8Array|null} [utxoId] InputContract utxoId
          * @property {Uint8Array|null} [balanceRoot] InputContract balanceRoot
+         * @property {Uint8Array|null} [stateRoot] InputContract stateRoot
+         * @property {pointers.ITxPointer|null} [txPointer] InputContract txPointer
          * @property {Uint8Array|null} [contractId] InputContract contractId
          * @property {number|null} [outputIndex] InputContract outputIndex
-         * @property {Uint8Array|null} [stateRoot] InputContract stateRoot
-         * @property {number|Long|null} [txPointerBlockHeight] InputContract txPointerBlockHeight
-         * @property {number|null} [txPointerTxIndex] InputContract txPointerTxIndex
-         * @property {Uint8Array|null} [utxoId] InputContract utxoId
-         * @property {google.protobuf.ITimestamp|null} [createdAt] InputContract createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] InputContract publishedAt
          */
 
         /**
@@ -4952,20 +4798,12 @@ export const inputs = $root.inputs = (() => {
         }
 
         /**
-         * InputContract subject.
-         * @member {string} subject
+         * InputContract utxoId.
+         * @member {Uint8Array} utxoId
          * @memberof inputs.InputContract
          * @instance
          */
-        InputContract.prototype.subject = "";
-
-        /**
-         * InputContract txId.
-         * @member {Uint8Array} txId
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.txId = $util.newBuffer([]);
+        InputContract.prototype.utxoId = $util.newBuffer([]);
 
         /**
          * InputContract balanceRoot.
@@ -4974,6 +4812,22 @@ export const inputs = $root.inputs = (() => {
          * @instance
          */
         InputContract.prototype.balanceRoot = $util.newBuffer([]);
+
+        /**
+         * InputContract stateRoot.
+         * @member {Uint8Array} stateRoot
+         * @memberof inputs.InputContract
+         * @instance
+         */
+        InputContract.prototype.stateRoot = $util.newBuffer([]);
+
+        /**
+         * InputContract txPointer.
+         * @member {pointers.ITxPointer|null|undefined} txPointer
+         * @memberof inputs.InputContract
+         * @instance
+         */
+        InputContract.prototype.txPointer = null;
 
         /**
          * InputContract contractId.
@@ -4990,54 +4844,6 @@ export const inputs = $root.inputs = (() => {
          * @instance
          */
         InputContract.prototype.outputIndex = 0;
-
-        /**
-         * InputContract stateRoot.
-         * @member {Uint8Array} stateRoot
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.stateRoot = $util.newBuffer([]);
-
-        /**
-         * InputContract txPointerBlockHeight.
-         * @member {number|Long} txPointerBlockHeight
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.txPointerBlockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * InputContract txPointerTxIndex.
-         * @member {number} txPointerTxIndex
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.txPointerTxIndex = 0;
-
-        /**
-         * InputContract utxoId.
-         * @member {Uint8Array} utxoId
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.utxoId = $util.newBuffer([]);
-
-        /**
-         * InputContract createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.createdAt = null;
-
-        /**
-         * InputContract publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof inputs.InputContract
-         * @instance
-         */
-        InputContract.prototype.publishedAt = null;
 
         /**
          * Creates a new InputContract instance using the specified properties.
@@ -5063,28 +4869,18 @@ export const inputs = $root.inputs = (() => {
         InputContract.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.balanceRoot != null && Object.hasOwnProperty.call(message, "balanceRoot"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.balanceRoot);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.contractId);
-            if (message.outputIndex != null && Object.hasOwnProperty.call(message, "outputIndex"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.outputIndex);
-            if (message.stateRoot != null && Object.hasOwnProperty.call(message, "stateRoot"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.stateRoot);
-            if (message.txPointerBlockHeight != null && Object.hasOwnProperty.call(message, "txPointerBlockHeight"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.txPointerBlockHeight);
-            if (message.txPointerTxIndex != null && Object.hasOwnProperty.call(message, "txPointerTxIndex"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.txPointerTxIndex);
             if (message.utxoId != null && Object.hasOwnProperty.call(message, "utxoId"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.utxoId);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.utxoId);
+            if (message.balanceRoot != null && Object.hasOwnProperty.call(message, "balanceRoot"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.balanceRoot);
+            if (message.stateRoot != null && Object.hasOwnProperty.call(message, "stateRoot"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.stateRoot);
+            if (message.txPointer != null && Object.hasOwnProperty.call(message, "txPointer"))
+                $root.pointers.TxPointer.encode(message.txPointer, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.contractId);
+            if (message.outputIndex != null && Object.hasOwnProperty.call(message, "outputIndex"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.outputIndex);
             return writer;
         };
 
@@ -5120,47 +4916,27 @@ export const inputs = $root.inputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.balanceRoot = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.outputIndex = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.stateRoot = reader.bytes();
-                        break;
-                    }
-                case 7: {
-                        message.txPointerBlockHeight = reader.int64();
-                        break;
-                    }
-                case 8: {
-                        message.txPointerTxIndex = reader.int32();
-                        break;
-                    }
-                case 9: {
                         message.utxoId = reader.bytes();
                         break;
                     }
-                case 10: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 2: {
+                        message.balanceRoot = reader.bytes();
                         break;
                     }
-                case 11: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 3: {
+                        message.stateRoot = reader.bytes();
+                        break;
+                    }
+                case 4: {
+                        message.txPointer = $root.pointers.TxPointer.decode(reader, reader.uint32());
+                        break;
+                    }
+                case 5: {
+                        message.contractId = reader.bytes();
+                        break;
+                    }
+                case 6: {
+                        message.outputIndex = reader.int32();
                         break;
                     }
                 default:
@@ -5198,43 +4974,26 @@ export const inputs = $root.inputs = (() => {
         InputContract.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
+            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
+                if (!(message.utxoId && typeof message.utxoId.length === "number" || $util.isString(message.utxoId)))
+                    return "utxoId: buffer expected";
             if (message.balanceRoot != null && message.hasOwnProperty("balanceRoot"))
                 if (!(message.balanceRoot && typeof message.balanceRoot.length === "number" || $util.isString(message.balanceRoot)))
                     return "balanceRoot: buffer expected";
+            if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
+                if (!(message.stateRoot && typeof message.stateRoot.length === "number" || $util.isString(message.stateRoot)))
+                    return "stateRoot: buffer expected";
+            if (message.txPointer != null && message.hasOwnProperty("txPointer")) {
+                let error = $root.pointers.TxPointer.verify(message.txPointer);
+                if (error)
+                    return "txPointer." + error;
+            }
             if (message.contractId != null && message.hasOwnProperty("contractId"))
                 if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
                     return "contractId: buffer expected";
             if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
                 if (!$util.isInteger(message.outputIndex))
                     return "outputIndex: integer expected";
-            if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
-                if (!(message.stateRoot && typeof message.stateRoot.length === "number" || $util.isString(message.stateRoot)))
-                    return "stateRoot: buffer expected";
-            if (message.txPointerBlockHeight != null && message.hasOwnProperty("txPointerBlockHeight"))
-                if (!$util.isInteger(message.txPointerBlockHeight) && !(message.txPointerBlockHeight && $util.isInteger(message.txPointerBlockHeight.low) && $util.isInteger(message.txPointerBlockHeight.high)))
-                    return "txPointerBlockHeight: integer|Long expected";
-            if (message.txPointerTxIndex != null && message.hasOwnProperty("txPointerTxIndex"))
-                if (!$util.isInteger(message.txPointerTxIndex))
-                    return "txPointerTxIndex: integer expected";
-            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
-                if (!(message.utxoId && typeof message.utxoId.length === "number" || $util.isString(message.utxoId)))
-                    return "utxoId: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -5250,18 +5009,26 @@ export const inputs = $root.inputs = (() => {
             if (object instanceof $root.inputs.InputContract)
                 return object;
             let message = new $root.inputs.InputContract();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
+            if (object.utxoId != null)
+                if (typeof object.utxoId === "string")
+                    $util.base64.decode(object.utxoId, message.utxoId = $util.newBuffer($util.base64.length(object.utxoId)), 0);
+                else if (object.utxoId.length >= 0)
+                    message.utxoId = object.utxoId;
             if (object.balanceRoot != null)
                 if (typeof object.balanceRoot === "string")
                     $util.base64.decode(object.balanceRoot, message.balanceRoot = $util.newBuffer($util.base64.length(object.balanceRoot)), 0);
                 else if (object.balanceRoot.length >= 0)
                     message.balanceRoot = object.balanceRoot;
+            if (object.stateRoot != null)
+                if (typeof object.stateRoot === "string")
+                    $util.base64.decode(object.stateRoot, message.stateRoot = $util.newBuffer($util.base64.length(object.stateRoot)), 0);
+                else if (object.stateRoot.length >= 0)
+                    message.stateRoot = object.stateRoot;
+            if (object.txPointer != null) {
+                if (typeof object.txPointer !== "object")
+                    throw TypeError(".inputs.InputContract.txPointer: object expected");
+                message.txPointer = $root.pointers.TxPointer.fromObject(object.txPointer);
+            }
             if (object.contractId != null)
                 if (typeof object.contractId === "string")
                     $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
@@ -5269,37 +5036,6 @@ export const inputs = $root.inputs = (() => {
                     message.contractId = object.contractId;
             if (object.outputIndex != null)
                 message.outputIndex = object.outputIndex | 0;
-            if (object.stateRoot != null)
-                if (typeof object.stateRoot === "string")
-                    $util.base64.decode(object.stateRoot, message.stateRoot = $util.newBuffer($util.base64.length(object.stateRoot)), 0);
-                else if (object.stateRoot.length >= 0)
-                    message.stateRoot = object.stateRoot;
-            if (object.txPointerBlockHeight != null)
-                if ($util.Long)
-                    (message.txPointerBlockHeight = $util.Long.fromValue(object.txPointerBlockHeight)).unsigned = false;
-                else if (typeof object.txPointerBlockHeight === "string")
-                    message.txPointerBlockHeight = parseInt(object.txPointerBlockHeight, 10);
-                else if (typeof object.txPointerBlockHeight === "number")
-                    message.txPointerBlockHeight = object.txPointerBlockHeight;
-                else if (typeof object.txPointerBlockHeight === "object")
-                    message.txPointerBlockHeight = new $util.LongBits(object.txPointerBlockHeight.low >>> 0, object.txPointerBlockHeight.high >>> 0).toNumber();
-            if (object.txPointerTxIndex != null)
-                message.txPointerTxIndex = object.txPointerTxIndex | 0;
-            if (object.utxoId != null)
-                if (typeof object.utxoId === "string")
-                    $util.base64.decode(object.utxoId, message.utxoId = $util.newBuffer($util.base64.length(object.utxoId)), 0);
-                else if (object.utxoId.length >= 0)
-                    message.utxoId = object.utxoId;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".inputs.InputContract.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".inputs.InputContract.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -5317,13 +5053,12 @@ export const inputs = $root.inputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.utxoId = "";
                 else {
-                    object.txId = [];
+                    object.utxoId = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.utxoId = $util.newBuffer(object.utxoId);
                 }
                 if (options.bytes === String)
                     object.balanceRoot = "";
@@ -5333,6 +5068,14 @@ export const inputs = $root.inputs = (() => {
                         object.balanceRoot = $util.newBuffer(object.balanceRoot);
                 }
                 if (options.bytes === String)
+                    object.stateRoot = "";
+                else {
+                    object.stateRoot = [];
+                    if (options.bytes !== Array)
+                        object.stateRoot = $util.newBuffer(object.stateRoot);
+                }
+                object.txPointer = null;
+                if (options.bytes === String)
                     object.contractId = "";
                 else {
                     object.contractId = [];
@@ -5340,54 +5083,19 @@ export const inputs = $root.inputs = (() => {
                         object.contractId = $util.newBuffer(object.contractId);
                 }
                 object.outputIndex = 0;
-                if (options.bytes === String)
-                    object.stateRoot = "";
-                else {
-                    object.stateRoot = [];
-                    if (options.bytes !== Array)
-                        object.stateRoot = $util.newBuffer(object.stateRoot);
-                }
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.txPointerBlockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.txPointerBlockHeight = options.longs === String ? "0" : 0;
-                object.txPointerTxIndex = 0;
-                if (options.bytes === String)
-                    object.utxoId = "";
-                else {
-                    object.utxoId = [];
-                    if (options.bytes !== Array)
-                        object.utxoId = $util.newBuffer(object.utxoId);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
+            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
+                object.utxoId = options.bytes === String ? $util.base64.encode(message.utxoId, 0, message.utxoId.length) : options.bytes === Array ? Array.prototype.slice.call(message.utxoId) : message.utxoId;
             if (message.balanceRoot != null && message.hasOwnProperty("balanceRoot"))
                 object.balanceRoot = options.bytes === String ? $util.base64.encode(message.balanceRoot, 0, message.balanceRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.balanceRoot) : message.balanceRoot;
+            if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
+                object.stateRoot = options.bytes === String ? $util.base64.encode(message.stateRoot, 0, message.stateRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.stateRoot) : message.stateRoot;
+            if (message.txPointer != null && message.hasOwnProperty("txPointer"))
+                object.txPointer = $root.pointers.TxPointer.toObject(message.txPointer, options);
             if (message.contractId != null && message.hasOwnProperty("contractId"))
                 object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
             if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
                 object.outputIndex = message.outputIndex;
-            if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
-                object.stateRoot = options.bytes === String ? $util.base64.encode(message.stateRoot, 0, message.stateRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.stateRoot) : message.stateRoot;
-            if (message.txPointerBlockHeight != null && message.hasOwnProperty("txPointerBlockHeight"))
-                if (typeof message.txPointerBlockHeight === "number")
-                    object.txPointerBlockHeight = options.longs === String ? String(message.txPointerBlockHeight) : message.txPointerBlockHeight;
-                else
-                    object.txPointerBlockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.txPointerBlockHeight) : options.longs === Number ? new $util.LongBits(message.txPointerBlockHeight.low >>> 0, message.txPointerBlockHeight.high >>> 0).toNumber() : message.txPointerBlockHeight;
-            if (message.txPointerTxIndex != null && message.hasOwnProperty("txPointerTxIndex"))
-                object.txPointerTxIndex = message.txPointerTxIndex;
-            if (message.utxoId != null && message.hasOwnProperty("utxoId"))
-                object.utxoId = options.bytes === String ? $util.base64.encode(message.utxoId, 0, message.utxoId.length) : options.bytes === Array ? Array.prototype.slice.call(message.utxoId) : message.utxoId;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -5426,22 +5134,18 @@ export const inputs = $root.inputs = (() => {
          * Properties of an InputMessage.
          * @memberof inputs
          * @interface IInputMessage
-         * @property {string|null} [subject] InputMessage subject
-         * @property {Uint8Array|null} [txId] InputMessage txId
+         * @property {Uint8Array|null} [sender] InputMessage sender
+         * @property {Uint8Array|null} [recipient] InputMessage recipient
          * @property {number|Long|null} [amount] InputMessage amount
-         * @property {Uint8Array|null} [data] InputMessage data
-         * @property {number|null} [dataLength] InputMessage dataLength
          * @property {Uint8Array|null} [nonce] InputMessage nonce
-         * @property {Uint8Array|null} [predicate] InputMessage predicate
-         * @property {number|null} [predicateLength] InputMessage predicateLength
-         * @property {Uint8Array|null} [predicateData] InputMessage predicateData
-         * @property {number|null} [predicateDataLength] InputMessage predicateDataLength
-         * @property {number|Long|null} [predicateGasUsed] InputMessage predicateGasUsed
-         * @property {Uint8Array|null} [recipientAddress] InputMessage recipientAddress
-         * @property {Uint8Array|null} [senderAddress] InputMessage senderAddress
          * @property {number|null} [witnessIndex] InputMessage witnessIndex
-         * @property {google.protobuf.ITimestamp|null} [createdAt] InputMessage createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] InputMessage publishedAt
+         * @property {number|Long|null} [predicateGasUsed] InputMessage predicateGasUsed
+         * @property {Uint8Array|null} [data] InputMessage data
+         * @property {Uint8Array|null} [predicate] InputMessage predicate
+         * @property {Uint8Array|null} [predicateData] InputMessage predicateData
+         * @property {number|null} [dataLength] InputMessage dataLength
+         * @property {number|null} [predicateLength] InputMessage predicateLength
+         * @property {number|null} [predicateDataLength] InputMessage predicateDataLength
          */
 
         /**
@@ -5460,20 +5164,20 @@ export const inputs = $root.inputs = (() => {
         }
 
         /**
-         * InputMessage subject.
-         * @member {string} subject
+         * InputMessage sender.
+         * @member {Uint8Array} sender
          * @memberof inputs.InputMessage
          * @instance
          */
-        InputMessage.prototype.subject = "";
+        InputMessage.prototype.sender = $util.newBuffer([]);
 
         /**
-         * InputMessage txId.
-         * @member {Uint8Array} txId
+         * InputMessage recipient.
+         * @member {Uint8Array} recipient
          * @memberof inputs.InputMessage
          * @instance
          */
-        InputMessage.prototype.txId = $util.newBuffer([]);
+        InputMessage.prototype.recipient = $util.newBuffer([]);
 
         /**
          * InputMessage amount.
@@ -5484,84 +5188,12 @@ export const inputs = $root.inputs = (() => {
         InputMessage.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * InputMessage data.
-         * @member {Uint8Array} data
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.data = $util.newBuffer([]);
-
-        /**
-         * InputMessage dataLength.
-         * @member {number} dataLength
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.dataLength = 0;
-
-        /**
          * InputMessage nonce.
          * @member {Uint8Array} nonce
          * @memberof inputs.InputMessage
          * @instance
          */
         InputMessage.prototype.nonce = $util.newBuffer([]);
-
-        /**
-         * InputMessage predicate.
-         * @member {Uint8Array} predicate
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.predicate = $util.newBuffer([]);
-
-        /**
-         * InputMessage predicateLength.
-         * @member {number} predicateLength
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.predicateLength = 0;
-
-        /**
-         * InputMessage predicateData.
-         * @member {Uint8Array} predicateData
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.predicateData = $util.newBuffer([]);
-
-        /**
-         * InputMessage predicateDataLength.
-         * @member {number} predicateDataLength
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.predicateDataLength = 0;
-
-        /**
-         * InputMessage predicateGasUsed.
-         * @member {number|Long} predicateGasUsed
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.predicateGasUsed = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * InputMessage recipientAddress.
-         * @member {Uint8Array} recipientAddress
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.recipientAddress = $util.newBuffer([]);
-
-        /**
-         * InputMessage senderAddress.
-         * @member {Uint8Array} senderAddress
-         * @memberof inputs.InputMessage
-         * @instance
-         */
-        InputMessage.prototype.senderAddress = $util.newBuffer([]);
 
         /**
          * InputMessage witnessIndex.
@@ -5572,20 +5204,60 @@ export const inputs = $root.inputs = (() => {
         InputMessage.prototype.witnessIndex = 0;
 
         /**
-         * InputMessage createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
+         * InputMessage predicateGasUsed.
+         * @member {number|Long} predicateGasUsed
          * @memberof inputs.InputMessage
          * @instance
          */
-        InputMessage.prototype.createdAt = null;
+        InputMessage.prototype.predicateGasUsed = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * InputMessage publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
+         * InputMessage data.
+         * @member {Uint8Array} data
          * @memberof inputs.InputMessage
          * @instance
          */
-        InputMessage.prototype.publishedAt = null;
+        InputMessage.prototype.data = $util.newBuffer([]);
+
+        /**
+         * InputMessage predicate.
+         * @member {Uint8Array} predicate
+         * @memberof inputs.InputMessage
+         * @instance
+         */
+        InputMessage.prototype.predicate = $util.newBuffer([]);
+
+        /**
+         * InputMessage predicateData.
+         * @member {Uint8Array} predicateData
+         * @memberof inputs.InputMessage
+         * @instance
+         */
+        InputMessage.prototype.predicateData = $util.newBuffer([]);
+
+        /**
+         * InputMessage dataLength.
+         * @member {number} dataLength
+         * @memberof inputs.InputMessage
+         * @instance
+         */
+        InputMessage.prototype.dataLength = 0;
+
+        /**
+         * InputMessage predicateLength.
+         * @member {number} predicateLength
+         * @memberof inputs.InputMessage
+         * @instance
+         */
+        InputMessage.prototype.predicateLength = 0;
+
+        /**
+         * InputMessage predicateDataLength.
+         * @member {number} predicateDataLength
+         * @memberof inputs.InputMessage
+         * @instance
+         */
+        InputMessage.prototype.predicateDataLength = 0;
 
         /**
          * Creates a new InputMessage instance using the specified properties.
@@ -5611,38 +5283,30 @@ export const inputs = $root.inputs = (() => {
         InputMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
+            if (message.sender != null && Object.hasOwnProperty.call(message, "sender"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.sender);
+            if (message.recipient != null && Object.hasOwnProperty.call(message, "recipient"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.recipient);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
                 writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
-            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.data);
-            if (message.dataLength != null && Object.hasOwnProperty.call(message, "dataLength"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.dataLength);
             if (message.nonce != null && Object.hasOwnProperty.call(message, "nonce"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.nonce);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.nonce);
+            if (message.witnessIndex != null && Object.hasOwnProperty.call(message, "witnessIndex"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.witnessIndex);
+            if (message.predicateGasUsed != null && Object.hasOwnProperty.call(message, "predicateGasUsed"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.predicateGasUsed);
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.data);
             if (message.predicate != null && Object.hasOwnProperty.call(message, "predicate"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.predicate);
-            if (message.predicateLength != null && Object.hasOwnProperty.call(message, "predicateLength"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.predicateLength);
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.predicate);
             if (message.predicateData != null && Object.hasOwnProperty.call(message, "predicateData"))
                 writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.predicateData);
+            if (message.dataLength != null && Object.hasOwnProperty.call(message, "dataLength"))
+                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.dataLength);
+            if (message.predicateLength != null && Object.hasOwnProperty.call(message, "predicateLength"))
+                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.predicateLength);
             if (message.predicateDataLength != null && Object.hasOwnProperty.call(message, "predicateDataLength"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.predicateDataLength);
-            if (message.predicateGasUsed != null && Object.hasOwnProperty.call(message, "predicateGasUsed"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int64(message.predicateGasUsed);
-            if (message.recipientAddress != null && Object.hasOwnProperty.call(message, "recipientAddress"))
-                writer.uint32(/* id 12, wireType 2 =*/98).bytes(message.recipientAddress);
-            if (message.senderAddress != null && Object.hasOwnProperty.call(message, "senderAddress"))
-                writer.uint32(/* id 13, wireType 2 =*/106).bytes(message.senderAddress);
-            if (message.witnessIndex != null && Object.hasOwnProperty.call(message, "witnessIndex"))
-                writer.uint32(/* id 14, wireType 0 =*/112).int32(message.witnessIndex);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
+                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.predicateDataLength);
             return writer;
         };
 
@@ -5678,11 +5342,11 @@ export const inputs = $root.inputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.sender = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
+                        message.recipient = reader.bytes();
                         break;
                     }
                 case 3: {
@@ -5690,23 +5354,23 @@ export const inputs = $root.inputs = (() => {
                         break;
                     }
                 case 4: {
-                        message.data = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.dataLength = reader.int32();
-                        break;
-                    }
-                case 6: {
                         message.nonce = reader.bytes();
                         break;
                     }
+                case 5: {
+                        message.witnessIndex = reader.int32();
+                        break;
+                    }
+                case 6: {
+                        message.predicateGasUsed = reader.int64();
+                        break;
+                    }
                 case 7: {
-                        message.predicate = reader.bytes();
+                        message.data = reader.bytes();
                         break;
                     }
                 case 8: {
-                        message.predicateLength = reader.int32();
+                        message.predicate = reader.bytes();
                         break;
                     }
                 case 9: {
@@ -5714,31 +5378,15 @@ export const inputs = $root.inputs = (() => {
                         break;
                     }
                 case 10: {
-                        message.predicateDataLength = reader.int32();
+                        message.dataLength = reader.int32();
                         break;
                     }
                 case 11: {
-                        message.predicateGasUsed = reader.int64();
+                        message.predicateLength = reader.int32();
                         break;
                     }
                 case 12: {
-                        message.recipientAddress = reader.bytes();
-                        break;
-                    }
-                case 13: {
-                        message.senderAddress = reader.bytes();
-                        break;
-                    }
-                case 14: {
-                        message.witnessIndex = reader.int32();
-                        break;
-                    }
-                case 15: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 16: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                        message.predicateDataLength = reader.int32();
                         break;
                     }
                 default:
@@ -5776,58 +5424,42 @@ export const inputs = $root.inputs = (() => {
         InputMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
+            if (message.sender != null && message.hasOwnProperty("sender"))
+                if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
+                    return "sender: buffer expected";
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
-            if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            if (message.dataLength != null && message.hasOwnProperty("dataLength"))
-                if (!$util.isInteger(message.dataLength))
-                    return "dataLength: integer expected";
             if (message.nonce != null && message.hasOwnProperty("nonce"))
                 if (!(message.nonce && typeof message.nonce.length === "number" || $util.isString(message.nonce)))
                     return "nonce: buffer expected";
-            if (message.predicate != null && message.hasOwnProperty("predicate"))
-                if (!(message.predicate && typeof message.predicate.length === "number" || $util.isString(message.predicate)))
-                    return "predicate: buffer expected";
-            if (message.predicateLength != null && message.hasOwnProperty("predicateLength"))
-                if (!$util.isInteger(message.predicateLength))
-                    return "predicateLength: integer expected";
-            if (message.predicateData != null && message.hasOwnProperty("predicateData"))
-                if (!(message.predicateData && typeof message.predicateData.length === "number" || $util.isString(message.predicateData)))
-                    return "predicateData: buffer expected";
-            if (message.predicateDataLength != null && message.hasOwnProperty("predicateDataLength"))
-                if (!$util.isInteger(message.predicateDataLength))
-                    return "predicateDataLength: integer expected";
-            if (message.predicateGasUsed != null && message.hasOwnProperty("predicateGasUsed"))
-                if (!$util.isInteger(message.predicateGasUsed) && !(message.predicateGasUsed && $util.isInteger(message.predicateGasUsed.low) && $util.isInteger(message.predicateGasUsed.high)))
-                    return "predicateGasUsed: integer|Long expected";
-            if (message.recipientAddress != null && message.hasOwnProperty("recipientAddress"))
-                if (!(message.recipientAddress && typeof message.recipientAddress.length === "number" || $util.isString(message.recipientAddress)))
-                    return "recipientAddress: buffer expected";
-            if (message.senderAddress != null && message.hasOwnProperty("senderAddress"))
-                if (!(message.senderAddress && typeof message.senderAddress.length === "number" || $util.isString(message.senderAddress)))
-                    return "senderAddress: buffer expected";
             if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
                 if (!$util.isInteger(message.witnessIndex))
                     return "witnessIndex: integer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
+            if (message.predicateGasUsed != null && message.hasOwnProperty("predicateGasUsed"))
+                if (!$util.isInteger(message.predicateGasUsed) && !(message.predicateGasUsed && $util.isInteger(message.predicateGasUsed.low) && $util.isInteger(message.predicateGasUsed.high)))
+                    return "predicateGasUsed: integer|Long expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
+            if (message.predicate != null && message.hasOwnProperty("predicate"))
+                if (!(message.predicate && typeof message.predicate.length === "number" || $util.isString(message.predicate)))
+                    return "predicate: buffer expected";
+            if (message.predicateData != null && message.hasOwnProperty("predicateData"))
+                if (!(message.predicateData && typeof message.predicateData.length === "number" || $util.isString(message.predicateData)))
+                    return "predicateData: buffer expected";
+            if (message.dataLength != null && message.hasOwnProperty("dataLength"))
+                if (!$util.isInteger(message.dataLength))
+                    return "dataLength: integer expected";
+            if (message.predicateLength != null && message.hasOwnProperty("predicateLength"))
+                if (!$util.isInteger(message.predicateLength))
+                    return "predicateLength: integer expected";
+            if (message.predicateDataLength != null && message.hasOwnProperty("predicateDataLength"))
+                if (!$util.isInteger(message.predicateDataLength))
+                    return "predicateDataLength: integer expected";
             return null;
         };
 
@@ -5843,13 +5475,16 @@ export const inputs = $root.inputs = (() => {
             if (object instanceof $root.inputs.InputMessage)
                 return object;
             let message = new $root.inputs.InputMessage();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
+            if (object.sender != null)
+                if (typeof object.sender === "string")
+                    $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
+                else if (object.sender.length >= 0)
+                    message.sender = object.sender;
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length >= 0)
+                    message.recipient = object.recipient;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -5859,32 +5494,13 @@ export const inputs = $root.inputs = (() => {
                     message.amount = object.amount;
                 else if (typeof object.amount === "object")
                     message.amount = new $util.LongBits(object.amount.low >>> 0, object.amount.high >>> 0).toNumber();
-            if (object.data != null)
-                if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
-            if (object.dataLength != null)
-                message.dataLength = object.dataLength | 0;
             if (object.nonce != null)
                 if (typeof object.nonce === "string")
                     $util.base64.decode(object.nonce, message.nonce = $util.newBuffer($util.base64.length(object.nonce)), 0);
                 else if (object.nonce.length >= 0)
                     message.nonce = object.nonce;
-            if (object.predicate != null)
-                if (typeof object.predicate === "string")
-                    $util.base64.decode(object.predicate, message.predicate = $util.newBuffer($util.base64.length(object.predicate)), 0);
-                else if (object.predicate.length >= 0)
-                    message.predicate = object.predicate;
-            if (object.predicateLength != null)
-                message.predicateLength = object.predicateLength | 0;
-            if (object.predicateData != null)
-                if (typeof object.predicateData === "string")
-                    $util.base64.decode(object.predicateData, message.predicateData = $util.newBuffer($util.base64.length(object.predicateData)), 0);
-                else if (object.predicateData.length >= 0)
-                    message.predicateData = object.predicateData;
-            if (object.predicateDataLength != null)
-                message.predicateDataLength = object.predicateDataLength | 0;
+            if (object.witnessIndex != null)
+                message.witnessIndex = object.witnessIndex | 0;
             if (object.predicateGasUsed != null)
                 if ($util.Long)
                     (message.predicateGasUsed = $util.Long.fromValue(object.predicateGasUsed)).unsigned = false;
@@ -5894,28 +5510,27 @@ export const inputs = $root.inputs = (() => {
                     message.predicateGasUsed = object.predicateGasUsed;
                 else if (typeof object.predicateGasUsed === "object")
                     message.predicateGasUsed = new $util.LongBits(object.predicateGasUsed.low >>> 0, object.predicateGasUsed.high >>> 0).toNumber();
-            if (object.recipientAddress != null)
-                if (typeof object.recipientAddress === "string")
-                    $util.base64.decode(object.recipientAddress, message.recipientAddress = $util.newBuffer($util.base64.length(object.recipientAddress)), 0);
-                else if (object.recipientAddress.length >= 0)
-                    message.recipientAddress = object.recipientAddress;
-            if (object.senderAddress != null)
-                if (typeof object.senderAddress === "string")
-                    $util.base64.decode(object.senderAddress, message.senderAddress = $util.newBuffer($util.base64.length(object.senderAddress)), 0);
-                else if (object.senderAddress.length >= 0)
-                    message.senderAddress = object.senderAddress;
-            if (object.witnessIndex != null)
-                message.witnessIndex = object.witnessIndex | 0;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".inputs.InputMessage.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".inputs.InputMessage.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length >= 0)
+                    message.data = object.data;
+            if (object.predicate != null)
+                if (typeof object.predicate === "string")
+                    $util.base64.decode(object.predicate, message.predicate = $util.newBuffer($util.base64.length(object.predicate)), 0);
+                else if (object.predicate.length >= 0)
+                    message.predicate = object.predicate;
+            if (object.predicateData != null)
+                if (typeof object.predicateData === "string")
+                    $util.base64.decode(object.predicateData, message.predicateData = $util.newBuffer($util.base64.length(object.predicateData)), 0);
+                else if (object.predicateData.length >= 0)
+                    message.predicateData = object.predicateData;
+            if (object.dataLength != null)
+                message.dataLength = object.dataLength | 0;
+            if (object.predicateLength != null)
+                message.predicateLength = object.predicateLength | 0;
+            if (object.predicateDataLength != null)
+                message.predicateDataLength = object.predicateDataLength | 0;
             return message;
         };
 
@@ -5933,13 +5548,19 @@ export const inputs = $root.inputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.sender = "";
                 else {
-                    object.txId = [];
+                    object.sender = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.sender = $util.newBuffer(object.sender);
+                }
+                if (options.bytes === String)
+                    object.recipient = "";
+                else {
+                    object.recipient = [];
+                    if (options.bytes !== Array)
+                        object.recipient = $util.newBuffer(object.recipient);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -5947,19 +5568,24 @@ export const inputs = $root.inputs = (() => {
                 } else
                     object.amount = options.longs === String ? "0" : 0;
                 if (options.bytes === String)
-                    object.data = "";
-                else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
-                }
-                object.dataLength = 0;
-                if (options.bytes === String)
                     object.nonce = "";
                 else {
                     object.nonce = [];
                     if (options.bytes !== Array)
                         object.nonce = $util.newBuffer(object.nonce);
+                }
+                object.witnessIndex = 0;
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, false);
+                    object.predicateGasUsed = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.predicateGasUsed = options.longs === String ? "0" : 0;
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
                 }
                 if (options.bytes === String)
                     object.predicate = "";
@@ -5968,7 +5594,6 @@ export const inputs = $root.inputs = (() => {
                     if (options.bytes !== Array)
                         object.predicate = $util.newBuffer(object.predicate);
                 }
-                object.predicateLength = 0;
                 if (options.bytes === String)
                     object.predicateData = "";
                 else {
@@ -5976,68 +5601,40 @@ export const inputs = $root.inputs = (() => {
                     if (options.bytes !== Array)
                         object.predicateData = $util.newBuffer(object.predicateData);
                 }
+                object.dataLength = 0;
+                object.predicateLength = 0;
                 object.predicateDataLength = 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.predicateGasUsed = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.predicateGasUsed = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.recipientAddress = "";
-                else {
-                    object.recipientAddress = [];
-                    if (options.bytes !== Array)
-                        object.recipientAddress = $util.newBuffer(object.recipientAddress);
-                }
-                if (options.bytes === String)
-                    object.senderAddress = "";
-                else {
-                    object.senderAddress = [];
-                    if (options.bytes !== Array)
-                        object.senderAddress = $util.newBuffer(object.senderAddress);
-                }
-                object.witnessIndex = 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
+            if (message.sender != null && message.hasOwnProperty("sender"))
+                object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
                 else
                     object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
-            if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            if (message.dataLength != null && message.hasOwnProperty("dataLength"))
-                object.dataLength = message.dataLength;
             if (message.nonce != null && message.hasOwnProperty("nonce"))
                 object.nonce = options.bytes === String ? $util.base64.encode(message.nonce, 0, message.nonce.length) : options.bytes === Array ? Array.prototype.slice.call(message.nonce) : message.nonce;
-            if (message.predicate != null && message.hasOwnProperty("predicate"))
-                object.predicate = options.bytes === String ? $util.base64.encode(message.predicate, 0, message.predicate.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicate) : message.predicate;
-            if (message.predicateLength != null && message.hasOwnProperty("predicateLength"))
-                object.predicateLength = message.predicateLength;
-            if (message.predicateData != null && message.hasOwnProperty("predicateData"))
-                object.predicateData = options.bytes === String ? $util.base64.encode(message.predicateData, 0, message.predicateData.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicateData) : message.predicateData;
-            if (message.predicateDataLength != null && message.hasOwnProperty("predicateDataLength"))
-                object.predicateDataLength = message.predicateDataLength;
+            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
+                object.witnessIndex = message.witnessIndex;
             if (message.predicateGasUsed != null && message.hasOwnProperty("predicateGasUsed"))
                 if (typeof message.predicateGasUsed === "number")
                     object.predicateGasUsed = options.longs === String ? String(message.predicateGasUsed) : message.predicateGasUsed;
                 else
                     object.predicateGasUsed = options.longs === String ? $util.Long.prototype.toString.call(message.predicateGasUsed) : options.longs === Number ? new $util.LongBits(message.predicateGasUsed.low >>> 0, message.predicateGasUsed.high >>> 0).toNumber() : message.predicateGasUsed;
-            if (message.recipientAddress != null && message.hasOwnProperty("recipientAddress"))
-                object.recipientAddress = options.bytes === String ? $util.base64.encode(message.recipientAddress, 0, message.recipientAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipientAddress) : message.recipientAddress;
-            if (message.senderAddress != null && message.hasOwnProperty("senderAddress"))
-                object.senderAddress = options.bytes === String ? $util.base64.encode(message.senderAddress, 0, message.senderAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.senderAddress) : message.senderAddress;
-            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
-                object.witnessIndex = message.witnessIndex;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            if (message.predicate != null && message.hasOwnProperty("predicate"))
+                object.predicate = options.bytes === String ? $util.base64.encode(message.predicate, 0, message.predicate.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicate) : message.predicate;
+            if (message.predicateData != null && message.hasOwnProperty("predicateData"))
+                object.predicateData = options.bytes === String ? $util.base64.encode(message.predicateData, 0, message.predicateData.length) : options.bytes === Array ? Array.prototype.slice.call(message.predicateData) : message.predicateData;
+            if (message.dataLength != null && message.hasOwnProperty("dataLength"))
+                object.dataLength = message.dataLength;
+            if (message.predicateLength != null && message.hasOwnProperty("predicateLength"))
+                object.predicateLength = message.predicateLength;
+            if (message.predicateDataLength != null && message.hasOwnProperty("predicateDataLength"))
+                object.predicateDataLength = message.predicateDataLength;
             return object;
         };
 
@@ -6086,19 +5683,21 @@ export const outputs = $root.outputs = (() => {
      * OutputType enum.
      * @name outputs.OutputType
      * @enum {number}
-     * @property {number} COIN=0 COIN value
-     * @property {number} CONTRACT=1 CONTRACT value
-     * @property {number} CHANGE=2 CHANGE value
-     * @property {number} VARIABLE=3 VARIABLE value
-     * @property {number} CONTRACT_CREATED=4 CONTRACT_CREATED value
+     * @property {number} UNKNOWN_OUTPUT_TYPE=0 UNKNOWN_OUTPUT_TYPE value
+     * @property {number} COIN=1 COIN value
+     * @property {number} CONTRACT=2 CONTRACT value
+     * @property {number} CHANGE=3 CHANGE value
+     * @property {number} VARIABLE=4 VARIABLE value
+     * @property {number} CONTRACT_CREATED=5 CONTRACT_CREATED value
      */
     outputs.OutputType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "COIN"] = 0;
-        values[valuesById[1] = "CONTRACT"] = 1;
-        values[valuesById[2] = "CHANGE"] = 2;
-        values[valuesById[3] = "VARIABLE"] = 3;
-        values[valuesById[4] = "CONTRACT_CREATED"] = 4;
+        values[valuesById[0] = "UNKNOWN_OUTPUT_TYPE"] = 0;
+        values[valuesById[1] = "COIN"] = 1;
+        values[valuesById[2] = "CONTRACT"] = 2;
+        values[valuesById[3] = "CHANGE"] = 3;
+        values[valuesById[4] = "VARIABLE"] = 4;
+        values[valuesById[5] = "CONTRACT_CREATED"] = 5;
         return values;
     })();
 
@@ -6109,18 +5708,13 @@ export const outputs = $root.outputs = (() => {
          * @memberof outputs
          * @interface IOutput
          * @property {string|null} [subject] Output subject
-         * @property {number|Long|null} [blockHeight] Output blockHeight
-         * @property {Uint8Array|null} [txId] Output txId
-         * @property {number|null} [txIndex] Output txIndex
-         * @property {number|null} [outputIndex] Output outputIndex
-         * @property {outputs.OutputType|null} [outputType] Output outputType
+         * @property {outputs.OutputType|null} [type] Output type
          * @property {outputs.IOutputCoin|null} [coin] Output coin
          * @property {outputs.IOutputContract|null} [contract] Output contract
          * @property {outputs.IOutputChange|null} [change] Output change
          * @property {outputs.IOutputVariable|null} [variable] Output variable
          * @property {outputs.IOutputContractCreated|null} [contractCreated] Output contractCreated
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Output createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Output publishedAt
+         * @property {common.IMetadata|null} [metadata] Output metadata
          * @property {pointers.IOutputPointer|null} [pointer] Output pointer
          */
 
@@ -6148,44 +5742,12 @@ export const outputs = $root.outputs = (() => {
         Output.prototype.subject = "";
 
         /**
-         * Output blockHeight.
-         * @member {number|Long} blockHeight
+         * Output type.
+         * @member {outputs.OutputType} type
          * @memberof outputs.Output
          * @instance
          */
-        Output.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Output txId.
-         * @member {Uint8Array} txId
-         * @memberof outputs.Output
-         * @instance
-         */
-        Output.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * Output txIndex.
-         * @member {number} txIndex
-         * @memberof outputs.Output
-         * @instance
-         */
-        Output.prototype.txIndex = 0;
-
-        /**
-         * Output outputIndex.
-         * @member {number} outputIndex
-         * @memberof outputs.Output
-         * @instance
-         */
-        Output.prototype.outputIndex = 0;
-
-        /**
-         * Output outputType.
-         * @member {outputs.OutputType} outputType
-         * @memberof outputs.Output
-         * @instance
-         */
-        Output.prototype.outputType = 0;
+        Output.prototype.type = 0;
 
         /**
          * Output coin.
@@ -6228,20 +5790,12 @@ export const outputs = $root.outputs = (() => {
         Output.prototype.contractCreated = null;
 
         /**
-         * Output createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
+         * Output metadata.
+         * @member {common.IMetadata|null|undefined} metadata
          * @memberof outputs.Output
          * @instance
          */
-        Output.prototype.createdAt = null;
-
-        /**
-         * Output publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof outputs.Output
-         * @instance
-         */
-        Output.prototype.publishedAt = null;
+        Output.prototype.metadata = null;
 
         /**
          * Output pointer.
@@ -6291,32 +5845,22 @@ export const outputs = $root.outputs = (() => {
                 writer = $Writer.create();
             if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.txId);
-            if (message.txIndex != null && Object.hasOwnProperty.call(message, "txIndex"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.txIndex);
-            if (message.outputIndex != null && Object.hasOwnProperty.call(message, "outputIndex"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.outputIndex);
-            if (message.outputType != null && Object.hasOwnProperty.call(message, "outputType"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.outputType);
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.type);
             if (message.coin != null && Object.hasOwnProperty.call(message, "coin"))
-                $root.outputs.OutputCoin.encode(message.coin, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.outputs.OutputCoin.encode(message.coin, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.contract != null && Object.hasOwnProperty.call(message, "contract"))
-                $root.outputs.OutputContract.encode(message.contract, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                $root.outputs.OutputContract.encode(message.contract, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.change != null && Object.hasOwnProperty.call(message, "change"))
-                $root.outputs.OutputChange.encode(message.change, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                $root.outputs.OutputChange.encode(message.change, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.variable != null && Object.hasOwnProperty.call(message, "variable"))
-                $root.outputs.OutputVariable.encode(message.variable, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                $root.outputs.OutputVariable.encode(message.variable, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             if (message.contractCreated != null && Object.hasOwnProperty.call(message, "contractCreated"))
-                $root.outputs.OutputContractCreated.encode(message.contractCreated, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+                $root.outputs.OutputContractCreated.encode(message.contractCreated, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                $root.common.Metadata.encode(message.metadata, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
             if (message.pointer != null && Object.hasOwnProperty.call(message, "pointer"))
-                $root.pointers.OutputPointer.encode(message.pointer, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
+                $root.pointers.OutputPointer.encode(message.pointer, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
             return writer;
         };
 
@@ -6356,54 +5900,34 @@ export const outputs = $root.outputs = (() => {
                         break;
                     }
                 case 2: {
-                        message.blockHeight = reader.int64();
+                        message.type = reader.int32();
                         break;
                     }
                 case 3: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.txIndex = reader.int32();
-                        break;
-                    }
-                case 5: {
-                        message.outputIndex = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.outputType = reader.int32();
-                        break;
-                    }
-                case 7: {
                         message.coin = $root.outputs.OutputCoin.decode(reader, reader.uint32());
                         break;
                     }
-                case 8: {
+                case 4: {
                         message.contract = $root.outputs.OutputContract.decode(reader, reader.uint32());
                         break;
                     }
-                case 9: {
+                case 5: {
                         message.change = $root.outputs.OutputChange.decode(reader, reader.uint32());
                         break;
                     }
-                case 10: {
+                case 6: {
                         message.variable = $root.outputs.OutputVariable.decode(reader, reader.uint32());
                         break;
                     }
-                case 11: {
+                case 7: {
                         message.contractCreated = $root.outputs.OutputContractCreated.decode(reader, reader.uint32());
                         break;
                     }
-                case 12: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 9: {
+                        message.metadata = $root.common.Metadata.decode(reader, reader.uint32());
                         break;
                     }
-                case 13: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 14: {
+                case 10: {
                         message.pointer = $root.pointers.OutputPointer.decode(reader, reader.uint32());
                         break;
                     }
@@ -6446,27 +5970,16 @@ export const outputs = $root.outputs = (() => {
             if (message.subject != null && message.hasOwnProperty("subject"))
                 if (!$util.isString(message.subject))
                     return "subject: string expected";
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
-                    return "blockHeight: integer|Long expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                if (!$util.isInteger(message.txIndex))
-                    return "txIndex: integer expected";
-            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
-                if (!$util.isInteger(message.outputIndex))
-                    return "outputIndex: integer expected";
-            if (message.outputType != null && message.hasOwnProperty("outputType"))
-                switch (message.outputType) {
+            if (message.type != null && message.hasOwnProperty("type"))
+                switch (message.type) {
                 default:
-                    return "outputType: enum value expected";
+                    return "type: enum value expected";
                 case 0:
                 case 1:
                 case 2:
                 case 3:
                 case 4:
+                case 5:
                     break;
                 }
             if (message.coin != null && message.hasOwnProperty("coin")) {
@@ -6517,15 +6030,10 @@ export const outputs = $root.outputs = (() => {
                         return "contractCreated." + error;
                 }
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                let error = $root.common.Metadata.verify(message.metadata);
                 if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
+                    return "metadata." + error;
             }
             if (message.pointer != null && message.hasOwnProperty("pointer")) {
                 let error = $root.pointers.OutputPointer.verify(message.pointer);
@@ -6549,50 +6057,36 @@ export const outputs = $root.outputs = (() => {
             let message = new $root.outputs.Output();
             if (object.subject != null)
                 message.subject = String(object.subject);
-            if (object.blockHeight != null)
-                if ($util.Long)
-                    (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
-                else if (typeof object.blockHeight === "string")
-                    message.blockHeight = parseInt(object.blockHeight, 10);
-                else if (typeof object.blockHeight === "number")
-                    message.blockHeight = object.blockHeight;
-                else if (typeof object.blockHeight === "object")
-                    message.blockHeight = new $util.LongBits(object.blockHeight.low >>> 0, object.blockHeight.high >>> 0).toNumber();
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.txIndex != null)
-                message.txIndex = object.txIndex | 0;
-            if (object.outputIndex != null)
-                message.outputIndex = object.outputIndex | 0;
-            switch (object.outputType) {
+            switch (object.type) {
             default:
-                if (typeof object.outputType === "number") {
-                    message.outputType = object.outputType;
+                if (typeof object.type === "number") {
+                    message.type = object.type;
                     break;
                 }
                 break;
-            case "COIN":
+            case "UNKNOWN_OUTPUT_TYPE":
             case 0:
-                message.outputType = 0;
+                message.type = 0;
+                break;
+            case "COIN":
+            case 1:
+                message.type = 1;
                 break;
             case "CONTRACT":
-            case 1:
-                message.outputType = 1;
+            case 2:
+                message.type = 2;
                 break;
             case "CHANGE":
-            case 2:
-                message.outputType = 2;
+            case 3:
+                message.type = 3;
                 break;
             case "VARIABLE":
-            case 3:
-                message.outputType = 3;
+            case 4:
+                message.type = 4;
                 break;
             case "CONTRACT_CREATED":
-            case 4:
-                message.outputType = 4;
+            case 5:
+                message.type = 5;
                 break;
             }
             if (object.coin != null) {
@@ -6620,15 +6114,10 @@ export const outputs = $root.outputs = (() => {
                     throw TypeError(".outputs.Output.contractCreated: object expected");
                 message.contractCreated = $root.outputs.OutputContractCreated.fromObject(object.contractCreated);
             }
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".outputs.Output.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".outputs.Output.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".outputs.Output.metadata: object expected");
+                message.metadata = $root.common.Metadata.fromObject(object.metadata);
             }
             if (object.pointer != null) {
                 if (typeof object.pointer !== "object")
@@ -6653,40 +6142,14 @@ export const outputs = $root.outputs = (() => {
             let object = {};
             if (options.defaults) {
                 object.subject = "";
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.blockHeight = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                object.txIndex = 0;
-                object.outputIndex = 0;
-                object.outputType = options.enums === String ? "COIN" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
+                object.type = options.enums === String ? "UNKNOWN_OUTPUT_TYPE" : 0;
+                object.metadata = null;
                 object.pointer = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (typeof message.blockHeight === "number")
-                    object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
-                else
-                    object.blockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.blockHeight) : options.longs === Number ? new $util.LongBits(message.blockHeight.low >>> 0, message.blockHeight.high >>> 0).toNumber() : message.blockHeight;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                object.txIndex = message.txIndex;
-            if (message.outputIndex != null && message.hasOwnProperty("outputIndex"))
-                object.outputIndex = message.outputIndex;
-            if (message.outputType != null && message.hasOwnProperty("outputType"))
-                object.outputType = options.enums === String ? $root.outputs.OutputType[message.outputType] === undefined ? message.outputType : $root.outputs.OutputType[message.outputType] : message.outputType;
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = options.enums === String ? $root.outputs.OutputType[message.type] === undefined ? message.type : $root.outputs.OutputType[message.type] : message.type;
             if (message.coin != null && message.hasOwnProperty("coin")) {
                 object.coin = $root.outputs.OutputCoin.toObject(message.coin, options);
                 if (options.oneofs)
@@ -6712,10 +6175,8 @@ export const outputs = $root.outputs = (() => {
                 if (options.oneofs)
                     object.output = "contractCreated";
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.common.Metadata.toObject(message.metadata, options);
             if (message.pointer != null && message.hasOwnProperty("pointer"))
                 object.pointer = $root.pointers.OutputPointer.toObject(message.pointer, options);
             return object;
@@ -6756,13 +6217,9 @@ export const outputs = $root.outputs = (() => {
          * Properties of an OutputCoin.
          * @memberof outputs
          * @interface IOutputCoin
-         * @property {string|null} [subject] OutputCoin subject
-         * @property {Uint8Array|null} [txId] OutputCoin txId
+         * @property {Uint8Array|null} [to] OutputCoin to
          * @property {number|Long|null} [amount] OutputCoin amount
          * @property {Uint8Array|null} [assetId] OutputCoin assetId
-         * @property {Uint8Array|null} [toAddress] OutputCoin toAddress
-         * @property {google.protobuf.ITimestamp|null} [createdAt] OutputCoin createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] OutputCoin publishedAt
          */
 
         /**
@@ -6781,20 +6238,12 @@ export const outputs = $root.outputs = (() => {
         }
 
         /**
-         * OutputCoin subject.
-         * @member {string} subject
+         * OutputCoin to.
+         * @member {Uint8Array} to
          * @memberof outputs.OutputCoin
          * @instance
          */
-        OutputCoin.prototype.subject = "";
-
-        /**
-         * OutputCoin txId.
-         * @member {Uint8Array} txId
-         * @memberof outputs.OutputCoin
-         * @instance
-         */
-        OutputCoin.prototype.txId = $util.newBuffer([]);
+        OutputCoin.prototype.to = $util.newBuffer([]);
 
         /**
          * OutputCoin amount.
@@ -6811,30 +6260,6 @@ export const outputs = $root.outputs = (() => {
          * @instance
          */
         OutputCoin.prototype.assetId = $util.newBuffer([]);
-
-        /**
-         * OutputCoin toAddress.
-         * @member {Uint8Array} toAddress
-         * @memberof outputs.OutputCoin
-         * @instance
-         */
-        OutputCoin.prototype.toAddress = $util.newBuffer([]);
-
-        /**
-         * OutputCoin createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof outputs.OutputCoin
-         * @instance
-         */
-        OutputCoin.prototype.createdAt = null;
-
-        /**
-         * OutputCoin publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof outputs.OutputCoin
-         * @instance
-         */
-        OutputCoin.prototype.publishedAt = null;
 
         /**
          * Creates a new OutputCoin instance using the specified properties.
@@ -6860,20 +6285,12 @@ export const outputs = $root.outputs = (() => {
         OutputCoin.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
+            if (message.to != null && Object.hasOwnProperty.call(message, "to"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.to);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
-            if (message.toAddress != null && Object.hasOwnProperty.call(message, "toAddress"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.toAddress);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.assetId);
             return writer;
         };
 
@@ -6909,31 +6326,15 @@ export const outputs = $root.outputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.to = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 4: {
+                case 3: {
                         message.assetId = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.toAddress = reader.bytes();
-                        break;
-                    }
-                case 6: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 7: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -6971,31 +6372,15 @@ export const outputs = $root.outputs = (() => {
         OutputCoin.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
+            if (message.to != null && message.hasOwnProperty("to"))
+                if (!(message.to && typeof message.to.length === "number" || $util.isString(message.to)))
+                    return "to: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 if (!(message.assetId && typeof message.assetId.length === "number" || $util.isString(message.assetId)))
                     return "assetId: buffer expected";
-            if (message.toAddress != null && message.hasOwnProperty("toAddress"))
-                if (!(message.toAddress && typeof message.toAddress.length === "number" || $util.isString(message.toAddress)))
-                    return "toAddress: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -7011,13 +6396,11 @@ export const outputs = $root.outputs = (() => {
             if (object instanceof $root.outputs.OutputCoin)
                 return object;
             let message = new $root.outputs.OutputCoin();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
+            if (object.to != null)
+                if (typeof object.to === "string")
+                    $util.base64.decode(object.to, message.to = $util.newBuffer($util.base64.length(object.to)), 0);
+                else if (object.to.length >= 0)
+                    message.to = object.to;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -7032,21 +6415,6 @@ export const outputs = $root.outputs = (() => {
                     $util.base64.decode(object.assetId, message.assetId = $util.newBuffer($util.base64.length(object.assetId)), 0);
                 else if (object.assetId.length >= 0)
                     message.assetId = object.assetId;
-            if (object.toAddress != null)
-                if (typeof object.toAddress === "string")
-                    $util.base64.decode(object.toAddress, message.toAddress = $util.newBuffer($util.base64.length(object.toAddress)), 0);
-                else if (object.toAddress.length >= 0)
-                    message.toAddress = object.toAddress;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".outputs.OutputCoin.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".outputs.OutputCoin.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -7064,13 +6432,12 @@ export const outputs = $root.outputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.to = "";
                 else {
-                    object.txId = [];
+                    object.to = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.to = $util.newBuffer(object.to);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -7084,20 +6451,9 @@ export const outputs = $root.outputs = (() => {
                     if (options.bytes !== Array)
                         object.assetId = $util.newBuffer(object.assetId);
                 }
-                if (options.bytes === String)
-                    object.toAddress = "";
-                else {
-                    object.toAddress = [];
-                    if (options.bytes !== Array)
-                        object.toAddress = $util.newBuffer(object.toAddress);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
+            if (message.to != null && message.hasOwnProperty("to"))
+                object.to = options.bytes === String ? $util.base64.encode(message.to, 0, message.to.length) : options.bytes === Array ? Array.prototype.slice.call(message.to) : message.to;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -7105,12 +6461,6 @@ export const outputs = $root.outputs = (() => {
                     object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 object.assetId = options.bytes === String ? $util.base64.encode(message.assetId, 0, message.assetId.length) : options.bytes === Array ? Array.prototype.slice.call(message.assetId) : message.assetId;
-            if (message.toAddress != null && message.hasOwnProperty("toAddress"))
-                object.toAddress = options.bytes === String ? $util.base64.encode(message.toAddress, 0, message.toAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.toAddress) : message.toAddress;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -7149,13 +6499,9 @@ export const outputs = $root.outputs = (() => {
          * Properties of an OutputContract.
          * @memberof outputs
          * @interface IOutputContract
-         * @property {string|null} [subject] OutputContract subject
-         * @property {Uint8Array|null} [txId] OutputContract txId
          * @property {Uint8Array|null} [balanceRoot] OutputContract balanceRoot
          * @property {Uint8Array|null} [stateRoot] OutputContract stateRoot
          * @property {number|null} [inputIndex] OutputContract inputIndex
-         * @property {google.protobuf.ITimestamp|null} [createdAt] OutputContract createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] OutputContract publishedAt
          */
 
         /**
@@ -7172,22 +6518,6 @@ export const outputs = $root.outputs = (() => {
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
-
-        /**
-         * OutputContract subject.
-         * @member {string} subject
-         * @memberof outputs.OutputContract
-         * @instance
-         */
-        OutputContract.prototype.subject = "";
-
-        /**
-         * OutputContract txId.
-         * @member {Uint8Array} txId
-         * @memberof outputs.OutputContract
-         * @instance
-         */
-        OutputContract.prototype.txId = $util.newBuffer([]);
 
         /**
          * OutputContract balanceRoot.
@@ -7214,22 +6544,6 @@ export const outputs = $root.outputs = (() => {
         OutputContract.prototype.inputIndex = 0;
 
         /**
-         * OutputContract createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof outputs.OutputContract
-         * @instance
-         */
-        OutputContract.prototype.createdAt = null;
-
-        /**
-         * OutputContract publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof outputs.OutputContract
-         * @instance
-         */
-        OutputContract.prototype.publishedAt = null;
-
-        /**
          * Creates a new OutputContract instance using the specified properties.
          * @function create
          * @memberof outputs.OutputContract
@@ -7253,20 +6567,12 @@ export const outputs = $root.outputs = (() => {
         OutputContract.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
             if (message.balanceRoot != null && Object.hasOwnProperty.call(message, "balanceRoot"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.balanceRoot);
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.balanceRoot);
             if (message.stateRoot != null && Object.hasOwnProperty.call(message, "stateRoot"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.stateRoot);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.stateRoot);
             if (message.inputIndex != null && Object.hasOwnProperty.call(message, "inputIndex"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.inputIndex);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.inputIndex);
             return writer;
         };
 
@@ -7302,31 +6608,15 @@ export const outputs = $root.outputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.balanceRoot = reader.bytes();
                         break;
                     }
-                case 4: {
+                case 2: {
                         message.stateRoot = reader.bytes();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.inputIndex = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 7: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -7364,12 +6654,6 @@ export const outputs = $root.outputs = (() => {
         OutputContract.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
             if (message.balanceRoot != null && message.hasOwnProperty("balanceRoot"))
                 if (!(message.balanceRoot && typeof message.balanceRoot.length === "number" || $util.isString(message.balanceRoot)))
                     return "balanceRoot: buffer expected";
@@ -7379,16 +6663,6 @@ export const outputs = $root.outputs = (() => {
             if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
                 if (!$util.isInteger(message.inputIndex))
                     return "inputIndex: integer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -7404,13 +6678,6 @@ export const outputs = $root.outputs = (() => {
             if (object instanceof $root.outputs.OutputContract)
                 return object;
             let message = new $root.outputs.OutputContract();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
             if (object.balanceRoot != null)
                 if (typeof object.balanceRoot === "string")
                     $util.base64.decode(object.balanceRoot, message.balanceRoot = $util.newBuffer($util.base64.length(object.balanceRoot)), 0);
@@ -7423,16 +6690,6 @@ export const outputs = $root.outputs = (() => {
                     message.stateRoot = object.stateRoot;
             if (object.inputIndex != null)
                 message.inputIndex = object.inputIndex | 0;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".outputs.OutputContract.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".outputs.OutputContract.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -7450,14 +6707,6 @@ export const outputs = $root.outputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
                 if (options.bytes === String)
                     object.balanceRoot = "";
                 else {
@@ -7473,23 +6722,13 @@ export const outputs = $root.outputs = (() => {
                         object.stateRoot = $util.newBuffer(object.stateRoot);
                 }
                 object.inputIndex = 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
             if (message.balanceRoot != null && message.hasOwnProperty("balanceRoot"))
                 object.balanceRoot = options.bytes === String ? $util.base64.encode(message.balanceRoot, 0, message.balanceRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.balanceRoot) : message.balanceRoot;
             if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
                 object.stateRoot = options.bytes === String ? $util.base64.encode(message.stateRoot, 0, message.stateRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.stateRoot) : message.stateRoot;
             if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
                 object.inputIndex = message.inputIndex;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -7528,12 +6767,8 @@ export const outputs = $root.outputs = (() => {
          * Properties of an OutputContractCreated.
          * @memberof outputs
          * @interface IOutputContractCreated
-         * @property {string|null} [subject] OutputContractCreated subject
-         * @property {Uint8Array|null} [txId] OutputContractCreated txId
          * @property {Uint8Array|null} [contractId] OutputContractCreated contractId
          * @property {Uint8Array|null} [stateRoot] OutputContractCreated stateRoot
-         * @property {google.protobuf.ITimestamp|null} [createdAt] OutputContractCreated createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] OutputContractCreated publishedAt
          */
 
         /**
@@ -7552,22 +6787,6 @@ export const outputs = $root.outputs = (() => {
         }
 
         /**
-         * OutputContractCreated subject.
-         * @member {string} subject
-         * @memberof outputs.OutputContractCreated
-         * @instance
-         */
-        OutputContractCreated.prototype.subject = "";
-
-        /**
-         * OutputContractCreated txId.
-         * @member {Uint8Array} txId
-         * @memberof outputs.OutputContractCreated
-         * @instance
-         */
-        OutputContractCreated.prototype.txId = $util.newBuffer([]);
-
-        /**
          * OutputContractCreated contractId.
          * @member {Uint8Array} contractId
          * @memberof outputs.OutputContractCreated
@@ -7582,22 +6801,6 @@ export const outputs = $root.outputs = (() => {
          * @instance
          */
         OutputContractCreated.prototype.stateRoot = $util.newBuffer([]);
-
-        /**
-         * OutputContractCreated createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof outputs.OutputContractCreated
-         * @instance
-         */
-        OutputContractCreated.prototype.createdAt = null;
-
-        /**
-         * OutputContractCreated publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof outputs.OutputContractCreated
-         * @instance
-         */
-        OutputContractCreated.prototype.publishedAt = null;
 
         /**
          * Creates a new OutputContractCreated instance using the specified properties.
@@ -7623,18 +6826,10 @@ export const outputs = $root.outputs = (() => {
         OutputContractCreated.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
             if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.contractId);
             if (message.stateRoot != null && Object.hasOwnProperty.call(message, "stateRoot"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.stateRoot);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.stateRoot);
             return writer;
         };
 
@@ -7670,27 +6865,11 @@ export const outputs = $root.outputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.contractId = reader.bytes();
                         break;
                     }
-                case 4: {
+                case 2: {
                         message.stateRoot = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 6: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -7728,28 +6907,12 @@ export const outputs = $root.outputs = (() => {
         OutputContractCreated.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
             if (message.contractId != null && message.hasOwnProperty("contractId"))
                 if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
                     return "contractId: buffer expected";
             if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
                 if (!(message.stateRoot && typeof message.stateRoot.length === "number" || $util.isString(message.stateRoot)))
                     return "stateRoot: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -7765,13 +6928,6 @@ export const outputs = $root.outputs = (() => {
             if (object instanceof $root.outputs.OutputContractCreated)
                 return object;
             let message = new $root.outputs.OutputContractCreated();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
             if (object.contractId != null)
                 if (typeof object.contractId === "string")
                     $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
@@ -7782,16 +6938,6 @@ export const outputs = $root.outputs = (() => {
                     $util.base64.decode(object.stateRoot, message.stateRoot = $util.newBuffer($util.base64.length(object.stateRoot)), 0);
                 else if (object.stateRoot.length >= 0)
                     message.stateRoot = object.stateRoot;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".outputs.OutputContractCreated.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".outputs.OutputContractCreated.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -7809,14 +6955,6 @@ export const outputs = $root.outputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
                 if (options.bytes === String)
                     object.contractId = "";
                 else {
@@ -7831,21 +6969,11 @@ export const outputs = $root.outputs = (() => {
                     if (options.bytes !== Array)
                         object.stateRoot = $util.newBuffer(object.stateRoot);
                 }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
             if (message.contractId != null && message.hasOwnProperty("contractId"))
                 object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
             if (message.stateRoot != null && message.hasOwnProperty("stateRoot"))
                 object.stateRoot = options.bytes === String ? $util.base64.encode(message.stateRoot, 0, message.stateRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.stateRoot) : message.stateRoot;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -7884,13 +7012,9 @@ export const outputs = $root.outputs = (() => {
          * Properties of an OutputChange.
          * @memberof outputs
          * @interface IOutputChange
-         * @property {string|null} [subject] OutputChange subject
-         * @property {Uint8Array|null} [txId] OutputChange txId
+         * @property {Uint8Array|null} [to] OutputChange to
          * @property {number|Long|null} [amount] OutputChange amount
          * @property {Uint8Array|null} [assetId] OutputChange assetId
-         * @property {Uint8Array|null} [toAddress] OutputChange toAddress
-         * @property {google.protobuf.ITimestamp|null} [createdAt] OutputChange createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] OutputChange publishedAt
          */
 
         /**
@@ -7909,20 +7033,12 @@ export const outputs = $root.outputs = (() => {
         }
 
         /**
-         * OutputChange subject.
-         * @member {string} subject
+         * OutputChange to.
+         * @member {Uint8Array} to
          * @memberof outputs.OutputChange
          * @instance
          */
-        OutputChange.prototype.subject = "";
-
-        /**
-         * OutputChange txId.
-         * @member {Uint8Array} txId
-         * @memberof outputs.OutputChange
-         * @instance
-         */
-        OutputChange.prototype.txId = $util.newBuffer([]);
+        OutputChange.prototype.to = $util.newBuffer([]);
 
         /**
          * OutputChange amount.
@@ -7939,30 +7055,6 @@ export const outputs = $root.outputs = (() => {
          * @instance
          */
         OutputChange.prototype.assetId = $util.newBuffer([]);
-
-        /**
-         * OutputChange toAddress.
-         * @member {Uint8Array} toAddress
-         * @memberof outputs.OutputChange
-         * @instance
-         */
-        OutputChange.prototype.toAddress = $util.newBuffer([]);
-
-        /**
-         * OutputChange createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof outputs.OutputChange
-         * @instance
-         */
-        OutputChange.prototype.createdAt = null;
-
-        /**
-         * OutputChange publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof outputs.OutputChange
-         * @instance
-         */
-        OutputChange.prototype.publishedAt = null;
 
         /**
          * Creates a new OutputChange instance using the specified properties.
@@ -7988,20 +7080,12 @@ export const outputs = $root.outputs = (() => {
         OutputChange.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
+            if (message.to != null && Object.hasOwnProperty.call(message, "to"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.to);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
-            if (message.toAddress != null && Object.hasOwnProperty.call(message, "toAddress"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.toAddress);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.assetId);
             return writer;
         };
 
@@ -8037,31 +7121,15 @@ export const outputs = $root.outputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.to = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 4: {
+                case 3: {
                         message.assetId = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.toAddress = reader.bytes();
-                        break;
-                    }
-                case 6: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 7: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -8099,31 +7167,15 @@ export const outputs = $root.outputs = (() => {
         OutputChange.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
+            if (message.to != null && message.hasOwnProperty("to"))
+                if (!(message.to && typeof message.to.length === "number" || $util.isString(message.to)))
+                    return "to: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 if (!(message.assetId && typeof message.assetId.length === "number" || $util.isString(message.assetId)))
                     return "assetId: buffer expected";
-            if (message.toAddress != null && message.hasOwnProperty("toAddress"))
-                if (!(message.toAddress && typeof message.toAddress.length === "number" || $util.isString(message.toAddress)))
-                    return "toAddress: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -8139,13 +7191,11 @@ export const outputs = $root.outputs = (() => {
             if (object instanceof $root.outputs.OutputChange)
                 return object;
             let message = new $root.outputs.OutputChange();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
+            if (object.to != null)
+                if (typeof object.to === "string")
+                    $util.base64.decode(object.to, message.to = $util.newBuffer($util.base64.length(object.to)), 0);
+                else if (object.to.length >= 0)
+                    message.to = object.to;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -8160,21 +7210,6 @@ export const outputs = $root.outputs = (() => {
                     $util.base64.decode(object.assetId, message.assetId = $util.newBuffer($util.base64.length(object.assetId)), 0);
                 else if (object.assetId.length >= 0)
                     message.assetId = object.assetId;
-            if (object.toAddress != null)
-                if (typeof object.toAddress === "string")
-                    $util.base64.decode(object.toAddress, message.toAddress = $util.newBuffer($util.base64.length(object.toAddress)), 0);
-                else if (object.toAddress.length >= 0)
-                    message.toAddress = object.toAddress;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".outputs.OutputChange.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".outputs.OutputChange.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -8192,13 +7227,12 @@ export const outputs = $root.outputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.to = "";
                 else {
-                    object.txId = [];
+                    object.to = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.to = $util.newBuffer(object.to);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -8212,20 +7246,9 @@ export const outputs = $root.outputs = (() => {
                     if (options.bytes !== Array)
                         object.assetId = $util.newBuffer(object.assetId);
                 }
-                if (options.bytes === String)
-                    object.toAddress = "";
-                else {
-                    object.toAddress = [];
-                    if (options.bytes !== Array)
-                        object.toAddress = $util.newBuffer(object.toAddress);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
+            if (message.to != null && message.hasOwnProperty("to"))
+                object.to = options.bytes === String ? $util.base64.encode(message.to, 0, message.to.length) : options.bytes === Array ? Array.prototype.slice.call(message.to) : message.to;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -8233,12 +7256,6 @@ export const outputs = $root.outputs = (() => {
                     object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 object.assetId = options.bytes === String ? $util.base64.encode(message.assetId, 0, message.assetId.length) : options.bytes === Array ? Array.prototype.slice.call(message.assetId) : message.assetId;
-            if (message.toAddress != null && message.hasOwnProperty("toAddress"))
-                object.toAddress = options.bytes === String ? $util.base64.encode(message.toAddress, 0, message.toAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.toAddress) : message.toAddress;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -8277,13 +7294,9 @@ export const outputs = $root.outputs = (() => {
          * Properties of an OutputVariable.
          * @memberof outputs
          * @interface IOutputVariable
-         * @property {string|null} [subject] OutputVariable subject
-         * @property {Uint8Array|null} [txId] OutputVariable txId
+         * @property {Uint8Array|null} [to] OutputVariable to
          * @property {number|Long|null} [amount] OutputVariable amount
          * @property {Uint8Array|null} [assetId] OutputVariable assetId
-         * @property {Uint8Array|null} [toAddress] OutputVariable toAddress
-         * @property {google.protobuf.ITimestamp|null} [createdAt] OutputVariable createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] OutputVariable publishedAt
          */
 
         /**
@@ -8302,20 +7315,12 @@ export const outputs = $root.outputs = (() => {
         }
 
         /**
-         * OutputVariable subject.
-         * @member {string} subject
+         * OutputVariable to.
+         * @member {Uint8Array} to
          * @memberof outputs.OutputVariable
          * @instance
          */
-        OutputVariable.prototype.subject = "";
-
-        /**
-         * OutputVariable txId.
-         * @member {Uint8Array} txId
-         * @memberof outputs.OutputVariable
-         * @instance
-         */
-        OutputVariable.prototype.txId = $util.newBuffer([]);
+        OutputVariable.prototype.to = $util.newBuffer([]);
 
         /**
          * OutputVariable amount.
@@ -8332,30 +7337,6 @@ export const outputs = $root.outputs = (() => {
          * @instance
          */
         OutputVariable.prototype.assetId = $util.newBuffer([]);
-
-        /**
-         * OutputVariable toAddress.
-         * @member {Uint8Array} toAddress
-         * @memberof outputs.OutputVariable
-         * @instance
-         */
-        OutputVariable.prototype.toAddress = $util.newBuffer([]);
-
-        /**
-         * OutputVariable createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof outputs.OutputVariable
-         * @instance
-         */
-        OutputVariable.prototype.createdAt = null;
-
-        /**
-         * OutputVariable publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof outputs.OutputVariable
-         * @instance
-         */
-        OutputVariable.prototype.publishedAt = null;
 
         /**
          * Creates a new OutputVariable instance using the specified properties.
@@ -8381,20 +7362,12 @@ export const outputs = $root.outputs = (() => {
         OutputVariable.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
+            if (message.to != null && Object.hasOwnProperty.call(message, "to"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.to);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
-            if (message.toAddress != null && Object.hasOwnProperty.call(message, "toAddress"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.toAddress);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.assetId);
             return writer;
         };
 
@@ -8430,31 +7403,15 @@ export const outputs = $root.outputs = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.to = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 4: {
+                case 3: {
                         message.assetId = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.toAddress = reader.bytes();
-                        break;
-                    }
-                case 6: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 7: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -8492,31 +7449,15 @@ export const outputs = $root.outputs = (() => {
         OutputVariable.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
+            if (message.to != null && message.hasOwnProperty("to"))
+                if (!(message.to && typeof message.to.length === "number" || $util.isString(message.to)))
+                    return "to: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 if (!(message.assetId && typeof message.assetId.length === "number" || $util.isString(message.assetId)))
                     return "assetId: buffer expected";
-            if (message.toAddress != null && message.hasOwnProperty("toAddress"))
-                if (!(message.toAddress && typeof message.toAddress.length === "number" || $util.isString(message.toAddress)))
-                    return "toAddress: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -8532,13 +7473,11 @@ export const outputs = $root.outputs = (() => {
             if (object instanceof $root.outputs.OutputVariable)
                 return object;
             let message = new $root.outputs.OutputVariable();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
+            if (object.to != null)
+                if (typeof object.to === "string")
+                    $util.base64.decode(object.to, message.to = $util.newBuffer($util.base64.length(object.to)), 0);
+                else if (object.to.length >= 0)
+                    message.to = object.to;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -8553,21 +7492,6 @@ export const outputs = $root.outputs = (() => {
                     $util.base64.decode(object.assetId, message.assetId = $util.newBuffer($util.base64.length(object.assetId)), 0);
                 else if (object.assetId.length >= 0)
                     message.assetId = object.assetId;
-            if (object.toAddress != null)
-                if (typeof object.toAddress === "string")
-                    $util.base64.decode(object.toAddress, message.toAddress = $util.newBuffer($util.base64.length(object.toAddress)), 0);
-                else if (object.toAddress.length >= 0)
-                    message.toAddress = object.toAddress;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".outputs.OutputVariable.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".outputs.OutputVariable.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -8585,13 +7509,12 @@ export const outputs = $root.outputs = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.to = "";
                 else {
-                    object.txId = [];
+                    object.to = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.to = $util.newBuffer(object.to);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -8605,20 +7528,9 @@ export const outputs = $root.outputs = (() => {
                     if (options.bytes !== Array)
                         object.assetId = $util.newBuffer(object.assetId);
                 }
-                if (options.bytes === String)
-                    object.toAddress = "";
-                else {
-                    object.toAddress = [];
-                    if (options.bytes !== Array)
-                        object.toAddress = $util.newBuffer(object.toAddress);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
+            if (message.to != null && message.hasOwnProperty("to"))
+                object.to = options.bytes === String ? $util.base64.encode(message.to, 0, message.to.length) : options.bytes === Array ? Array.prototype.slice.call(message.to) : message.to;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -8626,12 +7538,6 @@ export const outputs = $root.outputs = (() => {
                     object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 object.assetId = options.bytes === String ? $util.base64.encode(message.assetId, 0, message.assetId.length) : options.bytes === Array ? Array.prototype.slice.call(message.assetId) : message.assetId;
-            if (message.toAddress != null && message.hasOwnProperty("toAddress"))
-                object.toAddress = options.bytes === String ? $util.base64.encode(message.toAddress, 0, message.toAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.toAddress) : message.toAddress;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -8680,35 +7586,37 @@ export const receipts = $root.receipts = (() => {
      * ReceiptType enum.
      * @name receipts.ReceiptType
      * @enum {number}
-     * @property {number} CALL=0 CALL value
-     * @property {number} RETURN=1 RETURN value
-     * @property {number} RETURN_DATA=2 RETURN_DATA value
-     * @property {number} PANIC=3 PANIC value
-     * @property {number} REVERT=4 REVERT value
-     * @property {number} LOG=5 LOG value
-     * @property {number} LOG_DATA=6 LOG_DATA value
-     * @property {number} TRANSFER=7 TRANSFER value
-     * @property {number} TRANSFER_OUT=8 TRANSFER_OUT value
-     * @property {number} SCRIPT_RESULT=9 SCRIPT_RESULT value
-     * @property {number} MESSAGE_OUT=10 MESSAGE_OUT value
-     * @property {number} MINT=11 MINT value
-     * @property {number} BURN=12 BURN value
+     * @property {number} UNKNOWN_RECEIPT_TYPE=0 UNKNOWN_RECEIPT_TYPE value
+     * @property {number} CALL=1 CALL value
+     * @property {number} RETURN=2 RETURN value
+     * @property {number} RETURN_DATA=3 RETURN_DATA value
+     * @property {number} PANIC=4 PANIC value
+     * @property {number} REVERT=5 REVERT value
+     * @property {number} LOG=6 LOG value
+     * @property {number} LOG_DATA=7 LOG_DATA value
+     * @property {number} TRANSFER=8 TRANSFER value
+     * @property {number} TRANSFER_OUT=9 TRANSFER_OUT value
+     * @property {number} SCRIPT_RESULT=10 SCRIPT_RESULT value
+     * @property {number} MESSAGE_OUT=11 MESSAGE_OUT value
+     * @property {number} MINT=12 MINT value
+     * @property {number} BURN=13 BURN value
      */
     receipts.ReceiptType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "CALL"] = 0;
-        values[valuesById[1] = "RETURN"] = 1;
-        values[valuesById[2] = "RETURN_DATA"] = 2;
-        values[valuesById[3] = "PANIC"] = 3;
-        values[valuesById[4] = "REVERT"] = 4;
-        values[valuesById[5] = "LOG"] = 5;
-        values[valuesById[6] = "LOG_DATA"] = 6;
-        values[valuesById[7] = "TRANSFER"] = 7;
-        values[valuesById[8] = "TRANSFER_OUT"] = 8;
-        values[valuesById[9] = "SCRIPT_RESULT"] = 9;
-        values[valuesById[10] = "MESSAGE_OUT"] = 10;
-        values[valuesById[11] = "MINT"] = 11;
-        values[valuesById[12] = "BURN"] = 12;
+        values[valuesById[0] = "UNKNOWN_RECEIPT_TYPE"] = 0;
+        values[valuesById[1] = "CALL"] = 1;
+        values[valuesById[2] = "RETURN"] = 2;
+        values[valuesById[3] = "RETURN_DATA"] = 3;
+        values[valuesById[4] = "PANIC"] = 4;
+        values[valuesById[5] = "REVERT"] = 5;
+        values[valuesById[6] = "LOG"] = 6;
+        values[valuesById[7] = "LOG_DATA"] = 7;
+        values[valuesById[8] = "TRANSFER"] = 8;
+        values[valuesById[9] = "TRANSFER_OUT"] = 9;
+        values[valuesById[10] = "SCRIPT_RESULT"] = 10;
+        values[valuesById[11] = "MESSAGE_OUT"] = 11;
+        values[valuesById[12] = "MINT"] = 12;
+        values[valuesById[13] = "BURN"] = 13;
         return values;
     })();
 
@@ -8716,13 +7624,19 @@ export const receipts = $root.receipts = (() => {
      * ScriptResultType enum.
      * @name receipts.ScriptResultType
      * @enum {number}
-     * @property {number} SUCCESS=0 SUCCESS value
-     * @property {number} FAILURE=1 FAILURE value
+     * @property {number} UNKNOWN_SCRIPT_RESULT_TYPE=0 UNKNOWN_SCRIPT_RESULT_TYPE value
+     * @property {number} SUCCESS=1 SUCCESS value
+     * @property {number} SCRIPT_REVERT=2 SCRIPT_REVERT value
+     * @property {number} SCRIPT_PANIC=3 SCRIPT_PANIC value
+     * @property {number} GENERIC_FAILURE=4 GENERIC_FAILURE value
      */
     receipts.ScriptResultType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "SUCCESS"] = 0;
-        values[valuesById[1] = "FAILURE"] = 1;
+        values[valuesById[0] = "UNKNOWN_SCRIPT_RESULT_TYPE"] = 0;
+        values[valuesById[1] = "SUCCESS"] = 1;
+        values[valuesById[2] = "SCRIPT_REVERT"] = 2;
+        values[valuesById[3] = "SCRIPT_PANIC"] = 3;
+        values[valuesById[4] = "GENERIC_FAILURE"] = 4;
         return values;
     })();
 
@@ -8733,11 +7647,7 @@ export const receipts = $root.receipts = (() => {
          * @memberof receipts
          * @interface IReceipt
          * @property {string|null} [subject] Receipt subject
-         * @property {number|Long|null} [blockHeight] Receipt blockHeight
-         * @property {Uint8Array|null} [txId] Receipt txId
-         * @property {number|null} [txIndex] Receipt txIndex
-         * @property {number|null} [receiptIndex] Receipt receiptIndex
-         * @property {receipts.ReceiptType|null} [receiptType] Receipt receiptType
+         * @property {receipts.ReceiptType|null} [type] Receipt type
          * @property {receipts.IReceiptCall|null} [call] Receipt call
          * @property {receipts.IReceiptReturn|null} ["return"] Receipt return
          * @property {receipts.IReceiptReturnData|null} [returnData] Receipt returnData
@@ -8751,8 +7661,7 @@ export const receipts = $root.receipts = (() => {
          * @property {receipts.IReceiptMessageOut|null} [messageOut] Receipt messageOut
          * @property {receipts.IReceiptMint|null} [mint] Receipt mint
          * @property {receipts.IReceiptBurn|null} [burn] Receipt burn
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Receipt createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Receipt publishedAt
+         * @property {common.IMetadata|null} [metadata] Receipt metadata
          * @property {pointers.IReceiptPointer|null} [pointer] Receipt pointer
          */
 
@@ -8780,44 +7689,12 @@ export const receipts = $root.receipts = (() => {
         Receipt.prototype.subject = "";
 
         /**
-         * Receipt blockHeight.
-         * @member {number|Long} blockHeight
+         * Receipt type.
+         * @member {receipts.ReceiptType} type
          * @memberof receipts.Receipt
          * @instance
          */
-        Receipt.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Receipt txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.Receipt
-         * @instance
-         */
-        Receipt.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * Receipt txIndex.
-         * @member {number} txIndex
-         * @memberof receipts.Receipt
-         * @instance
-         */
-        Receipt.prototype.txIndex = 0;
-
-        /**
-         * Receipt receiptIndex.
-         * @member {number} receiptIndex
-         * @memberof receipts.Receipt
-         * @instance
-         */
-        Receipt.prototype.receiptIndex = 0;
-
-        /**
-         * Receipt receiptType.
-         * @member {receipts.ReceiptType} receiptType
-         * @memberof receipts.Receipt
-         * @instance
-         */
-        Receipt.prototype.receiptType = 0;
+        Receipt.prototype.type = 0;
 
         /**
          * Receipt call.
@@ -8924,20 +7801,12 @@ export const receipts = $root.receipts = (() => {
         Receipt.prototype.burn = null;
 
         /**
-         * Receipt createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
+         * Receipt metadata.
+         * @member {common.IMetadata|null|undefined} metadata
          * @memberof receipts.Receipt
          * @instance
          */
-        Receipt.prototype.createdAt = null;
-
-        /**
-         * Receipt publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.Receipt
-         * @instance
-         */
-        Receipt.prototype.publishedAt = null;
+        Receipt.prototype.metadata = null;
 
         /**
          * Receipt pointer.
@@ -8987,48 +7856,38 @@ export const receipts = $root.receipts = (() => {
                 writer = $Writer.create();
             if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.txId);
-            if (message.txIndex != null && Object.hasOwnProperty.call(message, "txIndex"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.txIndex);
-            if (message.receiptIndex != null && Object.hasOwnProperty.call(message, "receiptIndex"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.receiptIndex);
-            if (message.receiptType != null && Object.hasOwnProperty.call(message, "receiptType"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.receiptType);
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.type);
             if (message.call != null && Object.hasOwnProperty.call(message, "call"))
-                $root.receipts.ReceiptCall.encode(message.call, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.receipts.ReceiptCall.encode(message.call, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message["return"] != null && Object.hasOwnProperty.call(message, "return"))
-                $root.receipts.ReceiptReturn.encode(message["return"], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                $root.receipts.ReceiptReturn.encode(message["return"], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.returnData != null && Object.hasOwnProperty.call(message, "returnData"))
-                $root.receipts.ReceiptReturnData.encode(message.returnData, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                $root.receipts.ReceiptReturnData.encode(message.returnData, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             if (message.panic != null && Object.hasOwnProperty.call(message, "panic"))
-                $root.receipts.ReceiptPanic.encode(message.panic, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                $root.receipts.ReceiptPanic.encode(message.panic, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             if (message.revert != null && Object.hasOwnProperty.call(message, "revert"))
-                $root.receipts.ReceiptRevert.encode(message.revert, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                $root.receipts.ReceiptRevert.encode(message.revert, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.log != null && Object.hasOwnProperty.call(message, "log"))
-                $root.receipts.ReceiptLog.encode(message.log, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
+                $root.receipts.ReceiptLog.encode(message.log, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             if (message.logData != null && Object.hasOwnProperty.call(message, "logData"))
-                $root.receipts.ReceiptLogData.encode(message.logData, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+                $root.receipts.ReceiptLogData.encode(message.logData, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
             if (message.transfer != null && Object.hasOwnProperty.call(message, "transfer"))
-                $root.receipts.ReceiptTransfer.encode(message.transfer, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
+                $root.receipts.ReceiptTransfer.encode(message.transfer, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
             if (message.transferOut != null && Object.hasOwnProperty.call(message, "transferOut"))
-                $root.receipts.ReceiptTransferOut.encode(message.transferOut, writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
+                $root.receipts.ReceiptTransferOut.encode(message.transferOut, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
             if (message.scriptResult != null && Object.hasOwnProperty.call(message, "scriptResult"))
-                $root.receipts.ReceiptScriptResult.encode(message.scriptResult, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
+                $root.receipts.ReceiptScriptResult.encode(message.scriptResult, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
             if (message.messageOut != null && Object.hasOwnProperty.call(message, "messageOut"))
-                $root.receipts.ReceiptMessageOut.encode(message.messageOut, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
+                $root.receipts.ReceiptMessageOut.encode(message.messageOut, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
             if (message.mint != null && Object.hasOwnProperty.call(message, "mint"))
-                $root.receipts.ReceiptMint.encode(message.mint, writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
+                $root.receipts.ReceiptMint.encode(message.mint, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
             if (message.burn != null && Object.hasOwnProperty.call(message, "burn"))
-                $root.receipts.ReceiptBurn.encode(message.burn, writer.uint32(/* id 19, wireType 2 =*/154).fork()).ldelim();
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 20, wireType 2 =*/162).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 21, wireType 2 =*/170).fork()).ldelim();
+                $root.receipts.ReceiptBurn.encode(message.burn, writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
+            if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                $root.common.Metadata.encode(message.metadata, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
             if (message.pointer != null && Object.hasOwnProperty.call(message, "pointer"))
-                $root.pointers.ReceiptPointer.encode(message.pointer, writer.uint32(/* id 22, wireType 2 =*/178).fork()).ldelim();
+                $root.pointers.ReceiptPointer.encode(message.pointer, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
             return writer;
         };
 
@@ -9068,86 +7927,66 @@ export const receipts = $root.receipts = (() => {
                         break;
                     }
                 case 2: {
-                        message.blockHeight = reader.int64();
+                        message.type = reader.int32();
                         break;
                     }
                 case 3: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.txIndex = reader.int32();
-                        break;
-                    }
-                case 5: {
-                        message.receiptIndex = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.receiptType = reader.int32();
-                        break;
-                    }
-                case 7: {
                         message.call = $root.receipts.ReceiptCall.decode(reader, reader.uint32());
                         break;
                     }
-                case 8: {
+                case 4: {
                         message["return"] = $root.receipts.ReceiptReturn.decode(reader, reader.uint32());
                         break;
                     }
-                case 9: {
+                case 5: {
                         message.returnData = $root.receipts.ReceiptReturnData.decode(reader, reader.uint32());
                         break;
                     }
-                case 10: {
+                case 6: {
                         message.panic = $root.receipts.ReceiptPanic.decode(reader, reader.uint32());
                         break;
                     }
-                case 11: {
+                case 7: {
                         message.revert = $root.receipts.ReceiptRevert.decode(reader, reader.uint32());
                         break;
                     }
-                case 12: {
+                case 8: {
                         message.log = $root.receipts.ReceiptLog.decode(reader, reader.uint32());
                         break;
                     }
-                case 13: {
+                case 9: {
                         message.logData = $root.receipts.ReceiptLogData.decode(reader, reader.uint32());
                         break;
                     }
-                case 14: {
+                case 10: {
                         message.transfer = $root.receipts.ReceiptTransfer.decode(reader, reader.uint32());
                         break;
                     }
-                case 15: {
+                case 11: {
                         message.transferOut = $root.receipts.ReceiptTransferOut.decode(reader, reader.uint32());
                         break;
                     }
-                case 16: {
+                case 12: {
                         message.scriptResult = $root.receipts.ReceiptScriptResult.decode(reader, reader.uint32());
                         break;
                     }
-                case 17: {
+                case 13: {
                         message.messageOut = $root.receipts.ReceiptMessageOut.decode(reader, reader.uint32());
                         break;
                     }
-                case 18: {
+                case 14: {
                         message.mint = $root.receipts.ReceiptMint.decode(reader, reader.uint32());
                         break;
                     }
-                case 19: {
+                case 15: {
                         message.burn = $root.receipts.ReceiptBurn.decode(reader, reader.uint32());
                         break;
                     }
-                case 20: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 16: {
+                        message.metadata = $root.common.Metadata.decode(reader, reader.uint32());
                         break;
                     }
-                case 21: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 22: {
+                case 17: {
                         message.pointer = $root.pointers.ReceiptPointer.decode(reader, reader.uint32());
                         break;
                     }
@@ -9190,22 +8029,10 @@ export const receipts = $root.receipts = (() => {
             if (message.subject != null && message.hasOwnProperty("subject"))
                 if (!$util.isString(message.subject))
                     return "subject: string expected";
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
-                    return "blockHeight: integer|Long expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                if (!$util.isInteger(message.txIndex))
-                    return "txIndex: integer expected";
-            if (message.receiptIndex != null && message.hasOwnProperty("receiptIndex"))
-                if (!$util.isInteger(message.receiptIndex))
-                    return "receiptIndex: integer expected";
-            if (message.receiptType != null && message.hasOwnProperty("receiptType"))
-                switch (message.receiptType) {
+            if (message.type != null && message.hasOwnProperty("type"))
+                switch (message.type) {
                 default:
-                    return "receiptType: enum value expected";
+                    return "type: enum value expected";
                 case 0:
                 case 1:
                 case 2:
@@ -9219,6 +8046,7 @@ export const receipts = $root.receipts = (() => {
                 case 10:
                 case 11:
                 case 12:
+                case 13:
                     break;
                 }
             if (message.call != null && message.hasOwnProperty("call")) {
@@ -9349,15 +8177,10 @@ export const receipts = $root.receipts = (() => {
                         return "burn." + error;
                 }
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                let error = $root.common.Metadata.verify(message.metadata);
                 if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
+                    return "metadata." + error;
             }
             if (message.pointer != null && message.hasOwnProperty("pointer")) {
                 let error = $root.pointers.ReceiptPointer.verify(message.pointer);
@@ -9381,82 +8204,68 @@ export const receipts = $root.receipts = (() => {
             let message = new $root.receipts.Receipt();
             if (object.subject != null)
                 message.subject = String(object.subject);
-            if (object.blockHeight != null)
-                if ($util.Long)
-                    (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
-                else if (typeof object.blockHeight === "string")
-                    message.blockHeight = parseInt(object.blockHeight, 10);
-                else if (typeof object.blockHeight === "number")
-                    message.blockHeight = object.blockHeight;
-                else if (typeof object.blockHeight === "object")
-                    message.blockHeight = new $util.LongBits(object.blockHeight.low >>> 0, object.blockHeight.high >>> 0).toNumber();
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.txIndex != null)
-                message.txIndex = object.txIndex | 0;
-            if (object.receiptIndex != null)
-                message.receiptIndex = object.receiptIndex | 0;
-            switch (object.receiptType) {
+            switch (object.type) {
             default:
-                if (typeof object.receiptType === "number") {
-                    message.receiptType = object.receiptType;
+                if (typeof object.type === "number") {
+                    message.type = object.type;
                     break;
                 }
                 break;
-            case "CALL":
+            case "UNKNOWN_RECEIPT_TYPE":
             case 0:
-                message.receiptType = 0;
+                message.type = 0;
+                break;
+            case "CALL":
+            case 1:
+                message.type = 1;
                 break;
             case "RETURN":
-            case 1:
-                message.receiptType = 1;
+            case 2:
+                message.type = 2;
                 break;
             case "RETURN_DATA":
-            case 2:
-                message.receiptType = 2;
+            case 3:
+                message.type = 3;
                 break;
             case "PANIC":
-            case 3:
-                message.receiptType = 3;
+            case 4:
+                message.type = 4;
                 break;
             case "REVERT":
-            case 4:
-                message.receiptType = 4;
+            case 5:
+                message.type = 5;
                 break;
             case "LOG":
-            case 5:
-                message.receiptType = 5;
+            case 6:
+                message.type = 6;
                 break;
             case "LOG_DATA":
-            case 6:
-                message.receiptType = 6;
+            case 7:
+                message.type = 7;
                 break;
             case "TRANSFER":
-            case 7:
-                message.receiptType = 7;
+            case 8:
+                message.type = 8;
                 break;
             case "TRANSFER_OUT":
-            case 8:
-                message.receiptType = 8;
+            case 9:
+                message.type = 9;
                 break;
             case "SCRIPT_RESULT":
-            case 9:
-                message.receiptType = 9;
+            case 10:
+                message.type = 10;
                 break;
             case "MESSAGE_OUT":
-            case 10:
-                message.receiptType = 10;
+            case 11:
+                message.type = 11;
                 break;
             case "MINT":
-            case 11:
-                message.receiptType = 11;
+            case 12:
+                message.type = 12;
                 break;
             case "BURN":
-            case 12:
-                message.receiptType = 12;
+            case 13:
+                message.type = 13;
                 break;
             }
             if (object.call != null) {
@@ -9524,15 +8333,10 @@ export const receipts = $root.receipts = (() => {
                     throw TypeError(".receipts.Receipt.burn: object expected");
                 message.burn = $root.receipts.ReceiptBurn.fromObject(object.burn);
             }
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.Receipt.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.Receipt.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".receipts.Receipt.metadata: object expected");
+                message.metadata = $root.common.Metadata.fromObject(object.metadata);
             }
             if (object.pointer != null) {
                 if (typeof object.pointer !== "object")
@@ -9557,40 +8361,14 @@ export const receipts = $root.receipts = (() => {
             let object = {};
             if (options.defaults) {
                 object.subject = "";
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.blockHeight = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                object.txIndex = 0;
-                object.receiptIndex = 0;
-                object.receiptType = options.enums === String ? "CALL" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
+                object.type = options.enums === String ? "UNKNOWN_RECEIPT_TYPE" : 0;
+                object.metadata = null;
                 object.pointer = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (typeof message.blockHeight === "number")
-                    object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
-                else
-                    object.blockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.blockHeight) : options.longs === Number ? new $util.LongBits(message.blockHeight.low >>> 0, message.blockHeight.high >>> 0).toNumber() : message.blockHeight;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                object.txIndex = message.txIndex;
-            if (message.receiptIndex != null && message.hasOwnProperty("receiptIndex"))
-                object.receiptIndex = message.receiptIndex;
-            if (message.receiptType != null && message.hasOwnProperty("receiptType"))
-                object.receiptType = options.enums === String ? $root.receipts.ReceiptType[message.receiptType] === undefined ? message.receiptType : $root.receipts.ReceiptType[message.receiptType] : message.receiptType;
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = options.enums === String ? $root.receipts.ReceiptType[message.type] === undefined ? message.type : $root.receipts.ReceiptType[message.type] : message.type;
             if (message.call != null && message.hasOwnProperty("call")) {
                 object.call = $root.receipts.ReceiptCall.toObject(message.call, options);
                 if (options.oneofs)
@@ -9656,10 +8434,8 @@ export const receipts = $root.receipts = (() => {
                 if (options.oneofs)
                     object.receipt = "burn";
             }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.common.Metadata.toObject(message.metadata, options);
             if (message.pointer != null && message.hasOwnProperty("pointer"))
                 object.pointer = $root.pointers.ReceiptPointer.toObject(message.pointer, options);
             return object;
@@ -9700,10 +8476,8 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptCall.
          * @memberof receipts
          * @interface IReceiptCall
-         * @property {string|null} [subject] ReceiptCall subject
-         * @property {Uint8Array|null} [txId] ReceiptCall txId
-         * @property {Uint8Array|null} [contractId] ReceiptCall contractId
-         * @property {Uint8Array|null} [toContractId] ReceiptCall toContractId
+         * @property {Uint8Array|null} [id] ReceiptCall id
+         * @property {Uint8Array|null} [to] ReceiptCall to
          * @property {number|Long|null} [amount] ReceiptCall amount
          * @property {Uint8Array|null} [assetId] ReceiptCall assetId
          * @property {number|Long|null} [gas] ReceiptCall gas
@@ -9711,8 +8485,6 @@ export const receipts = $root.receipts = (() => {
          * @property {number|Long|null} [param2] ReceiptCall param2
          * @property {number|Long|null} [pc] ReceiptCall pc
          * @property {number|Long|null} [is] ReceiptCall is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptCall createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptCall publishedAt
          */
 
         /**
@@ -9731,36 +8503,20 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptCall subject.
-         * @member {string} subject
+         * ReceiptCall id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptCall
          * @instance
          */
-        ReceiptCall.prototype.subject = "";
+        ReceiptCall.prototype.id = $util.newBuffer([]);
 
         /**
-         * ReceiptCall txId.
-         * @member {Uint8Array} txId
+         * ReceiptCall to.
+         * @member {Uint8Array} to
          * @memberof receipts.ReceiptCall
          * @instance
          */
-        ReceiptCall.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptCall contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptCall
-         * @instance
-         */
-        ReceiptCall.prototype.contractId = $util.newBuffer([]);
-
-        /**
-         * ReceiptCall toContractId.
-         * @member {Uint8Array} toContractId
-         * @memberof receipts.ReceiptCall
-         * @instance
-         */
-        ReceiptCall.prototype.toContractId = $util.newBuffer([]);
+        ReceiptCall.prototype.to = $util.newBuffer([]);
 
         /**
          * ReceiptCall amount.
@@ -9819,22 +8575,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptCall.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptCall createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptCall
-         * @instance
-         */
-        ReceiptCall.prototype.createdAt = null;
-
-        /**
-         * ReceiptCall publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptCall
-         * @instance
-         */
-        ReceiptCall.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptCall instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptCall
@@ -9858,32 +8598,24 @@ export const receipts = $root.receipts = (() => {
         ReceiptCall.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
-            if (message.toContractId != null && Object.hasOwnProperty.call(message, "toContractId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.toContractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+            if (message.to != null && Object.hasOwnProperty.call(message, "to"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.to);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.amount);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.assetId);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
             if (message.gas != null && Object.hasOwnProperty.call(message, "gas"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.gas);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.gas);
             if (message.param1 != null && Object.hasOwnProperty.call(message, "param1"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.param1);
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.param1);
             if (message.param2 != null && Object.hasOwnProperty.call(message, "param2"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.param2);
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.param2);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int64(message.pc);
+                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.is);
             return writer;
         };
 
@@ -9919,55 +8651,39 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
+                        message.to = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.toContractId = reader.bytes();
-                        break;
-                    }
-                case 5: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.assetId = reader.bytes();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.gas = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.param1 = reader.int64();
                         break;
                     }
-                case 9: {
+                case 7: {
                         message.param2 = reader.int64();
                         break;
                     }
-                case 10: {
+                case 8: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 11: {
+                case 9: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 12: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 13: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -10005,18 +8721,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptCall.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
-            if (message.toContractId != null && message.hasOwnProperty("toContractId"))
-                if (!(message.toContractId && typeof message.toContractId.length === "number" || $util.isString(message.toContractId)))
-                    return "toContractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.to != null && message.hasOwnProperty("to"))
+                if (!(message.to && typeof message.to.length === "number" || $util.isString(message.to)))
+                    return "to: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
@@ -10038,16 +8748,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -10063,23 +8763,16 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptCall)
                 return object;
             let message = new $root.receipts.ReceiptCall();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
-            if (object.toContractId != null)
-                if (typeof object.toContractId === "string")
-                    $util.base64.decode(object.toContractId, message.toContractId = $util.newBuffer($util.base64.length(object.toContractId)), 0);
-                else if (object.toContractId.length >= 0)
-                    message.toContractId = object.toContractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
+            if (object.to != null)
+                if (typeof object.to === "string")
+                    $util.base64.decode(object.to, message.to = $util.newBuffer($util.base64.length(object.to)), 0);
+                else if (object.to.length >= 0)
+                    message.to = object.to;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -10139,16 +8832,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptCall.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptCall.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -10166,27 +8849,19 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if (options.bytes === String)
-                    object.contractId = "";
+                    object.to = "";
                 else {
-                    object.contractId = [];
+                    object.to = [];
                     if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
-                }
-                if (options.bytes === String)
-                    object.toContractId = "";
-                else {
-                    object.toContractId = [];
-                    if (options.bytes !== Array)
-                        object.toContractId = $util.newBuffer(object.toContractId);
+                        object.to = $util.newBuffer(object.to);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -10225,17 +8900,11 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
-            if (message.toContractId != null && message.hasOwnProperty("toContractId"))
-                object.toContractId = options.bytes === String ? $util.base64.encode(message.toContractId, 0, message.toContractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.toContractId) : message.toContractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.to != null && message.hasOwnProperty("to"))
+                object.to = options.bytes === String ? $util.base64.encode(message.to, 0, message.to.length) : options.bytes === Array ? Array.prototype.slice.call(message.to) : message.to;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -10268,10 +8937,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -10310,14 +8975,10 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptReturn.
          * @memberof receipts
          * @interface IReceiptReturn
-         * @property {string|null} [subject] ReceiptReturn subject
-         * @property {Uint8Array|null} [txId] ReceiptReturn txId
-         * @property {Uint8Array|null} [contractId] ReceiptReturn contractId
+         * @property {Uint8Array|null} [id] ReceiptReturn id
          * @property {number|Long|null} [val] ReceiptReturn val
          * @property {number|Long|null} [pc] ReceiptReturn pc
          * @property {number|Long|null} [is] ReceiptReturn is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptReturn createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptReturn publishedAt
          */
 
         /**
@@ -10336,28 +8997,12 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptReturn subject.
-         * @member {string} subject
+         * ReceiptReturn id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptReturn
          * @instance
          */
-        ReceiptReturn.prototype.subject = "";
-
-        /**
-         * ReceiptReturn txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptReturn
-         * @instance
-         */
-        ReceiptReturn.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptReturn contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptReturn
-         * @instance
-         */
-        ReceiptReturn.prototype.contractId = $util.newBuffer([]);
+        ReceiptReturn.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptReturn val.
@@ -10384,22 +9029,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptReturn.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptReturn createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptReturn
-         * @instance
-         */
-        ReceiptReturn.prototype.createdAt = null;
-
-        /**
-         * ReceiptReturn publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptReturn
-         * @instance
-         */
-        ReceiptReturn.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptReturn instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptReturn
@@ -10423,22 +9052,14 @@ export const receipts = $root.receipts = (() => {
         ReceiptReturn.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
             if (message.val != null && Object.hasOwnProperty.call(message, "val"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.val);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.val);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.is);
             return writer;
         };
 
@@ -10474,35 +9095,19 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
                         message.val = reader.int64();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 7: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 8: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -10540,15 +9145,9 @@ export const receipts = $root.receipts = (() => {
         ReceiptReturn.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.val != null && message.hasOwnProperty("val"))
                 if (!$util.isInteger(message.val) && !(message.val && $util.isInteger(message.val.low) && $util.isInteger(message.val.high)))
                     return "val: integer|Long expected";
@@ -10558,16 +9157,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -10583,18 +9172,11 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptReturn)
                 return object;
             let message = new $root.receipts.ReceiptReturn();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.val != null)
                 if ($util.Long)
                     (message.val = $util.Long.fromValue(object.val)).unsigned = false;
@@ -10622,16 +9204,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptReturn.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptReturn.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -10649,20 +9221,12 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -10679,15 +9243,9 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.val != null && message.hasOwnProperty("val"))
                 if (typeof message.val === "number")
                     object.val = options.longs === String ? String(message.val) : message.val;
@@ -10703,10 +9261,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -10745,17 +9299,13 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptReturnData.
          * @memberof receipts
          * @interface IReceiptReturnData
-         * @property {string|null} [subject] ReceiptReturnData subject
-         * @property {Uint8Array|null} [txId] ReceiptReturnData txId
-         * @property {Uint8Array|null} [contractId] ReceiptReturnData contractId
+         * @property {Uint8Array|null} [id] ReceiptReturnData id
          * @property {number|Long|null} [ptr] ReceiptReturnData ptr
          * @property {number|Long|null} [len] ReceiptReturnData len
          * @property {Uint8Array|null} [digest] ReceiptReturnData digest
+         * @property {Uint8Array|null} [data] ReceiptReturnData data
          * @property {number|Long|null} [pc] ReceiptReturnData pc
          * @property {number|Long|null} [is] ReceiptReturnData is
-         * @property {Uint8Array|null} [data] ReceiptReturnData data
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptReturnData createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptReturnData publishedAt
          */
 
         /**
@@ -10774,28 +9324,12 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptReturnData subject.
-         * @member {string} subject
+         * ReceiptReturnData id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptReturnData
          * @instance
          */
-        ReceiptReturnData.prototype.subject = "";
-
-        /**
-         * ReceiptReturnData txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptReturnData
-         * @instance
-         */
-        ReceiptReturnData.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptReturnData contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptReturnData
-         * @instance
-         */
-        ReceiptReturnData.prototype.contractId = $util.newBuffer([]);
+        ReceiptReturnData.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptReturnData ptr.
@@ -10822,6 +9356,14 @@ export const receipts = $root.receipts = (() => {
         ReceiptReturnData.prototype.digest = $util.newBuffer([]);
 
         /**
+         * ReceiptReturnData data.
+         * @member {Uint8Array} data
+         * @memberof receipts.ReceiptReturnData
+         * @instance
+         */
+        ReceiptReturnData.prototype.data = $util.newBuffer([]);
+
+        /**
          * ReceiptReturnData pc.
          * @member {number|Long} pc
          * @memberof receipts.ReceiptReturnData
@@ -10836,30 +9378,6 @@ export const receipts = $root.receipts = (() => {
          * @instance
          */
         ReceiptReturnData.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * ReceiptReturnData data.
-         * @member {Uint8Array} data
-         * @memberof receipts.ReceiptReturnData
-         * @instance
-         */
-        ReceiptReturnData.prototype.data = $util.newBuffer([]);
-
-        /**
-         * ReceiptReturnData createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptReturnData
-         * @instance
-         */
-        ReceiptReturnData.prototype.createdAt = null;
-
-        /**
-         * ReceiptReturnData publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptReturnData
-         * @instance
-         */
-        ReceiptReturnData.prototype.publishedAt = null;
 
         /**
          * Creates a new ReceiptReturnData instance using the specified properties.
@@ -10885,28 +9403,20 @@ export const receipts = $root.receipts = (() => {
         ReceiptReturnData.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
             if (message.ptr != null && Object.hasOwnProperty.call(message, "ptr"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.ptr);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.ptr);
             if (message.len != null && Object.hasOwnProperty.call(message, "len"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.len);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.len);
             if (message.digest != null && Object.hasOwnProperty.call(message, "digest"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.digest);
-            if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.pc);
-            if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.is);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.digest);
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.data);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.data);
+            if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.pc);
+            if (message.is != null && Object.hasOwnProperty.call(message, "is"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.is);
             return writer;
         };
 
@@ -10942,47 +9452,31 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
                         message.ptr = reader.int64();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.len = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.digest = reader.bytes();
                         break;
                     }
-                case 7: {
-                        message.pc = reader.int64();
-                        break;
-                    }
-                case 8: {
-                        message.is = reader.int64();
-                        break;
-                    }
-                case 9: {
+                case 5: {
                         message.data = reader.bytes();
                         break;
                     }
-                case 10: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 6: {
+                        message.pc = reader.int64();
                         break;
                     }
-                case 11: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 7: {
+                        message.is = reader.int64();
                         break;
                     }
                 default:
@@ -11020,15 +9514,9 @@ export const receipts = $root.receipts = (() => {
         ReceiptReturnData.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.ptr != null && message.hasOwnProperty("ptr"))
                 if (!$util.isInteger(message.ptr) && !(message.ptr && $util.isInteger(message.ptr.low) && $util.isInteger(message.ptr.high)))
                     return "ptr: integer|Long expected";
@@ -11038,25 +9526,15 @@ export const receipts = $root.receipts = (() => {
             if (message.digest != null && message.hasOwnProperty("digest"))
                 if (!(message.digest && typeof message.digest.length === "number" || $util.isString(message.digest)))
                     return "digest: buffer expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
             if (message.pc != null && message.hasOwnProperty("pc"))
                 if (!$util.isInteger(message.pc) && !(message.pc && $util.isInteger(message.pc.low) && $util.isInteger(message.pc.high)))
                     return "pc: integer|Long expected";
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -11072,18 +9550,11 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptReturnData)
                 return object;
             let message = new $root.receipts.ReceiptReturnData();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.ptr != null)
                 if ($util.Long)
                     (message.ptr = $util.Long.fromValue(object.ptr)).unsigned = false;
@@ -11107,6 +9578,11 @@ export const receipts = $root.receipts = (() => {
                     $util.base64.decode(object.digest, message.digest = $util.newBuffer($util.base64.length(object.digest)), 0);
                 else if (object.digest.length >= 0)
                     message.digest = object.digest;
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length >= 0)
+                    message.data = object.data;
             if (object.pc != null)
                 if ($util.Long)
                     (message.pc = $util.Long.fromValue(object.pc)).unsigned = false;
@@ -11125,21 +9601,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.data != null)
-                if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptReturnData.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptReturnData.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -11157,20 +9618,12 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -11189,6 +9642,13 @@ export const receipts = $root.receipts = (() => {
                     if (options.bytes !== Array)
                         object.digest = $util.newBuffer(object.digest);
                 }
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.pc = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -11199,22 +9659,9 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.data = "";
-                else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.ptr != null && message.hasOwnProperty("ptr"))
                 if (typeof message.ptr === "number")
                     object.ptr = options.longs === String ? String(message.ptr) : message.ptr;
@@ -11227,6 +9674,8 @@ export const receipts = $root.receipts = (() => {
                     object.len = options.longs === String ? $util.Long.prototype.toString.call(message.len) : options.longs === Number ? new $util.LongBits(message.len.low >>> 0, message.len.high >>> 0).toNumber() : message.len;
             if (message.digest != null && message.hasOwnProperty("digest"))
                 object.digest = options.bytes === String ? $util.base64.encode(message.digest, 0, message.digest.length) : options.bytes === Array ? Array.prototype.slice.call(message.digest) : message.digest;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
             if (message.pc != null && message.hasOwnProperty("pc"))
                 if (typeof message.pc === "number")
                     object.pc = options.longs === String ? String(message.pc) : message.pc;
@@ -11237,12 +9686,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -11281,15 +9724,11 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptPanic.
          * @memberof receipts
          * @interface IReceiptPanic
-         * @property {string|null} [subject] ReceiptPanic subject
-         * @property {Uint8Array|null} [txId] ReceiptPanic txId
-         * @property {Uint8Array|null} [contractId] ReceiptPanic contractId
+         * @property {Uint8Array|null} [id] ReceiptPanic id
          * @property {number|Long|null} [reason] ReceiptPanic reason
          * @property {number|Long|null} [pc] ReceiptPanic pc
          * @property {number|Long|null} [is] ReceiptPanic is
-         * @property {Uint8Array|null} [panicContractId] ReceiptPanic panicContractId
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptPanic createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptPanic publishedAt
+         * @property {Uint8Array|null} [contractId] ReceiptPanic contractId
          */
 
         /**
@@ -11308,28 +9747,12 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptPanic subject.
-         * @member {string} subject
+         * ReceiptPanic id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptPanic
          * @instance
          */
-        ReceiptPanic.prototype.subject = "";
-
-        /**
-         * ReceiptPanic txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptPanic
-         * @instance
-         */
-        ReceiptPanic.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptPanic contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptPanic
-         * @instance
-         */
-        ReceiptPanic.prototype.contractId = $util.newBuffer([]);
+        ReceiptPanic.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptPanic reason.
@@ -11356,28 +9779,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptPanic.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptPanic panicContractId.
-         * @member {Uint8Array} panicContractId
+         * ReceiptPanic contractId.
+         * @member {Uint8Array} contractId
          * @memberof receipts.ReceiptPanic
          * @instance
          */
-        ReceiptPanic.prototype.panicContractId = $util.newBuffer([]);
-
-        /**
-         * ReceiptPanic createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptPanic
-         * @instance
-         */
-        ReceiptPanic.prototype.createdAt = null;
-
-        /**
-         * ReceiptPanic publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptPanic
-         * @instance
-         */
-        ReceiptPanic.prototype.publishedAt = null;
+        ReceiptPanic.prototype.contractId = $util.newBuffer([]);
 
         /**
          * Creates a new ReceiptPanic instance using the specified properties.
@@ -11403,24 +9810,16 @@ export const receipts = $root.receipts = (() => {
         ReceiptPanic.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
             if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.reason);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.reason);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
-            if (message.panicContractId != null && Object.hasOwnProperty.call(message, "panicContractId"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.panicContractId);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.is);
+            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.contractId);
             return writer;
         };
 
@@ -11456,39 +9855,23 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
                         message.reason = reader.int64();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.is = reader.int64();
                         break;
                     }
-                case 7: {
-                        message.panicContractId = reader.bytes();
-                        break;
-                    }
-                case 8: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 9: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 5: {
+                        message.contractId = reader.bytes();
                         break;
                     }
                 default:
@@ -11526,15 +9909,9 @@ export const receipts = $root.receipts = (() => {
         ReceiptPanic.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.reason != null && message.hasOwnProperty("reason"))
                 if (!$util.isInteger(message.reason) && !(message.reason && $util.isInteger(message.reason.low) && $util.isInteger(message.reason.high)))
                     return "reason: integer|Long expected";
@@ -11544,19 +9921,9 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.panicContractId != null && message.hasOwnProperty("panicContractId"))
-                if (!(message.panicContractId && typeof message.panicContractId.length === "number" || $util.isString(message.panicContractId)))
-                    return "panicContractId: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
+            if (message.contractId != null && message.hasOwnProperty("contractId"))
+                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
+                    return "contractId: buffer expected";
             return null;
         };
 
@@ -11572,18 +9939,11 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptPanic)
                 return object;
             let message = new $root.receipts.ReceiptPanic();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.reason != null)
                 if ($util.Long)
                     (message.reason = $util.Long.fromValue(object.reason)).unsigned = false;
@@ -11611,21 +9971,11 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.panicContractId != null)
-                if (typeof object.panicContractId === "string")
-                    $util.base64.decode(object.panicContractId, message.panicContractId = $util.newBuffer($util.base64.length(object.panicContractId)), 0);
-                else if (object.panicContractId.length >= 0)
-                    message.panicContractId = object.panicContractId;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptPanic.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptPanic.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
+            if (object.contractId != null)
+                if (typeof object.contractId === "string")
+                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
+                else if (object.contractId.length >= 0)
+                    message.contractId = object.contractId;
             return message;
         };
 
@@ -11643,20 +9993,12 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -11674,21 +10016,15 @@ export const receipts = $root.receipts = (() => {
                 } else
                     object.is = options.longs === String ? "0" : 0;
                 if (options.bytes === String)
-                    object.panicContractId = "";
+                    object.contractId = "";
                 else {
-                    object.panicContractId = [];
+                    object.contractId = [];
                     if (options.bytes !== Array)
-                        object.panicContractId = $util.newBuffer(object.panicContractId);
+                        object.contractId = $util.newBuffer(object.contractId);
                 }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.reason != null && message.hasOwnProperty("reason"))
                 if (typeof message.reason === "number")
                     object.reason = options.longs === String ? String(message.reason) : message.reason;
@@ -11704,12 +10040,8 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.panicContractId != null && message.hasOwnProperty("panicContractId"))
-                object.panicContractId = options.bytes === String ? $util.base64.encode(message.panicContractId, 0, message.panicContractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.panicContractId) : message.panicContractId;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
+            if (message.contractId != null && message.hasOwnProperty("contractId"))
+                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
             return object;
         };
 
@@ -11748,14 +10080,10 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptRevert.
          * @memberof receipts
          * @interface IReceiptRevert
-         * @property {string|null} [subject] ReceiptRevert subject
-         * @property {Uint8Array|null} [txId] ReceiptRevert txId
-         * @property {Uint8Array|null} [contractId] ReceiptRevert contractId
-         * @property {number|Long|null} [val] ReceiptRevert val
+         * @property {Uint8Array|null} [id] ReceiptRevert id
+         * @property {number|Long|null} [ra] ReceiptRevert ra
          * @property {number|Long|null} [pc] ReceiptRevert pc
          * @property {number|Long|null} [is] ReceiptRevert is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptRevert createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptRevert publishedAt
          */
 
         /**
@@ -11774,36 +10102,20 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptRevert subject.
-         * @member {string} subject
+         * ReceiptRevert id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptRevert
          * @instance
          */
-        ReceiptRevert.prototype.subject = "";
+        ReceiptRevert.prototype.id = $util.newBuffer([]);
 
         /**
-         * ReceiptRevert txId.
-         * @member {Uint8Array} txId
+         * ReceiptRevert ra.
+         * @member {number|Long} ra
          * @memberof receipts.ReceiptRevert
          * @instance
          */
-        ReceiptRevert.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptRevert contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptRevert
-         * @instance
-         */
-        ReceiptRevert.prototype.contractId = $util.newBuffer([]);
-
-        /**
-         * ReceiptRevert val.
-         * @member {number|Long} val
-         * @memberof receipts.ReceiptRevert
-         * @instance
-         */
-        ReceiptRevert.prototype.val = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        ReceiptRevert.prototype.ra = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
          * ReceiptRevert pc.
@@ -11820,22 +10132,6 @@ export const receipts = $root.receipts = (() => {
          * @instance
          */
         ReceiptRevert.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * ReceiptRevert createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptRevert
-         * @instance
-         */
-        ReceiptRevert.prototype.createdAt = null;
-
-        /**
-         * ReceiptRevert publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptRevert
-         * @instance
-         */
-        ReceiptRevert.prototype.publishedAt = null;
 
         /**
          * Creates a new ReceiptRevert instance using the specified properties.
@@ -11861,22 +10157,14 @@ export const receipts = $root.receipts = (() => {
         ReceiptRevert.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
-            if (message.val != null && Object.hasOwnProperty.call(message, "val"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.val);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+            if (message.ra != null && Object.hasOwnProperty.call(message, "ra"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.ra);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.is);
             return writer;
         };
 
@@ -11912,35 +10200,19 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
+                        message.ra = reader.int64();
                         break;
                     }
                 case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.val = reader.int64();
-                        break;
-                    }
-                case 5: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 7: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 8: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -11978,34 +10250,18 @@ export const receipts = $root.receipts = (() => {
         ReceiptRevert.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
-            if (message.val != null && message.hasOwnProperty("val"))
-                if (!$util.isInteger(message.val) && !(message.val && $util.isInteger(message.val.low) && $util.isInteger(message.val.high)))
-                    return "val: integer|Long expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.ra != null && message.hasOwnProperty("ra"))
+                if (!$util.isInteger(message.ra) && !(message.ra && $util.isInteger(message.ra.low) && $util.isInteger(message.ra.high)))
+                    return "ra: integer|Long expected";
             if (message.pc != null && message.hasOwnProperty("pc"))
                 if (!$util.isInteger(message.pc) && !(message.pc && $util.isInteger(message.pc.low) && $util.isInteger(message.pc.high)))
                     return "pc: integer|Long expected";
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -12021,27 +10277,20 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptRevert)
                 return object;
             let message = new $root.receipts.ReceiptRevert();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
-            if (object.val != null)
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
+            if (object.ra != null)
                 if ($util.Long)
-                    (message.val = $util.Long.fromValue(object.val)).unsigned = false;
-                else if (typeof object.val === "string")
-                    message.val = parseInt(object.val, 10);
-                else if (typeof object.val === "number")
-                    message.val = object.val;
-                else if (typeof object.val === "object")
-                    message.val = new $util.LongBits(object.val.low >>> 0, object.val.high >>> 0).toNumber();
+                    (message.ra = $util.Long.fromValue(object.ra)).unsigned = false;
+                else if (typeof object.ra === "string")
+                    message.ra = parseInt(object.ra, 10);
+                else if (typeof object.ra === "number")
+                    message.ra = object.ra;
+                else if (typeof object.ra === "object")
+                    message.ra = new $util.LongBits(object.ra.low >>> 0, object.ra.high >>> 0).toNumber();
             if (object.pc != null)
                 if ($util.Long)
                     (message.pc = $util.Long.fromValue(object.pc)).unsigned = false;
@@ -12060,16 +10309,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptRevert.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptRevert.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -12087,26 +10326,18 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
-                    object.val = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    object.ra = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
-                    object.val = options.longs === String ? "0" : 0;
+                    object.ra = options.longs === String ? "0" : 0;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.pc = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -12117,20 +10348,14 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
-            if (message.val != null && message.hasOwnProperty("val"))
-                if (typeof message.val === "number")
-                    object.val = options.longs === String ? String(message.val) : message.val;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.ra != null && message.hasOwnProperty("ra"))
+                if (typeof message.ra === "number")
+                    object.ra = options.longs === String ? String(message.ra) : message.ra;
                 else
-                    object.val = options.longs === String ? $util.Long.prototype.toString.call(message.val) : options.longs === Number ? new $util.LongBits(message.val.low >>> 0, message.val.high >>> 0).toNumber() : message.val;
+                    object.ra = options.longs === String ? $util.Long.prototype.toString.call(message.ra) : options.longs === Number ? new $util.LongBits(message.ra.low >>> 0, message.ra.high >>> 0).toNumber() : message.ra;
             if (message.pc != null && message.hasOwnProperty("pc"))
                 if (typeof message.pc === "number")
                     object.pc = options.longs === String ? String(message.pc) : message.pc;
@@ -12141,10 +10366,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -12183,17 +10404,13 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptLog.
          * @memberof receipts
          * @interface IReceiptLog
-         * @property {string|null} [subject] ReceiptLog subject
-         * @property {Uint8Array|null} [txId] ReceiptLog txId
-         * @property {Uint8Array|null} [contractId] ReceiptLog contractId
+         * @property {Uint8Array|null} [id] ReceiptLog id
          * @property {number|Long|null} [ra] ReceiptLog ra
          * @property {number|Long|null} [rb] ReceiptLog rb
          * @property {number|Long|null} [rc] ReceiptLog rc
          * @property {number|Long|null} [rd] ReceiptLog rd
          * @property {number|Long|null} [pc] ReceiptLog pc
          * @property {number|Long|null} [is] ReceiptLog is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptLog createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptLog publishedAt
          */
 
         /**
@@ -12212,28 +10429,12 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptLog subject.
-         * @member {string} subject
+         * ReceiptLog id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptLog
          * @instance
          */
-        ReceiptLog.prototype.subject = "";
-
-        /**
-         * ReceiptLog txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptLog
-         * @instance
-         */
-        ReceiptLog.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptLog contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptLog
-         * @instance
-         */
-        ReceiptLog.prototype.contractId = $util.newBuffer([]);
+        ReceiptLog.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptLog ra.
@@ -12284,22 +10485,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptLog.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptLog createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptLog
-         * @instance
-         */
-        ReceiptLog.prototype.createdAt = null;
-
-        /**
-         * ReceiptLog publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptLog
-         * @instance
-         */
-        ReceiptLog.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptLog instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptLog
@@ -12323,28 +10508,20 @@ export const receipts = $root.receipts = (() => {
         ReceiptLog.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
             if (message.ra != null && Object.hasOwnProperty.call(message, "ra"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.ra);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.ra);
             if (message.rb != null && Object.hasOwnProperty.call(message, "rb"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.rb);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.rb);
             if (message.rc != null && Object.hasOwnProperty.call(message, "rc"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.rc);
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.rc);
             if (message.rd != null && Object.hasOwnProperty.call(message, "rd"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.rd);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.rd);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.pc);
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.is);
             return writer;
         };
 
@@ -12380,47 +10557,31 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
                         message.ra = reader.int64();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.rb = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.rc = reader.int64();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.rd = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 9: {
+                case 7: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 10: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 11: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -12458,15 +10619,9 @@ export const receipts = $root.receipts = (() => {
         ReceiptLog.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.ra != null && message.hasOwnProperty("ra"))
                 if (!$util.isInteger(message.ra) && !(message.ra && $util.isInteger(message.ra.low) && $util.isInteger(message.ra.high)))
                     return "ra: integer|Long expected";
@@ -12485,16 +10640,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -12510,18 +10655,11 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptLog)
                 return object;
             let message = new $root.receipts.ReceiptLog();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.ra != null)
                 if ($util.Long)
                     (message.ra = $util.Long.fromValue(object.ra)).unsigned = false;
@@ -12576,16 +10714,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptLog.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptLog.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -12603,20 +10731,12 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -12648,15 +10768,9 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.ra != null && message.hasOwnProperty("ra"))
                 if (typeof message.ra === "number")
                     object.ra = options.longs === String ? String(message.ra) : message.ra;
@@ -12687,10 +10801,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -12729,19 +10839,15 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptLogData.
          * @memberof receipts
          * @interface IReceiptLogData
-         * @property {string|null} [subject] ReceiptLogData subject
-         * @property {Uint8Array|null} [txId] ReceiptLogData txId
-         * @property {Uint8Array|null} [contractId] ReceiptLogData contractId
+         * @property {Uint8Array|null} [id] ReceiptLogData id
          * @property {number|Long|null} [ra] ReceiptLogData ra
          * @property {number|Long|null} [rb] ReceiptLogData rb
          * @property {number|Long|null} [ptr] ReceiptLogData ptr
          * @property {number|Long|null} [len] ReceiptLogData len
          * @property {Uint8Array|null} [digest] ReceiptLogData digest
+         * @property {Uint8Array|null} [data] ReceiptLogData data
          * @property {number|Long|null} [pc] ReceiptLogData pc
          * @property {number|Long|null} [is] ReceiptLogData is
-         * @property {Uint8Array|null} [data] ReceiptLogData data
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptLogData createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptLogData publishedAt
          */
 
         /**
@@ -12760,28 +10866,12 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptLogData subject.
-         * @member {string} subject
+         * ReceiptLogData id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptLogData
          * @instance
          */
-        ReceiptLogData.prototype.subject = "";
-
-        /**
-         * ReceiptLogData txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptLogData
-         * @instance
-         */
-        ReceiptLogData.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptLogData contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptLogData
-         * @instance
-         */
-        ReceiptLogData.prototype.contractId = $util.newBuffer([]);
+        ReceiptLogData.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptLogData ra.
@@ -12824,6 +10914,14 @@ export const receipts = $root.receipts = (() => {
         ReceiptLogData.prototype.digest = $util.newBuffer([]);
 
         /**
+         * ReceiptLogData data.
+         * @member {Uint8Array} data
+         * @memberof receipts.ReceiptLogData
+         * @instance
+         */
+        ReceiptLogData.prototype.data = $util.newBuffer([]);
+
+        /**
          * ReceiptLogData pc.
          * @member {number|Long} pc
          * @memberof receipts.ReceiptLogData
@@ -12838,30 +10936,6 @@ export const receipts = $root.receipts = (() => {
          * @instance
          */
         ReceiptLogData.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * ReceiptLogData data.
-         * @member {Uint8Array} data
-         * @memberof receipts.ReceiptLogData
-         * @instance
-         */
-        ReceiptLogData.prototype.data = $util.newBuffer([]);
-
-        /**
-         * ReceiptLogData createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptLogData
-         * @instance
-         */
-        ReceiptLogData.prototype.createdAt = null;
-
-        /**
-         * ReceiptLogData publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptLogData
-         * @instance
-         */
-        ReceiptLogData.prototype.publishedAt = null;
 
         /**
          * Creates a new ReceiptLogData instance using the specified properties.
@@ -12887,32 +10961,24 @@ export const receipts = $root.receipts = (() => {
         ReceiptLogData.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
             if (message.ra != null && Object.hasOwnProperty.call(message, "ra"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.ra);
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.ra);
             if (message.rb != null && Object.hasOwnProperty.call(message, "rb"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.rb);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.rb);
             if (message.ptr != null && Object.hasOwnProperty.call(message, "ptr"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.ptr);
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.ptr);
             if (message.len != null && Object.hasOwnProperty.call(message, "len"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.len);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.len);
             if (message.digest != null && Object.hasOwnProperty.call(message, "digest"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.digest);
-            if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.pc);
-            if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int64(message.is);
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.digest);
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 11, wireType 2 =*/90).bytes(message.data);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 12, wireType 2 =*/98).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.data);
+            if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
+                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.pc);
+            if (message.is != null && Object.hasOwnProperty.call(message, "is"))
+                writer.uint32(/* id 9, wireType 0 =*/72).int64(message.is);
             return writer;
         };
 
@@ -12948,55 +11014,39 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
                         message.ra = reader.int64();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.rb = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.ptr = reader.int64();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.len = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.digest = reader.bytes();
                         break;
                     }
-                case 9: {
-                        message.pc = reader.int64();
-                        break;
-                    }
-                case 10: {
-                        message.is = reader.int64();
-                        break;
-                    }
-                case 11: {
+                case 7: {
                         message.data = reader.bytes();
                         break;
                     }
-                case 12: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 8: {
+                        message.pc = reader.int64();
                         break;
                     }
-                case 13: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 9: {
+                        message.is = reader.int64();
                         break;
                     }
                 default:
@@ -13034,15 +11084,9 @@ export const receipts = $root.receipts = (() => {
         ReceiptLogData.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.ra != null && message.hasOwnProperty("ra"))
                 if (!$util.isInteger(message.ra) && !(message.ra && $util.isInteger(message.ra.low) && $util.isInteger(message.ra.high)))
                     return "ra: integer|Long expected";
@@ -13058,25 +11102,15 @@ export const receipts = $root.receipts = (() => {
             if (message.digest != null && message.hasOwnProperty("digest"))
                 if (!(message.digest && typeof message.digest.length === "number" || $util.isString(message.digest)))
                     return "digest: buffer expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
             if (message.pc != null && message.hasOwnProperty("pc"))
                 if (!$util.isInteger(message.pc) && !(message.pc && $util.isInteger(message.pc.low) && $util.isInteger(message.pc.high)))
                     return "pc: integer|Long expected";
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -13092,18 +11126,11 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptLogData)
                 return object;
             let message = new $root.receipts.ReceiptLogData();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.ra != null)
                 if ($util.Long)
                     (message.ra = $util.Long.fromValue(object.ra)).unsigned = false;
@@ -13145,6 +11172,11 @@ export const receipts = $root.receipts = (() => {
                     $util.base64.decode(object.digest, message.digest = $util.newBuffer($util.base64.length(object.digest)), 0);
                 else if (object.digest.length >= 0)
                     message.digest = object.digest;
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length >= 0)
+                    message.data = object.data;
             if (object.pc != null)
                 if ($util.Long)
                     (message.pc = $util.Long.fromValue(object.pc)).unsigned = false;
@@ -13163,21 +11195,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.data != null)
-                if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptLogData.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptLogData.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -13195,20 +11212,12 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -13237,6 +11246,13 @@ export const receipts = $root.receipts = (() => {
                     if (options.bytes !== Array)
                         object.digest = $util.newBuffer(object.digest);
                 }
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.pc = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -13247,22 +11263,9 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.data = "";
-                else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.ra != null && message.hasOwnProperty("ra"))
                 if (typeof message.ra === "number")
                     object.ra = options.longs === String ? String(message.ra) : message.ra;
@@ -13285,6 +11288,8 @@ export const receipts = $root.receipts = (() => {
                     object.len = options.longs === String ? $util.Long.prototype.toString.call(message.len) : options.longs === Number ? new $util.LongBits(message.len.low >>> 0, message.len.high >>> 0).toNumber() : message.len;
             if (message.digest != null && message.hasOwnProperty("digest"))
                 object.digest = options.bytes === String ? $util.base64.encode(message.digest, 0, message.digest.length) : options.bytes === Array ? Array.prototype.slice.call(message.digest) : message.digest;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
             if (message.pc != null && message.hasOwnProperty("pc"))
                 if (typeof message.pc === "number")
                     object.pc = options.longs === String ? String(message.pc) : message.pc;
@@ -13295,12 +11300,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -13339,16 +11338,12 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptTransfer.
          * @memberof receipts
          * @interface IReceiptTransfer
-         * @property {string|null} [subject] ReceiptTransfer subject
-         * @property {Uint8Array|null} [txId] ReceiptTransfer txId
-         * @property {Uint8Array|null} [contractId] ReceiptTransfer contractId
-         * @property {Uint8Array|null} [toContractId] ReceiptTransfer toContractId
+         * @property {Uint8Array|null} [id] ReceiptTransfer id
+         * @property {Uint8Array|null} [to] ReceiptTransfer to
          * @property {number|Long|null} [amount] ReceiptTransfer amount
          * @property {Uint8Array|null} [assetId] ReceiptTransfer assetId
          * @property {number|Long|null} [pc] ReceiptTransfer pc
          * @property {number|Long|null} [is] ReceiptTransfer is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptTransfer createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptTransfer publishedAt
          */
 
         /**
@@ -13367,36 +11362,20 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptTransfer subject.
-         * @member {string} subject
+         * ReceiptTransfer id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptTransfer
          * @instance
          */
-        ReceiptTransfer.prototype.subject = "";
+        ReceiptTransfer.prototype.id = $util.newBuffer([]);
 
         /**
-         * ReceiptTransfer txId.
-         * @member {Uint8Array} txId
+         * ReceiptTransfer to.
+         * @member {Uint8Array} to
          * @memberof receipts.ReceiptTransfer
          * @instance
          */
-        ReceiptTransfer.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptTransfer contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptTransfer
-         * @instance
-         */
-        ReceiptTransfer.prototype.contractId = $util.newBuffer([]);
-
-        /**
-         * ReceiptTransfer toContractId.
-         * @member {Uint8Array} toContractId
-         * @memberof receipts.ReceiptTransfer
-         * @instance
-         */
-        ReceiptTransfer.prototype.toContractId = $util.newBuffer([]);
+        ReceiptTransfer.prototype.to = $util.newBuffer([]);
 
         /**
          * ReceiptTransfer amount.
@@ -13431,22 +11410,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptTransfer.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptTransfer createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptTransfer
-         * @instance
-         */
-        ReceiptTransfer.prototype.createdAt = null;
-
-        /**
-         * ReceiptTransfer publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptTransfer
-         * @instance
-         */
-        ReceiptTransfer.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptTransfer instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptTransfer
@@ -13470,26 +11433,18 @@ export const receipts = $root.receipts = (() => {
         ReceiptTransfer.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
-            if (message.toContractId != null && Object.hasOwnProperty.call(message, "toContractId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.toContractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+            if (message.to != null && Object.hasOwnProperty.call(message, "to"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.to);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.amount);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.assetId);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.pc);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
             return writer;
         };
 
@@ -13525,43 +11480,27 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
+                        message.to = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.toContractId = reader.bytes();
-                        break;
-                    }
-                case 5: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.assetId = reader.bytes();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 9: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 10: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -13599,18 +11538,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptTransfer.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
-            if (message.toContractId != null && message.hasOwnProperty("toContractId"))
-                if (!(message.toContractId && typeof message.toContractId.length === "number" || $util.isString(message.toContractId)))
-                    return "toContractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.to != null && message.hasOwnProperty("to"))
+                if (!(message.to && typeof message.to.length === "number" || $util.isString(message.to)))
+                    return "to: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
@@ -13623,16 +11556,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -13648,23 +11571,16 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptTransfer)
                 return object;
             let message = new $root.receipts.ReceiptTransfer();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
-            if (object.toContractId != null)
-                if (typeof object.toContractId === "string")
-                    $util.base64.decode(object.toContractId, message.toContractId = $util.newBuffer($util.base64.length(object.toContractId)), 0);
-                else if (object.toContractId.length >= 0)
-                    message.toContractId = object.toContractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
+            if (object.to != null)
+                if (typeof object.to === "string")
+                    $util.base64.decode(object.to, message.to = $util.newBuffer($util.base64.length(object.to)), 0);
+                else if (object.to.length >= 0)
+                    message.to = object.to;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -13697,16 +11613,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptTransfer.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptTransfer.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -13724,27 +11630,19 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if (options.bytes === String)
-                    object.contractId = "";
+                    object.to = "";
                 else {
-                    object.contractId = [];
+                    object.to = [];
                     if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
-                }
-                if (options.bytes === String)
-                    object.toContractId = "";
-                else {
-                    object.toContractId = [];
-                    if (options.bytes !== Array)
-                        object.toContractId = $util.newBuffer(object.toContractId);
+                        object.to = $util.newBuffer(object.to);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -13768,17 +11666,11 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
-            if (message.toContractId != null && message.hasOwnProperty("toContractId"))
-                object.toContractId = options.bytes === String ? $util.base64.encode(message.toContractId, 0, message.toContractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.toContractId) : message.toContractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.to != null && message.hasOwnProperty("to"))
+                object.to = options.bytes === String ? $util.base64.encode(message.to, 0, message.to.length) : options.bytes === Array ? Array.prototype.slice.call(message.to) : message.to;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -13796,10 +11688,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -13838,16 +11726,12 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptTransferOut.
          * @memberof receipts
          * @interface IReceiptTransferOut
-         * @property {string|null} [subject] ReceiptTransferOut subject
-         * @property {Uint8Array|null} [txId] ReceiptTransferOut txId
-         * @property {Uint8Array|null} [contractId] ReceiptTransferOut contractId
+         * @property {Uint8Array|null} [id] ReceiptTransferOut id
          * @property {Uint8Array|null} [toAddress] ReceiptTransferOut toAddress
          * @property {number|Long|null} [amount] ReceiptTransferOut amount
          * @property {Uint8Array|null} [assetId] ReceiptTransferOut assetId
          * @property {number|Long|null} [pc] ReceiptTransferOut pc
          * @property {number|Long|null} [is] ReceiptTransferOut is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptTransferOut createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptTransferOut publishedAt
          */
 
         /**
@@ -13866,28 +11750,12 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptTransferOut subject.
-         * @member {string} subject
+         * ReceiptTransferOut id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptTransferOut
          * @instance
          */
-        ReceiptTransferOut.prototype.subject = "";
-
-        /**
-         * ReceiptTransferOut txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptTransferOut
-         * @instance
-         */
-        ReceiptTransferOut.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptTransferOut contractId.
-         * @member {Uint8Array} contractId
-         * @memberof receipts.ReceiptTransferOut
-         * @instance
-         */
-        ReceiptTransferOut.prototype.contractId = $util.newBuffer([]);
+        ReceiptTransferOut.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptTransferOut toAddress.
@@ -13930,22 +11798,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptTransferOut.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptTransferOut createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptTransferOut
-         * @instance
-         */
-        ReceiptTransferOut.prototype.createdAt = null;
-
-        /**
-         * ReceiptTransferOut publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptTransferOut
-         * @instance
-         */
-        ReceiptTransferOut.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptTransferOut instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptTransferOut
@@ -13969,26 +11821,18 @@ export const receipts = $root.receipts = (() => {
         ReceiptTransferOut.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.contractId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
             if (message.toAddress != null && Object.hasOwnProperty.call(message, "toAddress"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.toAddress);
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.toAddress);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.amount);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.assetId);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.assetId);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.pc);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
             return writer;
         };
 
@@ -14024,43 +11868,27 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.contractId = reader.bytes();
-                        break;
-                    }
-                case 4: {
                         message.toAddress = reader.bytes();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.assetId = reader.bytes();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 9: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 10: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -14098,15 +11926,9 @@ export const receipts = $root.receipts = (() => {
         ReceiptTransferOut.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.toAddress != null && message.hasOwnProperty("toAddress"))
                 if (!(message.toAddress && typeof message.toAddress.length === "number" || $util.isString(message.toAddress)))
                     return "toAddress: buffer expected";
@@ -14122,16 +11944,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -14147,18 +11959,11 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptTransferOut)
                 return object;
             let message = new $root.receipts.ReceiptTransferOut();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.toAddress != null)
                 if (typeof object.toAddress === "string")
                     $util.base64.decode(object.toAddress, message.toAddress = $util.newBuffer($util.base64.length(object.toAddress)), 0);
@@ -14196,16 +12001,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptTransferOut.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptTransferOut.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -14223,20 +12018,12 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.id = "";
                 else {
-                    object.txId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                if (options.bytes === String)
-                    object.contractId = "";
-                else {
-                    object.contractId = [];
-                    if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if (options.bytes === String)
                     object.toAddress = "";
@@ -14267,15 +12054,9 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.toAddress != null && message.hasOwnProperty("toAddress"))
                 object.toAddress = options.bytes === String ? $util.base64.encode(message.toAddress, 0, message.toAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.toAddress) : message.toAddress;
             if (message.amount != null && message.hasOwnProperty("amount"))
@@ -14295,10 +12076,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -14337,12 +12114,8 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptScriptResult.
          * @memberof receipts
          * @interface IReceiptScriptResult
-         * @property {string|null} [subject] ReceiptScriptResult subject
-         * @property {Uint8Array|null} [txId] ReceiptScriptResult txId
          * @property {receipts.ScriptResultType|null} [result] ReceiptScriptResult result
          * @property {number|Long|null} [gasUsed] ReceiptScriptResult gasUsed
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptScriptResult createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptScriptResult publishedAt
          */
 
         /**
@@ -14361,22 +12134,6 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptScriptResult subject.
-         * @member {string} subject
-         * @memberof receipts.ReceiptScriptResult
-         * @instance
-         */
-        ReceiptScriptResult.prototype.subject = "";
-
-        /**
-         * ReceiptScriptResult txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptScriptResult
-         * @instance
-         */
-        ReceiptScriptResult.prototype.txId = $util.newBuffer([]);
-
-        /**
          * ReceiptScriptResult result.
          * @member {receipts.ScriptResultType} result
          * @memberof receipts.ReceiptScriptResult
@@ -14391,22 +12148,6 @@ export const receipts = $root.receipts = (() => {
          * @instance
          */
         ReceiptScriptResult.prototype.gasUsed = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * ReceiptScriptResult createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptScriptResult
-         * @instance
-         */
-        ReceiptScriptResult.prototype.createdAt = null;
-
-        /**
-         * ReceiptScriptResult publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptScriptResult
-         * @instance
-         */
-        ReceiptScriptResult.prototype.publishedAt = null;
 
         /**
          * Creates a new ReceiptScriptResult instance using the specified properties.
@@ -14432,18 +12173,10 @@ export const receipts = $root.receipts = (() => {
         ReceiptScriptResult.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
             if (message.result != null && Object.hasOwnProperty.call(message, "result"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.result);
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.result);
             if (message.gasUsed != null && Object.hasOwnProperty.call(message, "gasUsed"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.gasUsed);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.gasUsed);
             return writer;
         };
 
@@ -14479,27 +12212,11 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.result = reader.int32();
                         break;
                     }
-                case 4: {
+                case 2: {
                         message.gasUsed = reader.int64();
-                        break;
-                    }
-                case 5: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 6: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -14537,33 +12254,20 @@ export const receipts = $root.receipts = (() => {
         ReceiptScriptResult.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
             if (message.result != null && message.hasOwnProperty("result"))
                 switch (message.result) {
                 default:
                     return "result: enum value expected";
                 case 0:
                 case 1:
+                case 2:
+                case 3:
+                case 4:
                     break;
                 }
             if (message.gasUsed != null && message.hasOwnProperty("gasUsed"))
                 if (!$util.isInteger(message.gasUsed) && !(message.gasUsed && $util.isInteger(message.gasUsed.low) && $util.isInteger(message.gasUsed.high)))
                     return "gasUsed: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -14579,13 +12283,6 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptScriptResult)
                 return object;
             let message = new $root.receipts.ReceiptScriptResult();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
             switch (object.result) {
             default:
                 if (typeof object.result === "number") {
@@ -14593,13 +12290,25 @@ export const receipts = $root.receipts = (() => {
                     break;
                 }
                 break;
-            case "SUCCESS":
+            case "UNKNOWN_SCRIPT_RESULT_TYPE":
             case 0:
                 message.result = 0;
                 break;
-            case "FAILURE":
+            case "SUCCESS":
             case 1:
                 message.result = 1;
+                break;
+            case "SCRIPT_REVERT":
+            case 2:
+                message.result = 2;
+                break;
+            case "SCRIPT_PANIC":
+            case 3:
+                message.result = 3;
+                break;
+            case "GENERIC_FAILURE":
+            case 4:
+                message.result = 4;
                 break;
             }
             if (object.gasUsed != null)
@@ -14611,16 +12320,6 @@ export const receipts = $root.receipts = (() => {
                     message.gasUsed = object.gasUsed;
                 else if (typeof object.gasUsed === "object")
                     message.gasUsed = new $util.LongBits(object.gasUsed.low >>> 0, object.gasUsed.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptScriptResult.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptScriptResult.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -14638,27 +12337,13 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                object.result = options.enums === String ? "SUCCESS" : 0;
+                object.result = options.enums === String ? "UNKNOWN_SCRIPT_RESULT_TYPE" : 0;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.gasUsed = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.gasUsed = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
             if (message.result != null && message.hasOwnProperty("result"))
                 object.result = options.enums === String ? $root.receipts.ScriptResultType[message.result] === undefined ? message.result : $root.receipts.ScriptResultType[message.result] : message.result;
             if (message.gasUsed != null && message.hasOwnProperty("gasUsed"))
@@ -14666,10 +12351,6 @@ export const receipts = $root.receipts = (() => {
                     object.gasUsed = options.longs === String ? String(message.gasUsed) : message.gasUsed;
                 else
                     object.gasUsed = options.longs === String ? $util.Long.prototype.toString.call(message.gasUsed) : options.longs === Number ? new $util.LongBits(message.gasUsed.low >>> 0, message.gasUsed.high >>> 0).toNumber() : message.gasUsed;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -14708,17 +12389,13 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptMessageOut.
          * @memberof receipts
          * @interface IReceiptMessageOut
-         * @property {string|null} [subject] ReceiptMessageOut subject
-         * @property {Uint8Array|null} [txId] ReceiptMessageOut txId
-         * @property {Uint8Array|null} [senderAddress] ReceiptMessageOut senderAddress
-         * @property {Uint8Array|null} [recipientAddress] ReceiptMessageOut recipientAddress
+         * @property {Uint8Array|null} [sender] ReceiptMessageOut sender
+         * @property {Uint8Array|null} [recipient] ReceiptMessageOut recipient
          * @property {number|Long|null} [amount] ReceiptMessageOut amount
          * @property {Uint8Array|null} [nonce] ReceiptMessageOut nonce
          * @property {number|Long|null} [len] ReceiptMessageOut len
          * @property {Uint8Array|null} [digest] ReceiptMessageOut digest
          * @property {Uint8Array|null} [data] ReceiptMessageOut data
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptMessageOut createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptMessageOut publishedAt
          */
 
         /**
@@ -14737,36 +12414,20 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptMessageOut subject.
-         * @member {string} subject
+         * ReceiptMessageOut sender.
+         * @member {Uint8Array} sender
          * @memberof receipts.ReceiptMessageOut
          * @instance
          */
-        ReceiptMessageOut.prototype.subject = "";
+        ReceiptMessageOut.prototype.sender = $util.newBuffer([]);
 
         /**
-         * ReceiptMessageOut txId.
-         * @member {Uint8Array} txId
+         * ReceiptMessageOut recipient.
+         * @member {Uint8Array} recipient
          * @memberof receipts.ReceiptMessageOut
          * @instance
          */
-        ReceiptMessageOut.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * ReceiptMessageOut senderAddress.
-         * @member {Uint8Array} senderAddress
-         * @memberof receipts.ReceiptMessageOut
-         * @instance
-         */
-        ReceiptMessageOut.prototype.senderAddress = $util.newBuffer([]);
-
-        /**
-         * ReceiptMessageOut recipientAddress.
-         * @member {Uint8Array} recipientAddress
-         * @memberof receipts.ReceiptMessageOut
-         * @instance
-         */
-        ReceiptMessageOut.prototype.recipientAddress = $util.newBuffer([]);
+        ReceiptMessageOut.prototype.recipient = $util.newBuffer([]);
 
         /**
          * ReceiptMessageOut amount.
@@ -14809,22 +12470,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptMessageOut.prototype.data = $util.newBuffer([]);
 
         /**
-         * ReceiptMessageOut createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptMessageOut
-         * @instance
-         */
-        ReceiptMessageOut.prototype.createdAt = null;
-
-        /**
-         * ReceiptMessageOut publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptMessageOut
-         * @instance
-         */
-        ReceiptMessageOut.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptMessageOut instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptMessageOut
@@ -14848,28 +12493,20 @@ export const receipts = $root.receipts = (() => {
         ReceiptMessageOut.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
-            if (message.senderAddress != null && Object.hasOwnProperty.call(message, "senderAddress"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.senderAddress);
-            if (message.recipientAddress != null && Object.hasOwnProperty.call(message, "recipientAddress"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.recipientAddress);
+            if (message.sender != null && Object.hasOwnProperty.call(message, "sender"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.sender);
+            if (message.recipient != null && Object.hasOwnProperty.call(message, "recipient"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.recipient);
             if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.amount);
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.amount);
             if (message.nonce != null && Object.hasOwnProperty.call(message, "nonce"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.nonce);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.nonce);
             if (message.len != null && Object.hasOwnProperty.call(message, "len"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.len);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.len);
             if (message.digest != null && Object.hasOwnProperty.call(message, "digest"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.digest);
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.digest);
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.data);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.data);
             return writer;
         };
 
@@ -14905,47 +12542,31 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
+                        message.sender = reader.bytes();
                         break;
                     }
                 case 2: {
-                        message.txId = reader.bytes();
+                        message.recipient = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.senderAddress = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.recipientAddress = reader.bytes();
-                        break;
-                    }
-                case 5: {
                         message.amount = reader.int64();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.nonce = reader.bytes();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.len = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.digest = reader.bytes();
                         break;
                     }
-                case 9: {
+                case 7: {
                         message.data = reader.bytes();
-                        break;
-                    }
-                case 10: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 11: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -14983,18 +12604,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptMessageOut.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.senderAddress != null && message.hasOwnProperty("senderAddress"))
-                if (!(message.senderAddress && typeof message.senderAddress.length === "number" || $util.isString(message.senderAddress)))
-                    return "senderAddress: buffer expected";
-            if (message.recipientAddress != null && message.hasOwnProperty("recipientAddress"))
-                if (!(message.recipientAddress && typeof message.recipientAddress.length === "number" || $util.isString(message.recipientAddress)))
-                    return "recipientAddress: buffer expected";
+            if (message.sender != null && message.hasOwnProperty("sender"))
+                if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
+                    return "sender: buffer expected";
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
                     return "amount: integer|Long expected";
@@ -15010,16 +12625,6 @@ export const receipts = $root.receipts = (() => {
             if (message.data != null && message.hasOwnProperty("data"))
                 if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
                     return "data: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -15035,23 +12640,16 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptMessageOut)
                 return object;
             let message = new $root.receipts.ReceiptMessageOut();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.senderAddress != null)
-                if (typeof object.senderAddress === "string")
-                    $util.base64.decode(object.senderAddress, message.senderAddress = $util.newBuffer($util.base64.length(object.senderAddress)), 0);
-                else if (object.senderAddress.length >= 0)
-                    message.senderAddress = object.senderAddress;
-            if (object.recipientAddress != null)
-                if (typeof object.recipientAddress === "string")
-                    $util.base64.decode(object.recipientAddress, message.recipientAddress = $util.newBuffer($util.base64.length(object.recipientAddress)), 0);
-                else if (object.recipientAddress.length >= 0)
-                    message.recipientAddress = object.recipientAddress;
+            if (object.sender != null)
+                if (typeof object.sender === "string")
+                    $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
+                else if (object.sender.length >= 0)
+                    message.sender = object.sender;
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length >= 0)
+                    message.recipient = object.recipient;
             if (object.amount != null)
                 if ($util.Long)
                     (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
@@ -15085,16 +12683,6 @@ export const receipts = $root.receipts = (() => {
                     $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
                 else if (object.data.length >= 0)
                     message.data = object.data;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptMessageOut.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptMessageOut.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -15112,27 +12700,19 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
                 if (options.bytes === String)
-                    object.txId = "";
+                    object.sender = "";
                 else {
-                    object.txId = [];
+                    object.sender = [];
                     if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
+                        object.sender = $util.newBuffer(object.sender);
                 }
                 if (options.bytes === String)
-                    object.senderAddress = "";
+                    object.recipient = "";
                 else {
-                    object.senderAddress = [];
+                    object.recipient = [];
                     if (options.bytes !== Array)
-                        object.senderAddress = $util.newBuffer(object.senderAddress);
-                }
-                if (options.bytes === String)
-                    object.recipientAddress = "";
-                else {
-                    object.recipientAddress = [];
-                    if (options.bytes !== Array)
-                        object.recipientAddress = $util.newBuffer(object.recipientAddress);
+                        object.recipient = $util.newBuffer(object.recipient);
                 }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -15165,17 +12745,11 @@ export const receipts = $root.receipts = (() => {
                     if (options.bytes !== Array)
                         object.data = $util.newBuffer(object.data);
                 }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.senderAddress != null && message.hasOwnProperty("senderAddress"))
-                object.senderAddress = options.bytes === String ? $util.base64.encode(message.senderAddress, 0, message.senderAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.senderAddress) : message.senderAddress;
-            if (message.recipientAddress != null && message.hasOwnProperty("recipientAddress"))
-                object.recipientAddress = options.bytes === String ? $util.base64.encode(message.recipientAddress, 0, message.recipientAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipientAddress) : message.recipientAddress;
+            if (message.sender != null && message.hasOwnProperty("sender"))
+                object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
             if (message.amount != null && message.hasOwnProperty("amount"))
                 if (typeof message.amount === "number")
                     object.amount = options.longs === String ? String(message.amount) : message.amount;
@@ -15192,10 +12766,6 @@ export const receipts = $root.receipts = (() => {
                 object.digest = options.bytes === String ? $util.base64.encode(message.digest, 0, message.digest.length) : options.bytes === Array ? Array.prototype.slice.call(message.digest) : message.digest;
             if (message.data != null && message.hasOwnProperty("data"))
                 object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -15234,16 +12804,12 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptMint.
          * @memberof receipts
          * @interface IReceiptMint
-         * @property {string|null} [subject] ReceiptMint subject
-         * @property {Uint8Array|null} [txId] ReceiptMint txId
          * @property {Uint8Array|null} [subId] ReceiptMint subId
-         * @property {Uint8Array|null} [contractId] ReceiptMint contractId
+         * @property {Uint8Array|null} [id] ReceiptMint id
          * @property {Uint8Array|null} [assetId] ReceiptMint assetId
          * @property {number|Long|null} [val] ReceiptMint val
          * @property {number|Long|null} [pc] ReceiptMint pc
          * @property {number|Long|null} [is] ReceiptMint is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptMint createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptMint publishedAt
          */
 
         /**
@@ -15262,22 +12828,6 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptMint subject.
-         * @member {string} subject
-         * @memberof receipts.ReceiptMint
-         * @instance
-         */
-        ReceiptMint.prototype.subject = "";
-
-        /**
-         * ReceiptMint txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptMint
-         * @instance
-         */
-        ReceiptMint.prototype.txId = $util.newBuffer([]);
-
-        /**
          * ReceiptMint subId.
          * @member {Uint8Array} subId
          * @memberof receipts.ReceiptMint
@@ -15286,12 +12836,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptMint.prototype.subId = $util.newBuffer([]);
 
         /**
-         * ReceiptMint contractId.
-         * @member {Uint8Array} contractId
+         * ReceiptMint id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptMint
          * @instance
          */
-        ReceiptMint.prototype.contractId = $util.newBuffer([]);
+        ReceiptMint.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptMint assetId.
@@ -15326,22 +12876,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptMint.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptMint createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptMint
-         * @instance
-         */
-        ReceiptMint.prototype.createdAt = null;
-
-        /**
-         * ReceiptMint publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptMint
-         * @instance
-         */
-        ReceiptMint.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptMint instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptMint
@@ -15365,26 +12899,18 @@ export const receipts = $root.receipts = (() => {
         ReceiptMint.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
             if (message.subId != null && Object.hasOwnProperty.call(message, "subId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.subId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.contractId);
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.subId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.assetId);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.assetId);
             if (message.val != null && Object.hasOwnProperty.call(message, "val"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.val);
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.val);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.pc);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
             return writer;
         };
 
@@ -15420,43 +12946,27 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.subId = reader.bytes();
                         break;
                     }
-                case 4: {
-                        message.contractId = reader.bytes();
+                case 2: {
+                        message.id = reader.bytes();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.assetId = reader.bytes();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.val = reader.int64();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 9: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 10: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -15494,18 +13004,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptMint.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
             if (message.subId != null && message.hasOwnProperty("subId"))
                 if (!(message.subId && typeof message.subId.length === "number" || $util.isString(message.subId)))
                     return "subId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 if (!(message.assetId && typeof message.assetId.length === "number" || $util.isString(message.assetId)))
                     return "assetId: buffer expected";
@@ -15518,16 +13022,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -15543,23 +13037,16 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptMint)
                 return object;
             let message = new $root.receipts.ReceiptMint();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
             if (object.subId != null)
                 if (typeof object.subId === "string")
                     $util.base64.decode(object.subId, message.subId = $util.newBuffer($util.base64.length(object.subId)), 0);
                 else if (object.subId.length >= 0)
                     message.subId = object.subId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.assetId != null)
                 if (typeof object.assetId === "string")
                     $util.base64.decode(object.assetId, message.assetId = $util.newBuffer($util.base64.length(object.assetId)), 0);
@@ -15592,16 +13079,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptMint.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptMint.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -15619,14 +13096,6 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
                 if (options.bytes === String)
                     object.subId = "";
                 else {
@@ -15635,11 +13104,11 @@ export const receipts = $root.receipts = (() => {
                         object.subId = $util.newBuffer(object.subId);
                 }
                 if (options.bytes === String)
-                    object.contractId = "";
+                    object.id = "";
                 else {
-                    object.contractId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if (options.bytes === String)
                     object.assetId = "";
@@ -15663,17 +13132,11 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
             if (message.subId != null && message.hasOwnProperty("subId"))
                 object.subId = options.bytes === String ? $util.base64.encode(message.subId, 0, message.subId.length) : options.bytes === Array ? Array.prototype.slice.call(message.subId) : message.subId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 object.assetId = options.bytes === String ? $util.base64.encode(message.assetId, 0, message.assetId.length) : options.bytes === Array ? Array.prototype.slice.call(message.assetId) : message.assetId;
             if (message.val != null && message.hasOwnProperty("val"))
@@ -15691,10 +13154,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -15733,16 +13192,12 @@ export const receipts = $root.receipts = (() => {
          * Properties of a ReceiptBurn.
          * @memberof receipts
          * @interface IReceiptBurn
-         * @property {string|null} [subject] ReceiptBurn subject
-         * @property {Uint8Array|null} [txId] ReceiptBurn txId
          * @property {Uint8Array|null} [subId] ReceiptBurn subId
-         * @property {Uint8Array|null} [contractId] ReceiptBurn contractId
+         * @property {Uint8Array|null} [id] ReceiptBurn id
          * @property {Uint8Array|null} [assetId] ReceiptBurn assetId
          * @property {number|Long|null} [val] ReceiptBurn val
          * @property {number|Long|null} [pc] ReceiptBurn pc
          * @property {number|Long|null} [is] ReceiptBurn is
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ReceiptBurn createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ReceiptBurn publishedAt
          */
 
         /**
@@ -15761,22 +13216,6 @@ export const receipts = $root.receipts = (() => {
         }
 
         /**
-         * ReceiptBurn subject.
-         * @member {string} subject
-         * @memberof receipts.ReceiptBurn
-         * @instance
-         */
-        ReceiptBurn.prototype.subject = "";
-
-        /**
-         * ReceiptBurn txId.
-         * @member {Uint8Array} txId
-         * @memberof receipts.ReceiptBurn
-         * @instance
-         */
-        ReceiptBurn.prototype.txId = $util.newBuffer([]);
-
-        /**
          * ReceiptBurn subId.
          * @member {Uint8Array} subId
          * @memberof receipts.ReceiptBurn
@@ -15785,12 +13224,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptBurn.prototype.subId = $util.newBuffer([]);
 
         /**
-         * ReceiptBurn contractId.
-         * @member {Uint8Array} contractId
+         * ReceiptBurn id.
+         * @member {Uint8Array} id
          * @memberof receipts.ReceiptBurn
          * @instance
          */
-        ReceiptBurn.prototype.contractId = $util.newBuffer([]);
+        ReceiptBurn.prototype.id = $util.newBuffer([]);
 
         /**
          * ReceiptBurn assetId.
@@ -15825,22 +13264,6 @@ export const receipts = $root.receipts = (() => {
         ReceiptBurn.prototype.is = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * ReceiptBurn createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof receipts.ReceiptBurn
-         * @instance
-         */
-        ReceiptBurn.prototype.createdAt = null;
-
-        /**
-         * ReceiptBurn publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof receipts.ReceiptBurn
-         * @instance
-         */
-        ReceiptBurn.prototype.publishedAt = null;
-
-        /**
          * Creates a new ReceiptBurn instance using the specified properties.
          * @function create
          * @memberof receipts.ReceiptBurn
@@ -15864,26 +13287,18 @@ export const receipts = $root.receipts = (() => {
         ReceiptBurn.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
             if (message.subId != null && Object.hasOwnProperty.call(message, "subId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.subId);
-            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.contractId);
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.subId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
             if (message.assetId != null && Object.hasOwnProperty.call(message, "assetId"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.assetId);
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.assetId);
             if (message.val != null && Object.hasOwnProperty.call(message, "val"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.val);
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.val);
             if (message.pc != null && Object.hasOwnProperty.call(message, "pc"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.pc);
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.pc);
             if (message.is != null && Object.hasOwnProperty.call(message, "is"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int64(message.is);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.is);
             return writer;
         };
 
@@ -15919,43 +13334,27 @@ export const receipts = $root.receipts = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1: {
-                        message.subject = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 3: {
                         message.subId = reader.bytes();
                         break;
                     }
-                case 4: {
-                        message.contractId = reader.bytes();
+                case 2: {
+                        message.id = reader.bytes();
                         break;
                     }
-                case 5: {
+                case 3: {
                         message.assetId = reader.bytes();
                         break;
                     }
-                case 6: {
+                case 4: {
                         message.val = reader.int64();
                         break;
                     }
-                case 7: {
+                case 5: {
                         message.pc = reader.int64();
                         break;
                     }
-                case 8: {
+                case 6: {
                         message.is = reader.int64();
-                        break;
-                    }
-                case 9: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 10: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -15993,18 +13392,12 @@ export const receipts = $root.receipts = (() => {
         ReceiptBurn.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                if (!$util.isString(message.subject))
-                    return "subject: string expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
             if (message.subId != null && message.hasOwnProperty("subId"))
                 if (!(message.subId && typeof message.subId.length === "number" || $util.isString(message.subId)))
                     return "subId: buffer expected";
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
-                    return "contractId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 if (!(message.assetId && typeof message.assetId.length === "number" || $util.isString(message.assetId)))
                     return "assetId: buffer expected";
@@ -16017,16 +13410,6 @@ export const receipts = $root.receipts = (() => {
             if (message.is != null && message.hasOwnProperty("is"))
                 if (!$util.isInteger(message.is) && !(message.is && $util.isInteger(message.is.low) && $util.isInteger(message.is.high)))
                     return "is: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -16042,23 +13425,16 @@ export const receipts = $root.receipts = (() => {
             if (object instanceof $root.receipts.ReceiptBurn)
                 return object;
             let message = new $root.receipts.ReceiptBurn();
-            if (object.subject != null)
-                message.subject = String(object.subject);
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
             if (object.subId != null)
                 if (typeof object.subId === "string")
                     $util.base64.decode(object.subId, message.subId = $util.newBuffer($util.base64.length(object.subId)), 0);
                 else if (object.subId.length >= 0)
                     message.subId = object.subId;
-            if (object.contractId != null)
-                if (typeof object.contractId === "string")
-                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
-                else if (object.contractId.length >= 0)
-                    message.contractId = object.contractId;
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
             if (object.assetId != null)
                 if (typeof object.assetId === "string")
                     $util.base64.decode(object.assetId, message.assetId = $util.newBuffer($util.base64.length(object.assetId)), 0);
@@ -16091,16 +13467,6 @@ export const receipts = $root.receipts = (() => {
                     message.is = object.is;
                 else if (typeof object.is === "object")
                     message.is = new $util.LongBits(object.is.low >>> 0, object.is.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".receipts.ReceiptBurn.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".receipts.ReceiptBurn.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -16118,14 +13484,6 @@ export const receipts = $root.receipts = (() => {
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.subject = "";
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
                 if (options.bytes === String)
                     object.subId = "";
                 else {
@@ -16134,11 +13492,11 @@ export const receipts = $root.receipts = (() => {
                         object.subId = $util.newBuffer(object.subId);
                 }
                 if (options.bytes === String)
-                    object.contractId = "";
+                    object.id = "";
                 else {
-                    object.contractId = [];
+                    object.id = [];
                     if (options.bytes !== Array)
-                        object.contractId = $util.newBuffer(object.contractId);
+                        object.id = $util.newBuffer(object.id);
                 }
                 if (options.bytes === String)
                     object.assetId = "";
@@ -16162,17 +13520,11 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.is = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
-            if (message.subject != null && message.hasOwnProperty("subject"))
-                object.subject = message.subject;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
             if (message.subId != null && message.hasOwnProperty("subId"))
                 object.subId = options.bytes === String ? $util.base64.encode(message.subId, 0, message.subId.length) : options.bytes === Array ? Array.prototype.slice.call(message.subId) : message.subId;
-            if (message.contractId != null && message.hasOwnProperty("contractId"))
-                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
             if (message.assetId != null && message.hasOwnProperty("assetId"))
                 object.assetId = options.bytes === String ? $util.base64.encode(message.assetId, 0, message.assetId.length) : options.bytes === Array ? Array.prototype.slice.call(message.assetId) : message.assetId;
             if (message.val != null && message.hasOwnProperty("val"))
@@ -16190,10 +13542,6 @@ export const receipts = $root.receipts = (() => {
                     object.is = options.longs === String ? String(message.is) : message.is;
                 else
                     object.is = options.longs === String ? $util.Long.prototype.toString.call(message.is) : options.longs === Number ? new $util.LongBits(message.is.low >>> 0, message.is.high >>> 0).toNumber() : message.is;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -16242,21 +13590,23 @@ export const transactions = $root.transactions = (() => {
      * TransactionType enum.
      * @name transactions.TransactionType
      * @enum {number}
-     * @property {number} SCRIPT=0 SCRIPT value
-     * @property {number} CREATE=1 CREATE value
-     * @property {number} MINT=2 MINT value
-     * @property {number} UPGRADE=3 UPGRADE value
-     * @property {number} UPLOAD=4 UPLOAD value
-     * @property {number} BLOB=5 BLOB value
+     * @property {number} UNKNOWN_TRANSACTION_TYPE=0 UNKNOWN_TRANSACTION_TYPE value
+     * @property {number} SCRIPT=1 SCRIPT value
+     * @property {number} CREATE=2 CREATE value
+     * @property {number} MINT=3 MINT value
+     * @property {number} UPGRADE=4 UPGRADE value
+     * @property {number} UPLOAD=5 UPLOAD value
+     * @property {number} BLOB=6 BLOB value
      */
     transactions.TransactionType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "SCRIPT"] = 0;
-        values[valuesById[1] = "CREATE"] = 1;
-        values[valuesById[2] = "MINT"] = 2;
-        values[valuesById[3] = "UPGRADE"] = 3;
-        values[valuesById[4] = "UPLOAD"] = 4;
-        values[valuesById[5] = "BLOB"] = 5;
+        values[valuesById[0] = "UNKNOWN_TRANSACTION_TYPE"] = 0;
+        values[valuesById[1] = "SCRIPT"] = 1;
+        values[valuesById[2] = "CREATE"] = 2;
+        values[valuesById[3] = "MINT"] = 3;
+        values[valuesById[4] = "UPGRADE"] = 4;
+        values[valuesById[5] = "UPLOAD"] = 5;
+        values[valuesById[6] = "BLOB"] = 6;
         return values;
     })();
 
@@ -16264,15 +13614,21 @@ export const transactions = $root.transactions = (() => {
      * TransactionStatus enum.
      * @name transactions.TransactionStatus
      * @enum {number}
-     * @property {number} SUCCESS=0 SUCCESS value
-     * @property {number} FAILURE=1 FAILURE value
+     * @property {number} UNKNOWN_TRANSACTION_STATUS=0 UNKNOWN_TRANSACTION_STATUS value
+     * @property {number} FAILED=1 FAILED value
      * @property {number} SUBMITTED=2 SUBMITTED value
+     * @property {number} SQUEEZED_OUT=3 SQUEEZED_OUT value
+     * @property {number} SUCCESS=4 SUCCESS value
+     * @property {number} NONE=5 NONE value
      */
     transactions.TransactionStatus = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "SUCCESS"] = 0;
-        values[valuesById[1] = "FAILURE"] = 1;
+        values[valuesById[0] = "UNKNOWN_TRANSACTION_STATUS"] = 0;
+        values[valuesById[1] = "FAILED"] = 1;
         values[valuesById[2] = "SUBMITTED"] = 2;
+        values[valuesById[3] = "SQUEEZED_OUT"] = 3;
+        values[valuesById[4] = "SUCCESS"] = 4;
+        values[valuesById[5] = "NONE"] = 5;
         return values;
     })();
 
@@ -16280,17 +13636,19 @@ export const transactions = $root.transactions = (() => {
      * PolicyType enum.
      * @name transactions.PolicyType
      * @enum {number}
-     * @property {number} TIP=0 TIP value
-     * @property {number} WITNESS_LIMIT=1 WITNESS_LIMIT value
-     * @property {number} MATURITY=2 MATURITY value
-     * @property {number} MAX_FEE=3 MAX_FEE value
+     * @property {number} UNKNOWN_POLICY_TYPE=0 UNKNOWN_POLICY_TYPE value
+     * @property {number} TIP=1 TIP value
+     * @property {number} WITNESS_LIMIT=2 WITNESS_LIMIT value
+     * @property {number} MATURITY=3 MATURITY value
+     * @property {number} MAX_FEE=4 MAX_FEE value
      */
     transactions.PolicyType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "TIP"] = 0;
-        values[valuesById[1] = "WITNESS_LIMIT"] = 1;
-        values[valuesById[2] = "MATURITY"] = 2;
-        values[valuesById[3] = "MAX_FEE"] = 3;
+        values[valuesById[0] = "UNKNOWN_POLICY_TYPE"] = 0;
+        values[valuesById[1] = "TIP"] = 1;
+        values[valuesById[2] = "WITNESS_LIMIT"] = 2;
+        values[valuesById[3] = "MATURITY"] = 3;
+        values[valuesById[4] = "MAX_FEE"] = 4;
         return values;
     })();
 
@@ -16301,53 +13659,50 @@ export const transactions = $root.transactions = (() => {
          * @memberof transactions
          * @interface ITransaction
          * @property {string|null} [subject] Transaction subject
-         * @property {number|Long|null} [blockHeight] Transaction blockHeight
-         * @property {Uint8Array|null} [txId] Transaction txId
-         * @property {number|null} [txIndex] Transaction txIndex
-         * @property {transactions.TransactionType|null} [type] Transaction type
-         * @property {transactions.TransactionStatus|null} [status] Transaction status
-         * @property {Uint8Array|null} [root] Transaction root
-         * @property {number|null} [witnessIndex] Transaction witnessIndex
-         * @property {Uint8Array|null} [blobId] Transaction blobId
+         * @property {Uint8Array|null} [id] Transaction id
+         * @property {number|Long|null} [scriptGasLimit] Transaction scriptGasLimit
+         * @property {pointers.ITxPointer|null} [txPointer] Transaction txPointer
          * @property {Array.<Uint8Array>|null} [inputAssetIds] Transaction inputAssetIds
+         * @property {Array.<Uint8Array>|null} [inputContracts] Transaction inputContracts
+         * @property {inputs.IInputContract|null} [inputContract] Transaction inputContract
+         * @property {Array.<inputs.IInput>|null} [inputs] Transaction inputs
+         * @property {boolean|null} [isScript] Transaction isScript
          * @property {boolean|null} [isCreate] Transaction isCreate
          * @property {boolean|null} [isMint] Transaction isMint
-         * @property {boolean|null} [isScript] Transaction isScript
          * @property {boolean|null} [isUpgrade] Transaction isUpgrade
          * @property {boolean|null} [isUpload] Transaction isUpload
-         * @property {number|null} [maturity] Transaction maturity
+         * @property {boolean|null} [isBlob] Transaction isBlob
+         * @property {Array.<outputs.IOutput>|null} [outputs] Transaction outputs
+         * @property {outputs.IOutputContract|null} [outputContract] Transaction outputContract
          * @property {number|Long|null} [mintAmount] Transaction mintAmount
          * @property {Uint8Array|null} [mintAssetId] Transaction mintAssetId
          * @property {number|Long|null} [mintGasPrice] Transaction mintGasPrice
-         * @property {number|null} [policyType] Transaction policyType
-         * @property {Uint8Array|null} [rawPayload] Transaction rawPayload
          * @property {Uint8Array|null} [receiptsRoot] Transaction receiptsRoot
-         * @property {Uint8Array|null} [salt] Transaction salt
+         * @property {transactions.TransactionStatus|null} [status] Transaction status
+         * @property {Array.<Uint8Array>|null} [witnesses] Transaction witnesses
          * @property {Uint8Array|null} [script] Transaction script
-         * @property {number|Long|null} [scriptLength] Transaction scriptLength
          * @property {Uint8Array|null} [scriptData] Transaction scriptData
-         * @property {number|Long|null} [scriptDataLength] Transaction scriptDataLength
-         * @property {number|Long|null} [scriptGasLimit] Transaction scriptGasLimit
+         * @property {transactions.IPolicy|null} [policies] Transaction policies
+         * @property {Uint8Array|null} [salt] Transaction salt
+         * @property {Array.<Uint8Array>|null} [storageSlots] Transaction storageSlots
+         * @property {number|null} [bytecodeWitnessIndex] Transaction bytecodeWitnessIndex
+         * @property {Uint8Array|null} [bytecodeRoot] Transaction bytecodeRoot
          * @property {number|null} [subsectionIndex] Transaction subsectionIndex
          * @property {number|null} [subsectionsNumber] Transaction subsectionsNumber
+         * @property {Array.<Uint8Array>|null} [proofSet] Transaction proofSet
          * @property {number|null} [upgradePurpose] Transaction upgradePurpose
+         * @property {Uint8Array|null} [blobId] Transaction blobId
+         * @property {number|null} [maturity] Transaction maturity
+         * @property {number|null} [policyType] Transaction policyType
+         * @property {Uint8Array|null} [rawPayload] Transaction rawPayload
+         * @property {number|Long|null} [scriptLength] Transaction scriptLength
+         * @property {number|Long|null} [scriptDataLength] Transaction scriptDataLength
          * @property {number|Long|null} [storageSlotsCount] Transaction storageSlotsCount
          * @property {number|null} [proofSetCount] Transaction proofSetCount
          * @property {number|null} [witnessesCount] Transaction witnessesCount
          * @property {number|null} [inputsCount] Transaction inputsCount
          * @property {number|null} [outputsCount] Transaction outputsCount
-         * @property {inputs.IInputContract|null} [inputContract] Transaction inputContract
-         * @property {Array.<Uint8Array>|null} [inputContracts] Transaction inputContracts
-         * @property {Array.<inputs.IInput>|null} [inputs] Transaction inputs
-         * @property {outputs.IOutputContract|null} [outputContract] Transaction outputContract
-         * @property {Array.<outputs.IOutput>|null} [outputs] Transaction outputs
-         * @property {Array.<Uint8Array>|null} [proofSet] Transaction proofSet
-         * @property {Array.<receipts.IReceipt>|null} [receipts] Transaction receipts
-         * @property {Array.<transactions.IStorageSlot>|null} [storageSlots] Transaction storageSlots
-         * @property {Array.<Uint8Array>|null} [witnesses] Transaction witnesses
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Transaction createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Transaction publishedAt
-         * @property {pointers.ITransactionPointer|null} [pointer] Transaction pointer
+         * @property {common.IMetadata|null} [metadata] Transaction metadata
          */
 
         /**
@@ -16363,10 +13718,9 @@ export const transactions = $root.transactions = (() => {
             this.inputContracts = [];
             this.inputs = [];
             this.outputs = [];
-            this.proofSet = [];
-            this.receipts = [];
-            this.storageSlots = [];
             this.witnesses = [];
+            this.storageSlots = [];
+            this.proofSet = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -16382,68 +13736,28 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.subject = "";
 
         /**
-         * Transaction blockHeight.
-         * @member {number|Long} blockHeight
+         * Transaction id.
+         * @member {Uint8Array} id
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        Transaction.prototype.id = $util.newBuffer([]);
 
         /**
-         * Transaction txId.
-         * @member {Uint8Array} txId
+         * Transaction scriptGasLimit.
+         * @member {number|Long} scriptGasLimit
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.txId = $util.newBuffer([]);
+        Transaction.prototype.scriptGasLimit = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Transaction txIndex.
-         * @member {number} txIndex
+         * Transaction txPointer.
+         * @member {pointers.ITxPointer|null|undefined} txPointer
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.txIndex = 0;
-
-        /**
-         * Transaction type.
-         * @member {transactions.TransactionType} type
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.type = 0;
-
-        /**
-         * Transaction status.
-         * @member {transactions.TransactionStatus} status
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.status = 0;
-
-        /**
-         * Transaction root.
-         * @member {Uint8Array} root
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.root = $util.newBuffer([]);
-
-        /**
-         * Transaction witnessIndex.
-         * @member {number} witnessIndex
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.witnessIndex = 0;
-
-        /**
-         * Transaction blobId.
-         * @member {Uint8Array} blobId
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.blobId = $util.newBuffer([]);
+        Transaction.prototype.txPointer = null;
 
         /**
          * Transaction inputAssetIds.
@@ -16452,6 +13766,38 @@ export const transactions = $root.transactions = (() => {
          * @instance
          */
         Transaction.prototype.inputAssetIds = $util.emptyArray;
+
+        /**
+         * Transaction inputContracts.
+         * @member {Array.<Uint8Array>} inputContracts
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.inputContracts = $util.emptyArray;
+
+        /**
+         * Transaction inputContract.
+         * @member {inputs.IInputContract|null|undefined} inputContract
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.inputContract = null;
+
+        /**
+         * Transaction inputs.
+         * @member {Array.<inputs.IInput>} inputs
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.inputs = $util.emptyArray;
+
+        /**
+         * Transaction isScript.
+         * @member {boolean} isScript
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.isScript = false;
 
         /**
          * Transaction isCreate.
@@ -16470,14 +13816,6 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.isMint = false;
 
         /**
-         * Transaction isScript.
-         * @member {boolean} isScript
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.isScript = false;
-
-        /**
          * Transaction isUpgrade.
          * @member {boolean} isUpgrade
          * @memberof transactions.Transaction
@@ -16494,12 +13832,28 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.isUpload = false;
 
         /**
-         * Transaction maturity.
-         * @member {number} maturity
+         * Transaction isBlob.
+         * @member {boolean} isBlob
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.maturity = 0;
+        Transaction.prototype.isBlob = false;
+
+        /**
+         * Transaction outputs.
+         * @member {Array.<outputs.IOutput>} outputs
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.outputs = $util.emptyArray;
+
+        /**
+         * Transaction outputContract.
+         * @member {outputs.IOutputContract|null|undefined} outputContract
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.outputContract = null;
 
         /**
          * Transaction mintAmount.
@@ -16526,22 +13880,6 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.mintGasPrice = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Transaction policyType.
-         * @member {number} policyType
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.policyType = 0;
-
-        /**
-         * Transaction rawPayload.
-         * @member {Uint8Array} rawPayload
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.rawPayload = $util.newBuffer([]);
-
-        /**
          * Transaction receiptsRoot.
          * @member {Uint8Array} receiptsRoot
          * @memberof transactions.Transaction
@@ -16550,12 +13888,20 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.receiptsRoot = $util.newBuffer([]);
 
         /**
-         * Transaction salt.
-         * @member {Uint8Array} salt
+         * Transaction status.
+         * @member {transactions.TransactionStatus} status
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.salt = $util.newBuffer([]);
+        Transaction.prototype.status = 0;
+
+        /**
+         * Transaction witnesses.
+         * @member {Array.<Uint8Array>} witnesses
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.witnesses = $util.emptyArray;
 
         /**
          * Transaction script.
@@ -16566,14 +13912,6 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.script = $util.newBuffer([]);
 
         /**
-         * Transaction scriptLength.
-         * @member {number|Long} scriptLength
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.scriptLength = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
          * Transaction scriptData.
          * @member {Uint8Array} scriptData
          * @memberof transactions.Transaction
@@ -16582,20 +13920,44 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.scriptData = $util.newBuffer([]);
 
         /**
-         * Transaction scriptDataLength.
-         * @member {number|Long} scriptDataLength
+         * Transaction policies.
+         * @member {transactions.IPolicy|null|undefined} policies
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.scriptDataLength = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        Transaction.prototype.policies = null;
 
         /**
-         * Transaction scriptGasLimit.
-         * @member {number|Long} scriptGasLimit
+         * Transaction salt.
+         * @member {Uint8Array} salt
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.scriptGasLimit = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        Transaction.prototype.salt = $util.newBuffer([]);
+
+        /**
+         * Transaction storageSlots.
+         * @member {Array.<Uint8Array>} storageSlots
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.storageSlots = $util.emptyArray;
+
+        /**
+         * Transaction bytecodeWitnessIndex.
+         * @member {number} bytecodeWitnessIndex
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.bytecodeWitnessIndex = 0;
+
+        /**
+         * Transaction bytecodeRoot.
+         * @member {Uint8Array} bytecodeRoot
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.bytecodeRoot = $util.newBuffer([]);
 
         /**
          * Transaction subsectionIndex.
@@ -16614,12 +13976,68 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.subsectionsNumber = 0;
 
         /**
+         * Transaction proofSet.
+         * @member {Array.<Uint8Array>} proofSet
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.proofSet = $util.emptyArray;
+
+        /**
          * Transaction upgradePurpose.
          * @member {number} upgradePurpose
          * @memberof transactions.Transaction
          * @instance
          */
         Transaction.prototype.upgradePurpose = 0;
+
+        /**
+         * Transaction blobId.
+         * @member {Uint8Array} blobId
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.blobId = $util.newBuffer([]);
+
+        /**
+         * Transaction maturity.
+         * @member {number} maturity
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.maturity = 0;
+
+        /**
+         * Transaction policyType.
+         * @member {number} policyType
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.policyType = 0;
+
+        /**
+         * Transaction rawPayload.
+         * @member {Uint8Array} rawPayload
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.rawPayload = $util.newBuffer([]);
+
+        /**
+         * Transaction scriptLength.
+         * @member {number|Long} scriptLength
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.scriptLength = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Transaction scriptDataLength.
+         * @member {number|Long} scriptDataLength
+         * @memberof transactions.Transaction
+         * @instance
+         */
+        Transaction.prototype.scriptDataLength = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
          * Transaction storageSlotsCount.
@@ -16662,100 +14080,12 @@ export const transactions = $root.transactions = (() => {
         Transaction.prototype.outputsCount = 0;
 
         /**
-         * Transaction inputContract.
-         * @member {inputs.IInputContract|null|undefined} inputContract
+         * Transaction metadata.
+         * @member {common.IMetadata|null|undefined} metadata
          * @memberof transactions.Transaction
          * @instance
          */
-        Transaction.prototype.inputContract = null;
-
-        /**
-         * Transaction inputContracts.
-         * @member {Array.<Uint8Array>} inputContracts
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.inputContracts = $util.emptyArray;
-
-        /**
-         * Transaction inputs.
-         * @member {Array.<inputs.IInput>} inputs
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.inputs = $util.emptyArray;
-
-        /**
-         * Transaction outputContract.
-         * @member {outputs.IOutputContract|null|undefined} outputContract
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.outputContract = null;
-
-        /**
-         * Transaction outputs.
-         * @member {Array.<outputs.IOutput>} outputs
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.outputs = $util.emptyArray;
-
-        /**
-         * Transaction proofSet.
-         * @member {Array.<Uint8Array>} proofSet
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.proofSet = $util.emptyArray;
-
-        /**
-         * Transaction receipts.
-         * @member {Array.<receipts.IReceipt>} receipts
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.receipts = $util.emptyArray;
-
-        /**
-         * Transaction storageSlots.
-         * @member {Array.<transactions.IStorageSlot>} storageSlots
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.storageSlots = $util.emptyArray;
-
-        /**
-         * Transaction witnesses.
-         * @member {Array.<Uint8Array>} witnesses
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.witnesses = $util.emptyArray;
-
-        /**
-         * Transaction createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.createdAt = null;
-
-        /**
-         * Transaction publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.publishedAt = null;
-
-        /**
-         * Transaction pointer.
-         * @member {pointers.ITransactionPointer|null|undefined} pointer
-         * @memberof transactions.Transaction
-         * @instance
-         */
-        Transaction.prototype.pointer = null;
+        Transaction.prototype.metadata = null;
 
         /**
          * Creates a new Transaction instance using the specified properties.
@@ -16783,108 +14113,101 @@ export const transactions = $root.transactions = (() => {
                 writer = $Writer.create();
             if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.txId);
-            if (message.txIndex != null && Object.hasOwnProperty.call(message, "txIndex"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.txIndex);
-            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.type);
-            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.status);
-            if (message.root != null && Object.hasOwnProperty.call(message, "root"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.root);
-            if (message.witnessIndex != null && Object.hasOwnProperty.call(message, "witnessIndex"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.witnessIndex);
-            if (message.blobId != null && Object.hasOwnProperty.call(message, "blobId"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.blobId);
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.id);
+            if (message.scriptGasLimit != null && Object.hasOwnProperty.call(message, "scriptGasLimit"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.scriptGasLimit);
+            if (message.txPointer != null && Object.hasOwnProperty.call(message, "txPointer"))
+                $root.pointers.TxPointer.encode(message.txPointer, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.inputAssetIds != null && message.inputAssetIds.length)
                 for (let i = 0; i < message.inputAssetIds.length; ++i)
-                    writer.uint32(/* id 10, wireType 2 =*/82).bytes(message.inputAssetIds[i]);
-            if (message.isCreate != null && Object.hasOwnProperty.call(message, "isCreate"))
-                writer.uint32(/* id 11, wireType 0 =*/88).bool(message.isCreate);
-            if (message.isMint != null && Object.hasOwnProperty.call(message, "isMint"))
-                writer.uint32(/* id 12, wireType 0 =*/96).bool(message.isMint);
+                    writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.inputAssetIds[i]);
+            if (message.inputContracts != null && message.inputContracts.length)
+                for (let i = 0; i < message.inputContracts.length; ++i)
+                    writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.inputContracts[i]);
+            if (message.inputContract != null && Object.hasOwnProperty.call(message, "inputContract"))
+                $root.inputs.InputContract.encode(message.inputContract, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            if (message.inputs != null && message.inputs.length)
+                for (let i = 0; i < message.inputs.length; ++i)
+                    $root.inputs.Input.encode(message.inputs[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             if (message.isScript != null && Object.hasOwnProperty.call(message, "isScript"))
-                writer.uint32(/* id 13, wireType 0 =*/104).bool(message.isScript);
+                writer.uint32(/* id 9, wireType 0 =*/72).bool(message.isScript);
+            if (message.isCreate != null && Object.hasOwnProperty.call(message, "isCreate"))
+                writer.uint32(/* id 10, wireType 0 =*/80).bool(message.isCreate);
+            if (message.isMint != null && Object.hasOwnProperty.call(message, "isMint"))
+                writer.uint32(/* id 11, wireType 0 =*/88).bool(message.isMint);
             if (message.isUpgrade != null && Object.hasOwnProperty.call(message, "isUpgrade"))
-                writer.uint32(/* id 14, wireType 0 =*/112).bool(message.isUpgrade);
+                writer.uint32(/* id 12, wireType 0 =*/96).bool(message.isUpgrade);
             if (message.isUpload != null && Object.hasOwnProperty.call(message, "isUpload"))
-                writer.uint32(/* id 15, wireType 0 =*/120).bool(message.isUpload);
-            if (message.maturity != null && Object.hasOwnProperty.call(message, "maturity"))
-                writer.uint32(/* id 16, wireType 0 =*/128).int32(message.maturity);
+                writer.uint32(/* id 13, wireType 0 =*/104).bool(message.isUpload);
+            if (message.isBlob != null && Object.hasOwnProperty.call(message, "isBlob"))
+                writer.uint32(/* id 14, wireType 0 =*/112).bool(message.isBlob);
+            if (message.outputs != null && message.outputs.length)
+                for (let i = 0; i < message.outputs.length; ++i)
+                    $root.outputs.Output.encode(message.outputs[i], writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
+            if (message.outputContract != null && Object.hasOwnProperty.call(message, "outputContract"))
+                $root.outputs.OutputContract.encode(message.outputContract, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
             if (message.mintAmount != null && Object.hasOwnProperty.call(message, "mintAmount"))
                 writer.uint32(/* id 17, wireType 0 =*/136).int64(message.mintAmount);
             if (message.mintAssetId != null && Object.hasOwnProperty.call(message, "mintAssetId"))
                 writer.uint32(/* id 18, wireType 2 =*/146).bytes(message.mintAssetId);
             if (message.mintGasPrice != null && Object.hasOwnProperty.call(message, "mintGasPrice"))
                 writer.uint32(/* id 19, wireType 0 =*/152).int64(message.mintGasPrice);
-            if (message.policyType != null && Object.hasOwnProperty.call(message, "policyType"))
-                writer.uint32(/* id 20, wireType 0 =*/160).int32(message.policyType);
-            if (message.rawPayload != null && Object.hasOwnProperty.call(message, "rawPayload"))
-                writer.uint32(/* id 21, wireType 2 =*/170).bytes(message.rawPayload);
             if (message.receiptsRoot != null && Object.hasOwnProperty.call(message, "receiptsRoot"))
-                writer.uint32(/* id 22, wireType 2 =*/178).bytes(message.receiptsRoot);
-            if (message.salt != null && Object.hasOwnProperty.call(message, "salt"))
-                writer.uint32(/* id 23, wireType 2 =*/186).bytes(message.salt);
-            if (message.script != null && Object.hasOwnProperty.call(message, "script"))
-                writer.uint32(/* id 24, wireType 2 =*/194).bytes(message.script);
-            if (message.scriptLength != null && Object.hasOwnProperty.call(message, "scriptLength"))
-                writer.uint32(/* id 25, wireType 0 =*/200).int64(message.scriptLength);
-            if (message.scriptData != null && Object.hasOwnProperty.call(message, "scriptData"))
-                writer.uint32(/* id 26, wireType 2 =*/210).bytes(message.scriptData);
-            if (message.scriptDataLength != null && Object.hasOwnProperty.call(message, "scriptDataLength"))
-                writer.uint32(/* id 27, wireType 0 =*/216).int64(message.scriptDataLength);
-            if (message.scriptGasLimit != null && Object.hasOwnProperty.call(message, "scriptGasLimit"))
-                writer.uint32(/* id 28, wireType 0 =*/224).int64(message.scriptGasLimit);
-            if (message.subsectionIndex != null && Object.hasOwnProperty.call(message, "subsectionIndex"))
-                writer.uint32(/* id 29, wireType 0 =*/232).int32(message.subsectionIndex);
-            if (message.subsectionsNumber != null && Object.hasOwnProperty.call(message, "subsectionsNumber"))
-                writer.uint32(/* id 30, wireType 0 =*/240).int32(message.subsectionsNumber);
-            if (message.upgradePurpose != null && Object.hasOwnProperty.call(message, "upgradePurpose"))
-                writer.uint32(/* id 31, wireType 0 =*/248).int32(message.upgradePurpose);
-            if (message.storageSlotsCount != null && Object.hasOwnProperty.call(message, "storageSlotsCount"))
-                writer.uint32(/* id 32, wireType 0 =*/256).int64(message.storageSlotsCount);
-            if (message.proofSetCount != null && Object.hasOwnProperty.call(message, "proofSetCount"))
-                writer.uint32(/* id 33, wireType 0 =*/264).int32(message.proofSetCount);
-            if (message.witnessesCount != null && Object.hasOwnProperty.call(message, "witnessesCount"))
-                writer.uint32(/* id 34, wireType 0 =*/272).int32(message.witnessesCount);
-            if (message.inputsCount != null && Object.hasOwnProperty.call(message, "inputsCount"))
-                writer.uint32(/* id 35, wireType 0 =*/280).int32(message.inputsCount);
-            if (message.outputsCount != null && Object.hasOwnProperty.call(message, "outputsCount"))
-                writer.uint32(/* id 36, wireType 0 =*/288).int32(message.outputsCount);
-            if (message.inputContract != null && Object.hasOwnProperty.call(message, "inputContract"))
-                $root.inputs.InputContract.encode(message.inputContract, writer.uint32(/* id 37, wireType 2 =*/298).fork()).ldelim();
-            if (message.inputContracts != null && message.inputContracts.length)
-                for (let i = 0; i < message.inputContracts.length; ++i)
-                    writer.uint32(/* id 38, wireType 2 =*/306).bytes(message.inputContracts[i]);
-            if (message.inputs != null && message.inputs.length)
-                for (let i = 0; i < message.inputs.length; ++i)
-                    $root.inputs.Input.encode(message.inputs[i], writer.uint32(/* id 39, wireType 2 =*/314).fork()).ldelim();
-            if (message.outputContract != null && Object.hasOwnProperty.call(message, "outputContract"))
-                $root.outputs.OutputContract.encode(message.outputContract, writer.uint32(/* id 40, wireType 2 =*/322).fork()).ldelim();
-            if (message.outputs != null && message.outputs.length)
-                for (let i = 0; i < message.outputs.length; ++i)
-                    $root.outputs.Output.encode(message.outputs[i], writer.uint32(/* id 41, wireType 2 =*/330).fork()).ldelim();
-            if (message.proofSet != null && message.proofSet.length)
-                for (let i = 0; i < message.proofSet.length; ++i)
-                    writer.uint32(/* id 42, wireType 2 =*/338).bytes(message.proofSet[i]);
-            if (message.receipts != null && message.receipts.length)
-                for (let i = 0; i < message.receipts.length; ++i)
-                    $root.receipts.Receipt.encode(message.receipts[i], writer.uint32(/* id 43, wireType 2 =*/346).fork()).ldelim();
-            if (message.storageSlots != null && message.storageSlots.length)
-                for (let i = 0; i < message.storageSlots.length; ++i)
-                    $root.transactions.StorageSlot.encode(message.storageSlots[i], writer.uint32(/* id 44, wireType 2 =*/354).fork()).ldelim();
+                writer.uint32(/* id 20, wireType 2 =*/162).bytes(message.receiptsRoot);
+            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
+                writer.uint32(/* id 21, wireType 0 =*/168).int32(message.status);
             if (message.witnesses != null && message.witnesses.length)
                 for (let i = 0; i < message.witnesses.length; ++i)
-                    writer.uint32(/* id 45, wireType 2 =*/362).bytes(message.witnesses[i]);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 46, wireType 2 =*/370).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 47, wireType 2 =*/378).fork()).ldelim();
-            if (message.pointer != null && Object.hasOwnProperty.call(message, "pointer"))
-                $root.pointers.TransactionPointer.encode(message.pointer, writer.uint32(/* id 48, wireType 2 =*/386).fork()).ldelim();
+                    writer.uint32(/* id 22, wireType 2 =*/178).bytes(message.witnesses[i]);
+            if (message.script != null && Object.hasOwnProperty.call(message, "script"))
+                writer.uint32(/* id 23, wireType 2 =*/186).bytes(message.script);
+            if (message.scriptData != null && Object.hasOwnProperty.call(message, "scriptData"))
+                writer.uint32(/* id 24, wireType 2 =*/194).bytes(message.scriptData);
+            if (message.policies != null && Object.hasOwnProperty.call(message, "policies"))
+                $root.transactions.Policy.encode(message.policies, writer.uint32(/* id 25, wireType 2 =*/202).fork()).ldelim();
+            if (message.salt != null && Object.hasOwnProperty.call(message, "salt"))
+                writer.uint32(/* id 26, wireType 2 =*/210).bytes(message.salt);
+            if (message.storageSlots != null && message.storageSlots.length)
+                for (let i = 0; i < message.storageSlots.length; ++i)
+                    writer.uint32(/* id 27, wireType 2 =*/218).bytes(message.storageSlots[i]);
+            if (message.bytecodeWitnessIndex != null && Object.hasOwnProperty.call(message, "bytecodeWitnessIndex"))
+                writer.uint32(/* id 28, wireType 0 =*/224).int32(message.bytecodeWitnessIndex);
+            if (message.bytecodeRoot != null && Object.hasOwnProperty.call(message, "bytecodeRoot"))
+                writer.uint32(/* id 29, wireType 2 =*/234).bytes(message.bytecodeRoot);
+            if (message.subsectionIndex != null && Object.hasOwnProperty.call(message, "subsectionIndex"))
+                writer.uint32(/* id 30, wireType 0 =*/240).int32(message.subsectionIndex);
+            if (message.subsectionsNumber != null && Object.hasOwnProperty.call(message, "subsectionsNumber"))
+                writer.uint32(/* id 31, wireType 0 =*/248).int32(message.subsectionsNumber);
+            if (message.proofSet != null && message.proofSet.length)
+                for (let i = 0; i < message.proofSet.length; ++i)
+                    writer.uint32(/* id 32, wireType 2 =*/258).bytes(message.proofSet[i]);
+            if (message.upgradePurpose != null && Object.hasOwnProperty.call(message, "upgradePurpose"))
+                writer.uint32(/* id 33, wireType 0 =*/264).int32(message.upgradePurpose);
+            if (message.blobId != null && Object.hasOwnProperty.call(message, "blobId"))
+                writer.uint32(/* id 34, wireType 2 =*/274).bytes(message.blobId);
+            if (message.maturity != null && Object.hasOwnProperty.call(message, "maturity"))
+                writer.uint32(/* id 35, wireType 0 =*/280).int32(message.maturity);
+            if (message.policyType != null && Object.hasOwnProperty.call(message, "policyType"))
+                writer.uint32(/* id 36, wireType 0 =*/288).int32(message.policyType);
+            if (message.rawPayload != null && Object.hasOwnProperty.call(message, "rawPayload"))
+                writer.uint32(/* id 37, wireType 2 =*/298).bytes(message.rawPayload);
+            if (message.scriptLength != null && Object.hasOwnProperty.call(message, "scriptLength"))
+                writer.uint32(/* id 38, wireType 0 =*/304).int64(message.scriptLength);
+            if (message.scriptDataLength != null && Object.hasOwnProperty.call(message, "scriptDataLength"))
+                writer.uint32(/* id 39, wireType 0 =*/312).int64(message.scriptDataLength);
+            if (message.storageSlotsCount != null && Object.hasOwnProperty.call(message, "storageSlotsCount"))
+                writer.uint32(/* id 40, wireType 0 =*/320).int64(message.storageSlotsCount);
+            if (message.proofSetCount != null && Object.hasOwnProperty.call(message, "proofSetCount"))
+                writer.uint32(/* id 41, wireType 0 =*/328).int32(message.proofSetCount);
+            if (message.witnessesCount != null && Object.hasOwnProperty.call(message, "witnessesCount"))
+                writer.uint32(/* id 42, wireType 0 =*/336).int32(message.witnessesCount);
+            if (message.inputsCount != null && Object.hasOwnProperty.call(message, "inputsCount"))
+                writer.uint32(/* id 43, wireType 0 =*/344).int32(message.inputsCount);
+            if (message.outputsCount != null && Object.hasOwnProperty.call(message, "outputsCount"))
+                writer.uint32(/* id 44, wireType 0 =*/352).int32(message.outputsCount);
+            if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                $root.common.Metadata.encode(message.metadata, writer.uint32(/* id 45, wireType 2 =*/362).fork()).ldelim();
             return writer;
         };
 
@@ -16924,65 +14247,71 @@ export const transactions = $root.transactions = (() => {
                         break;
                     }
                 case 2: {
-                        message.blockHeight = reader.int64();
+                        message.id = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.txId = reader.bytes();
+                        message.scriptGasLimit = reader.int64();
                         break;
                     }
                 case 4: {
-                        message.txIndex = reader.int32();
+                        message.txPointer = $root.pointers.TxPointer.decode(reader, reader.uint32());
                         break;
                     }
                 case 5: {
-                        message.type = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.status = reader.int32();
-                        break;
-                    }
-                case 7: {
-                        message.root = reader.bytes();
-                        break;
-                    }
-                case 8: {
-                        message.witnessIndex = reader.int32();
-                        break;
-                    }
-                case 9: {
-                        message.blobId = reader.bytes();
-                        break;
-                    }
-                case 10: {
                         if (!(message.inputAssetIds && message.inputAssetIds.length))
                             message.inputAssetIds = [];
                         message.inputAssetIds.push(reader.bytes());
                         break;
                     }
-                case 11: {
-                        message.isCreate = reader.bool();
+                case 6: {
+                        if (!(message.inputContracts && message.inputContracts.length))
+                            message.inputContracts = [];
+                        message.inputContracts.push(reader.bytes());
                         break;
                     }
-                case 12: {
-                        message.isMint = reader.bool();
+                case 7: {
+                        message.inputContract = $root.inputs.InputContract.decode(reader, reader.uint32());
                         break;
                     }
-                case 13: {
+                case 8: {
+                        if (!(message.inputs && message.inputs.length))
+                            message.inputs = [];
+                        message.inputs.push($root.inputs.Input.decode(reader, reader.uint32()));
+                        break;
+                    }
+                case 9: {
                         message.isScript = reader.bool();
                         break;
                     }
-                case 14: {
+                case 10: {
+                        message.isCreate = reader.bool();
+                        break;
+                    }
+                case 11: {
+                        message.isMint = reader.bool();
+                        break;
+                    }
+                case 12: {
                         message.isUpgrade = reader.bool();
                         break;
                     }
-                case 15: {
+                case 13: {
                         message.isUpload = reader.bool();
                         break;
                     }
+                case 14: {
+                        message.isBlob = reader.bool();
+                        break;
+                    }
+                case 15: {
+                        if (!(message.outputs && message.outputs.length))
+                            message.outputs = [];
+                        message.outputs.push($root.outputs.Output.decode(reader, reader.uint32()));
+                        break;
+                    }
                 case 16: {
-                        message.maturity = reader.int32();
+                        message.outputContract = $root.outputs.OutputContract.decode(reader, reader.uint32());
                         break;
                     }
                 case 17: {
@@ -16998,133 +14327,113 @@ export const transactions = $root.transactions = (() => {
                         break;
                     }
                 case 20: {
-                        message.policyType = reader.int32();
-                        break;
-                    }
-                case 21: {
-                        message.rawPayload = reader.bytes();
-                        break;
-                    }
-                case 22: {
                         message.receiptsRoot = reader.bytes();
                         break;
                     }
-                case 23: {
-                        message.salt = reader.bytes();
+                case 21: {
+                        message.status = reader.int32();
                         break;
                     }
-                case 24: {
-                        message.script = reader.bytes();
-                        break;
-                    }
-                case 25: {
-                        message.scriptLength = reader.int64();
-                        break;
-                    }
-                case 26: {
-                        message.scriptData = reader.bytes();
-                        break;
-                    }
-                case 27: {
-                        message.scriptDataLength = reader.int64();
-                        break;
-                    }
-                case 28: {
-                        message.scriptGasLimit = reader.int64();
-                        break;
-                    }
-                case 29: {
-                        message.subsectionIndex = reader.int32();
-                        break;
-                    }
-                case 30: {
-                        message.subsectionsNumber = reader.int32();
-                        break;
-                    }
-                case 31: {
-                        message.upgradePurpose = reader.int32();
-                        break;
-                    }
-                case 32: {
-                        message.storageSlotsCount = reader.int64();
-                        break;
-                    }
-                case 33: {
-                        message.proofSetCount = reader.int32();
-                        break;
-                    }
-                case 34: {
-                        message.witnessesCount = reader.int32();
-                        break;
-                    }
-                case 35: {
-                        message.inputsCount = reader.int32();
-                        break;
-                    }
-                case 36: {
-                        message.outputsCount = reader.int32();
-                        break;
-                    }
-                case 37: {
-                        message.inputContract = $root.inputs.InputContract.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 38: {
-                        if (!(message.inputContracts && message.inputContracts.length))
-                            message.inputContracts = [];
-                        message.inputContracts.push(reader.bytes());
-                        break;
-                    }
-                case 39: {
-                        if (!(message.inputs && message.inputs.length))
-                            message.inputs = [];
-                        message.inputs.push($root.inputs.Input.decode(reader, reader.uint32()));
-                        break;
-                    }
-                case 40: {
-                        message.outputContract = $root.outputs.OutputContract.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 41: {
-                        if (!(message.outputs && message.outputs.length))
-                            message.outputs = [];
-                        message.outputs.push($root.outputs.Output.decode(reader, reader.uint32()));
-                        break;
-                    }
-                case 42: {
-                        if (!(message.proofSet && message.proofSet.length))
-                            message.proofSet = [];
-                        message.proofSet.push(reader.bytes());
-                        break;
-                    }
-                case 43: {
-                        if (!(message.receipts && message.receipts.length))
-                            message.receipts = [];
-                        message.receipts.push($root.receipts.Receipt.decode(reader, reader.uint32()));
-                        break;
-                    }
-                case 44: {
-                        if (!(message.storageSlots && message.storageSlots.length))
-                            message.storageSlots = [];
-                        message.storageSlots.push($root.transactions.StorageSlot.decode(reader, reader.uint32()));
-                        break;
-                    }
-                case 45: {
+                case 22: {
                         if (!(message.witnesses && message.witnesses.length))
                             message.witnesses = [];
                         message.witnesses.push(reader.bytes());
                         break;
                     }
-                case 46: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 23: {
+                        message.script = reader.bytes();
                         break;
                     }
-                case 47: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                case 24: {
+                        message.scriptData = reader.bytes();
                         break;
                     }
-                case 48: {
-                        message.pointer = $root.pointers.TransactionPointer.decode(reader, reader.uint32());
+                case 25: {
+                        message.policies = $root.transactions.Policy.decode(reader, reader.uint32());
+                        break;
+                    }
+                case 26: {
+                        message.salt = reader.bytes();
+                        break;
+                    }
+                case 27: {
+                        if (!(message.storageSlots && message.storageSlots.length))
+                            message.storageSlots = [];
+                        message.storageSlots.push(reader.bytes());
+                        break;
+                    }
+                case 28: {
+                        message.bytecodeWitnessIndex = reader.int32();
+                        break;
+                    }
+                case 29: {
+                        message.bytecodeRoot = reader.bytes();
+                        break;
+                    }
+                case 30: {
+                        message.subsectionIndex = reader.int32();
+                        break;
+                    }
+                case 31: {
+                        message.subsectionsNumber = reader.int32();
+                        break;
+                    }
+                case 32: {
+                        if (!(message.proofSet && message.proofSet.length))
+                            message.proofSet = [];
+                        message.proofSet.push(reader.bytes());
+                        break;
+                    }
+                case 33: {
+                        message.upgradePurpose = reader.int32();
+                        break;
+                    }
+                case 34: {
+                        message.blobId = reader.bytes();
+                        break;
+                    }
+                case 35: {
+                        message.maturity = reader.int32();
+                        break;
+                    }
+                case 36: {
+                        message.policyType = reader.int32();
+                        break;
+                    }
+                case 37: {
+                        message.rawPayload = reader.bytes();
+                        break;
+                    }
+                case 38: {
+                        message.scriptLength = reader.int64();
+                        break;
+                    }
+                case 39: {
+                        message.scriptDataLength = reader.int64();
+                        break;
+                    }
+                case 40: {
+                        message.storageSlotsCount = reader.int64();
+                        break;
+                    }
+                case 41: {
+                        message.proofSetCount = reader.int32();
+                        break;
+                    }
+                case 42: {
+                        message.witnessesCount = reader.int32();
+                        break;
+                    }
+                case 43: {
+                        message.inputsCount = reader.int32();
+                        break;
+                    }
+                case 44: {
+                        message.outputsCount = reader.int32();
+                        break;
+                    }
+                case 45: {
+                        message.metadata = $root.common.Metadata.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -17165,45 +14474,17 @@ export const transactions = $root.transactions = (() => {
             if (message.subject != null && message.hasOwnProperty("subject"))
                 if (!$util.isString(message.subject))
                     return "subject: string expected";
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
-                    return "blockHeight: integer|Long expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                if (!$util.isInteger(message.txIndex))
-                    return "txIndex: integer expected";
-            if (message.type != null && message.hasOwnProperty("type"))
-                switch (message.type) {
-                default:
-                    return "type: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    break;
-                }
-            if (message.status != null && message.hasOwnProperty("status"))
-                switch (message.status) {
-                default:
-                    return "status: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                    break;
-                }
-            if (message.root != null && message.hasOwnProperty("root"))
-                if (!(message.root && typeof message.root.length === "number" || $util.isString(message.root)))
-                    return "root: buffer expected";
-            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
-                if (!$util.isInteger(message.witnessIndex))
-                    return "witnessIndex: integer expected";
-            if (message.blobId != null && message.hasOwnProperty("blobId"))
-                if (!(message.blobId && typeof message.blobId.length === "number" || $util.isString(message.blobId)))
-                    return "blobId: buffer expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                    return "id: buffer expected";
+            if (message.scriptGasLimit != null && message.hasOwnProperty("scriptGasLimit"))
+                if (!$util.isInteger(message.scriptGasLimit) && !(message.scriptGasLimit && $util.isInteger(message.scriptGasLimit.low) && $util.isInteger(message.scriptGasLimit.high)))
+                    return "scriptGasLimit: integer|Long expected";
+            if (message.txPointer != null && message.hasOwnProperty("txPointer")) {
+                let error = $root.pointers.TxPointer.verify(message.txPointer);
+                if (error)
+                    return "txPointer." + error;
+            }
             if (message.inputAssetIds != null && message.hasOwnProperty("inputAssetIds")) {
                 if (!Array.isArray(message.inputAssetIds))
                     return "inputAssetIds: array expected";
@@ -17211,24 +14492,59 @@ export const transactions = $root.transactions = (() => {
                     if (!(message.inputAssetIds[i] && typeof message.inputAssetIds[i].length === "number" || $util.isString(message.inputAssetIds[i])))
                         return "inputAssetIds: buffer[] expected";
             }
+            if (message.inputContracts != null && message.hasOwnProperty("inputContracts")) {
+                if (!Array.isArray(message.inputContracts))
+                    return "inputContracts: array expected";
+                for (let i = 0; i < message.inputContracts.length; ++i)
+                    if (!(message.inputContracts[i] && typeof message.inputContracts[i].length === "number" || $util.isString(message.inputContracts[i])))
+                        return "inputContracts: buffer[] expected";
+            }
+            if (message.inputContract != null && message.hasOwnProperty("inputContract")) {
+                let error = $root.inputs.InputContract.verify(message.inputContract);
+                if (error)
+                    return "inputContract." + error;
+            }
+            if (message.inputs != null && message.hasOwnProperty("inputs")) {
+                if (!Array.isArray(message.inputs))
+                    return "inputs: array expected";
+                for (let i = 0; i < message.inputs.length; ++i) {
+                    let error = $root.inputs.Input.verify(message.inputs[i]);
+                    if (error)
+                        return "inputs." + error;
+                }
+            }
+            if (message.isScript != null && message.hasOwnProperty("isScript"))
+                if (typeof message.isScript !== "boolean")
+                    return "isScript: boolean expected";
             if (message.isCreate != null && message.hasOwnProperty("isCreate"))
                 if (typeof message.isCreate !== "boolean")
                     return "isCreate: boolean expected";
             if (message.isMint != null && message.hasOwnProperty("isMint"))
                 if (typeof message.isMint !== "boolean")
                     return "isMint: boolean expected";
-            if (message.isScript != null && message.hasOwnProperty("isScript"))
-                if (typeof message.isScript !== "boolean")
-                    return "isScript: boolean expected";
             if (message.isUpgrade != null && message.hasOwnProperty("isUpgrade"))
                 if (typeof message.isUpgrade !== "boolean")
                     return "isUpgrade: boolean expected";
             if (message.isUpload != null && message.hasOwnProperty("isUpload"))
                 if (typeof message.isUpload !== "boolean")
                     return "isUpload: boolean expected";
-            if (message.maturity != null && message.hasOwnProperty("maturity"))
-                if (!$util.isInteger(message.maturity))
-                    return "maturity: integer expected";
+            if (message.isBlob != null && message.hasOwnProperty("isBlob"))
+                if (typeof message.isBlob !== "boolean")
+                    return "isBlob: boolean expected";
+            if (message.outputs != null && message.hasOwnProperty("outputs")) {
+                if (!Array.isArray(message.outputs))
+                    return "outputs: array expected";
+                for (let i = 0; i < message.outputs.length; ++i) {
+                    let error = $root.outputs.Output.verify(message.outputs[i]);
+                    if (error)
+                        return "outputs." + error;
+                }
+            }
+            if (message.outputContract != null && message.hasOwnProperty("outputContract")) {
+                let error = $root.outputs.OutputContract.verify(message.outputContract);
+                if (error)
+                    return "outputContract." + error;
+            }
             if (message.mintAmount != null && message.hasOwnProperty("mintAmount"))
                 if (!$util.isInteger(message.mintAmount) && !(message.mintAmount && $util.isInteger(message.mintAmount.low) && $util.isInteger(message.mintAmount.high)))
                     return "mintAmount: integer|Long expected";
@@ -17238,42 +14554,89 @@ export const transactions = $root.transactions = (() => {
             if (message.mintGasPrice != null && message.hasOwnProperty("mintGasPrice"))
                 if (!$util.isInteger(message.mintGasPrice) && !(message.mintGasPrice && $util.isInteger(message.mintGasPrice.low) && $util.isInteger(message.mintGasPrice.high)))
                     return "mintGasPrice: integer|Long expected";
-            if (message.policyType != null && message.hasOwnProperty("policyType"))
-                if (!$util.isInteger(message.policyType))
-                    return "policyType: integer expected";
-            if (message.rawPayload != null && message.hasOwnProperty("rawPayload"))
-                if (!(message.rawPayload && typeof message.rawPayload.length === "number" || $util.isString(message.rawPayload)))
-                    return "rawPayload: buffer expected";
             if (message.receiptsRoot != null && message.hasOwnProperty("receiptsRoot"))
                 if (!(message.receiptsRoot && typeof message.receiptsRoot.length === "number" || $util.isString(message.receiptsRoot)))
                     return "receiptsRoot: buffer expected";
-            if (message.salt != null && message.hasOwnProperty("salt"))
-                if (!(message.salt && typeof message.salt.length === "number" || $util.isString(message.salt)))
-                    return "salt: buffer expected";
+            if (message.status != null && message.hasOwnProperty("status"))
+                switch (message.status) {
+                default:
+                    return "status: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    break;
+                }
+            if (message.witnesses != null && message.hasOwnProperty("witnesses")) {
+                if (!Array.isArray(message.witnesses))
+                    return "witnesses: array expected";
+                for (let i = 0; i < message.witnesses.length; ++i)
+                    if (!(message.witnesses[i] && typeof message.witnesses[i].length === "number" || $util.isString(message.witnesses[i])))
+                        return "witnesses: buffer[] expected";
+            }
             if (message.script != null && message.hasOwnProperty("script"))
                 if (!(message.script && typeof message.script.length === "number" || $util.isString(message.script)))
                     return "script: buffer expected";
-            if (message.scriptLength != null && message.hasOwnProperty("scriptLength"))
-                if (!$util.isInteger(message.scriptLength) && !(message.scriptLength && $util.isInteger(message.scriptLength.low) && $util.isInteger(message.scriptLength.high)))
-                    return "scriptLength: integer|Long expected";
             if (message.scriptData != null && message.hasOwnProperty("scriptData"))
                 if (!(message.scriptData && typeof message.scriptData.length === "number" || $util.isString(message.scriptData)))
                     return "scriptData: buffer expected";
-            if (message.scriptDataLength != null && message.hasOwnProperty("scriptDataLength"))
-                if (!$util.isInteger(message.scriptDataLength) && !(message.scriptDataLength && $util.isInteger(message.scriptDataLength.low) && $util.isInteger(message.scriptDataLength.high)))
-                    return "scriptDataLength: integer|Long expected";
-            if (message.scriptGasLimit != null && message.hasOwnProperty("scriptGasLimit"))
-                if (!$util.isInteger(message.scriptGasLimit) && !(message.scriptGasLimit && $util.isInteger(message.scriptGasLimit.low) && $util.isInteger(message.scriptGasLimit.high)))
-                    return "scriptGasLimit: integer|Long expected";
+            if (message.policies != null && message.hasOwnProperty("policies")) {
+                let error = $root.transactions.Policy.verify(message.policies);
+                if (error)
+                    return "policies." + error;
+            }
+            if (message.salt != null && message.hasOwnProperty("salt"))
+                if (!(message.salt && typeof message.salt.length === "number" || $util.isString(message.salt)))
+                    return "salt: buffer expected";
+            if (message.storageSlots != null && message.hasOwnProperty("storageSlots")) {
+                if (!Array.isArray(message.storageSlots))
+                    return "storageSlots: array expected";
+                for (let i = 0; i < message.storageSlots.length; ++i)
+                    if (!(message.storageSlots[i] && typeof message.storageSlots[i].length === "number" || $util.isString(message.storageSlots[i])))
+                        return "storageSlots: buffer[] expected";
+            }
+            if (message.bytecodeWitnessIndex != null && message.hasOwnProperty("bytecodeWitnessIndex"))
+                if (!$util.isInteger(message.bytecodeWitnessIndex))
+                    return "bytecodeWitnessIndex: integer expected";
+            if (message.bytecodeRoot != null && message.hasOwnProperty("bytecodeRoot"))
+                if (!(message.bytecodeRoot && typeof message.bytecodeRoot.length === "number" || $util.isString(message.bytecodeRoot)))
+                    return "bytecodeRoot: buffer expected";
             if (message.subsectionIndex != null && message.hasOwnProperty("subsectionIndex"))
                 if (!$util.isInteger(message.subsectionIndex))
                     return "subsectionIndex: integer expected";
             if (message.subsectionsNumber != null && message.hasOwnProperty("subsectionsNumber"))
                 if (!$util.isInteger(message.subsectionsNumber))
                     return "subsectionsNumber: integer expected";
+            if (message.proofSet != null && message.hasOwnProperty("proofSet")) {
+                if (!Array.isArray(message.proofSet))
+                    return "proofSet: array expected";
+                for (let i = 0; i < message.proofSet.length; ++i)
+                    if (!(message.proofSet[i] && typeof message.proofSet[i].length === "number" || $util.isString(message.proofSet[i])))
+                        return "proofSet: buffer[] expected";
+            }
             if (message.upgradePurpose != null && message.hasOwnProperty("upgradePurpose"))
                 if (!$util.isInteger(message.upgradePurpose))
                     return "upgradePurpose: integer expected";
+            if (message.blobId != null && message.hasOwnProperty("blobId"))
+                if (!(message.blobId && typeof message.blobId.length === "number" || $util.isString(message.blobId)))
+                    return "blobId: buffer expected";
+            if (message.maturity != null && message.hasOwnProperty("maturity"))
+                if (!$util.isInteger(message.maturity))
+                    return "maturity: integer expected";
+            if (message.policyType != null && message.hasOwnProperty("policyType"))
+                if (!$util.isInteger(message.policyType))
+                    return "policyType: integer expected";
+            if (message.rawPayload != null && message.hasOwnProperty("rawPayload"))
+                if (!(message.rawPayload && typeof message.rawPayload.length === "number" || $util.isString(message.rawPayload)))
+                    return "rawPayload: buffer expected";
+            if (message.scriptLength != null && message.hasOwnProperty("scriptLength"))
+                if (!$util.isInteger(message.scriptLength) && !(message.scriptLength && $util.isInteger(message.scriptLength.low) && $util.isInteger(message.scriptLength.high)))
+                    return "scriptLength: integer|Long expected";
+            if (message.scriptDataLength != null && message.hasOwnProperty("scriptDataLength"))
+                if (!$util.isInteger(message.scriptDataLength) && !(message.scriptDataLength && $util.isInteger(message.scriptDataLength.low) && $util.isInteger(message.scriptDataLength.high)))
+                    return "scriptDataLength: integer|Long expected";
             if (message.storageSlotsCount != null && message.hasOwnProperty("storageSlotsCount"))
                 if (!$util.isInteger(message.storageSlotsCount) && !(message.storageSlotsCount && $util.isInteger(message.storageSlotsCount.low) && $util.isInteger(message.storageSlotsCount.high)))
                     return "storageSlotsCount: integer|Long expected";
@@ -17289,87 +14652,10 @@ export const transactions = $root.transactions = (() => {
             if (message.outputsCount != null && message.hasOwnProperty("outputsCount"))
                 if (!$util.isInteger(message.outputsCount))
                     return "outputsCount: integer expected";
-            if (message.inputContract != null && message.hasOwnProperty("inputContract")) {
-                let error = $root.inputs.InputContract.verify(message.inputContract);
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                let error = $root.common.Metadata.verify(message.metadata);
                 if (error)
-                    return "inputContract." + error;
-            }
-            if (message.inputContracts != null && message.hasOwnProperty("inputContracts")) {
-                if (!Array.isArray(message.inputContracts))
-                    return "inputContracts: array expected";
-                for (let i = 0; i < message.inputContracts.length; ++i)
-                    if (!(message.inputContracts[i] && typeof message.inputContracts[i].length === "number" || $util.isString(message.inputContracts[i])))
-                        return "inputContracts: buffer[] expected";
-            }
-            if (message.inputs != null && message.hasOwnProperty("inputs")) {
-                if (!Array.isArray(message.inputs))
-                    return "inputs: array expected";
-                for (let i = 0; i < message.inputs.length; ++i) {
-                    let error = $root.inputs.Input.verify(message.inputs[i]);
-                    if (error)
-                        return "inputs." + error;
-                }
-            }
-            if (message.outputContract != null && message.hasOwnProperty("outputContract")) {
-                let error = $root.outputs.OutputContract.verify(message.outputContract);
-                if (error)
-                    return "outputContract." + error;
-            }
-            if (message.outputs != null && message.hasOwnProperty("outputs")) {
-                if (!Array.isArray(message.outputs))
-                    return "outputs: array expected";
-                for (let i = 0; i < message.outputs.length; ++i) {
-                    let error = $root.outputs.Output.verify(message.outputs[i]);
-                    if (error)
-                        return "outputs." + error;
-                }
-            }
-            if (message.proofSet != null && message.hasOwnProperty("proofSet")) {
-                if (!Array.isArray(message.proofSet))
-                    return "proofSet: array expected";
-                for (let i = 0; i < message.proofSet.length; ++i)
-                    if (!(message.proofSet[i] && typeof message.proofSet[i].length === "number" || $util.isString(message.proofSet[i])))
-                        return "proofSet: buffer[] expected";
-            }
-            if (message.receipts != null && message.hasOwnProperty("receipts")) {
-                if (!Array.isArray(message.receipts))
-                    return "receipts: array expected";
-                for (let i = 0; i < message.receipts.length; ++i) {
-                    let error = $root.receipts.Receipt.verify(message.receipts[i]);
-                    if (error)
-                        return "receipts." + error;
-                }
-            }
-            if (message.storageSlots != null && message.hasOwnProperty("storageSlots")) {
-                if (!Array.isArray(message.storageSlots))
-                    return "storageSlots: array expected";
-                for (let i = 0; i < message.storageSlots.length; ++i) {
-                    let error = $root.transactions.StorageSlot.verify(message.storageSlots[i]);
-                    if (error)
-                        return "storageSlots." + error;
-                }
-            }
-            if (message.witnesses != null && message.hasOwnProperty("witnesses")) {
-                if (!Array.isArray(message.witnesses))
-                    return "witnesses: array expected";
-                for (let i = 0; i < message.witnesses.length; ++i)
-                    if (!(message.witnesses[i] && typeof message.witnesses[i].length === "number" || $util.isString(message.witnesses[i])))
-                        return "witnesses: buffer[] expected";
-            }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
-            if (message.pointer != null && message.hasOwnProperty("pointer")) {
-                let error = $root.pointers.TransactionPointer.verify(message.pointer);
-                if (error)
-                    return "pointer." + error;
+                    return "metadata." + error;
             }
             return null;
         };
@@ -17388,86 +14674,25 @@ export const transactions = $root.transactions = (() => {
             let message = new $root.transactions.Transaction();
             if (object.subject != null)
                 message.subject = String(object.subject);
-            if (object.blockHeight != null)
+            if (object.id != null)
+                if (typeof object.id === "string")
+                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                else if (object.id.length >= 0)
+                    message.id = object.id;
+            if (object.scriptGasLimit != null)
                 if ($util.Long)
-                    (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
-                else if (typeof object.blockHeight === "string")
-                    message.blockHeight = parseInt(object.blockHeight, 10);
-                else if (typeof object.blockHeight === "number")
-                    message.blockHeight = object.blockHeight;
-                else if (typeof object.blockHeight === "object")
-                    message.blockHeight = new $util.LongBits(object.blockHeight.low >>> 0, object.blockHeight.high >>> 0).toNumber();
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.txIndex != null)
-                message.txIndex = object.txIndex | 0;
-            switch (object.type) {
-            default:
-                if (typeof object.type === "number") {
-                    message.type = object.type;
-                    break;
-                }
-                break;
-            case "SCRIPT":
-            case 0:
-                message.type = 0;
-                break;
-            case "CREATE":
-            case 1:
-                message.type = 1;
-                break;
-            case "MINT":
-            case 2:
-                message.type = 2;
-                break;
-            case "UPGRADE":
-            case 3:
-                message.type = 3;
-                break;
-            case "UPLOAD":
-            case 4:
-                message.type = 4;
-                break;
-            case "BLOB":
-            case 5:
-                message.type = 5;
-                break;
+                    (message.scriptGasLimit = $util.Long.fromValue(object.scriptGasLimit)).unsigned = false;
+                else if (typeof object.scriptGasLimit === "string")
+                    message.scriptGasLimit = parseInt(object.scriptGasLimit, 10);
+                else if (typeof object.scriptGasLimit === "number")
+                    message.scriptGasLimit = object.scriptGasLimit;
+                else if (typeof object.scriptGasLimit === "object")
+                    message.scriptGasLimit = new $util.LongBits(object.scriptGasLimit.low >>> 0, object.scriptGasLimit.high >>> 0).toNumber();
+            if (object.txPointer != null) {
+                if (typeof object.txPointer !== "object")
+                    throw TypeError(".transactions.Transaction.txPointer: object expected");
+                message.txPointer = $root.pointers.TxPointer.fromObject(object.txPointer);
             }
-            switch (object.status) {
-            default:
-                if (typeof object.status === "number") {
-                    message.status = object.status;
-                    break;
-                }
-                break;
-            case "SUCCESS":
-            case 0:
-                message.status = 0;
-                break;
-            case "FAILURE":
-            case 1:
-                message.status = 1;
-                break;
-            case "SUBMITTED":
-            case 2:
-                message.status = 2;
-                break;
-            }
-            if (object.root != null)
-                if (typeof object.root === "string")
-                    $util.base64.decode(object.root, message.root = $util.newBuffer($util.base64.length(object.root)), 0);
-                else if (object.root.length >= 0)
-                    message.root = object.root;
-            if (object.witnessIndex != null)
-                message.witnessIndex = object.witnessIndex | 0;
-            if (object.blobId != null)
-                if (typeof object.blobId === "string")
-                    $util.base64.decode(object.blobId, message.blobId = $util.newBuffer($util.base64.length(object.blobId)), 0);
-                else if (object.blobId.length >= 0)
-                    message.blobId = object.blobId;
             if (object.inputAssetIds) {
                 if (!Array.isArray(object.inputAssetIds))
                     throw TypeError(".transactions.Transaction.inputAssetIds: array expected");
@@ -17478,18 +14703,58 @@ export const transactions = $root.transactions = (() => {
                     else if (object.inputAssetIds[i].length >= 0)
                         message.inputAssetIds[i] = object.inputAssetIds[i];
             }
+            if (object.inputContracts) {
+                if (!Array.isArray(object.inputContracts))
+                    throw TypeError(".transactions.Transaction.inputContracts: array expected");
+                message.inputContracts = [];
+                for (let i = 0; i < object.inputContracts.length; ++i)
+                    if (typeof object.inputContracts[i] === "string")
+                        $util.base64.decode(object.inputContracts[i], message.inputContracts[i] = $util.newBuffer($util.base64.length(object.inputContracts[i])), 0);
+                    else if (object.inputContracts[i].length >= 0)
+                        message.inputContracts[i] = object.inputContracts[i];
+            }
+            if (object.inputContract != null) {
+                if (typeof object.inputContract !== "object")
+                    throw TypeError(".transactions.Transaction.inputContract: object expected");
+                message.inputContract = $root.inputs.InputContract.fromObject(object.inputContract);
+            }
+            if (object.inputs) {
+                if (!Array.isArray(object.inputs))
+                    throw TypeError(".transactions.Transaction.inputs: array expected");
+                message.inputs = [];
+                for (let i = 0; i < object.inputs.length; ++i) {
+                    if (typeof object.inputs[i] !== "object")
+                        throw TypeError(".transactions.Transaction.inputs: object expected");
+                    message.inputs[i] = $root.inputs.Input.fromObject(object.inputs[i]);
+                }
+            }
+            if (object.isScript != null)
+                message.isScript = Boolean(object.isScript);
             if (object.isCreate != null)
                 message.isCreate = Boolean(object.isCreate);
             if (object.isMint != null)
                 message.isMint = Boolean(object.isMint);
-            if (object.isScript != null)
-                message.isScript = Boolean(object.isScript);
             if (object.isUpgrade != null)
                 message.isUpgrade = Boolean(object.isUpgrade);
             if (object.isUpload != null)
                 message.isUpload = Boolean(object.isUpload);
-            if (object.maturity != null)
-                message.maturity = object.maturity | 0;
+            if (object.isBlob != null)
+                message.isBlob = Boolean(object.isBlob);
+            if (object.outputs) {
+                if (!Array.isArray(object.outputs))
+                    throw TypeError(".transactions.Transaction.outputs: array expected");
+                message.outputs = [];
+                for (let i = 0; i < object.outputs.length; ++i) {
+                    if (typeof object.outputs[i] !== "object")
+                        throw TypeError(".transactions.Transaction.outputs: object expected");
+                    message.outputs[i] = $root.outputs.Output.fromObject(object.outputs[i]);
+                }
+            }
+            if (object.outputContract != null) {
+                if (typeof object.outputContract !== "object")
+                    throw TypeError(".transactions.Transaction.outputContract: object expected");
+                message.outputContract = $root.outputs.OutputContract.fromObject(object.outputContract);
+            }
             if (object.mintAmount != null)
                 if ($util.Long)
                     (message.mintAmount = $util.Long.fromValue(object.mintAmount)).unsigned = false;
@@ -17513,6 +14778,113 @@ export const transactions = $root.transactions = (() => {
                     message.mintGasPrice = object.mintGasPrice;
                 else if (typeof object.mintGasPrice === "object")
                     message.mintGasPrice = new $util.LongBits(object.mintGasPrice.low >>> 0, object.mintGasPrice.high >>> 0).toNumber();
+            if (object.receiptsRoot != null)
+                if (typeof object.receiptsRoot === "string")
+                    $util.base64.decode(object.receiptsRoot, message.receiptsRoot = $util.newBuffer($util.base64.length(object.receiptsRoot)), 0);
+                else if (object.receiptsRoot.length >= 0)
+                    message.receiptsRoot = object.receiptsRoot;
+            switch (object.status) {
+            default:
+                if (typeof object.status === "number") {
+                    message.status = object.status;
+                    break;
+                }
+                break;
+            case "UNKNOWN_TRANSACTION_STATUS":
+            case 0:
+                message.status = 0;
+                break;
+            case "FAILED":
+            case 1:
+                message.status = 1;
+                break;
+            case "SUBMITTED":
+            case 2:
+                message.status = 2;
+                break;
+            case "SQUEEZED_OUT":
+            case 3:
+                message.status = 3;
+                break;
+            case "SUCCESS":
+            case 4:
+                message.status = 4;
+                break;
+            case "NONE":
+            case 5:
+                message.status = 5;
+                break;
+            }
+            if (object.witnesses) {
+                if (!Array.isArray(object.witnesses))
+                    throw TypeError(".transactions.Transaction.witnesses: array expected");
+                message.witnesses = [];
+                for (let i = 0; i < object.witnesses.length; ++i)
+                    if (typeof object.witnesses[i] === "string")
+                        $util.base64.decode(object.witnesses[i], message.witnesses[i] = $util.newBuffer($util.base64.length(object.witnesses[i])), 0);
+                    else if (object.witnesses[i].length >= 0)
+                        message.witnesses[i] = object.witnesses[i];
+            }
+            if (object.script != null)
+                if (typeof object.script === "string")
+                    $util.base64.decode(object.script, message.script = $util.newBuffer($util.base64.length(object.script)), 0);
+                else if (object.script.length >= 0)
+                    message.script = object.script;
+            if (object.scriptData != null)
+                if (typeof object.scriptData === "string")
+                    $util.base64.decode(object.scriptData, message.scriptData = $util.newBuffer($util.base64.length(object.scriptData)), 0);
+                else if (object.scriptData.length >= 0)
+                    message.scriptData = object.scriptData;
+            if (object.policies != null) {
+                if (typeof object.policies !== "object")
+                    throw TypeError(".transactions.Transaction.policies: object expected");
+                message.policies = $root.transactions.Policy.fromObject(object.policies);
+            }
+            if (object.salt != null)
+                if (typeof object.salt === "string")
+                    $util.base64.decode(object.salt, message.salt = $util.newBuffer($util.base64.length(object.salt)), 0);
+                else if (object.salt.length >= 0)
+                    message.salt = object.salt;
+            if (object.storageSlots) {
+                if (!Array.isArray(object.storageSlots))
+                    throw TypeError(".transactions.Transaction.storageSlots: array expected");
+                message.storageSlots = [];
+                for (let i = 0; i < object.storageSlots.length; ++i)
+                    if (typeof object.storageSlots[i] === "string")
+                        $util.base64.decode(object.storageSlots[i], message.storageSlots[i] = $util.newBuffer($util.base64.length(object.storageSlots[i])), 0);
+                    else if (object.storageSlots[i].length >= 0)
+                        message.storageSlots[i] = object.storageSlots[i];
+            }
+            if (object.bytecodeWitnessIndex != null)
+                message.bytecodeWitnessIndex = object.bytecodeWitnessIndex | 0;
+            if (object.bytecodeRoot != null)
+                if (typeof object.bytecodeRoot === "string")
+                    $util.base64.decode(object.bytecodeRoot, message.bytecodeRoot = $util.newBuffer($util.base64.length(object.bytecodeRoot)), 0);
+                else if (object.bytecodeRoot.length >= 0)
+                    message.bytecodeRoot = object.bytecodeRoot;
+            if (object.subsectionIndex != null)
+                message.subsectionIndex = object.subsectionIndex | 0;
+            if (object.subsectionsNumber != null)
+                message.subsectionsNumber = object.subsectionsNumber | 0;
+            if (object.proofSet) {
+                if (!Array.isArray(object.proofSet))
+                    throw TypeError(".transactions.Transaction.proofSet: array expected");
+                message.proofSet = [];
+                for (let i = 0; i < object.proofSet.length; ++i)
+                    if (typeof object.proofSet[i] === "string")
+                        $util.base64.decode(object.proofSet[i], message.proofSet[i] = $util.newBuffer($util.base64.length(object.proofSet[i])), 0);
+                    else if (object.proofSet[i].length >= 0)
+                        message.proofSet[i] = object.proofSet[i];
+            }
+            if (object.upgradePurpose != null)
+                message.upgradePurpose = object.upgradePurpose | 0;
+            if (object.blobId != null)
+                if (typeof object.blobId === "string")
+                    $util.base64.decode(object.blobId, message.blobId = $util.newBuffer($util.base64.length(object.blobId)), 0);
+                else if (object.blobId.length >= 0)
+                    message.blobId = object.blobId;
+            if (object.maturity != null)
+                message.maturity = object.maturity | 0;
             if (object.policyType != null)
                 message.policyType = object.policyType | 0;
             if (object.rawPayload != null)
@@ -17520,21 +14892,6 @@ export const transactions = $root.transactions = (() => {
                     $util.base64.decode(object.rawPayload, message.rawPayload = $util.newBuffer($util.base64.length(object.rawPayload)), 0);
                 else if (object.rawPayload.length >= 0)
                     message.rawPayload = object.rawPayload;
-            if (object.receiptsRoot != null)
-                if (typeof object.receiptsRoot === "string")
-                    $util.base64.decode(object.receiptsRoot, message.receiptsRoot = $util.newBuffer($util.base64.length(object.receiptsRoot)), 0);
-                else if (object.receiptsRoot.length >= 0)
-                    message.receiptsRoot = object.receiptsRoot;
-            if (object.salt != null)
-                if (typeof object.salt === "string")
-                    $util.base64.decode(object.salt, message.salt = $util.newBuffer($util.base64.length(object.salt)), 0);
-                else if (object.salt.length >= 0)
-                    message.salt = object.salt;
-            if (object.script != null)
-                if (typeof object.script === "string")
-                    $util.base64.decode(object.script, message.script = $util.newBuffer($util.base64.length(object.script)), 0);
-                else if (object.script.length >= 0)
-                    message.script = object.script;
             if (object.scriptLength != null)
                 if ($util.Long)
                     (message.scriptLength = $util.Long.fromValue(object.scriptLength)).unsigned = false;
@@ -17544,11 +14901,6 @@ export const transactions = $root.transactions = (() => {
                     message.scriptLength = object.scriptLength;
                 else if (typeof object.scriptLength === "object")
                     message.scriptLength = new $util.LongBits(object.scriptLength.low >>> 0, object.scriptLength.high >>> 0).toNumber();
-            if (object.scriptData != null)
-                if (typeof object.scriptData === "string")
-                    $util.base64.decode(object.scriptData, message.scriptData = $util.newBuffer($util.base64.length(object.scriptData)), 0);
-                else if (object.scriptData.length >= 0)
-                    message.scriptData = object.scriptData;
             if (object.scriptDataLength != null)
                 if ($util.Long)
                     (message.scriptDataLength = $util.Long.fromValue(object.scriptDataLength)).unsigned = false;
@@ -17558,21 +14910,6 @@ export const transactions = $root.transactions = (() => {
                     message.scriptDataLength = object.scriptDataLength;
                 else if (typeof object.scriptDataLength === "object")
                     message.scriptDataLength = new $util.LongBits(object.scriptDataLength.low >>> 0, object.scriptDataLength.high >>> 0).toNumber();
-            if (object.scriptGasLimit != null)
-                if ($util.Long)
-                    (message.scriptGasLimit = $util.Long.fromValue(object.scriptGasLimit)).unsigned = false;
-                else if (typeof object.scriptGasLimit === "string")
-                    message.scriptGasLimit = parseInt(object.scriptGasLimit, 10);
-                else if (typeof object.scriptGasLimit === "number")
-                    message.scriptGasLimit = object.scriptGasLimit;
-                else if (typeof object.scriptGasLimit === "object")
-                    message.scriptGasLimit = new $util.LongBits(object.scriptGasLimit.low >>> 0, object.scriptGasLimit.high >>> 0).toNumber();
-            if (object.subsectionIndex != null)
-                message.subsectionIndex = object.subsectionIndex | 0;
-            if (object.subsectionsNumber != null)
-                message.subsectionsNumber = object.subsectionsNumber | 0;
-            if (object.upgradePurpose != null)
-                message.upgradePurpose = object.upgradePurpose | 0;
             if (object.storageSlotsCount != null)
                 if ($util.Long)
                     (message.storageSlotsCount = $util.Long.fromValue(object.storageSlotsCount)).unsigned = false;
@@ -17590,100 +14927,10 @@ export const transactions = $root.transactions = (() => {
                 message.inputsCount = object.inputsCount | 0;
             if (object.outputsCount != null)
                 message.outputsCount = object.outputsCount | 0;
-            if (object.inputContract != null) {
-                if (typeof object.inputContract !== "object")
-                    throw TypeError(".transactions.Transaction.inputContract: object expected");
-                message.inputContract = $root.inputs.InputContract.fromObject(object.inputContract);
-            }
-            if (object.inputContracts) {
-                if (!Array.isArray(object.inputContracts))
-                    throw TypeError(".transactions.Transaction.inputContracts: array expected");
-                message.inputContracts = [];
-                for (let i = 0; i < object.inputContracts.length; ++i)
-                    if (typeof object.inputContracts[i] === "string")
-                        $util.base64.decode(object.inputContracts[i], message.inputContracts[i] = $util.newBuffer($util.base64.length(object.inputContracts[i])), 0);
-                    else if (object.inputContracts[i].length >= 0)
-                        message.inputContracts[i] = object.inputContracts[i];
-            }
-            if (object.inputs) {
-                if (!Array.isArray(object.inputs))
-                    throw TypeError(".transactions.Transaction.inputs: array expected");
-                message.inputs = [];
-                for (let i = 0; i < object.inputs.length; ++i) {
-                    if (typeof object.inputs[i] !== "object")
-                        throw TypeError(".transactions.Transaction.inputs: object expected");
-                    message.inputs[i] = $root.inputs.Input.fromObject(object.inputs[i]);
-                }
-            }
-            if (object.outputContract != null) {
-                if (typeof object.outputContract !== "object")
-                    throw TypeError(".transactions.Transaction.outputContract: object expected");
-                message.outputContract = $root.outputs.OutputContract.fromObject(object.outputContract);
-            }
-            if (object.outputs) {
-                if (!Array.isArray(object.outputs))
-                    throw TypeError(".transactions.Transaction.outputs: array expected");
-                message.outputs = [];
-                for (let i = 0; i < object.outputs.length; ++i) {
-                    if (typeof object.outputs[i] !== "object")
-                        throw TypeError(".transactions.Transaction.outputs: object expected");
-                    message.outputs[i] = $root.outputs.Output.fromObject(object.outputs[i]);
-                }
-            }
-            if (object.proofSet) {
-                if (!Array.isArray(object.proofSet))
-                    throw TypeError(".transactions.Transaction.proofSet: array expected");
-                message.proofSet = [];
-                for (let i = 0; i < object.proofSet.length; ++i)
-                    if (typeof object.proofSet[i] === "string")
-                        $util.base64.decode(object.proofSet[i], message.proofSet[i] = $util.newBuffer($util.base64.length(object.proofSet[i])), 0);
-                    else if (object.proofSet[i].length >= 0)
-                        message.proofSet[i] = object.proofSet[i];
-            }
-            if (object.receipts) {
-                if (!Array.isArray(object.receipts))
-                    throw TypeError(".transactions.Transaction.receipts: array expected");
-                message.receipts = [];
-                for (let i = 0; i < object.receipts.length; ++i) {
-                    if (typeof object.receipts[i] !== "object")
-                        throw TypeError(".transactions.Transaction.receipts: object expected");
-                    message.receipts[i] = $root.receipts.Receipt.fromObject(object.receipts[i]);
-                }
-            }
-            if (object.storageSlots) {
-                if (!Array.isArray(object.storageSlots))
-                    throw TypeError(".transactions.Transaction.storageSlots: array expected");
-                message.storageSlots = [];
-                for (let i = 0; i < object.storageSlots.length; ++i) {
-                    if (typeof object.storageSlots[i] !== "object")
-                        throw TypeError(".transactions.Transaction.storageSlots: object expected");
-                    message.storageSlots[i] = $root.transactions.StorageSlot.fromObject(object.storageSlots[i]);
-                }
-            }
-            if (object.witnesses) {
-                if (!Array.isArray(object.witnesses))
-                    throw TypeError(".transactions.Transaction.witnesses: array expected");
-                message.witnesses = [];
-                for (let i = 0; i < object.witnesses.length; ++i)
-                    if (typeof object.witnesses[i] === "string")
-                        $util.base64.decode(object.witnesses[i], message.witnesses[i] = $util.newBuffer($util.base64.length(object.witnesses[i])), 0);
-                    else if (object.witnesses[i].length >= 0)
-                        message.witnesses[i] = object.witnesses[i];
-            }
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".transactions.Transaction.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".transactions.Transaction.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
-            if (object.pointer != null) {
-                if (typeof object.pointer !== "object")
-                    throw TypeError(".transactions.Transaction.pointer: object expected");
-                message.pointer = $root.pointers.TransactionPointer.fromObject(object.pointer);
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".transactions.Transaction.metadata: object expected");
+                message.metadata = $root.common.Metadata.fromObject(object.metadata);
             }
             return message;
         };
@@ -17706,49 +14953,33 @@ export const transactions = $root.transactions = (() => {
                 object.inputContracts = [];
                 object.inputs = [];
                 object.outputs = [];
-                object.proofSet = [];
-                object.receipts = [];
-                object.storageSlots = [];
                 object.witnesses = [];
+                object.storageSlots = [];
+                object.proofSet = [];
             }
             if (options.defaults) {
                 object.subject = "";
+                if (options.bytes === String)
+                    object.id = "";
+                else {
+                    object.id = [];
+                    if (options.bytes !== Array)
+                        object.id = $util.newBuffer(object.id);
+                }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
-                    object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    object.scriptGasLimit = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
-                    object.blockHeight = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                object.txIndex = 0;
-                object.type = options.enums === String ? "SCRIPT" : 0;
-                object.status = options.enums === String ? "SUCCESS" : 0;
-                if (options.bytes === String)
-                    object.root = "";
-                else {
-                    object.root = [];
-                    if (options.bytes !== Array)
-                        object.root = $util.newBuffer(object.root);
-                }
-                object.witnessIndex = 0;
-                if (options.bytes === String)
-                    object.blobId = "";
-                else {
-                    object.blobId = [];
-                    if (options.bytes !== Array)
-                        object.blobId = $util.newBuffer(object.blobId);
-                }
+                    object.scriptGasLimit = options.longs === String ? "0" : 0;
+                object.txPointer = null;
+                object.inputContract = null;
+                object.isScript = false;
                 object.isCreate = false;
                 object.isMint = false;
-                object.isScript = false;
                 object.isUpgrade = false;
                 object.isUpload = false;
-                object.maturity = 0;
+                object.isBlob = false;
+                object.outputContract = null;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.mintAmount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -17766,6 +14997,55 @@ export const transactions = $root.transactions = (() => {
                     object.mintGasPrice = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.mintGasPrice = options.longs === String ? "0" : 0;
+                if (options.bytes === String)
+                    object.receiptsRoot = "";
+                else {
+                    object.receiptsRoot = [];
+                    if (options.bytes !== Array)
+                        object.receiptsRoot = $util.newBuffer(object.receiptsRoot);
+                }
+                object.status = options.enums === String ? "UNKNOWN_TRANSACTION_STATUS" : 0;
+                if (options.bytes === String)
+                    object.script = "";
+                else {
+                    object.script = [];
+                    if (options.bytes !== Array)
+                        object.script = $util.newBuffer(object.script);
+                }
+                if (options.bytes === String)
+                    object.scriptData = "";
+                else {
+                    object.scriptData = [];
+                    if (options.bytes !== Array)
+                        object.scriptData = $util.newBuffer(object.scriptData);
+                }
+                object.policies = null;
+                if (options.bytes === String)
+                    object.salt = "";
+                else {
+                    object.salt = [];
+                    if (options.bytes !== Array)
+                        object.salt = $util.newBuffer(object.salt);
+                }
+                object.bytecodeWitnessIndex = 0;
+                if (options.bytes === String)
+                    object.bytecodeRoot = "";
+                else {
+                    object.bytecodeRoot = [];
+                    if (options.bytes !== Array)
+                        object.bytecodeRoot = $util.newBuffer(object.bytecodeRoot);
+                }
+                object.subsectionIndex = 0;
+                object.subsectionsNumber = 0;
+                object.upgradePurpose = 0;
+                if (options.bytes === String)
+                    object.blobId = "";
+                else {
+                    object.blobId = [];
+                    if (options.bytes !== Array)
+                        object.blobId = $util.newBuffer(object.blobId);
+                }
+                object.maturity = 0;
                 object.policyType = 0;
                 if (options.bytes === String)
                     object.rawPayload = "";
@@ -17774,52 +15054,16 @@ export const transactions = $root.transactions = (() => {
                     if (options.bytes !== Array)
                         object.rawPayload = $util.newBuffer(object.rawPayload);
                 }
-                if (options.bytes === String)
-                    object.receiptsRoot = "";
-                else {
-                    object.receiptsRoot = [];
-                    if (options.bytes !== Array)
-                        object.receiptsRoot = $util.newBuffer(object.receiptsRoot);
-                }
-                if (options.bytes === String)
-                    object.salt = "";
-                else {
-                    object.salt = [];
-                    if (options.bytes !== Array)
-                        object.salt = $util.newBuffer(object.salt);
-                }
-                if (options.bytes === String)
-                    object.script = "";
-                else {
-                    object.script = [];
-                    if (options.bytes !== Array)
-                        object.script = $util.newBuffer(object.script);
-                }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.scriptLength = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.scriptLength = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.scriptData = "";
-                else {
-                    object.scriptData = [];
-                    if (options.bytes !== Array)
-                        object.scriptData = $util.newBuffer(object.scriptData);
-                }
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.scriptDataLength = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.scriptDataLength = options.longs === String ? "0" : 0;
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.scriptGasLimit = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.scriptGasLimit = options.longs === String ? "0" : 0;
-                object.subsectionIndex = 0;
-                object.subsectionsNumber = 0;
-                object.upgradePurpose = 0;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.storageSlotsCount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -17829,50 +15073,55 @@ export const transactions = $root.transactions = (() => {
                 object.witnessesCount = 0;
                 object.inputsCount = 0;
                 object.outputsCount = 0;
-                object.inputContract = null;
-                object.outputContract = null;
-                object.createdAt = null;
-                object.publishedAt = null;
-                object.pointer = null;
+                object.metadata = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (typeof message.blockHeight === "number")
-                    object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
+            if (message.id != null && message.hasOwnProperty("id"))
+                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+            if (message.scriptGasLimit != null && message.hasOwnProperty("scriptGasLimit"))
+                if (typeof message.scriptGasLimit === "number")
+                    object.scriptGasLimit = options.longs === String ? String(message.scriptGasLimit) : message.scriptGasLimit;
                 else
-                    object.blockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.blockHeight) : options.longs === Number ? new $util.LongBits(message.blockHeight.low >>> 0, message.blockHeight.high >>> 0).toNumber() : message.blockHeight;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                object.txIndex = message.txIndex;
-            if (message.type != null && message.hasOwnProperty("type"))
-                object.type = options.enums === String ? $root.transactions.TransactionType[message.type] === undefined ? message.type : $root.transactions.TransactionType[message.type] : message.type;
-            if (message.status != null && message.hasOwnProperty("status"))
-                object.status = options.enums === String ? $root.transactions.TransactionStatus[message.status] === undefined ? message.status : $root.transactions.TransactionStatus[message.status] : message.status;
-            if (message.root != null && message.hasOwnProperty("root"))
-                object.root = options.bytes === String ? $util.base64.encode(message.root, 0, message.root.length) : options.bytes === Array ? Array.prototype.slice.call(message.root) : message.root;
-            if (message.witnessIndex != null && message.hasOwnProperty("witnessIndex"))
-                object.witnessIndex = message.witnessIndex;
-            if (message.blobId != null && message.hasOwnProperty("blobId"))
-                object.blobId = options.bytes === String ? $util.base64.encode(message.blobId, 0, message.blobId.length) : options.bytes === Array ? Array.prototype.slice.call(message.blobId) : message.blobId;
+                    object.scriptGasLimit = options.longs === String ? $util.Long.prototype.toString.call(message.scriptGasLimit) : options.longs === Number ? new $util.LongBits(message.scriptGasLimit.low >>> 0, message.scriptGasLimit.high >>> 0).toNumber() : message.scriptGasLimit;
+            if (message.txPointer != null && message.hasOwnProperty("txPointer"))
+                object.txPointer = $root.pointers.TxPointer.toObject(message.txPointer, options);
             if (message.inputAssetIds && message.inputAssetIds.length) {
                 object.inputAssetIds = [];
                 for (let j = 0; j < message.inputAssetIds.length; ++j)
                     object.inputAssetIds[j] = options.bytes === String ? $util.base64.encode(message.inputAssetIds[j], 0, message.inputAssetIds[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.inputAssetIds[j]) : message.inputAssetIds[j];
             }
+            if (message.inputContracts && message.inputContracts.length) {
+                object.inputContracts = [];
+                for (let j = 0; j < message.inputContracts.length; ++j)
+                    object.inputContracts[j] = options.bytes === String ? $util.base64.encode(message.inputContracts[j], 0, message.inputContracts[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.inputContracts[j]) : message.inputContracts[j];
+            }
+            if (message.inputContract != null && message.hasOwnProperty("inputContract"))
+                object.inputContract = $root.inputs.InputContract.toObject(message.inputContract, options);
+            if (message.inputs && message.inputs.length) {
+                object.inputs = [];
+                for (let j = 0; j < message.inputs.length; ++j)
+                    object.inputs[j] = $root.inputs.Input.toObject(message.inputs[j], options);
+            }
+            if (message.isScript != null && message.hasOwnProperty("isScript"))
+                object.isScript = message.isScript;
             if (message.isCreate != null && message.hasOwnProperty("isCreate"))
                 object.isCreate = message.isCreate;
             if (message.isMint != null && message.hasOwnProperty("isMint"))
                 object.isMint = message.isMint;
-            if (message.isScript != null && message.hasOwnProperty("isScript"))
-                object.isScript = message.isScript;
             if (message.isUpgrade != null && message.hasOwnProperty("isUpgrade"))
                 object.isUpgrade = message.isUpgrade;
             if (message.isUpload != null && message.hasOwnProperty("isUpload"))
                 object.isUpload = message.isUpload;
-            if (message.maturity != null && message.hasOwnProperty("maturity"))
-                object.maturity = message.maturity;
+            if (message.isBlob != null && message.hasOwnProperty("isBlob"))
+                object.isBlob = message.isBlob;
+            if (message.outputs && message.outputs.length) {
+                object.outputs = [];
+                for (let j = 0; j < message.outputs.length; ++j)
+                    object.outputs[j] = $root.outputs.Output.toObject(message.outputs[j], options);
+            }
+            if (message.outputContract != null && message.hasOwnProperty("outputContract"))
+                object.outputContract = $root.outputs.OutputContract.toObject(message.outputContract, options);
             if (message.mintAmount != null && message.hasOwnProperty("mintAmount"))
                 if (typeof message.mintAmount === "number")
                     object.mintAmount = options.longs === String ? String(message.mintAmount) : message.mintAmount;
@@ -17885,39 +15134,61 @@ export const transactions = $root.transactions = (() => {
                     object.mintGasPrice = options.longs === String ? String(message.mintGasPrice) : message.mintGasPrice;
                 else
                     object.mintGasPrice = options.longs === String ? $util.Long.prototype.toString.call(message.mintGasPrice) : options.longs === Number ? new $util.LongBits(message.mintGasPrice.low >>> 0, message.mintGasPrice.high >>> 0).toNumber() : message.mintGasPrice;
+            if (message.receiptsRoot != null && message.hasOwnProperty("receiptsRoot"))
+                object.receiptsRoot = options.bytes === String ? $util.base64.encode(message.receiptsRoot, 0, message.receiptsRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.receiptsRoot) : message.receiptsRoot;
+            if (message.status != null && message.hasOwnProperty("status"))
+                object.status = options.enums === String ? $root.transactions.TransactionStatus[message.status] === undefined ? message.status : $root.transactions.TransactionStatus[message.status] : message.status;
+            if (message.witnesses && message.witnesses.length) {
+                object.witnesses = [];
+                for (let j = 0; j < message.witnesses.length; ++j)
+                    object.witnesses[j] = options.bytes === String ? $util.base64.encode(message.witnesses[j], 0, message.witnesses[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.witnesses[j]) : message.witnesses[j];
+            }
+            if (message.script != null && message.hasOwnProperty("script"))
+                object.script = options.bytes === String ? $util.base64.encode(message.script, 0, message.script.length) : options.bytes === Array ? Array.prototype.slice.call(message.script) : message.script;
+            if (message.scriptData != null && message.hasOwnProperty("scriptData"))
+                object.scriptData = options.bytes === String ? $util.base64.encode(message.scriptData, 0, message.scriptData.length) : options.bytes === Array ? Array.prototype.slice.call(message.scriptData) : message.scriptData;
+            if (message.policies != null && message.hasOwnProperty("policies"))
+                object.policies = $root.transactions.Policy.toObject(message.policies, options);
+            if (message.salt != null && message.hasOwnProperty("salt"))
+                object.salt = options.bytes === String ? $util.base64.encode(message.salt, 0, message.salt.length) : options.bytes === Array ? Array.prototype.slice.call(message.salt) : message.salt;
+            if (message.storageSlots && message.storageSlots.length) {
+                object.storageSlots = [];
+                for (let j = 0; j < message.storageSlots.length; ++j)
+                    object.storageSlots[j] = options.bytes === String ? $util.base64.encode(message.storageSlots[j], 0, message.storageSlots[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.storageSlots[j]) : message.storageSlots[j];
+            }
+            if (message.bytecodeWitnessIndex != null && message.hasOwnProperty("bytecodeWitnessIndex"))
+                object.bytecodeWitnessIndex = message.bytecodeWitnessIndex;
+            if (message.bytecodeRoot != null && message.hasOwnProperty("bytecodeRoot"))
+                object.bytecodeRoot = options.bytes === String ? $util.base64.encode(message.bytecodeRoot, 0, message.bytecodeRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.bytecodeRoot) : message.bytecodeRoot;
+            if (message.subsectionIndex != null && message.hasOwnProperty("subsectionIndex"))
+                object.subsectionIndex = message.subsectionIndex;
+            if (message.subsectionsNumber != null && message.hasOwnProperty("subsectionsNumber"))
+                object.subsectionsNumber = message.subsectionsNumber;
+            if (message.proofSet && message.proofSet.length) {
+                object.proofSet = [];
+                for (let j = 0; j < message.proofSet.length; ++j)
+                    object.proofSet[j] = options.bytes === String ? $util.base64.encode(message.proofSet[j], 0, message.proofSet[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.proofSet[j]) : message.proofSet[j];
+            }
+            if (message.upgradePurpose != null && message.hasOwnProperty("upgradePurpose"))
+                object.upgradePurpose = message.upgradePurpose;
+            if (message.blobId != null && message.hasOwnProperty("blobId"))
+                object.blobId = options.bytes === String ? $util.base64.encode(message.blobId, 0, message.blobId.length) : options.bytes === Array ? Array.prototype.slice.call(message.blobId) : message.blobId;
+            if (message.maturity != null && message.hasOwnProperty("maturity"))
+                object.maturity = message.maturity;
             if (message.policyType != null && message.hasOwnProperty("policyType"))
                 object.policyType = message.policyType;
             if (message.rawPayload != null && message.hasOwnProperty("rawPayload"))
                 object.rawPayload = options.bytes === String ? $util.base64.encode(message.rawPayload, 0, message.rawPayload.length) : options.bytes === Array ? Array.prototype.slice.call(message.rawPayload) : message.rawPayload;
-            if (message.receiptsRoot != null && message.hasOwnProperty("receiptsRoot"))
-                object.receiptsRoot = options.bytes === String ? $util.base64.encode(message.receiptsRoot, 0, message.receiptsRoot.length) : options.bytes === Array ? Array.prototype.slice.call(message.receiptsRoot) : message.receiptsRoot;
-            if (message.salt != null && message.hasOwnProperty("salt"))
-                object.salt = options.bytes === String ? $util.base64.encode(message.salt, 0, message.salt.length) : options.bytes === Array ? Array.prototype.slice.call(message.salt) : message.salt;
-            if (message.script != null && message.hasOwnProperty("script"))
-                object.script = options.bytes === String ? $util.base64.encode(message.script, 0, message.script.length) : options.bytes === Array ? Array.prototype.slice.call(message.script) : message.script;
             if (message.scriptLength != null && message.hasOwnProperty("scriptLength"))
                 if (typeof message.scriptLength === "number")
                     object.scriptLength = options.longs === String ? String(message.scriptLength) : message.scriptLength;
                 else
                     object.scriptLength = options.longs === String ? $util.Long.prototype.toString.call(message.scriptLength) : options.longs === Number ? new $util.LongBits(message.scriptLength.low >>> 0, message.scriptLength.high >>> 0).toNumber() : message.scriptLength;
-            if (message.scriptData != null && message.hasOwnProperty("scriptData"))
-                object.scriptData = options.bytes === String ? $util.base64.encode(message.scriptData, 0, message.scriptData.length) : options.bytes === Array ? Array.prototype.slice.call(message.scriptData) : message.scriptData;
             if (message.scriptDataLength != null && message.hasOwnProperty("scriptDataLength"))
                 if (typeof message.scriptDataLength === "number")
                     object.scriptDataLength = options.longs === String ? String(message.scriptDataLength) : message.scriptDataLength;
                 else
                     object.scriptDataLength = options.longs === String ? $util.Long.prototype.toString.call(message.scriptDataLength) : options.longs === Number ? new $util.LongBits(message.scriptDataLength.low >>> 0, message.scriptDataLength.high >>> 0).toNumber() : message.scriptDataLength;
-            if (message.scriptGasLimit != null && message.hasOwnProperty("scriptGasLimit"))
-                if (typeof message.scriptGasLimit === "number")
-                    object.scriptGasLimit = options.longs === String ? String(message.scriptGasLimit) : message.scriptGasLimit;
-                else
-                    object.scriptGasLimit = options.longs === String ? $util.Long.prototype.toString.call(message.scriptGasLimit) : options.longs === Number ? new $util.LongBits(message.scriptGasLimit.low >>> 0, message.scriptGasLimit.high >>> 0).toNumber() : message.scriptGasLimit;
-            if (message.subsectionIndex != null && message.hasOwnProperty("subsectionIndex"))
-                object.subsectionIndex = message.subsectionIndex;
-            if (message.subsectionsNumber != null && message.hasOwnProperty("subsectionsNumber"))
-                object.subsectionsNumber = message.subsectionsNumber;
-            if (message.upgradePurpose != null && message.hasOwnProperty("upgradePurpose"))
-                object.upgradePurpose = message.upgradePurpose;
             if (message.storageSlotsCount != null && message.hasOwnProperty("storageSlotsCount"))
                 if (typeof message.storageSlotsCount === "number")
                     object.storageSlotsCount = options.longs === String ? String(message.storageSlotsCount) : message.storageSlotsCount;
@@ -17931,51 +15202,8 @@ export const transactions = $root.transactions = (() => {
                 object.inputsCount = message.inputsCount;
             if (message.outputsCount != null && message.hasOwnProperty("outputsCount"))
                 object.outputsCount = message.outputsCount;
-            if (message.inputContract != null && message.hasOwnProperty("inputContract"))
-                object.inputContract = $root.inputs.InputContract.toObject(message.inputContract, options);
-            if (message.inputContracts && message.inputContracts.length) {
-                object.inputContracts = [];
-                for (let j = 0; j < message.inputContracts.length; ++j)
-                    object.inputContracts[j] = options.bytes === String ? $util.base64.encode(message.inputContracts[j], 0, message.inputContracts[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.inputContracts[j]) : message.inputContracts[j];
-            }
-            if (message.inputs && message.inputs.length) {
-                object.inputs = [];
-                for (let j = 0; j < message.inputs.length; ++j)
-                    object.inputs[j] = $root.inputs.Input.toObject(message.inputs[j], options);
-            }
-            if (message.outputContract != null && message.hasOwnProperty("outputContract"))
-                object.outputContract = $root.outputs.OutputContract.toObject(message.outputContract, options);
-            if (message.outputs && message.outputs.length) {
-                object.outputs = [];
-                for (let j = 0; j < message.outputs.length; ++j)
-                    object.outputs[j] = $root.outputs.Output.toObject(message.outputs[j], options);
-            }
-            if (message.proofSet && message.proofSet.length) {
-                object.proofSet = [];
-                for (let j = 0; j < message.proofSet.length; ++j)
-                    object.proofSet[j] = options.bytes === String ? $util.base64.encode(message.proofSet[j], 0, message.proofSet[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.proofSet[j]) : message.proofSet[j];
-            }
-            if (message.receipts && message.receipts.length) {
-                object.receipts = [];
-                for (let j = 0; j < message.receipts.length; ++j)
-                    object.receipts[j] = $root.receipts.Receipt.toObject(message.receipts[j], options);
-            }
-            if (message.storageSlots && message.storageSlots.length) {
-                object.storageSlots = [];
-                for (let j = 0; j < message.storageSlots.length; ++j)
-                    object.storageSlots[j] = $root.transactions.StorageSlot.toObject(message.storageSlots[j], options);
-            }
-            if (message.witnesses && message.witnesses.length) {
-                object.witnesses = [];
-                for (let j = 0; j < message.witnesses.length; ++j)
-                    object.witnesses[j] = options.bytes === String ? $util.base64.encode(message.witnesses[j], 0, message.witnesses[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.witnesses[j]) : message.witnesses[j];
-            }
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
-            if (message.pointer != null && message.hasOwnProperty("pointer"))
-                object.pointer = $root.pointers.TransactionPointer.toObject(message.pointer, options);
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.common.Metadata.toObject(message.metadata, options);
             return object;
         };
 
@@ -18018,8 +15246,6 @@ export const transactions = $root.transactions = (() => {
          * @property {Uint8Array|null} [txId] StorageSlot txId
          * @property {Uint8Array|null} [key] StorageSlot key
          * @property {Uint8Array|null} [value] StorageSlot value
-         * @property {google.protobuf.ITimestamp|null} [createdAt] StorageSlot createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] StorageSlot publishedAt
          */
 
         /**
@@ -18070,22 +15296,6 @@ export const transactions = $root.transactions = (() => {
         StorageSlot.prototype.value = $util.newBuffer([]);
 
         /**
-         * StorageSlot createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof transactions.StorageSlot
-         * @instance
-         */
-        StorageSlot.prototype.createdAt = null;
-
-        /**
-         * StorageSlot publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof transactions.StorageSlot
-         * @instance
-         */
-        StorageSlot.prototype.publishedAt = null;
-
-        /**
          * Creates a new StorageSlot instance using the specified properties.
          * @function create
          * @memberof transactions.StorageSlot
@@ -18117,10 +15327,6 @@ export const transactions = $root.transactions = (() => {
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.key);
             if (message.value != null && Object.hasOwnProperty.call(message, "value"))
                 writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.value);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             return writer;
         };
 
@@ -18171,14 +15377,6 @@ export const transactions = $root.transactions = (() => {
                         message.value = reader.bytes();
                         break;
                     }
-                case 5: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 6: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -18226,16 +15424,6 @@ export const transactions = $root.transactions = (() => {
             if (message.value != null && message.hasOwnProperty("value"))
                 if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
                     return "value: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -18268,16 +15456,6 @@ export const transactions = $root.transactions = (() => {
                     $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
                 else if (object.value.length >= 0)
                     message.value = object.value;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".transactions.StorageSlot.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".transactions.StorageSlot.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -18317,8 +15495,6 @@ export const transactions = $root.transactions = (() => {
                     if (options.bytes !== Array)
                         object.value = $util.newBuffer(object.value);
                 }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
@@ -18328,10 +15504,6 @@ export const transactions = $root.transactions = (() => {
                 object.key = options.bytes === String ? $util.base64.encode(message.key, 0, message.key.length) : options.bytes === Array ? Array.prototype.slice.call(message.key) : message.key;
             if (message.value != null && message.hasOwnProperty("value"))
                 object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -18374,8 +15546,6 @@ export const transactions = $root.transactions = (() => {
          * @property {Uint8Array|null} [txId] Witness txId
          * @property {Uint8Array|null} [witnessData] Witness witnessData
          * @property {number|null} [witnessDataLength] Witness witnessDataLength
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Witness createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Witness publishedAt
          */
 
         /**
@@ -18426,22 +15596,6 @@ export const transactions = $root.transactions = (() => {
         Witness.prototype.witnessDataLength = 0;
 
         /**
-         * Witness createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof transactions.Witness
-         * @instance
-         */
-        Witness.prototype.createdAt = null;
-
-        /**
-         * Witness publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof transactions.Witness
-         * @instance
-         */
-        Witness.prototype.publishedAt = null;
-
-        /**
          * Creates a new Witness instance using the specified properties.
          * @function create
          * @memberof transactions.Witness
@@ -18473,10 +15627,6 @@ export const transactions = $root.transactions = (() => {
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.witnessData);
             if (message.witnessDataLength != null && Object.hasOwnProperty.call(message, "witnessDataLength"))
                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.witnessDataLength);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             return writer;
         };
 
@@ -18527,14 +15677,6 @@ export const transactions = $root.transactions = (() => {
                         message.witnessDataLength = reader.int32();
                         break;
                     }
-                case 5: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 6: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -18582,16 +15724,6 @@ export const transactions = $root.transactions = (() => {
             if (message.witnessDataLength != null && message.hasOwnProperty("witnessDataLength"))
                 if (!$util.isInteger(message.witnessDataLength))
                     return "witnessDataLength: integer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -18621,16 +15753,6 @@ export const transactions = $root.transactions = (() => {
                     message.witnessData = object.witnessData;
             if (object.witnessDataLength != null)
                 message.witnessDataLength = object.witnessDataLength | 0;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".transactions.Witness.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".transactions.Witness.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -18664,8 +15786,6 @@ export const transactions = $root.transactions = (() => {
                         object.witnessData = $util.newBuffer(object.witnessData);
                 }
                 object.witnessDataLength = 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
@@ -18675,10 +15795,6 @@ export const transactions = $root.transactions = (() => {
                 object.witnessData = options.bytes === String ? $util.base64.encode(message.witnessData, 0, message.witnessData.length) : options.bytes === Array ? Array.prototype.slice.call(message.witnessData) : message.witnessData;
             if (message.witnessDataLength != null && message.hasOwnProperty("witnessDataLength"))
                 object.witnessDataLength = message.witnessDataLength;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -18720,8 +15836,6 @@ export const transactions = $root.transactions = (() => {
          * @property {string|null} [subject] ProofSet subject
          * @property {Uint8Array|null} [txId] ProofSet txId
          * @property {Uint8Array|null} [proofHash] ProofSet proofHash
-         * @property {google.protobuf.ITimestamp|null} [createdAt] ProofSet createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] ProofSet publishedAt
          */
 
         /**
@@ -18764,22 +15878,6 @@ export const transactions = $root.transactions = (() => {
         ProofSet.prototype.proofHash = $util.newBuffer([]);
 
         /**
-         * ProofSet createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof transactions.ProofSet
-         * @instance
-         */
-        ProofSet.prototype.createdAt = null;
-
-        /**
-         * ProofSet publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof transactions.ProofSet
-         * @instance
-         */
-        ProofSet.prototype.publishedAt = null;
-
-        /**
          * Creates a new ProofSet instance using the specified properties.
          * @function create
          * @memberof transactions.ProofSet
@@ -18809,10 +15907,6 @@ export const transactions = $root.transactions = (() => {
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.txId);
             if (message.proofHash != null && Object.hasOwnProperty.call(message, "proofHash"))
                 writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.proofHash);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             return writer;
         };
 
@@ -18859,14 +15953,6 @@ export const transactions = $root.transactions = (() => {
                         message.proofHash = reader.bytes();
                         break;
                     }
-                case 4: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 5: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -18911,16 +15997,6 @@ export const transactions = $root.transactions = (() => {
             if (message.proofHash != null && message.hasOwnProperty("proofHash"))
                 if (!(message.proofHash && typeof message.proofHash.length === "number" || $util.isString(message.proofHash)))
                     return "proofHash: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -18948,16 +16024,6 @@ export const transactions = $root.transactions = (() => {
                     $util.base64.decode(object.proofHash, message.proofHash = $util.newBuffer($util.base64.length(object.proofHash)), 0);
                 else if (object.proofHash.length >= 0)
                     message.proofHash = object.proofHash;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".transactions.ProofSet.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".transactions.ProofSet.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -18990,8 +16056,6 @@ export const transactions = $root.transactions = (() => {
                     if (options.bytes !== Array)
                         object.proofHash = $util.newBuffer(object.proofHash);
                 }
-                object.createdAt = null;
-                object.publishedAt = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
@@ -18999,10 +16063,6 @@ export const transactions = $root.transactions = (() => {
                 object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
             if (message.proofHash != null && message.hasOwnProperty("proofHash"))
                 object.proofHash = options.bytes === String ? $util.base64.encode(message.proofHash, 0, message.proofHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.proofHash) : message.proofHash;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -19045,8 +16105,6 @@ export const transactions = $root.transactions = (() => {
          * @property {Uint8Array|null} [txId] Policy txId
          * @property {transactions.PolicyType|null} [type] Policy type
          * @property {number|Long|null} [data] Policy data
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Policy createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Policy publishedAt
          */
 
         /**
@@ -19097,22 +16155,6 @@ export const transactions = $root.transactions = (() => {
         Policy.prototype.data = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * Policy createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof transactions.Policy
-         * @instance
-         */
-        Policy.prototype.createdAt = null;
-
-        /**
-         * Policy publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof transactions.Policy
-         * @instance
-         */
-        Policy.prototype.publishedAt = null;
-
-        /**
          * Creates a new Policy instance using the specified properties.
          * @function create
          * @memberof transactions.Policy
@@ -19144,10 +16186,6 @@ export const transactions = $root.transactions = (() => {
                 writer.uint32(/* id 3, wireType 0 =*/24).int32(message.type);
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
                 writer.uint32(/* id 4, wireType 0 =*/32).int64(message.data);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             return writer;
         };
 
@@ -19196,14 +16234,6 @@ export const transactions = $root.transactions = (() => {
                     }
                 case 4: {
                         message.data = reader.int64();
-                        break;
-                    }
-                case 5: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 6: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -19255,21 +16285,12 @@ export const transactions = $root.transactions = (() => {
                 case 1:
                 case 2:
                 case 3:
+                case 4:
                     break;
                 }
             if (message.data != null && message.hasOwnProperty("data"))
                 if (!$util.isInteger(message.data) && !(message.data && $util.isInteger(message.data.low) && $util.isInteger(message.data.high)))
                     return "data: integer|Long expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
-            }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
-            }
             return null;
         };
 
@@ -19299,21 +16320,25 @@ export const transactions = $root.transactions = (() => {
                     break;
                 }
                 break;
-            case "TIP":
+            case "UNKNOWN_POLICY_TYPE":
             case 0:
                 message.type = 0;
                 break;
-            case "WITNESS_LIMIT":
+            case "TIP":
             case 1:
                 message.type = 1;
                 break;
-            case "MATURITY":
+            case "WITNESS_LIMIT":
             case 2:
                 message.type = 2;
                 break;
-            case "MAX_FEE":
+            case "MATURITY":
             case 3:
                 message.type = 3;
+                break;
+            case "MAX_FEE":
+            case 4:
+                message.type = 4;
                 break;
             }
             if (object.data != null)
@@ -19325,16 +16350,6 @@ export const transactions = $root.transactions = (() => {
                     message.data = object.data;
                 else if (typeof object.data === "object")
                     message.data = new $util.LongBits(object.data.low >>> 0, object.data.high >>> 0).toNumber();
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".transactions.Policy.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
-            }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".transactions.Policy.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
-            }
             return message;
         };
 
@@ -19360,14 +16375,12 @@ export const transactions = $root.transactions = (() => {
                     if (options.bytes !== Array)
                         object.txId = $util.newBuffer(object.txId);
                 }
-                object.type = options.enums === String ? "TIP" : 0;
+                object.type = options.enums === String ? "UNKNOWN_POLICY_TYPE" : 0;
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
                     object.data = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.data = options.longs === String ? "0" : 0;
-                object.createdAt = null;
-                object.publishedAt = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
@@ -19380,10 +16393,6 @@ export const transactions = $root.transactions = (() => {
                     object.data = options.longs === String ? String(message.data) : message.data;
                 else
                     object.data = options.longs === String ? $util.Long.prototype.toString.call(message.data) : options.longs === Number ? new $util.LongBits(message.data.low >>> 0, message.data.high >>> 0).toNumber() : message.data;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
             return object;
         };
 
@@ -19429,18 +16438,34 @@ export const utxos = $root.utxos = (() => {
     const utxos = {};
 
     /**
+     * UtxoStatus enum.
+     * @name utxos.UtxoStatus
+     * @enum {number}
+     * @property {number} UNSPENT=0 UNSPENT value
+     * @property {number} SPENT=2 SPENT value
+     */
+    utxos.UtxoStatus = (function() {
+        const valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "UNSPENT"] = 0;
+        values[valuesById[2] = "SPENT"] = 2;
+        return values;
+    })();
+
+    /**
      * UtxoType enum.
      * @name utxos.UtxoType
      * @enum {number}
-     * @property {number} CONTRACT=0 CONTRACT value
-     * @property {number} COIN=1 COIN value
-     * @property {number} MESSAGE=2 MESSAGE value
+     * @property {number} UNKNOWN=0 UNKNOWN value
+     * @property {number} CONTRACT=1 CONTRACT value
+     * @property {number} COIN=2 COIN value
+     * @property {number} MESSAGE=3 MESSAGE value
      */
     utxos.UtxoType = (function() {
         const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "CONTRACT"] = 0;
-        values[valuesById[1] = "COIN"] = 1;
-        values[valuesById[2] = "MESSAGE"] = 2;
+        values[valuesById[0] = "UNKNOWN"] = 0;
+        values[valuesById[1] = "CONTRACT"] = 1;
+        values[valuesById[2] = "COIN"] = 2;
+        values[valuesById[3] = "MESSAGE"] = 3;
         return values;
     })();
 
@@ -19451,21 +16476,13 @@ export const utxos = $root.utxos = (() => {
          * @memberof utxos
          * @interface IUtxo
          * @property {string|null} [subject] Utxo subject
-         * @property {number|Long|null} [blockHeight] Utxo blockHeight
-         * @property {Uint8Array|null} [txId] Utxo txId
-         * @property {number|null} [txIndex] Utxo txIndex
-         * @property {number|null} [inputIndex] Utxo inputIndex
-         * @property {utxos.UtxoType|null} [utxoType] Utxo utxoType
          * @property {Uint8Array|null} [utxoId] Utxo utxoId
-         * @property {Uint8Array|null} [value] Utxo value
-         * @property {Uint8Array|null} [senderAddress] Utxo senderAddress
-         * @property {Uint8Array|null} [recipientAddress] Utxo recipientAddress
-         * @property {Uint8Array|null} [nonce] Utxo nonce
-         * @property {number|Long|null} [amount] Utxo amount
-         * @property {Uint8Array|null} [data] Utxo data
-         * @property {google.protobuf.ITimestamp|null} [createdAt] Utxo createdAt
-         * @property {google.protobuf.ITimestamp|null} [publishedAt] Utxo publishedAt
-         * @property {google.protobuf.ITimestamp|null} [updatedAt] Utxo updatedAt
+         * @property {utxos.UtxoType|null} [type] Utxo type
+         * @property {utxos.UtxoStatus|null} [status] Utxo status
+         * @property {utxos.IUtxoCoin|null} [coin] Utxo coin
+         * @property {utxos.IUtxoContract|null} [contract] Utxo contract
+         * @property {utxos.IUtxoMessage|null} [message] Utxo message
+         * @property {common.IMetadata|null} [metadata] Utxo metadata
          * @property {pointers.IUtxoPointer|null} [pointer] Utxo pointer
          */
 
@@ -19493,46 +16510,6 @@ export const utxos = $root.utxos = (() => {
         Utxo.prototype.subject = "";
 
         /**
-         * Utxo blockHeight.
-         * @member {number|Long} blockHeight
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.blockHeight = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-        /**
-         * Utxo txId.
-         * @member {Uint8Array} txId
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.txId = $util.newBuffer([]);
-
-        /**
-         * Utxo txIndex.
-         * @member {number} txIndex
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.txIndex = 0;
-
-        /**
-         * Utxo inputIndex.
-         * @member {number} inputIndex
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.inputIndex = 0;
-
-        /**
-         * Utxo utxoType.
-         * @member {utxos.UtxoType} utxoType
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.utxoType = 0;
-
-        /**
          * Utxo utxoId.
          * @member {Uint8Array} utxoId
          * @memberof utxos.Utxo
@@ -19541,76 +16518,52 @@ export const utxos = $root.utxos = (() => {
         Utxo.prototype.utxoId = $util.newBuffer([]);
 
         /**
-         * Utxo value.
-         * @member {Uint8Array} value
+         * Utxo type.
+         * @member {utxos.UtxoType} type
          * @memberof utxos.Utxo
          * @instance
          */
-        Utxo.prototype.value = $util.newBuffer([]);
+        Utxo.prototype.type = 0;
 
         /**
-         * Utxo senderAddress.
-         * @member {Uint8Array} senderAddress
+         * Utxo status.
+         * @member {utxos.UtxoStatus} status
          * @memberof utxos.Utxo
          * @instance
          */
-        Utxo.prototype.senderAddress = $util.newBuffer([]);
+        Utxo.prototype.status = 0;
 
         /**
-         * Utxo recipientAddress.
-         * @member {Uint8Array} recipientAddress
+         * Utxo coin.
+         * @member {utxos.IUtxoCoin|null|undefined} coin
          * @memberof utxos.Utxo
          * @instance
          */
-        Utxo.prototype.recipientAddress = $util.newBuffer([]);
+        Utxo.prototype.coin = null;
 
         /**
-         * Utxo nonce.
-         * @member {Uint8Array} nonce
+         * Utxo contract.
+         * @member {utxos.IUtxoContract|null|undefined} contract
          * @memberof utxos.Utxo
          * @instance
          */
-        Utxo.prototype.nonce = $util.newBuffer([]);
+        Utxo.prototype.contract = null;
 
         /**
-         * Utxo amount.
-         * @member {number|Long} amount
+         * Utxo message.
+         * @member {utxos.IUtxoMessage|null|undefined} message
          * @memberof utxos.Utxo
          * @instance
          */
-        Utxo.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        Utxo.prototype.message = null;
 
         /**
-         * Utxo data.
-         * @member {Uint8Array} data
+         * Utxo metadata.
+         * @member {common.IMetadata|null|undefined} metadata
          * @memberof utxos.Utxo
          * @instance
          */
-        Utxo.prototype.data = $util.newBuffer([]);
-
-        /**
-         * Utxo createdAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} createdAt
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.createdAt = null;
-
-        /**
-         * Utxo publishedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} publishedAt
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.publishedAt = null;
-
-        /**
-         * Utxo updatedAt.
-         * @member {google.protobuf.ITimestamp|null|undefined} updatedAt
-         * @memberof utxos.Utxo
-         * @instance
-         */
-        Utxo.prototype.updatedAt = null;
+        Utxo.prototype.metadata = null;
 
         /**
          * Utxo pointer.
@@ -19619,6 +16572,20 @@ export const utxos = $root.utxos = (() => {
          * @instance
          */
         Utxo.prototype.pointer = null;
+
+        // OneOf field names bound to virtual getters and setters
+        let $oneOfFields;
+
+        /**
+         * Utxo utxoData.
+         * @member {"coin"|"contract"|"message"|undefined} utxoData
+         * @memberof utxos.Utxo
+         * @instance
+         */
+        Object.defineProperty(Utxo.prototype, "utxoData", {
+            get: $util.oneOfGetter($oneOfFields = ["coin", "contract", "message"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
 
         /**
          * Creates a new Utxo instance using the specified properties.
@@ -19646,38 +16613,22 @@ export const utxos = $root.utxos = (() => {
                 writer = $Writer.create();
             if (message.subject != null && Object.hasOwnProperty.call(message, "subject"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.subject);
-            if (message.blockHeight != null && Object.hasOwnProperty.call(message, "blockHeight"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.blockHeight);
-            if (message.txId != null && Object.hasOwnProperty.call(message, "txId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.txId);
-            if (message.txIndex != null && Object.hasOwnProperty.call(message, "txIndex"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.txIndex);
-            if (message.inputIndex != null && Object.hasOwnProperty.call(message, "inputIndex"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.inputIndex);
-            if (message.utxoType != null && Object.hasOwnProperty.call(message, "utxoType"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.utxoType);
             if (message.utxoId != null && Object.hasOwnProperty.call(message, "utxoId"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.utxoId);
-            if (message.value != null && Object.hasOwnProperty.call(message, "value"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.value);
-            if (message.senderAddress != null && Object.hasOwnProperty.call(message, "senderAddress"))
-                writer.uint32(/* id 9, wireType 2 =*/74).bytes(message.senderAddress);
-            if (message.recipientAddress != null && Object.hasOwnProperty.call(message, "recipientAddress"))
-                writer.uint32(/* id 10, wireType 2 =*/82).bytes(message.recipientAddress);
-            if (message.nonce != null && Object.hasOwnProperty.call(message, "nonce"))
-                writer.uint32(/* id 11, wireType 2 =*/90).bytes(message.nonce);
-            if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
-                writer.uint32(/* id 12, wireType 0 =*/96).int64(message.amount);
-            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 13, wireType 2 =*/106).bytes(message.data);
-            if (message.createdAt != null && Object.hasOwnProperty.call(message, "createdAt"))
-                $root.google.protobuf.Timestamp.encode(message.createdAt, writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
-            if (message.publishedAt != null && Object.hasOwnProperty.call(message, "publishedAt"))
-                $root.google.protobuf.Timestamp.encode(message.publishedAt, writer.uint32(/* id 15, wireType 2 =*/122).fork()).ldelim();
-            if (message.updatedAt != null && Object.hasOwnProperty.call(message, "updatedAt"))
-                $root.google.protobuf.Timestamp.encode(message.updatedAt, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.utxoId);
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.type);
+            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.status);
+            if (message.coin != null && Object.hasOwnProperty.call(message, "coin"))
+                $root.utxos.UtxoCoin.encode(message.coin, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.contract != null && Object.hasOwnProperty.call(message, "contract"))
+                $root.utxos.UtxoContract.encode(message.contract, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+            if (message.message != null && Object.hasOwnProperty.call(message, "message"))
+                $root.utxos.UtxoMessage.encode(message.message, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            if (message.metadata != null && Object.hasOwnProperty.call(message, "metadata"))
+                $root.common.Metadata.encode(message.metadata, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             if (message.pointer != null && Object.hasOwnProperty.call(message, "pointer"))
-                $root.pointers.UtxoPointer.encode(message.pointer, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
+                $root.pointers.UtxoPointer.encode(message.pointer, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
             return writer;
         };
 
@@ -19717,66 +16668,34 @@ export const utxos = $root.utxos = (() => {
                         break;
                     }
                 case 2: {
-                        message.blockHeight = reader.int64();
-                        break;
-                    }
-                case 3: {
-                        message.txId = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.txIndex = reader.int32();
-                        break;
-                    }
-                case 5: {
-                        message.inputIndex = reader.int32();
-                        break;
-                    }
-                case 6: {
-                        message.utxoType = reader.int32();
-                        break;
-                    }
-                case 7: {
                         message.utxoId = reader.bytes();
                         break;
                     }
+                case 3: {
+                        message.type = reader.int32();
+                        break;
+                    }
+                case 4: {
+                        message.status = reader.int32();
+                        break;
+                    }
+                case 5: {
+                        message.coin = $root.utxos.UtxoCoin.decode(reader, reader.uint32());
+                        break;
+                    }
+                case 6: {
+                        message.contract = $root.utxos.UtxoContract.decode(reader, reader.uint32());
+                        break;
+                    }
+                case 7: {
+                        message.message = $root.utxos.UtxoMessage.decode(reader, reader.uint32());
+                        break;
+                    }
                 case 8: {
-                        message.value = reader.bytes();
+                        message.metadata = $root.common.Metadata.decode(reader, reader.uint32());
                         break;
                     }
                 case 9: {
-                        message.senderAddress = reader.bytes();
-                        break;
-                    }
-                case 10: {
-                        message.recipientAddress = reader.bytes();
-                        break;
-                    }
-                case 11: {
-                        message.nonce = reader.bytes();
-                        break;
-                    }
-                case 12: {
-                        message.amount = reader.int64();
-                        break;
-                    }
-                case 13: {
-                        message.data = reader.bytes();
-                        break;
-                    }
-                case 14: {
-                        message.createdAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 15: {
-                        message.publishedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 16: {
-                        message.updatedAt = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                        break;
-                    }
-                case 17: {
                         message.pointer = $root.pointers.UtxoPointer.decode(reader, reader.uint32());
                         break;
                     }
@@ -19815,65 +16734,63 @@ export const utxos = $root.utxos = (() => {
         Utxo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            let properties = {};
             if (message.subject != null && message.hasOwnProperty("subject"))
                 if (!$util.isString(message.subject))
                     return "subject: string expected";
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (!$util.isInteger(message.blockHeight) && !(message.blockHeight && $util.isInteger(message.blockHeight.low) && $util.isInteger(message.blockHeight.high)))
-                    return "blockHeight: integer|Long expected";
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                if (!(message.txId && typeof message.txId.length === "number" || $util.isString(message.txId)))
-                    return "txId: buffer expected";
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                if (!$util.isInteger(message.txIndex))
-                    return "txIndex: integer expected";
-            if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
-                if (!$util.isInteger(message.inputIndex))
-                    return "inputIndex: integer expected";
-            if (message.utxoType != null && message.hasOwnProperty("utxoType"))
-                switch (message.utxoType) {
-                default:
-                    return "utxoType: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                    break;
-                }
             if (message.utxoId != null && message.hasOwnProperty("utxoId"))
                 if (!(message.utxoId && typeof message.utxoId.length === "number" || $util.isString(message.utxoId)))
                     return "utxoId: buffer expected";
-            if (message.value != null && message.hasOwnProperty("value"))
-                if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
-                    return "value: buffer expected";
-            if (message.senderAddress != null && message.hasOwnProperty("senderAddress"))
-                if (!(message.senderAddress && typeof message.senderAddress.length === "number" || $util.isString(message.senderAddress)))
-                    return "senderAddress: buffer expected";
-            if (message.recipientAddress != null && message.hasOwnProperty("recipientAddress"))
-                if (!(message.recipientAddress && typeof message.recipientAddress.length === "number" || $util.isString(message.recipientAddress)))
-                    return "recipientAddress: buffer expected";
-            if (message.nonce != null && message.hasOwnProperty("nonce"))
-                if (!(message.nonce && typeof message.nonce.length === "number" || $util.isString(message.nonce)))
-                    return "nonce: buffer expected";
-            if (message.amount != null && message.hasOwnProperty("amount"))
-                if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
-                    return "amount: integer|Long expected";
-            if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            if (message.createdAt != null && message.hasOwnProperty("createdAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.createdAt);
-                if (error)
-                    return "createdAt." + error;
+            if (message.type != null && message.hasOwnProperty("type"))
+                switch (message.type) {
+                default:
+                    return "type: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    break;
+                }
+            if (message.status != null && message.hasOwnProperty("status"))
+                switch (message.status) {
+                default:
+                    return "status: enum value expected";
+                case 0:
+                case 2:
+                    break;
+                }
+            if (message.coin != null && message.hasOwnProperty("coin")) {
+                properties.utxoData = 1;
+                {
+                    let error = $root.utxos.UtxoCoin.verify(message.coin);
+                    if (error)
+                        return "coin." + error;
+                }
             }
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.publishedAt);
-                if (error)
-                    return "publishedAt." + error;
+            if (message.contract != null && message.hasOwnProperty("contract")) {
+                if (properties.utxoData === 1)
+                    return "utxoData: multiple values";
+                properties.utxoData = 1;
+                {
+                    let error = $root.utxos.UtxoContract.verify(message.contract);
+                    if (error)
+                        return "contract." + error;
+                }
             }
-            if (message.updatedAt != null && message.hasOwnProperty("updatedAt")) {
-                let error = $root.google.protobuf.Timestamp.verify(message.updatedAt);
+            if (message.message != null && message.hasOwnProperty("message")) {
+                if (properties.utxoData === 1)
+                    return "utxoData: multiple values";
+                properties.utxoData = 1;
+                {
+                    let error = $root.utxos.UtxoMessage.verify(message.message);
+                    if (error)
+                        return "message." + error;
+                }
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata")) {
+                let error = $root.common.Metadata.verify(message.metadata);
                 if (error)
-                    return "updatedAt." + error;
+                    return "metadata." + error;
             }
             if (message.pointer != null && message.hasOwnProperty("pointer")) {
                 let error = $root.pointers.UtxoPointer.verify(message.pointer);
@@ -19897,97 +16814,70 @@ export const utxos = $root.utxos = (() => {
             let message = new $root.utxos.Utxo();
             if (object.subject != null)
                 message.subject = String(object.subject);
-            if (object.blockHeight != null)
-                if ($util.Long)
-                    (message.blockHeight = $util.Long.fromValue(object.blockHeight)).unsigned = false;
-                else if (typeof object.blockHeight === "string")
-                    message.blockHeight = parseInt(object.blockHeight, 10);
-                else if (typeof object.blockHeight === "number")
-                    message.blockHeight = object.blockHeight;
-                else if (typeof object.blockHeight === "object")
-                    message.blockHeight = new $util.LongBits(object.blockHeight.low >>> 0, object.blockHeight.high >>> 0).toNumber();
-            if (object.txId != null)
-                if (typeof object.txId === "string")
-                    $util.base64.decode(object.txId, message.txId = $util.newBuffer($util.base64.length(object.txId)), 0);
-                else if (object.txId.length >= 0)
-                    message.txId = object.txId;
-            if (object.txIndex != null)
-                message.txIndex = object.txIndex | 0;
-            if (object.inputIndex != null)
-                message.inputIndex = object.inputIndex | 0;
-            switch (object.utxoType) {
-            default:
-                if (typeof object.utxoType === "number") {
-                    message.utxoType = object.utxoType;
-                    break;
-                }
-                break;
-            case "CONTRACT":
-            case 0:
-                message.utxoType = 0;
-                break;
-            case "COIN":
-            case 1:
-                message.utxoType = 1;
-                break;
-            case "MESSAGE":
-            case 2:
-                message.utxoType = 2;
-                break;
-            }
             if (object.utxoId != null)
                 if (typeof object.utxoId === "string")
                     $util.base64.decode(object.utxoId, message.utxoId = $util.newBuffer($util.base64.length(object.utxoId)), 0);
                 else if (object.utxoId.length >= 0)
                     message.utxoId = object.utxoId;
-            if (object.value != null)
-                if (typeof object.value === "string")
-                    $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
-                else if (object.value.length >= 0)
-                    message.value = object.value;
-            if (object.senderAddress != null)
-                if (typeof object.senderAddress === "string")
-                    $util.base64.decode(object.senderAddress, message.senderAddress = $util.newBuffer($util.base64.length(object.senderAddress)), 0);
-                else if (object.senderAddress.length >= 0)
-                    message.senderAddress = object.senderAddress;
-            if (object.recipientAddress != null)
-                if (typeof object.recipientAddress === "string")
-                    $util.base64.decode(object.recipientAddress, message.recipientAddress = $util.newBuffer($util.base64.length(object.recipientAddress)), 0);
-                else if (object.recipientAddress.length >= 0)
-                    message.recipientAddress = object.recipientAddress;
-            if (object.nonce != null)
-                if (typeof object.nonce === "string")
-                    $util.base64.decode(object.nonce, message.nonce = $util.newBuffer($util.base64.length(object.nonce)), 0);
-                else if (object.nonce.length >= 0)
-                    message.nonce = object.nonce;
-            if (object.amount != null)
-                if ($util.Long)
-                    (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
-                else if (typeof object.amount === "string")
-                    message.amount = parseInt(object.amount, 10);
-                else if (typeof object.amount === "number")
-                    message.amount = object.amount;
-                else if (typeof object.amount === "object")
-                    message.amount = new $util.LongBits(object.amount.low >>> 0, object.amount.high >>> 0).toNumber();
-            if (object.data != null)
-                if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
-            if (object.createdAt != null) {
-                if (typeof object.createdAt !== "object")
-                    throw TypeError(".utxos.Utxo.createdAt: object expected");
-                message.createdAt = $root.google.protobuf.Timestamp.fromObject(object.createdAt);
+            switch (object.type) {
+            default:
+                if (typeof object.type === "number") {
+                    message.type = object.type;
+                    break;
+                }
+                break;
+            case "UNKNOWN":
+            case 0:
+                message.type = 0;
+                break;
+            case "CONTRACT":
+            case 1:
+                message.type = 1;
+                break;
+            case "COIN":
+            case 2:
+                message.type = 2;
+                break;
+            case "MESSAGE":
+            case 3:
+                message.type = 3;
+                break;
             }
-            if (object.publishedAt != null) {
-                if (typeof object.publishedAt !== "object")
-                    throw TypeError(".utxos.Utxo.publishedAt: object expected");
-                message.publishedAt = $root.google.protobuf.Timestamp.fromObject(object.publishedAt);
+            switch (object.status) {
+            default:
+                if (typeof object.status === "number") {
+                    message.status = object.status;
+                    break;
+                }
+                break;
+            case "UNSPENT":
+            case 0:
+                message.status = 0;
+                break;
+            case "SPENT":
+            case 2:
+                message.status = 2;
+                break;
             }
-            if (object.updatedAt != null) {
-                if (typeof object.updatedAt !== "object")
-                    throw TypeError(".utxos.Utxo.updatedAt: object expected");
-                message.updatedAt = $root.google.protobuf.Timestamp.fromObject(object.updatedAt);
+            if (object.coin != null) {
+                if (typeof object.coin !== "object")
+                    throw TypeError(".utxos.Utxo.coin: object expected");
+                message.coin = $root.utxos.UtxoCoin.fromObject(object.coin);
+            }
+            if (object.contract != null) {
+                if (typeof object.contract !== "object")
+                    throw TypeError(".utxos.Utxo.contract: object expected");
+                message.contract = $root.utxos.UtxoContract.fromObject(object.contract);
+            }
+            if (object.message != null) {
+                if (typeof object.message !== "object")
+                    throw TypeError(".utxos.Utxo.message: object expected");
+                message.message = $root.utxos.UtxoMessage.fromObject(object.message);
+            }
+            if (object.metadata != null) {
+                if (typeof object.metadata !== "object")
+                    throw TypeError(".utxos.Utxo.metadata: object expected");
+                message.metadata = $root.common.Metadata.fromObject(object.metadata);
             }
             if (object.pointer != null) {
                 if (typeof object.pointer !== "object")
@@ -20012,21 +16902,6 @@ export const utxos = $root.utxos = (() => {
             let object = {};
             if (options.defaults) {
                 object.subject = "";
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.blockHeight = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.blockHeight = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.txId = "";
-                else {
-                    object.txId = [];
-                    if (options.bytes !== Array)
-                        object.txId = $util.newBuffer(object.txId);
-                }
-                object.txIndex = 0;
-                object.inputIndex = 0;
-                object.utxoType = options.enums === String ? "CONTRACT" : 0;
                 if (options.bytes === String)
                     object.utxoId = "";
                 else {
@@ -20034,89 +16909,36 @@ export const utxos = $root.utxos = (() => {
                     if (options.bytes !== Array)
                         object.utxoId = $util.newBuffer(object.utxoId);
                 }
-                if (options.bytes === String)
-                    object.value = "";
-                else {
-                    object.value = [];
-                    if (options.bytes !== Array)
-                        object.value = $util.newBuffer(object.value);
-                }
-                if (options.bytes === String)
-                    object.senderAddress = "";
-                else {
-                    object.senderAddress = [];
-                    if (options.bytes !== Array)
-                        object.senderAddress = $util.newBuffer(object.senderAddress);
-                }
-                if (options.bytes === String)
-                    object.recipientAddress = "";
-                else {
-                    object.recipientAddress = [];
-                    if (options.bytes !== Array)
-                        object.recipientAddress = $util.newBuffer(object.recipientAddress);
-                }
-                if (options.bytes === String)
-                    object.nonce = "";
-                else {
-                    object.nonce = [];
-                    if (options.bytes !== Array)
-                        object.nonce = $util.newBuffer(object.nonce);
-                }
-                if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
-                    object.amount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                } else
-                    object.amount = options.longs === String ? "0" : 0;
-                if (options.bytes === String)
-                    object.data = "";
-                else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
-                }
-                object.createdAt = null;
-                object.publishedAt = null;
-                object.updatedAt = null;
+                object.type = options.enums === String ? "UNKNOWN" : 0;
+                object.status = options.enums === String ? "UNSPENT" : 0;
+                object.metadata = null;
                 object.pointer = null;
             }
             if (message.subject != null && message.hasOwnProperty("subject"))
                 object.subject = message.subject;
-            if (message.blockHeight != null && message.hasOwnProperty("blockHeight"))
-                if (typeof message.blockHeight === "number")
-                    object.blockHeight = options.longs === String ? String(message.blockHeight) : message.blockHeight;
-                else
-                    object.blockHeight = options.longs === String ? $util.Long.prototype.toString.call(message.blockHeight) : options.longs === Number ? new $util.LongBits(message.blockHeight.low >>> 0, message.blockHeight.high >>> 0).toNumber() : message.blockHeight;
-            if (message.txId != null && message.hasOwnProperty("txId"))
-                object.txId = options.bytes === String ? $util.base64.encode(message.txId, 0, message.txId.length) : options.bytes === Array ? Array.prototype.slice.call(message.txId) : message.txId;
-            if (message.txIndex != null && message.hasOwnProperty("txIndex"))
-                object.txIndex = message.txIndex;
-            if (message.inputIndex != null && message.hasOwnProperty("inputIndex"))
-                object.inputIndex = message.inputIndex;
-            if (message.utxoType != null && message.hasOwnProperty("utxoType"))
-                object.utxoType = options.enums === String ? $root.utxos.UtxoType[message.utxoType] === undefined ? message.utxoType : $root.utxos.UtxoType[message.utxoType] : message.utxoType;
             if (message.utxoId != null && message.hasOwnProperty("utxoId"))
                 object.utxoId = options.bytes === String ? $util.base64.encode(message.utxoId, 0, message.utxoId.length) : options.bytes === Array ? Array.prototype.slice.call(message.utxoId) : message.utxoId;
-            if (message.value != null && message.hasOwnProperty("value"))
-                object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
-            if (message.senderAddress != null && message.hasOwnProperty("senderAddress"))
-                object.senderAddress = options.bytes === String ? $util.base64.encode(message.senderAddress, 0, message.senderAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.senderAddress) : message.senderAddress;
-            if (message.recipientAddress != null && message.hasOwnProperty("recipientAddress"))
-                object.recipientAddress = options.bytes === String ? $util.base64.encode(message.recipientAddress, 0, message.recipientAddress.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipientAddress) : message.recipientAddress;
-            if (message.nonce != null && message.hasOwnProperty("nonce"))
-                object.nonce = options.bytes === String ? $util.base64.encode(message.nonce, 0, message.nonce.length) : options.bytes === Array ? Array.prototype.slice.call(message.nonce) : message.nonce;
-            if (message.amount != null && message.hasOwnProperty("amount"))
-                if (typeof message.amount === "number")
-                    object.amount = options.longs === String ? String(message.amount) : message.amount;
-                else
-                    object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
-            if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            if (message.createdAt != null && message.hasOwnProperty("createdAt"))
-                object.createdAt = $root.google.protobuf.Timestamp.toObject(message.createdAt, options);
-            if (message.publishedAt != null && message.hasOwnProperty("publishedAt"))
-                object.publishedAt = $root.google.protobuf.Timestamp.toObject(message.publishedAt, options);
-            if (message.updatedAt != null && message.hasOwnProperty("updatedAt"))
-                object.updatedAt = $root.google.protobuf.Timestamp.toObject(message.updatedAt, options);
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = options.enums === String ? $root.utxos.UtxoType[message.type] === undefined ? message.type : $root.utxos.UtxoType[message.type] : message.type;
+            if (message.status != null && message.hasOwnProperty("status"))
+                object.status = options.enums === String ? $root.utxos.UtxoStatus[message.status] === undefined ? message.status : $root.utxos.UtxoStatus[message.status] : message.status;
+            if (message.coin != null && message.hasOwnProperty("coin")) {
+                object.coin = $root.utxos.UtxoCoin.toObject(message.coin, options);
+                if (options.oneofs)
+                    object.utxoData = "coin";
+            }
+            if (message.contract != null && message.hasOwnProperty("contract")) {
+                object.contract = $root.utxos.UtxoContract.toObject(message.contract, options);
+                if (options.oneofs)
+                    object.utxoData = "contract";
+            }
+            if (message.message != null && message.hasOwnProperty("message")) {
+                object.message = $root.utxos.UtxoMessage.toObject(message.message, options);
+                if (options.oneofs)
+                    object.utxoData = "message";
+            }
+            if (message.metadata != null && message.hasOwnProperty("metadata"))
+                object.metadata = $root.common.Metadata.toObject(message.metadata, options);
             if (message.pointer != null && message.hasOwnProperty("pointer"))
                 object.pointer = $root.pointers.UtxoPointer.toObject(message.pointer, options);
             return object;
@@ -20149,6 +16971,777 @@ export const utxos = $root.utxos = (() => {
         };
 
         return Utxo;
+    })();
+
+    utxos.UtxoCoin = (function() {
+
+        /**
+         * Properties of an UtxoCoin.
+         * @memberof utxos
+         * @interface IUtxoCoin
+         * @property {number|Long|null} [amount] UtxoCoin amount
+         */
+
+        /**
+         * Constructs a new UtxoCoin.
+         * @memberof utxos
+         * @classdesc Represents an UtxoCoin.
+         * @implements IUtxoCoin
+         * @constructor
+         * @param {utxos.IUtxoCoin=} [properties] Properties to set
+         */
+        function UtxoCoin(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UtxoCoin amount.
+         * @member {number|Long} amount
+         * @memberof utxos.UtxoCoin
+         * @instance
+         */
+        UtxoCoin.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Creates a new UtxoCoin instance using the specified properties.
+         * @function create
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {utxos.IUtxoCoin=} [properties] Properties to set
+         * @returns {utxos.UtxoCoin} UtxoCoin instance
+         */
+        UtxoCoin.create = function create(properties) {
+            return new UtxoCoin(properties);
+        };
+
+        /**
+         * Encodes the specified UtxoCoin message. Does not implicitly {@link utxos.UtxoCoin.verify|verify} messages.
+         * @function encode
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {utxos.IUtxoCoin} message UtxoCoin message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UtxoCoin.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.amount != null && Object.hasOwnProperty.call(message, "amount"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.amount);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UtxoCoin message, length delimited. Does not implicitly {@link utxos.UtxoCoin.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {utxos.IUtxoCoin} message UtxoCoin message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UtxoCoin.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UtxoCoin message from the specified reader or buffer.
+         * @function decode
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {utxos.UtxoCoin} UtxoCoin
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UtxoCoin.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.utxos.UtxoCoin();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.amount = reader.int64();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UtxoCoin message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {utxos.UtxoCoin} UtxoCoin
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UtxoCoin.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UtxoCoin message.
+         * @function verify
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UtxoCoin.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                if (!$util.isInteger(message.amount) && !(message.amount && $util.isInteger(message.amount.low) && $util.isInteger(message.amount.high)))
+                    return "amount: integer|Long expected";
+            return null;
+        };
+
+        /**
+         * Creates an UtxoCoin message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {utxos.UtxoCoin} UtxoCoin
+         */
+        UtxoCoin.fromObject = function fromObject(object) {
+            if (object instanceof $root.utxos.UtxoCoin)
+                return object;
+            let message = new $root.utxos.UtxoCoin();
+            if (object.amount != null)
+                if ($util.Long)
+                    (message.amount = $util.Long.fromValue(object.amount)).unsigned = false;
+                else if (typeof object.amount === "string")
+                    message.amount = parseInt(object.amount, 10);
+                else if (typeof object.amount === "number")
+                    message.amount = object.amount;
+                else if (typeof object.amount === "object")
+                    message.amount = new $util.LongBits(object.amount.low >>> 0, object.amount.high >>> 0).toNumber();
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UtxoCoin message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {utxos.UtxoCoin} message UtxoCoin
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UtxoCoin.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, false);
+                    object.amount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.amount = options.longs === String ? "0" : 0;
+            if (message.amount != null && message.hasOwnProperty("amount"))
+                if (typeof message.amount === "number")
+                    object.amount = options.longs === String ? String(message.amount) : message.amount;
+                else
+                    object.amount = options.longs === String ? $util.Long.prototype.toString.call(message.amount) : options.longs === Number ? new $util.LongBits(message.amount.low >>> 0, message.amount.high >>> 0).toNumber() : message.amount;
+            return object;
+        };
+
+        /**
+         * Converts this UtxoCoin to JSON.
+         * @function toJSON
+         * @memberof utxos.UtxoCoin
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UtxoCoin.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for UtxoCoin
+         * @function getTypeUrl
+         * @memberof utxos.UtxoCoin
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        UtxoCoin.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/utxos.UtxoCoin";
+        };
+
+        return UtxoCoin;
+    })();
+
+    utxos.UtxoContract = (function() {
+
+        /**
+         * Properties of an UtxoContract.
+         * @memberof utxos
+         * @interface IUtxoContract
+         * @property {Uint8Array|null} [contractId] UtxoContract contractId
+         * @property {Uint8Array|null} [value] UtxoContract value
+         */
+
+        /**
+         * Constructs a new UtxoContract.
+         * @memberof utxos
+         * @classdesc Represents an UtxoContract.
+         * @implements IUtxoContract
+         * @constructor
+         * @param {utxos.IUtxoContract=} [properties] Properties to set
+         */
+        function UtxoContract(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UtxoContract contractId.
+         * @member {Uint8Array} contractId
+         * @memberof utxos.UtxoContract
+         * @instance
+         */
+        UtxoContract.prototype.contractId = $util.newBuffer([]);
+
+        /**
+         * UtxoContract value.
+         * @member {Uint8Array} value
+         * @memberof utxos.UtxoContract
+         * @instance
+         */
+        UtxoContract.prototype.value = $util.newBuffer([]);
+
+        /**
+         * Creates a new UtxoContract instance using the specified properties.
+         * @function create
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {utxos.IUtxoContract=} [properties] Properties to set
+         * @returns {utxos.UtxoContract} UtxoContract instance
+         */
+        UtxoContract.create = function create(properties) {
+            return new UtxoContract(properties);
+        };
+
+        /**
+         * Encodes the specified UtxoContract message. Does not implicitly {@link utxos.UtxoContract.verify|verify} messages.
+         * @function encode
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {utxos.IUtxoContract} message UtxoContract message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UtxoContract.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.contractId != null && Object.hasOwnProperty.call(message, "contractId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.contractId);
+            if (message.value != null && Object.hasOwnProperty.call(message, "value"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.value);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UtxoContract message, length delimited. Does not implicitly {@link utxos.UtxoContract.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {utxos.IUtxoContract} message UtxoContract message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UtxoContract.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UtxoContract message from the specified reader or buffer.
+         * @function decode
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {utxos.UtxoContract} UtxoContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UtxoContract.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.utxos.UtxoContract();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.contractId = reader.bytes();
+                        break;
+                    }
+                case 2: {
+                        message.value = reader.bytes();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UtxoContract message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {utxos.UtxoContract} UtxoContract
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UtxoContract.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UtxoContract message.
+         * @function verify
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UtxoContract.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.contractId != null && message.hasOwnProperty("contractId"))
+                if (!(message.contractId && typeof message.contractId.length === "number" || $util.isString(message.contractId)))
+                    return "contractId: buffer expected";
+            if (message.value != null && message.hasOwnProperty("value"))
+                if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
+                    return "value: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates an UtxoContract message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {utxos.UtxoContract} UtxoContract
+         */
+        UtxoContract.fromObject = function fromObject(object) {
+            if (object instanceof $root.utxos.UtxoContract)
+                return object;
+            let message = new $root.utxos.UtxoContract();
+            if (object.contractId != null)
+                if (typeof object.contractId === "string")
+                    $util.base64.decode(object.contractId, message.contractId = $util.newBuffer($util.base64.length(object.contractId)), 0);
+                else if (object.contractId.length >= 0)
+                    message.contractId = object.contractId;
+            if (object.value != null)
+                if (typeof object.value === "string")
+                    $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
+                else if (object.value.length >= 0)
+                    message.value = object.value;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UtxoContract message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {utxos.UtxoContract} message UtxoContract
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UtxoContract.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.contractId = "";
+                else {
+                    object.contractId = [];
+                    if (options.bytes !== Array)
+                        object.contractId = $util.newBuffer(object.contractId);
+                }
+                if (options.bytes === String)
+                    object.value = "";
+                else {
+                    object.value = [];
+                    if (options.bytes !== Array)
+                        object.value = $util.newBuffer(object.value);
+                }
+            }
+            if (message.contractId != null && message.hasOwnProperty("contractId"))
+                object.contractId = options.bytes === String ? $util.base64.encode(message.contractId, 0, message.contractId.length) : options.bytes === Array ? Array.prototype.slice.call(message.contractId) : message.contractId;
+            if (message.value != null && message.hasOwnProperty("value"))
+                object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
+            return object;
+        };
+
+        /**
+         * Converts this UtxoContract to JSON.
+         * @function toJSON
+         * @memberof utxos.UtxoContract
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UtxoContract.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for UtxoContract
+         * @function getTypeUrl
+         * @memberof utxos.UtxoContract
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        UtxoContract.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/utxos.UtxoContract";
+        };
+
+        return UtxoContract;
+    })();
+
+    utxos.UtxoMessage = (function() {
+
+        /**
+         * Properties of an UtxoMessage.
+         * @memberof utxos
+         * @interface IUtxoMessage
+         * @property {Uint8Array|null} [sender] UtxoMessage sender
+         * @property {Uint8Array|null} [recipient] UtxoMessage recipient
+         * @property {Uint8Array|null} [nonce] UtxoMessage nonce
+         * @property {Uint8Array|null} [data] UtxoMessage data
+         */
+
+        /**
+         * Constructs a new UtxoMessage.
+         * @memberof utxos
+         * @classdesc Represents an UtxoMessage.
+         * @implements IUtxoMessage
+         * @constructor
+         * @param {utxos.IUtxoMessage=} [properties] Properties to set
+         */
+        function UtxoMessage(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UtxoMessage sender.
+         * @member {Uint8Array} sender
+         * @memberof utxos.UtxoMessage
+         * @instance
+         */
+        UtxoMessage.prototype.sender = $util.newBuffer([]);
+
+        /**
+         * UtxoMessage recipient.
+         * @member {Uint8Array} recipient
+         * @memberof utxos.UtxoMessage
+         * @instance
+         */
+        UtxoMessage.prototype.recipient = $util.newBuffer([]);
+
+        /**
+         * UtxoMessage nonce.
+         * @member {Uint8Array} nonce
+         * @memberof utxos.UtxoMessage
+         * @instance
+         */
+        UtxoMessage.prototype.nonce = $util.newBuffer([]);
+
+        /**
+         * UtxoMessage data.
+         * @member {Uint8Array} data
+         * @memberof utxos.UtxoMessage
+         * @instance
+         */
+        UtxoMessage.prototype.data = $util.newBuffer([]);
+
+        /**
+         * Creates a new UtxoMessage instance using the specified properties.
+         * @function create
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {utxos.IUtxoMessage=} [properties] Properties to set
+         * @returns {utxos.UtxoMessage} UtxoMessage instance
+         */
+        UtxoMessage.create = function create(properties) {
+            return new UtxoMessage(properties);
+        };
+
+        /**
+         * Encodes the specified UtxoMessage message. Does not implicitly {@link utxos.UtxoMessage.verify|verify} messages.
+         * @function encode
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {utxos.IUtxoMessage} message UtxoMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UtxoMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.sender != null && Object.hasOwnProperty.call(message, "sender"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.sender);
+            if (message.recipient != null && Object.hasOwnProperty.call(message, "recipient"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.recipient);
+            if (message.nonce != null && Object.hasOwnProperty.call(message, "nonce"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.nonce);
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.data);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UtxoMessage message, length delimited. Does not implicitly {@link utxos.UtxoMessage.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {utxos.IUtxoMessage} message UtxoMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UtxoMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UtxoMessage message from the specified reader or buffer.
+         * @function decode
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {utxos.UtxoMessage} UtxoMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UtxoMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.utxos.UtxoMessage();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.sender = reader.bytes();
+                        break;
+                    }
+                case 2: {
+                        message.recipient = reader.bytes();
+                        break;
+                    }
+                case 3: {
+                        message.nonce = reader.bytes();
+                        break;
+                    }
+                case 4: {
+                        message.data = reader.bytes();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UtxoMessage message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {utxos.UtxoMessage} UtxoMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UtxoMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UtxoMessage message.
+         * @function verify
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UtxoMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.sender != null && message.hasOwnProperty("sender"))
+                if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
+                    return "sender: buffer expected";
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                if (!(message.recipient && typeof message.recipient.length === "number" || $util.isString(message.recipient)))
+                    return "recipient: buffer expected";
+            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                if (!(message.nonce && typeof message.nonce.length === "number" || $util.isString(message.nonce)))
+                    return "nonce: buffer expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates an UtxoMessage message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {utxos.UtxoMessage} UtxoMessage
+         */
+        UtxoMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.utxos.UtxoMessage)
+                return object;
+            let message = new $root.utxos.UtxoMessage();
+            if (object.sender != null)
+                if (typeof object.sender === "string")
+                    $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
+                else if (object.sender.length >= 0)
+                    message.sender = object.sender;
+            if (object.recipient != null)
+                if (typeof object.recipient === "string")
+                    $util.base64.decode(object.recipient, message.recipient = $util.newBuffer($util.base64.length(object.recipient)), 0);
+                else if (object.recipient.length >= 0)
+                    message.recipient = object.recipient;
+            if (object.nonce != null)
+                if (typeof object.nonce === "string")
+                    $util.base64.decode(object.nonce, message.nonce = $util.newBuffer($util.base64.length(object.nonce)), 0);
+                else if (object.nonce.length >= 0)
+                    message.nonce = object.nonce;
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length >= 0)
+                    message.data = object.data;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UtxoMessage message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {utxos.UtxoMessage} message UtxoMessage
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UtxoMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                if (options.bytes === String)
+                    object.sender = "";
+                else {
+                    object.sender = [];
+                    if (options.bytes !== Array)
+                        object.sender = $util.newBuffer(object.sender);
+                }
+                if (options.bytes === String)
+                    object.recipient = "";
+                else {
+                    object.recipient = [];
+                    if (options.bytes !== Array)
+                        object.recipient = $util.newBuffer(object.recipient);
+                }
+                if (options.bytes === String)
+                    object.nonce = "";
+                else {
+                    object.nonce = [];
+                    if (options.bytes !== Array)
+                        object.nonce = $util.newBuffer(object.nonce);
+                }
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
+            }
+            if (message.sender != null && message.hasOwnProperty("sender"))
+                object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+            if (message.recipient != null && message.hasOwnProperty("recipient"))
+                object.recipient = options.bytes === String ? $util.base64.encode(message.recipient, 0, message.recipient.length) : options.bytes === Array ? Array.prototype.slice.call(message.recipient) : message.recipient;
+            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                object.nonce = options.bytes === String ? $util.base64.encode(message.nonce, 0, message.nonce.length) : options.bytes === Array ? Array.prototype.slice.call(message.nonce) : message.nonce;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            return object;
+        };
+
+        /**
+         * Converts this UtxoMessage to JSON.
+         * @function toJSON
+         * @memberof utxos.UtxoMessage
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UtxoMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for UtxoMessage
+         * @function getTypeUrl
+         * @memberof utxos.UtxoMessage
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        UtxoMessage.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/utxos.UtxoMessage";
+        };
+
+        return UtxoMessage;
     })();
 
     return utxos;

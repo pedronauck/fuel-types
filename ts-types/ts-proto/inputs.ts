@@ -6,27 +6,31 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
-import { InputPointer } from "./pointers";
+import { Metadata } from "./common";
+import { InputPointer, TxPointer } from "./pointers";
 
 export const protobufPackage = "inputs";
 
 export enum InputType {
-  CONTRACT = 0,
-  COIN = 1,
-  MESSAGE = 2,
+  UNKNOWN_INPUT_TYPE = 0,
+  CONTRACT = 1,
+  COIN = 2,
+  MESSAGE = 3,
   UNRECOGNIZED = -1,
 }
 
 export function inputTypeFromJSON(object: any): InputType {
   switch (object) {
     case 0:
+    case "UNKNOWN_INPUT_TYPE":
+      return InputType.UNKNOWN_INPUT_TYPE;
+    case 1:
     case "CONTRACT":
       return InputType.CONTRACT;
-    case 1:
+    case 2:
     case "COIN":
       return InputType.COIN;
-    case 2:
+    case 3:
     case "MESSAGE":
       return InputType.MESSAGE;
     case -1:
@@ -38,6 +42,8 @@ export function inputTypeFromJSON(object: any): InputType {
 
 export function inputTypeToJSON(object: InputType): string {
   switch (object) {
+    case InputType.UNKNOWN_INPUT_TYPE:
+      return "UNKNOWN_INPUT_TYPE";
     case InputType.CONTRACT:
       return "CONTRACT";
     case InputType.COIN:
@@ -52,88 +58,70 @@ export function inputTypeToJSON(object: InputType): string {
 
 export interface Input {
   subject: string;
-  blockHeight: number;
-  txId: Uint8Array;
-  txIndex: number;
-  inputIndex: number;
-  inputType: InputType;
+  type: InputType;
   coin?: InputCoin | undefined;
   contract?: InputContract | undefined;
   message?:
     | InputMessage
     | undefined;
   /** Metadata */
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  metadata: Metadata | undefined;
   pointer: InputPointer | undefined;
 }
 
 export interface InputCoin {
-  subject: string;
-  txId: Uint8Array;
+  /** Fields matching fuel-core */
+  utxoId: Uint8Array;
+  owner: Uint8Array;
   amount: number;
   assetId: Uint8Array;
-  ownerAddress: Uint8Array;
-  outputIndex: number;
+  txPointer: TxPointer | undefined;
+  witnessIndex: number;
+  predicateGasUsed: number;
   predicate: Uint8Array;
   predicateData: Uint8Array;
-  predicateGasUsed: number;
+  /** Extra fields (not in fuel-core) */
   predicateLength: number;
   predicateDataLength: number;
-  txPointerBlockHeight: number;
-  txPointerTxIndex: number;
-  utxoId: Uint8Array;
-  witnessIndex: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  outputIndex: number;
 }
 
 export interface InputContract {
-  subject: string;
-  txId: Uint8Array;
-  balanceRoot: Uint8Array;
-  contractId: Uint8Array;
-  outputIndex: number;
-  stateRoot: Uint8Array;
-  txPointerBlockHeight: number;
-  txPointerTxIndex: number;
+  /** Fields matching fuel-core */
   utxoId: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  balanceRoot: Uint8Array;
+  stateRoot: Uint8Array;
+  txPointer: TxPointer | undefined;
+  contractId: Uint8Array;
+  /** Extra fields (not in fuel-core) */
+  outputIndex: number;
 }
 
 export interface InputMessage {
-  subject: string;
-  txId: Uint8Array;
+  /** Fields matching fuel-core */
+  sender: Uint8Array;
+  recipient: Uint8Array;
   amount: number;
-  data: Uint8Array;
-  dataLength: number;
   nonce: Uint8Array;
-  predicate: Uint8Array;
-  predicateLength: number;
-  predicateData: Uint8Array;
-  predicateDataLength: number;
-  predicateGasUsed: number;
-  recipientAddress: Uint8Array;
-  senderAddress: Uint8Array;
   witnessIndex: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  predicateGasUsed: number;
+  data: Uint8Array;
+  predicate: Uint8Array;
+  predicateData: Uint8Array;
+  /** Extra fields (not in fuel-core) */
+  dataLength: number;
+  predicateLength: number;
+  predicateDataLength: number;
 }
 
 function createBaseInput(): Input {
   return {
     subject: "",
-    blockHeight: 0,
-    txId: new Uint8Array(0),
-    txIndex: 0,
-    inputIndex: 0,
-    inputType: 0,
+    type: 0,
     coin: undefined,
     contract: undefined,
     message: undefined,
-    createdAt: undefined,
-    publishedAt: undefined,
+    metadata: undefined,
     pointer: undefined,
   };
 }
@@ -143,38 +131,23 @@ export const Input: MessageFns<Input> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(26).bytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      writer.uint32(32).int32(message.txIndex);
-    }
-    if (message.inputIndex !== 0) {
-      writer.uint32(40).int32(message.inputIndex);
-    }
-    if (message.inputType !== 0) {
-      writer.uint32(48).int32(message.inputType);
+    if (message.type !== 0) {
+      writer.uint32(16).int32(message.type);
     }
     if (message.coin !== undefined) {
-      InputCoin.encode(message.coin, writer.uint32(58).fork()).join();
+      InputCoin.encode(message.coin, writer.uint32(26).fork()).join();
     }
     if (message.contract !== undefined) {
-      InputContract.encode(message.contract, writer.uint32(66).fork()).join();
+      InputContract.encode(message.contract, writer.uint32(34).fork()).join();
     }
     if (message.message !== undefined) {
-      InputMessage.encode(message.message, writer.uint32(74).fork()).join();
+      InputMessage.encode(message.message, writer.uint32(42).fork()).join();
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(82).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(90).fork()).join();
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(58).fork()).join();
     }
     if (message.pointer !== undefined) {
-      InputPointer.encode(message.pointer, writer.uint32(98).fork()).join();
+      InputPointer.encode(message.pointer, writer.uint32(66).fork()).join();
     }
     return writer;
   },
@@ -199,7 +172,7 @@ export const Input: MessageFns<Input> = {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.type = reader.int32() as any;
           continue;
         }
         case 3: {
@@ -207,31 +180,23 @@ export const Input: MessageFns<Input> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.coin = InputCoin.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.contract = InputContract.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.inputIndex = reader.int32();
-          continue;
-        }
-        case 6: {
-          if (tag !== 48) {
-            break;
-          }
-
-          message.inputType = reader.int32() as any;
+          message.message = InputMessage.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -239,43 +204,11 @@ export const Input: MessageFns<Input> = {
             break;
           }
 
-          message.coin = InputCoin.decode(reader, reader.uint32());
+          message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
         case 8: {
           if (tag !== 66) {
-            break;
-          }
-
-          message.contract = InputContract.decode(reader, reader.uint32());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.message = InputMessage.decode(reader, reader.uint32());
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 12: {
-          if (tag !== 98) {
             break;
           }
 
@@ -294,16 +227,11 @@ export const Input: MessageFns<Input> = {
   fromJSON(object: any): Input {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
-      inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
-      inputType: isSet(object.inputType) ? inputTypeFromJSON(object.inputType) : 0,
+      type: isSet(object.type) ? inputTypeFromJSON(object.type) : 0,
       coin: isSet(object.coin) ? InputCoin.fromJSON(object.coin) : undefined,
       contract: isSet(object.contract) ? InputContract.fromJSON(object.contract) : undefined,
       message: isSet(object.message) ? InputMessage.fromJSON(object.message) : undefined,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
       pointer: isSet(object.pointer) ? InputPointer.fromJSON(object.pointer) : undefined,
     };
   },
@@ -313,20 +241,8 @@ export const Input: MessageFns<Input> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      obj.txIndex = Math.round(message.txIndex);
-    }
-    if (message.inputIndex !== 0) {
-      obj.inputIndex = Math.round(message.inputIndex);
-    }
-    if (message.inputType !== 0) {
-      obj.inputType = inputTypeToJSON(message.inputType);
+    if (message.type !== 0) {
+      obj.type = inputTypeToJSON(message.type);
     }
     if (message.coin !== undefined) {
       obj.coin = InputCoin.toJSON(message.coin);
@@ -337,11 +253,8 @@ export const Input: MessageFns<Input> = {
     if (message.message !== undefined) {
       obj.message = InputMessage.toJSON(message.message);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.pointer !== undefined) {
       obj.pointer = InputPointer.toJSON(message.pointer);
@@ -355,11 +268,7 @@ export const Input: MessageFns<Input> = {
   fromPartial<I extends Exact<DeepPartial<Input>, I>>(object: I): Input {
     const message = createBaseInput();
     message.subject = object.subject ?? "";
-    message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.txIndex = object.txIndex ?? 0;
-    message.inputIndex = object.inputIndex ?? 0;
-    message.inputType = object.inputType ?? 0;
+    message.type = object.type ?? 0;
     message.coin = (object.coin !== undefined && object.coin !== null) ? InputCoin.fromPartial(object.coin) : undefined;
     message.contract = (object.contract !== undefined && object.contract !== null)
       ? InputContract.fromPartial(object.contract)
@@ -367,8 +276,9 @@ export const Input: MessageFns<Input> = {
     message.message = (object.message !== undefined && object.message !== null)
       ? InputMessage.fromPartial(object.message)
       : undefined;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
     message.pointer = (object.pointer !== undefined && object.pointer !== null)
       ? InputPointer.fromPartial(object.pointer)
       : undefined;
@@ -378,33 +288,28 @@ export const Input: MessageFns<Input> = {
 
 function createBaseInputCoin(): InputCoin {
   return {
-    subject: "",
-    txId: new Uint8Array(0),
+    utxoId: new Uint8Array(0),
+    owner: new Uint8Array(0),
     amount: 0,
     assetId: new Uint8Array(0),
-    ownerAddress: new Uint8Array(0),
-    outputIndex: 0,
+    txPointer: undefined,
+    witnessIndex: 0,
+    predicateGasUsed: 0,
     predicate: new Uint8Array(0),
     predicateData: new Uint8Array(0),
-    predicateGasUsed: 0,
     predicateLength: 0,
     predicateDataLength: 0,
-    txPointerBlockHeight: 0,
-    txPointerTxIndex: 0,
-    utxoId: new Uint8Array(0),
-    witnessIndex: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
+    outputIndex: 0,
   };
 }
 
 export const InputCoin: MessageFns<InputCoin> = {
   encode(message: InputCoin, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.utxoId.length !== 0) {
+      writer.uint32(10).bytes(message.utxoId);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.owner.length !== 0) {
+      writer.uint32(18).bytes(message.owner);
     }
     if (message.amount !== 0) {
       writer.uint32(24).int64(message.amount);
@@ -412,20 +317,20 @@ export const InputCoin: MessageFns<InputCoin> = {
     if (message.assetId.length !== 0) {
       writer.uint32(34).bytes(message.assetId);
     }
-    if (message.ownerAddress.length !== 0) {
-      writer.uint32(42).bytes(message.ownerAddress);
+    if (message.txPointer !== undefined) {
+      TxPointer.encode(message.txPointer, writer.uint32(42).fork()).join();
     }
-    if (message.outputIndex !== 0) {
-      writer.uint32(48).int32(message.outputIndex);
-    }
-    if (message.predicate.length !== 0) {
-      writer.uint32(58).bytes(message.predicate);
-    }
-    if (message.predicateData.length !== 0) {
-      writer.uint32(66).bytes(message.predicateData);
+    if (message.witnessIndex !== 0) {
+      writer.uint32(48).int32(message.witnessIndex);
     }
     if (message.predicateGasUsed !== 0) {
-      writer.uint32(72).int64(message.predicateGasUsed);
+      writer.uint32(56).int64(message.predicateGasUsed);
+    }
+    if (message.predicate.length !== 0) {
+      writer.uint32(66).bytes(message.predicate);
+    }
+    if (message.predicateData.length !== 0) {
+      writer.uint32(74).bytes(message.predicateData);
     }
     if (message.predicateLength !== 0) {
       writer.uint32(80).int64(message.predicateLength);
@@ -433,23 +338,8 @@ export const InputCoin: MessageFns<InputCoin> = {
     if (message.predicateDataLength !== 0) {
       writer.uint32(88).int64(message.predicateDataLength);
     }
-    if (message.txPointerBlockHeight !== 0) {
-      writer.uint32(96).int64(message.txPointerBlockHeight);
-    }
-    if (message.txPointerTxIndex !== 0) {
-      writer.uint32(104).int32(message.txPointerTxIndex);
-    }
-    if (message.utxoId.length !== 0) {
-      writer.uint32(114).bytes(message.utxoId);
-    }
-    if (message.witnessIndex !== 0) {
-      writer.uint32(120).int32(message.witnessIndex);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(130).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(138).fork()).join();
+    if (message.outputIndex !== 0) {
+      writer.uint32(96).int32(message.outputIndex);
     }
     return writer;
   },
@@ -466,7 +356,7 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.utxoId = reader.bytes();
           continue;
         }
         case 2: {
@@ -474,7 +364,7 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.owner = reader.bytes();
           continue;
         }
         case 3: {
@@ -498,7 +388,7 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.ownerAddress = reader.bytes();
+          message.txPointer = TxPointer.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
@@ -506,15 +396,15 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.outputIndex = reader.int32();
+          message.witnessIndex = reader.int32();
           continue;
         }
         case 7: {
-          if (tag !== 58) {
+          if (tag !== 56) {
             break;
           }
 
-          message.predicate = reader.bytes();
+          message.predicateGasUsed = longToNumber(reader.int64());
           continue;
         }
         case 8: {
@@ -522,15 +412,15 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.predicateData = reader.bytes();
+          message.predicate = reader.bytes();
           continue;
         }
         case 9: {
-          if (tag !== 72) {
+          if (tag !== 74) {
             break;
           }
 
-          message.predicateGasUsed = longToNumber(reader.int64());
+          message.predicateData = reader.bytes();
           continue;
         }
         case 10: {
@@ -554,47 +444,7 @@ export const InputCoin: MessageFns<InputCoin> = {
             break;
           }
 
-          message.txPointerBlockHeight = longToNumber(reader.int64());
-          continue;
-        }
-        case 13: {
-          if (tag !== 104) {
-            break;
-          }
-
-          message.txPointerTxIndex = reader.int32();
-          continue;
-        }
-        case 14: {
-          if (tag !== 114) {
-            break;
-          }
-
-          message.utxoId = reader.bytes();
-          continue;
-        }
-        case 15: {
-          if (tag !== 120) {
-            break;
-          }
-
-          message.witnessIndex = reader.int32();
-          continue;
-        }
-        case 16: {
-          if (tag !== 130) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 17: {
-          if (tag !== 138) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.outputIndex = reader.int32();
           continue;
         }
       }
@@ -608,33 +458,28 @@ export const InputCoin: MessageFns<InputCoin> = {
 
   fromJSON(object: any): InputCoin {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
+      owner: isSet(object.owner) ? bytesFromBase64(object.owner) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
-      ownerAddress: isSet(object.ownerAddress) ? bytesFromBase64(object.ownerAddress) : new Uint8Array(0),
-      outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
+      txPointer: isSet(object.txPointer) ? TxPointer.fromJSON(object.txPointer) : undefined,
+      witnessIndex: isSet(object.witnessIndex) ? globalThis.Number(object.witnessIndex) : 0,
+      predicateGasUsed: isSet(object.predicateGasUsed) ? globalThis.Number(object.predicateGasUsed) : 0,
       predicate: isSet(object.predicate) ? bytesFromBase64(object.predicate) : new Uint8Array(0),
       predicateData: isSet(object.predicateData) ? bytesFromBase64(object.predicateData) : new Uint8Array(0),
-      predicateGasUsed: isSet(object.predicateGasUsed) ? globalThis.Number(object.predicateGasUsed) : 0,
       predicateLength: isSet(object.predicateLength) ? globalThis.Number(object.predicateLength) : 0,
       predicateDataLength: isSet(object.predicateDataLength) ? globalThis.Number(object.predicateDataLength) : 0,
-      txPointerBlockHeight: isSet(object.txPointerBlockHeight) ? globalThis.Number(object.txPointerBlockHeight) : 0,
-      txPointerTxIndex: isSet(object.txPointerTxIndex) ? globalThis.Number(object.txPointerTxIndex) : 0,
-      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
-      witnessIndex: isSet(object.witnessIndex) ? globalThis.Number(object.witnessIndex) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
     };
   },
 
   toJSON(message: InputCoin): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.utxoId.length !== 0) {
+      obj.utxoId = base64FromBytes(message.utxoId);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.owner.length !== 0) {
+      obj.owner = base64FromBytes(message.owner);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
@@ -642,11 +487,14 @@ export const InputCoin: MessageFns<InputCoin> = {
     if (message.assetId.length !== 0) {
       obj.assetId = base64FromBytes(message.assetId);
     }
-    if (message.ownerAddress.length !== 0) {
-      obj.ownerAddress = base64FromBytes(message.ownerAddress);
+    if (message.txPointer !== undefined) {
+      obj.txPointer = TxPointer.toJSON(message.txPointer);
     }
-    if (message.outputIndex !== 0) {
-      obj.outputIndex = Math.round(message.outputIndex);
+    if (message.witnessIndex !== 0) {
+      obj.witnessIndex = Math.round(message.witnessIndex);
+    }
+    if (message.predicateGasUsed !== 0) {
+      obj.predicateGasUsed = Math.round(message.predicateGasUsed);
     }
     if (message.predicate.length !== 0) {
       obj.predicate = base64FromBytes(message.predicate);
@@ -654,32 +502,14 @@ export const InputCoin: MessageFns<InputCoin> = {
     if (message.predicateData.length !== 0) {
       obj.predicateData = base64FromBytes(message.predicateData);
     }
-    if (message.predicateGasUsed !== 0) {
-      obj.predicateGasUsed = Math.round(message.predicateGasUsed);
-    }
     if (message.predicateLength !== 0) {
       obj.predicateLength = Math.round(message.predicateLength);
     }
     if (message.predicateDataLength !== 0) {
       obj.predicateDataLength = Math.round(message.predicateDataLength);
     }
-    if (message.txPointerBlockHeight !== 0) {
-      obj.txPointerBlockHeight = Math.round(message.txPointerBlockHeight);
-    }
-    if (message.txPointerTxIndex !== 0) {
-      obj.txPointerTxIndex = Math.round(message.txPointerTxIndex);
-    }
-    if (message.utxoId.length !== 0) {
-      obj.utxoId = base64FromBytes(message.utxoId);
-    }
-    if (message.witnessIndex !== 0) {
-      obj.witnessIndex = Math.round(message.witnessIndex);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.outputIndex !== 0) {
+      obj.outputIndex = Math.round(message.outputIndex);
     }
     return obj;
   },
@@ -689,77 +519,54 @@ export const InputCoin: MessageFns<InputCoin> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputCoin>, I>>(object: I): InputCoin {
     const message = createBaseInputCoin();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.utxoId = object.utxoId ?? new Uint8Array(0);
+    message.owner = object.owner ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
-    message.ownerAddress = object.ownerAddress ?? new Uint8Array(0);
-    message.outputIndex = object.outputIndex ?? 0;
+    message.txPointer = (object.txPointer !== undefined && object.txPointer !== null)
+      ? TxPointer.fromPartial(object.txPointer)
+      : undefined;
+    message.witnessIndex = object.witnessIndex ?? 0;
+    message.predicateGasUsed = object.predicateGasUsed ?? 0;
     message.predicate = object.predicate ?? new Uint8Array(0);
     message.predicateData = object.predicateData ?? new Uint8Array(0);
-    message.predicateGasUsed = object.predicateGasUsed ?? 0;
     message.predicateLength = object.predicateLength ?? 0;
     message.predicateDataLength = object.predicateDataLength ?? 0;
-    message.txPointerBlockHeight = object.txPointerBlockHeight ?? 0;
-    message.txPointerTxIndex = object.txPointerTxIndex ?? 0;
-    message.utxoId = object.utxoId ?? new Uint8Array(0);
-    message.witnessIndex = object.witnessIndex ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.outputIndex = object.outputIndex ?? 0;
     return message;
   },
 };
 
 function createBaseInputContract(): InputContract {
   return {
-    subject: "",
-    txId: new Uint8Array(0),
+    utxoId: new Uint8Array(0),
     balanceRoot: new Uint8Array(0),
+    stateRoot: new Uint8Array(0),
+    txPointer: undefined,
     contractId: new Uint8Array(0),
     outputIndex: 0,
-    stateRoot: new Uint8Array(0),
-    txPointerBlockHeight: 0,
-    txPointerTxIndex: 0,
-    utxoId: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
   };
 }
 
 export const InputContract: MessageFns<InputContract> = {
   encode(message: InputContract, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.utxoId.length !== 0) {
+      writer.uint32(10).bytes(message.utxoId);
     }
     if (message.balanceRoot.length !== 0) {
-      writer.uint32(26).bytes(message.balanceRoot);
-    }
-    if (message.contractId.length !== 0) {
-      writer.uint32(34).bytes(message.contractId);
-    }
-    if (message.outputIndex !== 0) {
-      writer.uint32(40).int32(message.outputIndex);
+      writer.uint32(18).bytes(message.balanceRoot);
     }
     if (message.stateRoot.length !== 0) {
-      writer.uint32(50).bytes(message.stateRoot);
+      writer.uint32(26).bytes(message.stateRoot);
     }
-    if (message.txPointerBlockHeight !== 0) {
-      writer.uint32(56).int64(message.txPointerBlockHeight);
+    if (message.txPointer !== undefined) {
+      TxPointer.encode(message.txPointer, writer.uint32(34).fork()).join();
     }
-    if (message.txPointerTxIndex !== 0) {
-      writer.uint32(64).int32(message.txPointerTxIndex);
+    if (message.contractId.length !== 0) {
+      writer.uint32(42).bytes(message.contractId);
     }
-    if (message.utxoId.length !== 0) {
-      writer.uint32(74).bytes(message.utxoId);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(82).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(90).fork()).join();
+    if (message.outputIndex !== 0) {
+      writer.uint32(48).int32(message.outputIndex);
     }
     return writer;
   },
@@ -776,7 +583,7 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.utxoId = reader.bytes();
           continue;
         }
         case 2: {
@@ -784,7 +591,7 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.balanceRoot = reader.bytes();
           continue;
         }
         case 3: {
@@ -792,7 +599,7 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.balanceRoot = reader.bytes();
+          message.stateRoot = reader.bytes();
           continue;
         }
         case 4: {
@@ -800,63 +607,23 @@ export const InputContract: MessageFns<InputContract> = {
             break;
           }
 
-          message.contractId = reader.bytes();
+          message.txPointer = TxPointer.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.contractId = reader.bytes();
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
             break;
           }
 
           message.outputIndex = reader.int32();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.stateRoot = reader.bytes();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.txPointerBlockHeight = longToNumber(reader.int64());
-          continue;
-        }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
-          message.txPointerTxIndex = reader.int32();
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.utxoId = reader.bytes();
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -870,54 +637,34 @@ export const InputContract: MessageFns<InputContract> = {
 
   fromJSON(object: any): InputContract {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
       balanceRoot: isSet(object.balanceRoot) ? bytesFromBase64(object.balanceRoot) : new Uint8Array(0),
+      stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
+      txPointer: isSet(object.txPointer) ? TxPointer.fromJSON(object.txPointer) : undefined,
       contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
       outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
-      stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
-      txPointerBlockHeight: isSet(object.txPointerBlockHeight) ? globalThis.Number(object.txPointerBlockHeight) : 0,
-      txPointerTxIndex: isSet(object.txPointerTxIndex) ? globalThis.Number(object.txPointerTxIndex) : 0,
-      utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: InputContract): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.utxoId.length !== 0) {
+      obj.utxoId = base64FromBytes(message.utxoId);
     }
     if (message.balanceRoot.length !== 0) {
       obj.balanceRoot = base64FromBytes(message.balanceRoot);
+    }
+    if (message.stateRoot.length !== 0) {
+      obj.stateRoot = base64FromBytes(message.stateRoot);
+    }
+    if (message.txPointer !== undefined) {
+      obj.txPointer = TxPointer.toJSON(message.txPointer);
     }
     if (message.contractId.length !== 0) {
       obj.contractId = base64FromBytes(message.contractId);
     }
     if (message.outputIndex !== 0) {
       obj.outputIndex = Math.round(message.outputIndex);
-    }
-    if (message.stateRoot.length !== 0) {
-      obj.stateRoot = base64FromBytes(message.stateRoot);
-    }
-    if (message.txPointerBlockHeight !== 0) {
-      obj.txPointerBlockHeight = Math.round(message.txPointerBlockHeight);
-    }
-    if (message.txPointerTxIndex !== 0) {
-      obj.txPointerTxIndex = Math.round(message.txPointerTxIndex);
-    }
-    if (message.utxoId.length !== 0) {
-      obj.utxoId = base64FromBytes(message.utxoId);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -927,91 +674,72 @@ export const InputContract: MessageFns<InputContract> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputContract>, I>>(object: I): InputContract {
     const message = createBaseInputContract();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.utxoId = object.utxoId ?? new Uint8Array(0);
     message.balanceRoot = object.balanceRoot ?? new Uint8Array(0);
+    message.stateRoot = object.stateRoot ?? new Uint8Array(0);
+    message.txPointer = (object.txPointer !== undefined && object.txPointer !== null)
+      ? TxPointer.fromPartial(object.txPointer)
+      : undefined;
     message.contractId = object.contractId ?? new Uint8Array(0);
     message.outputIndex = object.outputIndex ?? 0;
-    message.stateRoot = object.stateRoot ?? new Uint8Array(0);
-    message.txPointerBlockHeight = object.txPointerBlockHeight ?? 0;
-    message.txPointerTxIndex = object.txPointerTxIndex ?? 0;
-    message.utxoId = object.utxoId ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseInputMessage(): InputMessage {
   return {
-    subject: "",
-    txId: new Uint8Array(0),
+    sender: new Uint8Array(0),
+    recipient: new Uint8Array(0),
     amount: 0,
-    data: new Uint8Array(0),
-    dataLength: 0,
     nonce: new Uint8Array(0),
-    predicate: new Uint8Array(0),
-    predicateLength: 0,
-    predicateData: new Uint8Array(0),
-    predicateDataLength: 0,
-    predicateGasUsed: 0,
-    recipientAddress: new Uint8Array(0),
-    senderAddress: new Uint8Array(0),
     witnessIndex: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
+    predicateGasUsed: 0,
+    data: new Uint8Array(0),
+    predicate: new Uint8Array(0),
+    predicateData: new Uint8Array(0),
+    dataLength: 0,
+    predicateLength: 0,
+    predicateDataLength: 0,
   };
 }
 
 export const InputMessage: MessageFns<InputMessage> = {
   encode(message: InputMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.sender.length !== 0) {
+      writer.uint32(10).bytes(message.sender);
     }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.recipient.length !== 0) {
+      writer.uint32(18).bytes(message.recipient);
     }
     if (message.amount !== 0) {
       writer.uint32(24).int64(message.amount);
     }
-    if (message.data.length !== 0) {
-      writer.uint32(34).bytes(message.data);
-    }
-    if (message.dataLength !== 0) {
-      writer.uint32(40).int32(message.dataLength);
-    }
     if (message.nonce.length !== 0) {
-      writer.uint32(50).bytes(message.nonce);
+      writer.uint32(34).bytes(message.nonce);
+    }
+    if (message.witnessIndex !== 0) {
+      writer.uint32(40).int32(message.witnessIndex);
+    }
+    if (message.predicateGasUsed !== 0) {
+      writer.uint32(48).int64(message.predicateGasUsed);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(58).bytes(message.data);
     }
     if (message.predicate.length !== 0) {
-      writer.uint32(58).bytes(message.predicate);
-    }
-    if (message.predicateLength !== 0) {
-      writer.uint32(64).int32(message.predicateLength);
+      writer.uint32(66).bytes(message.predicate);
     }
     if (message.predicateData.length !== 0) {
       writer.uint32(74).bytes(message.predicateData);
     }
+    if (message.dataLength !== 0) {
+      writer.uint32(80).int32(message.dataLength);
+    }
+    if (message.predicateLength !== 0) {
+      writer.uint32(88).int32(message.predicateLength);
+    }
     if (message.predicateDataLength !== 0) {
-      writer.uint32(80).int32(message.predicateDataLength);
-    }
-    if (message.predicateGasUsed !== 0) {
-      writer.uint32(88).int64(message.predicateGasUsed);
-    }
-    if (message.recipientAddress.length !== 0) {
-      writer.uint32(98).bytes(message.recipientAddress);
-    }
-    if (message.senderAddress.length !== 0) {
-      writer.uint32(106).bytes(message.senderAddress);
-    }
-    if (message.witnessIndex !== 0) {
-      writer.uint32(112).int32(message.witnessIndex);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(122).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(130).fork()).join();
+      writer.uint32(96).int32(message.predicateDataLength);
     }
     return writer;
   },
@@ -1028,7 +756,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.sender = reader.bytes();
           continue;
         }
         case 2: {
@@ -1036,7 +764,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.recipient = reader.bytes();
           continue;
         }
         case 3: {
@@ -1052,7 +780,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.data = reader.bytes();
+          message.nonce = reader.bytes();
           continue;
         }
         case 5: {
@@ -1060,15 +788,15 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.dataLength = reader.int32();
+          message.witnessIndex = reader.int32();
           continue;
         }
         case 6: {
-          if (tag !== 50) {
+          if (tag !== 48) {
             break;
           }
 
-          message.nonce = reader.bytes();
+          message.predicateGasUsed = longToNumber(reader.int64());
           continue;
         }
         case 7: {
@@ -1076,15 +804,15 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.predicate = reader.bytes();
+          message.data = reader.bytes();
           continue;
         }
         case 8: {
-          if (tag !== 64) {
+          if (tag !== 66) {
             break;
           }
 
-          message.predicateLength = reader.int32();
+          message.predicate = reader.bytes();
           continue;
         }
         case 9: {
@@ -1100,7 +828,7 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.predicateDataLength = reader.int32();
+          message.dataLength = reader.int32();
           continue;
         }
         case 11: {
@@ -1108,47 +836,15 @@ export const InputMessage: MessageFns<InputMessage> = {
             break;
           }
 
-          message.predicateGasUsed = longToNumber(reader.int64());
+          message.predicateLength = reader.int32();
           continue;
         }
         case 12: {
-          if (tag !== 98) {
+          if (tag !== 96) {
             break;
           }
 
-          message.recipientAddress = reader.bytes();
-          continue;
-        }
-        case 13: {
-          if (tag !== 106) {
-            break;
-          }
-
-          message.senderAddress = reader.bytes();
-          continue;
-        }
-        case 14: {
-          if (tag !== 112) {
-            break;
-          }
-
-          message.witnessIndex = reader.int32();
-          continue;
-        }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 16: {
-          if (tag !== 130) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.predicateDataLength = reader.int32();
           continue;
         }
       }
@@ -1162,74 +858,58 @@ export const InputMessage: MessageFns<InputMessage> = {
 
   fromJSON(object: any): InputMessage {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      sender: isSet(object.sender) ? bytesFromBase64(object.sender) : new Uint8Array(0),
+      recipient: isSet(object.recipient) ? bytesFromBase64(object.recipient) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
-      dataLength: isSet(object.dataLength) ? globalThis.Number(object.dataLength) : 0,
       nonce: isSet(object.nonce) ? bytesFromBase64(object.nonce) : new Uint8Array(0),
-      predicate: isSet(object.predicate) ? bytesFromBase64(object.predicate) : new Uint8Array(0),
-      predicateLength: isSet(object.predicateLength) ? globalThis.Number(object.predicateLength) : 0,
-      predicateData: isSet(object.predicateData) ? bytesFromBase64(object.predicateData) : new Uint8Array(0),
-      predicateDataLength: isSet(object.predicateDataLength) ? globalThis.Number(object.predicateDataLength) : 0,
-      predicateGasUsed: isSet(object.predicateGasUsed) ? globalThis.Number(object.predicateGasUsed) : 0,
-      recipientAddress: isSet(object.recipientAddress) ? bytesFromBase64(object.recipientAddress) : new Uint8Array(0),
-      senderAddress: isSet(object.senderAddress) ? bytesFromBase64(object.senderAddress) : new Uint8Array(0),
       witnessIndex: isSet(object.witnessIndex) ? globalThis.Number(object.witnessIndex) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      predicateGasUsed: isSet(object.predicateGasUsed) ? globalThis.Number(object.predicateGasUsed) : 0,
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+      predicate: isSet(object.predicate) ? bytesFromBase64(object.predicate) : new Uint8Array(0),
+      predicateData: isSet(object.predicateData) ? bytesFromBase64(object.predicateData) : new Uint8Array(0),
+      dataLength: isSet(object.dataLength) ? globalThis.Number(object.dataLength) : 0,
+      predicateLength: isSet(object.predicateLength) ? globalThis.Number(object.predicateLength) : 0,
+      predicateDataLength: isSet(object.predicateDataLength) ? globalThis.Number(object.predicateDataLength) : 0,
     };
   },
 
   toJSON(message: InputMessage): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.sender.length !== 0) {
+      obj.sender = base64FromBytes(message.sender);
     }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.recipient.length !== 0) {
+      obj.recipient = base64FromBytes(message.recipient);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
-    if (message.data.length !== 0) {
-      obj.data = base64FromBytes(message.data);
-    }
-    if (message.dataLength !== 0) {
-      obj.dataLength = Math.round(message.dataLength);
-    }
     if (message.nonce.length !== 0) {
       obj.nonce = base64FromBytes(message.nonce);
-    }
-    if (message.predicate.length !== 0) {
-      obj.predicate = base64FromBytes(message.predicate);
-    }
-    if (message.predicateLength !== 0) {
-      obj.predicateLength = Math.round(message.predicateLength);
-    }
-    if (message.predicateData.length !== 0) {
-      obj.predicateData = base64FromBytes(message.predicateData);
-    }
-    if (message.predicateDataLength !== 0) {
-      obj.predicateDataLength = Math.round(message.predicateDataLength);
-    }
-    if (message.predicateGasUsed !== 0) {
-      obj.predicateGasUsed = Math.round(message.predicateGasUsed);
-    }
-    if (message.recipientAddress.length !== 0) {
-      obj.recipientAddress = base64FromBytes(message.recipientAddress);
-    }
-    if (message.senderAddress.length !== 0) {
-      obj.senderAddress = base64FromBytes(message.senderAddress);
     }
     if (message.witnessIndex !== 0) {
       obj.witnessIndex = Math.round(message.witnessIndex);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
+    if (message.predicateGasUsed !== 0) {
+      obj.predicateGasUsed = Math.round(message.predicateGasUsed);
     }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    if (message.predicate.length !== 0) {
+      obj.predicate = base64FromBytes(message.predicate);
+    }
+    if (message.predicateData.length !== 0) {
+      obj.predicateData = base64FromBytes(message.predicateData);
+    }
+    if (message.dataLength !== 0) {
+      obj.dataLength = Math.round(message.dataLength);
+    }
+    if (message.predicateLength !== 0) {
+      obj.predicateLength = Math.round(message.predicateLength);
+    }
+    if (message.predicateDataLength !== 0) {
+      obj.predicateDataLength = Math.round(message.predicateDataLength);
     }
     return obj;
   },
@@ -1239,22 +919,18 @@ export const InputMessage: MessageFns<InputMessage> = {
   },
   fromPartial<I extends Exact<DeepPartial<InputMessage>, I>>(object: I): InputMessage {
     const message = createBaseInputMessage();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.sender = object.sender ?? new Uint8Array(0);
+    message.recipient = object.recipient ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
-    message.data = object.data ?? new Uint8Array(0);
-    message.dataLength = object.dataLength ?? 0;
     message.nonce = object.nonce ?? new Uint8Array(0);
-    message.predicate = object.predicate ?? new Uint8Array(0);
-    message.predicateLength = object.predicateLength ?? 0;
-    message.predicateData = object.predicateData ?? new Uint8Array(0);
-    message.predicateDataLength = object.predicateDataLength ?? 0;
-    message.predicateGasUsed = object.predicateGasUsed ?? 0;
-    message.recipientAddress = object.recipientAddress ?? new Uint8Array(0);
-    message.senderAddress = object.senderAddress ?? new Uint8Array(0);
     message.witnessIndex = object.witnessIndex ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.predicateGasUsed = object.predicateGasUsed ?? 0;
+    message.data = object.data ?? new Uint8Array(0);
+    message.predicate = object.predicate ?? new Uint8Array(0);
+    message.predicateData = object.predicateData ?? new Uint8Array(0);
+    message.dataLength = object.dataLength ?? 0;
+    message.predicateLength = object.predicateLength ?? 0;
+    message.predicateDataLength = object.predicateDataLength ?? 0;
     return message;
   },
 };
@@ -1295,28 +971,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());

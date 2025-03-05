@@ -6,23 +6,27 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
+import { Metadata } from "./common";
 import { BlockPointer } from "./pointers";
 
 export const protobufPackage = "blocks";
 
 export enum ConsensusType {
-  GENESIS = 0,
-  POA_CONSENSUS = 1,
+  UNKNOWN_CONSENSUS_TYPE = 0,
+  GENESIS = 1,
+  POA_CONSENSUS = 2,
   UNRECOGNIZED = -1,
 }
 
 export function consensusTypeFromJSON(object: any): ConsensusType {
   switch (object) {
     case 0:
+    case "UNKNOWN_CONSENSUS_TYPE":
+      return ConsensusType.UNKNOWN_CONSENSUS_TYPE;
+    case 1:
     case "GENESIS":
       return ConsensusType.GENESIS;
-    case 1:
+    case 2:
     case "POA_CONSENSUS":
       return ConsensusType.POA_CONSENSUS;
     case -1:
@@ -34,6 +38,8 @@ export function consensusTypeFromJSON(object: any): ConsensusType {
 
 export function consensusTypeToJSON(object: ConsensusType): string {
   switch (object) {
+    case ConsensusType.UNKNOWN_CONSENSUS_TYPE:
+      return "UNKNOWN_CONSENSUS_TYPE";
     case ConsensusType.GENESIS:
       return "GENESIS";
     case ConsensusType.POA_CONSENSUS:
@@ -45,26 +51,19 @@ export function consensusTypeToJSON(object: ConsensusType): string {
 }
 
 export interface Block {
-  subject: string;
   blockHeight: number;
-  producerAddress: Uint8Array;
   blockId: number;
   version: string;
   /** Relationship fields */
   header: BlockHeader | undefined;
-  consensus:
-    | BlockConsensus
-    | undefined;
-  /** Array of tx_ids in this block */
+  consensus: BlockConsensus | undefined;
   transactionIds: Uint8Array[];
   /** Metadata */
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  metadata: Metadata | undefined;
   pointer: BlockPointer | undefined;
 }
 
 export interface BlockHeader {
-  subject: string;
   blockHeight: number;
   applicationHash: Uint8Array;
   consensusParametersVersion: number;
@@ -78,12 +77,11 @@ export interface BlockHeader {
   transactionsCount: number;
   transactionsRoot: Uint8Array;
   version: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface BlockConsensus {
-  subject: string;
+  chainId: number;
+  producer: Uint8Array;
   blockHeight: number;
   consensusType: ConsensusType;
   chainConfigHash: Uint8Array;
@@ -92,60 +90,46 @@ export interface BlockConsensus {
   messagesRoot: Uint8Array;
   transactionsRoot: Uint8Array;
   signature: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 function createBaseBlock(): Block {
   return {
-    subject: "",
     blockHeight: 0,
-    producerAddress: new Uint8Array(0),
     blockId: 0,
     version: "",
     header: undefined,
     consensus: undefined,
     transactionIds: [],
-    createdAt: undefined,
-    publishedAt: undefined,
+    metadata: undefined,
     pointer: undefined,
   };
 }
 
 export const Block: MessageFns<Block> = {
   encode(message: Block, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
     if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
-    }
-    if (message.producerAddress.length !== 0) {
-      writer.uint32(26).bytes(message.producerAddress);
+      writer.uint32(8).int64(message.blockHeight);
     }
     if (message.blockId !== 0) {
-      writer.uint32(32).int32(message.blockId);
+      writer.uint32(16).int32(message.blockId);
     }
     if (message.version !== "") {
-      writer.uint32(42).string(message.version);
+      writer.uint32(26).string(message.version);
     }
     if (message.header !== undefined) {
-      BlockHeader.encode(message.header, writer.uint32(50).fork()).join();
+      BlockHeader.encode(message.header, writer.uint32(34).fork()).join();
     }
     if (message.consensus !== undefined) {
-      BlockConsensus.encode(message.consensus, writer.uint32(58).fork()).join();
+      BlockConsensus.encode(message.consensus, writer.uint32(42).fork()).join();
     }
     for (const v of message.transactionIds) {
-      writer.uint32(66).bytes(v!);
+      writer.uint32(50).bytes(v!);
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(74).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(82).fork()).join();
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(58).fork()).join();
     }
     if (message.pointer !== undefined) {
-      BlockPointer.encode(message.pointer, writer.uint32(90).fork()).join();
+      BlockPointer.encode(message.pointer, writer.uint32(66).fork()).join();
     }
     return writer;
   },
@@ -158,11 +142,11 @@ export const Block: MessageFns<Block> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.subject = reader.string();
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 2: {
@@ -170,7 +154,7 @@ export const Block: MessageFns<Block> = {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.blockId = reader.int32();
           continue;
         }
         case 3: {
@@ -178,15 +162,15 @@ export const Block: MessageFns<Block> = {
             break;
           }
 
-          message.producerAddress = reader.bytes();
+          message.version = reader.string();
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.blockId = reader.int32();
+          message.header = BlockHeader.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
@@ -194,7 +178,7 @@ export const Block: MessageFns<Block> = {
             break;
           }
 
-          message.version = reader.string();
+          message.consensus = BlockConsensus.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
@@ -202,7 +186,7 @@ export const Block: MessageFns<Block> = {
             break;
           }
 
-          message.header = BlockHeader.decode(reader, reader.uint32());
+          message.transactionIds.push(reader.bytes());
           continue;
         }
         case 7: {
@@ -210,35 +194,11 @@ export const Block: MessageFns<Block> = {
             break;
           }
 
-          message.consensus = BlockConsensus.decode(reader, reader.uint32());
+          message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
         case 8: {
           if (tag !== 66) {
-            break;
-          }
-
-          message.transactionIds.push(reader.bytes());
-          continue;
-        }
-        case 9: {
-          if (tag !== 74) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
             break;
           }
 
@@ -256,9 +216,7 @@ export const Block: MessageFns<Block> = {
 
   fromJSON(object: any): Block {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      producerAddress: isSet(object.producerAddress) ? bytesFromBase64(object.producerAddress) : new Uint8Array(0),
       blockId: isSet(object.blockId) ? globalThis.Number(object.blockId) : 0,
       version: isSet(object.version) ? globalThis.String(object.version) : "",
       header: isSet(object.header) ? BlockHeader.fromJSON(object.header) : undefined,
@@ -266,22 +224,15 @@ export const Block: MessageFns<Block> = {
       transactionIds: globalThis.Array.isArray(object?.transactionIds)
         ? object.transactionIds.map((e: any) => bytesFromBase64(e))
         : [],
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
       pointer: isSet(object.pointer) ? BlockPointer.fromJSON(object.pointer) : undefined,
     };
   },
 
   toJSON(message: Block): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
-    }
-    if (message.producerAddress.length !== 0) {
-      obj.producerAddress = base64FromBytes(message.producerAddress);
     }
     if (message.blockId !== 0) {
       obj.blockId = Math.round(message.blockId);
@@ -298,11 +249,8 @@ export const Block: MessageFns<Block> = {
     if (message.transactionIds?.length) {
       obj.transactionIds = message.transactionIds.map((e) => base64FromBytes(e));
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.pointer !== undefined) {
       obj.pointer = BlockPointer.toJSON(message.pointer);
@@ -315,9 +263,7 @@ export const Block: MessageFns<Block> = {
   },
   fromPartial<I extends Exact<DeepPartial<Block>, I>>(object: I): Block {
     const message = createBaseBlock();
-    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
-    message.producerAddress = object.producerAddress ?? new Uint8Array(0);
     message.blockId = object.blockId ?? 0;
     message.version = object.version ?? "";
     message.header = (object.header !== undefined && object.header !== null)
@@ -327,8 +273,9 @@ export const Block: MessageFns<Block> = {
       ? BlockConsensus.fromPartial(object.consensus)
       : undefined;
     message.transactionIds = object.transactionIds?.map((e) => e) || [];
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
     message.pointer = (object.pointer !== undefined && object.pointer !== null)
       ? BlockPointer.fromPartial(object.pointer)
       : undefined;
@@ -338,7 +285,6 @@ export const Block: MessageFns<Block> = {
 
 function createBaseBlockHeader(): BlockHeader {
   return {
-    subject: "",
     blockHeight: 0,
     applicationHash: new Uint8Array(0),
     consensusParametersVersion: 0,
@@ -352,60 +298,49 @@ function createBaseBlockHeader(): BlockHeader {
     transactionsCount: 0,
     transactionsRoot: new Uint8Array(0),
     version: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
   };
 }
 
 export const BlockHeader: MessageFns<BlockHeader> = {
   encode(message: BlockHeader, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
     if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
+      writer.uint32(8).int64(message.blockHeight);
     }
     if (message.applicationHash.length !== 0) {
-      writer.uint32(26).bytes(message.applicationHash);
+      writer.uint32(18).bytes(message.applicationHash);
     }
     if (message.consensusParametersVersion !== 0) {
-      writer.uint32(32).int32(message.consensusParametersVersion);
+      writer.uint32(24).int32(message.consensusParametersVersion);
     }
     if (message.daHeight !== 0) {
-      writer.uint32(40).int64(message.daHeight);
+      writer.uint32(32).int64(message.daHeight);
     }
     if (message.eventInboxRoot.length !== 0) {
-      writer.uint32(50).bytes(message.eventInboxRoot);
+      writer.uint32(42).bytes(message.eventInboxRoot);
     }
     if (message.messageOutboxRoot.length !== 0) {
-      writer.uint32(58).bytes(message.messageOutboxRoot);
+      writer.uint32(50).bytes(message.messageOutboxRoot);
     }
     if (message.messageReceiptCount !== 0) {
-      writer.uint32(64).int32(message.messageReceiptCount);
+      writer.uint32(56).int32(message.messageReceiptCount);
     }
     if (message.prevRoot.length !== 0) {
-      writer.uint32(74).bytes(message.prevRoot);
+      writer.uint32(66).bytes(message.prevRoot);
     }
     if (message.stateTransitionBytecodeVersion !== 0) {
-      writer.uint32(80).int32(message.stateTransitionBytecodeVersion);
+      writer.uint32(72).int32(message.stateTransitionBytecodeVersion);
     }
     if (message.time !== 0) {
-      writer.uint32(88).int64(message.time);
+      writer.uint32(80).int64(message.time);
     }
     if (message.transactionsCount !== 0) {
-      writer.uint32(96).int32(message.transactionsCount);
+      writer.uint32(88).int32(message.transactionsCount);
     }
     if (message.transactionsRoot.length !== 0) {
-      writer.uint32(106).bytes(message.transactionsRoot);
+      writer.uint32(98).bytes(message.transactionsRoot);
     }
     if (message.version !== 0) {
-      writer.uint32(112).int32(message.version);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(122).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(130).fork()).join();
+      writer.uint32(104).int32(message.version);
     }
     return writer;
   },
@@ -418,27 +353,27 @@ export const BlockHeader: MessageFns<BlockHeader> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.subject = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 16) {
+          if (tag !== 8) {
             break;
           }
 
           message.blockHeight = longToNumber(reader.int64());
           continue;
         }
-        case 3: {
-          if (tag !== 26) {
+        case 2: {
+          if (tag !== 18) {
             break;
           }
 
           message.applicationHash = reader.bytes();
+          continue;
+        }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.consensusParametersVersion = reader.int32();
           continue;
         }
         case 4: {
@@ -446,15 +381,15 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.consensusParametersVersion = reader.int32();
+          message.daHeight = longToNumber(reader.int64());
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.daHeight = longToNumber(reader.int64());
+          message.eventInboxRoot = reader.bytes();
           continue;
         }
         case 6: {
@@ -462,31 +397,31 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.eventInboxRoot = reader.bytes();
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
           message.messageOutboxRoot = reader.bytes();
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
+        case 7: {
+          if (tag !== 56) {
             break;
           }
 
           message.messageReceiptCount = reader.int32();
           continue;
         }
-        case 9: {
-          if (tag !== 74) {
+        case 8: {
+          if (tag !== 66) {
             break;
           }
 
           message.prevRoot = reader.bytes();
+          continue;
+        }
+        case 9: {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.stateTransitionBytecodeVersion = reader.int32();
           continue;
         }
         case 10: {
@@ -494,7 +429,7 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.stateTransitionBytecodeVersion = reader.int32();
+          message.time = longToNumber(reader.int64());
           continue;
         }
         case 11: {
@@ -502,47 +437,23 @@ export const BlockHeader: MessageFns<BlockHeader> = {
             break;
           }
 
-          message.time = longToNumber(reader.int64());
-          continue;
-        }
-        case 12: {
-          if (tag !== 96) {
-            break;
-          }
-
           message.transactionsCount = reader.int32();
           continue;
         }
-        case 13: {
-          if (tag !== 106) {
+        case 12: {
+          if (tag !== 98) {
             break;
           }
 
           message.transactionsRoot = reader.bytes();
           continue;
         }
-        case 14: {
-          if (tag !== 112) {
+        case 13: {
+          if (tag !== 104) {
             break;
           }
 
           message.version = reader.int32();
-          continue;
-        }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 16: {
-          if (tag !== 130) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -556,7 +467,6 @@ export const BlockHeader: MessageFns<BlockHeader> = {
 
   fromJSON(object: any): BlockHeader {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
       applicationHash: isSet(object.applicationHash) ? bytesFromBase64(object.applicationHash) : new Uint8Array(0),
       consensusParametersVersion: isSet(object.consensusParametersVersion)
@@ -576,16 +486,11 @@ export const BlockHeader: MessageFns<BlockHeader> = {
       transactionsCount: isSet(object.transactionsCount) ? globalThis.Number(object.transactionsCount) : 0,
       transactionsRoot: isSet(object.transactionsRoot) ? bytesFromBase64(object.transactionsRoot) : new Uint8Array(0),
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: BlockHeader): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
     }
@@ -625,12 +530,6 @@ export const BlockHeader: MessageFns<BlockHeader> = {
     if (message.version !== 0) {
       obj.version = Math.round(message.version);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -639,7 +538,6 @@ export const BlockHeader: MessageFns<BlockHeader> = {
   },
   fromPartial<I extends Exact<DeepPartial<BlockHeader>, I>>(object: I): BlockHeader {
     const message = createBaseBlockHeader();
-    message.subject = object.subject ?? "";
     message.blockHeight = object.blockHeight ?? 0;
     message.applicationHash = object.applicationHash ?? new Uint8Array(0);
     message.consensusParametersVersion = object.consensusParametersVersion ?? 0;
@@ -653,15 +551,14 @@ export const BlockHeader: MessageFns<BlockHeader> = {
     message.transactionsCount = object.transactionsCount ?? 0;
     message.transactionsRoot = object.transactionsRoot ?? new Uint8Array(0);
     message.version = object.version ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseBlockConsensus(): BlockConsensus {
   return {
-    subject: "",
+    chainId: 0,
+    producer: new Uint8Array(0),
     blockHeight: 0,
     consensusType: 0,
     chainConfigHash: new Uint8Array(0),
@@ -670,45 +567,40 @@ function createBaseBlockConsensus(): BlockConsensus {
     messagesRoot: new Uint8Array(0),
     transactionsRoot: new Uint8Array(0),
     signature: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
   };
 }
 
 export const BlockConsensus: MessageFns<BlockConsensus> = {
   encode(message: BlockConsensus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
+    if (message.chainId !== 0) {
+      writer.uint32(8).int64(message.chainId);
+    }
+    if (message.producer.length !== 0) {
+      writer.uint32(18).bytes(message.producer);
     }
     if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
+      writer.uint32(24).int64(message.blockHeight);
     }
     if (message.consensusType !== 0) {
-      writer.uint32(24).int32(message.consensusType);
+      writer.uint32(32).int32(message.consensusType);
     }
     if (message.chainConfigHash.length !== 0) {
-      writer.uint32(34).bytes(message.chainConfigHash);
+      writer.uint32(42).bytes(message.chainConfigHash);
     }
     if (message.coinsRoot.length !== 0) {
-      writer.uint32(42).bytes(message.coinsRoot);
+      writer.uint32(50).bytes(message.coinsRoot);
     }
     if (message.contractsRoot.length !== 0) {
-      writer.uint32(50).bytes(message.contractsRoot);
+      writer.uint32(58).bytes(message.contractsRoot);
     }
     if (message.messagesRoot.length !== 0) {
-      writer.uint32(58).bytes(message.messagesRoot);
+      writer.uint32(66).bytes(message.messagesRoot);
     }
     if (message.transactionsRoot.length !== 0) {
-      writer.uint32(66).bytes(message.transactionsRoot);
+      writer.uint32(74).bytes(message.transactionsRoot);
     }
     if (message.signature.length !== 0) {
-      writer.uint32(74).bytes(message.signature);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(82).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(90).fork()).join();
+      writer.uint32(82).bytes(message.signature);
     }
     return writer;
   },
@@ -721,19 +613,19 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.subject = reader.string();
+          message.chainId = longToNumber(reader.int64());
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.producer = reader.bytes();
           continue;
         }
         case 3: {
@@ -741,15 +633,15 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.consensusType = reader.int32() as any;
+          message.blockHeight = longToNumber(reader.int64());
           continue;
         }
         case 4: {
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.chainConfigHash = reader.bytes();
+          message.consensusType = reader.int32() as any;
           continue;
         }
         case 5: {
@@ -757,7 +649,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.coinsRoot = reader.bytes();
+          message.chainConfigHash = reader.bytes();
           continue;
         }
         case 6: {
@@ -765,7 +657,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.contractsRoot = reader.bytes();
+          message.coinsRoot = reader.bytes();
           continue;
         }
         case 7: {
@@ -773,7 +665,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.messagesRoot = reader.bytes();
+          message.contractsRoot = reader.bytes();
           continue;
         }
         case 8: {
@@ -781,7 +673,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.transactionsRoot = reader.bytes();
+          message.messagesRoot = reader.bytes();
           continue;
         }
         case 9: {
@@ -789,7 +681,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.signature = reader.bytes();
+          message.transactionsRoot = reader.bytes();
           continue;
         }
         case 10: {
@@ -797,15 +689,7 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
             break;
           }
 
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.signature = reader.bytes();
           continue;
         }
       }
@@ -819,7 +703,8 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
 
   fromJSON(object: any): BlockConsensus {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+      chainId: isSet(object.chainId) ? globalThis.Number(object.chainId) : 0,
+      producer: isSet(object.producer) ? bytesFromBase64(object.producer) : new Uint8Array(0),
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
       consensusType: isSet(object.consensusType) ? consensusTypeFromJSON(object.consensusType) : 0,
       chainConfigHash: isSet(object.chainConfigHash) ? bytesFromBase64(object.chainConfigHash) : new Uint8Array(0),
@@ -828,15 +713,16 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
       messagesRoot: isSet(object.messagesRoot) ? bytesFromBase64(object.messagesRoot) : new Uint8Array(0),
       transactionsRoot: isSet(object.transactionsRoot) ? bytesFromBase64(object.transactionsRoot) : new Uint8Array(0),
       signature: isSet(object.signature) ? bytesFromBase64(object.signature) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: BlockConsensus): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
+    if (message.chainId !== 0) {
+      obj.chainId = Math.round(message.chainId);
+    }
+    if (message.producer.length !== 0) {
+      obj.producer = base64FromBytes(message.producer);
     }
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
@@ -862,12 +748,6 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
     if (message.signature.length !== 0) {
       obj.signature = base64FromBytes(message.signature);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -876,7 +756,8 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
   },
   fromPartial<I extends Exact<DeepPartial<BlockConsensus>, I>>(object: I): BlockConsensus {
     const message = createBaseBlockConsensus();
-    message.subject = object.subject ?? "";
+    message.chainId = object.chainId ?? 0;
+    message.producer = object.producer ?? new Uint8Array(0);
     message.blockHeight = object.blockHeight ?? 0;
     message.consensusType = object.consensusType ?? 0;
     message.chainConfigHash = object.chainConfigHash ?? new Uint8Array(0);
@@ -885,8 +766,6 @@ export const BlockConsensus: MessageFns<BlockConsensus> = {
     message.messagesRoot = object.messagesRoot ?? new Uint8Array(0);
     message.transactionsRoot = object.transactionsRoot ?? new Uint8Array(0);
     message.signature = object.signature ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
@@ -927,28 +806,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());

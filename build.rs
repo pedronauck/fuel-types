@@ -47,8 +47,7 @@ fn build_ts() -> Result<()> {
 }
 
 fn main() -> Result<()> {
-    build_rust()?;
-    // Uncomment the following line when you want to enable TypeScript generation
-    // build_ts()?;
+    // build_rust()?;
+    build_ts()?;
     Ok(())
 }

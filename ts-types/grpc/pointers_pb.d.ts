@@ -26,25 +26,25 @@ export namespace BlockPointer {
     }
 }
 
-export class TransactionPointer extends jspb.Message { 
+export class TxPointer extends jspb.Message { 
     getBlockHeight(): number;
-    setBlockHeight(value: number): TransactionPointer;
+    setBlockHeight(value: number): TxPointer;
     getTxId(): number;
-    setTxId(value: number): TransactionPointer;
+    setTxId(value: number): TxPointer;
     getTxIndex(): number;
-    setTxIndex(value: number): TransactionPointer;
+    setTxIndex(value: number): TxPointer;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): TransactionPointer.AsObject;
-    static toObject(includeInstance: boolean, msg: TransactionPointer): TransactionPointer.AsObject;
+    toObject(includeInstance?: boolean): TxPointer.AsObject;
+    static toObject(includeInstance: boolean, msg: TxPointer): TxPointer.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: TransactionPointer, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): TransactionPointer;
-    static deserializeBinaryFromReader(message: TransactionPointer, reader: jspb.BinaryReader): TransactionPointer;
+    static serializeBinaryToWriter(message: TxPointer, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): TxPointer;
+    static deserializeBinaryFromReader(message: TxPointer, reader: jspb.BinaryReader): TxPointer;
 }
 
-export namespace TransactionPointer {
+export namespace TxPointer {
     export type AsObject = {
         blockHeight: number,
         txId: number,
@@ -148,6 +148,10 @@ export class UtxoPointer extends jspb.Message {
     setTxIndex(value: number): UtxoPointer;
     getUtxoId(): number;
     setUtxoId(value: number): UtxoPointer;
+    getInputIndex(): number;
+    setInputIndex(value: number): UtxoPointer;
+    getOutputIndex(): number;
+    setOutputIndex(value: number): UtxoPointer;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): UtxoPointer.AsObject;
@@ -165,5 +169,7 @@ export namespace UtxoPointer {
         txId: number,
         txIndex: number,
         utxoId: number,
+        inputIndex: number,
+        outputIndex: number,
     }
 }

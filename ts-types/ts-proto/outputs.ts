@@ -6,35 +6,39 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
+import { Metadata } from "./common";
 import { OutputPointer } from "./pointers";
 
 export const protobufPackage = "outputs";
 
 export enum OutputType {
-  COIN = 0,
-  CONTRACT = 1,
-  CHANGE = 2,
-  VARIABLE = 3,
-  CONTRACT_CREATED = 4,
+  UNKNOWN_OUTPUT_TYPE = 0,
+  COIN = 1,
+  CONTRACT = 2,
+  CHANGE = 3,
+  VARIABLE = 4,
+  CONTRACT_CREATED = 5,
   UNRECOGNIZED = -1,
 }
 
 export function outputTypeFromJSON(object: any): OutputType {
   switch (object) {
     case 0:
+    case "UNKNOWN_OUTPUT_TYPE":
+      return OutputType.UNKNOWN_OUTPUT_TYPE;
+    case 1:
     case "COIN":
       return OutputType.COIN;
-    case 1:
+    case 2:
     case "CONTRACT":
       return OutputType.CONTRACT;
-    case 2:
+    case 3:
     case "CHANGE":
       return OutputType.CHANGE;
-    case 3:
+    case 4:
     case "VARIABLE":
       return OutputType.VARIABLE;
-    case 4:
+    case 5:
     case "CONTRACT_CREATED":
       return OutputType.CONTRACT_CREATED;
     case -1:
@@ -46,6 +50,8 @@ export function outputTypeFromJSON(object: any): OutputType {
 
 export function outputTypeToJSON(object: OutputType): string {
   switch (object) {
+    case OutputType.UNKNOWN_OUTPUT_TYPE:
+      return "UNKNOWN_OUTPUT_TYPE";
     case OutputType.COIN:
       return "COIN";
     case OutputType.CONTRACT:
@@ -64,11 +70,7 @@ export function outputTypeToJSON(object: OutputType): string {
 
 export interface Output {
   subject: string;
-  blockHeight: number;
-  txId: Uint8Array;
-  txIndex: number;
-  outputIndex: number;
-  outputType: OutputType;
+  type: OutputType;
   coin?: OutputCoin | undefined;
   contract?: OutputContract | undefined;
   change?: OutputChange | undefined;
@@ -77,75 +79,49 @@ export interface Output {
     | OutputContractCreated
     | undefined;
   /** Metadata */
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
+  metadata: Metadata | undefined;
   pointer: OutputPointer | undefined;
 }
 
 export interface OutputCoin {
-  subject: string;
-  txId: Uint8Array;
+  to: Uint8Array;
   amount: number;
   assetId: Uint8Array;
-  toAddress: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface OutputContract {
-  subject: string;
-  txId: Uint8Array;
   balanceRoot: Uint8Array;
   stateRoot: Uint8Array;
   inputIndex: number;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface OutputContractCreated {
-  subject: string;
-  txId: Uint8Array;
   contractId: Uint8Array;
   stateRoot: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface OutputChange {
-  subject: string;
-  txId: Uint8Array;
+  to: Uint8Array;
   amount: number;
   assetId: Uint8Array;
-  toAddress: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 export interface OutputVariable {
-  subject: string;
-  txId: Uint8Array;
+  to: Uint8Array;
   amount: number;
   assetId: Uint8Array;
-  toAddress: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
 }
 
 function createBaseOutput(): Output {
   return {
     subject: "",
-    blockHeight: 0,
-    txId: new Uint8Array(0),
-    txIndex: 0,
-    outputIndex: 0,
-    outputType: 0,
+    type: 0,
     coin: undefined,
     contract: undefined,
     change: undefined,
     variable: undefined,
     contractCreated: undefined,
-    createdAt: undefined,
-    publishedAt: undefined,
+    metadata: undefined,
     pointer: undefined,
   };
 }
@@ -155,44 +131,29 @@ export const Output: MessageFns<Output> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(26).bytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      writer.uint32(32).int32(message.txIndex);
-    }
-    if (message.outputIndex !== 0) {
-      writer.uint32(40).int32(message.outputIndex);
-    }
-    if (message.outputType !== 0) {
-      writer.uint32(48).int32(message.outputType);
+    if (message.type !== 0) {
+      writer.uint32(16).int32(message.type);
     }
     if (message.coin !== undefined) {
-      OutputCoin.encode(message.coin, writer.uint32(58).fork()).join();
+      OutputCoin.encode(message.coin, writer.uint32(26).fork()).join();
     }
     if (message.contract !== undefined) {
-      OutputContract.encode(message.contract, writer.uint32(66).fork()).join();
+      OutputContract.encode(message.contract, writer.uint32(34).fork()).join();
     }
     if (message.change !== undefined) {
-      OutputChange.encode(message.change, writer.uint32(74).fork()).join();
+      OutputChange.encode(message.change, writer.uint32(42).fork()).join();
     }
     if (message.variable !== undefined) {
-      OutputVariable.encode(message.variable, writer.uint32(82).fork()).join();
+      OutputVariable.encode(message.variable, writer.uint32(50).fork()).join();
     }
     if (message.contractCreated !== undefined) {
-      OutputContractCreated.encode(message.contractCreated, writer.uint32(90).fork()).join();
+      OutputContractCreated.encode(message.contractCreated, writer.uint32(58).fork()).join();
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(98).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(106).fork()).join();
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(74).fork()).join();
     }
     if (message.pointer !== undefined) {
-      OutputPointer.encode(message.pointer, writer.uint32(114).fork()).join();
+      OutputPointer.encode(message.pointer, writer.uint32(82).fork()).join();
     }
     return writer;
   },
@@ -217,7 +178,7 @@ export const Output: MessageFns<Output> = {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.type = reader.int32() as any;
           continue;
         }
         case 3: {
@@ -225,31 +186,31 @@ export const Output: MessageFns<Output> = {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.coin = OutputCoin.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.contract = OutputContract.decode(reader, reader.uint32());
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.outputIndex = reader.int32();
+          message.change = OutputChange.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.outputType = reader.int32() as any;
+          message.variable = OutputVariable.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -257,15 +218,7 @@ export const Output: MessageFns<Output> = {
             break;
           }
 
-          message.coin = OutputCoin.decode(reader, reader.uint32());
-          continue;
-        }
-        case 8: {
-          if (tag !== 66) {
-            break;
-          }
-
-          message.contract = OutputContract.decode(reader, reader.uint32());
+          message.contractCreated = OutputContractCreated.decode(reader, reader.uint32());
           continue;
         }
         case 9: {
@@ -273,43 +226,11 @@ export const Output: MessageFns<Output> = {
             break;
           }
 
-          message.change = OutputChange.decode(reader, reader.uint32());
+          message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
         case 10: {
           if (tag !== 82) {
-            break;
-          }
-
-          message.variable = OutputVariable.decode(reader, reader.uint32());
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.contractCreated = OutputContractCreated.decode(reader, reader.uint32());
-          continue;
-        }
-        case 12: {
-          if (tag !== 98) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 13: {
-          if (tag !== 106) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 14: {
-          if (tag !== 114) {
             break;
           }
 
@@ -328,11 +249,7 @@ export const Output: MessageFns<Output> = {
   fromJSON(object: any): Output {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
-      outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
-      outputType: isSet(object.outputType) ? outputTypeFromJSON(object.outputType) : 0,
+      type: isSet(object.type) ? outputTypeFromJSON(object.type) : 0,
       coin: isSet(object.coin) ? OutputCoin.fromJSON(object.coin) : undefined,
       contract: isSet(object.contract) ? OutputContract.fromJSON(object.contract) : undefined,
       change: isSet(object.change) ? OutputChange.fromJSON(object.change) : undefined,
@@ -340,8 +257,7 @@ export const Output: MessageFns<Output> = {
       contractCreated: isSet(object.contractCreated)
         ? OutputContractCreated.fromJSON(object.contractCreated)
         : undefined,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
       pointer: isSet(object.pointer) ? OutputPointer.fromJSON(object.pointer) : undefined,
     };
   },
@@ -351,20 +267,8 @@ export const Output: MessageFns<Output> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      obj.txIndex = Math.round(message.txIndex);
-    }
-    if (message.outputIndex !== 0) {
-      obj.outputIndex = Math.round(message.outputIndex);
-    }
-    if (message.outputType !== 0) {
-      obj.outputType = outputTypeToJSON(message.outputType);
+    if (message.type !== 0) {
+      obj.type = outputTypeToJSON(message.type);
     }
     if (message.coin !== undefined) {
       obj.coin = OutputCoin.toJSON(message.coin);
@@ -381,11 +285,8 @@ export const Output: MessageFns<Output> = {
     if (message.contractCreated !== undefined) {
       obj.contractCreated = OutputContractCreated.toJSON(message.contractCreated);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.pointer !== undefined) {
       obj.pointer = OutputPointer.toJSON(message.pointer);
@@ -399,11 +300,7 @@ export const Output: MessageFns<Output> = {
   fromPartial<I extends Exact<DeepPartial<Output>, I>>(object: I): Output {
     const message = createBaseOutput();
     message.subject = object.subject ?? "";
-    message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.txIndex = object.txIndex ?? 0;
-    message.outputIndex = object.outputIndex ?? 0;
-    message.outputType = object.outputType ?? 0;
+    message.type = object.type ?? 0;
     message.coin = (object.coin !== undefined && object.coin !== null)
       ? OutputCoin.fromPartial(object.coin)
       : undefined;
@@ -419,8 +316,9 @@ export const Output: MessageFns<Output> = {
     message.contractCreated = (object.contractCreated !== undefined && object.contractCreated !== null)
       ? OutputContractCreated.fromPartial(object.contractCreated)
       : undefined;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
     message.pointer = (object.pointer !== undefined && object.pointer !== null)
       ? OutputPointer.fromPartial(object.pointer)
       : undefined;
@@ -429,39 +327,19 @@ export const Output: MessageFns<Output> = {
 };
 
 function createBaseOutputCoin(): OutputCoin {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    amount: 0,
-    assetId: new Uint8Array(0),
-    toAddress: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0) };
 }
 
 export const OutputCoin: MessageFns<OutputCoin> = {
   encode(message: OutputCoin, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.to.length !== 0) {
+      writer.uint32(10).bytes(message.to);
     }
     if (message.amount !== 0) {
-      writer.uint32(24).int64(message.amount);
+      writer.uint32(16).int64(message.amount);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(34).bytes(message.assetId);
-    }
-    if (message.toAddress.length !== 0) {
-      writer.uint32(42).bytes(message.toAddress);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(50).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(58).fork()).join();
+      writer.uint32(26).bytes(message.assetId);
     }
     return writer;
   },
@@ -478,55 +356,23 @@ export const OutputCoin: MessageFns<OutputCoin> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.to = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
+          if (tag !== 16) {
             break;
           }
 
           message.amount = longToNumber(reader.int64());
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
           message.assetId = reader.bytes();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.toAddress = reader.bytes();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -540,38 +386,22 @@ export const OutputCoin: MessageFns<OutputCoin> = {
 
   fromJSON(object: any): OutputCoin {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
-      toAddress: isSet(object.toAddress) ? bytesFromBase64(object.toAddress) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: OutputCoin): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
     if (message.assetId.length !== 0) {
       obj.assetId = base64FromBytes(message.assetId);
-    }
-    if (message.toAddress.length !== 0) {
-      obj.toAddress = base64FromBytes(message.toAddress);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -581,51 +411,27 @@ export const OutputCoin: MessageFns<OutputCoin> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputCoin>, I>>(object: I): OutputCoin {
     const message = createBaseOutputCoin();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.to = object.to ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
-    message.toAddress = object.toAddress ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseOutputContract(): OutputContract {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    balanceRoot: new Uint8Array(0),
-    stateRoot: new Uint8Array(0),
-    inputIndex: 0,
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { balanceRoot: new Uint8Array(0), stateRoot: new Uint8Array(0), inputIndex: 0 };
 }
 
 export const OutputContract: MessageFns<OutputContract> = {
   encode(message: OutputContract, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
     if (message.balanceRoot.length !== 0) {
-      writer.uint32(26).bytes(message.balanceRoot);
+      writer.uint32(10).bytes(message.balanceRoot);
     }
     if (message.stateRoot.length !== 0) {
-      writer.uint32(34).bytes(message.stateRoot);
+      writer.uint32(18).bytes(message.stateRoot);
     }
     if (message.inputIndex !== 0) {
-      writer.uint32(40).int32(message.inputIndex);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(50).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(58).fork()).join();
+      writer.uint32(24).int32(message.inputIndex);
     }
     return writer;
   },
@@ -642,7 +448,7 @@ export const OutputContract: MessageFns<OutputContract> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.balanceRoot = reader.bytes();
           continue;
         }
         case 2: {
@@ -650,47 +456,15 @@ export const OutputContract: MessageFns<OutputContract> = {
             break;
           }
 
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.balanceRoot = reader.bytes();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
           message.stateRoot = reader.bytes();
           continue;
         }
-        case 5: {
-          if (tag !== 40) {
+        case 3: {
+          if (tag !== 24) {
             break;
           }
 
           message.inputIndex = reader.int32();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -704,24 +478,14 @@ export const OutputContract: MessageFns<OutputContract> = {
 
   fromJSON(object: any): OutputContract {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       balanceRoot: isSet(object.balanceRoot) ? bytesFromBase64(object.balanceRoot) : new Uint8Array(0),
       stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
       inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: OutputContract): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
     if (message.balanceRoot.length !== 0) {
       obj.balanceRoot = base64FromBytes(message.balanceRoot);
     }
@@ -731,12 +495,6 @@ export const OutputContract: MessageFns<OutputContract> = {
     if (message.inputIndex !== 0) {
       obj.inputIndex = Math.round(message.inputIndex);
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
     return obj;
   },
 
@@ -745,47 +503,24 @@ export const OutputContract: MessageFns<OutputContract> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputContract>, I>>(object: I): OutputContract {
     const message = createBaseOutputContract();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
     message.balanceRoot = object.balanceRoot ?? new Uint8Array(0);
     message.stateRoot = object.stateRoot ?? new Uint8Array(0);
     message.inputIndex = object.inputIndex ?? 0;
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseOutputContractCreated(): OutputContractCreated {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    contractId: new Uint8Array(0),
-    stateRoot: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { contractId: new Uint8Array(0), stateRoot: new Uint8Array(0) };
 }
 
 export const OutputContractCreated: MessageFns<OutputContractCreated> = {
   encode(message: OutputContractCreated, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
-    }
     if (message.contractId.length !== 0) {
-      writer.uint32(26).bytes(message.contractId);
+      writer.uint32(10).bytes(message.contractId);
     }
     if (message.stateRoot.length !== 0) {
-      writer.uint32(34).bytes(message.stateRoot);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(50).fork()).join();
+      writer.uint32(18).bytes(message.stateRoot);
     }
     return writer;
   },
@@ -802,7 +537,7 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.contractId = reader.bytes();
           continue;
         }
         case 2: {
@@ -810,39 +545,7 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
             break;
           }
 
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
-            break;
-          }
-
-          message.contractId = reader.bytes();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
           message.stateRoot = reader.bytes();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -856,34 +559,18 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
 
   fromJSON(object: any): OutputContractCreated {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
       contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
       stateRoot: isSet(object.stateRoot) ? bytesFromBase64(object.stateRoot) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: OutputContractCreated): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
     if (message.contractId.length !== 0) {
       obj.contractId = base64FromBytes(message.contractId);
     }
     if (message.stateRoot.length !== 0) {
       obj.stateRoot = base64FromBytes(message.stateRoot);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -893,50 +580,26 @@ export const OutputContractCreated: MessageFns<OutputContractCreated> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputContractCreated>, I>>(object: I): OutputContractCreated {
     const message = createBaseOutputContractCreated();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
     message.contractId = object.contractId ?? new Uint8Array(0);
     message.stateRoot = object.stateRoot ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseOutputChange(): OutputChange {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    amount: 0,
-    assetId: new Uint8Array(0),
-    toAddress: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0) };
 }
 
 export const OutputChange: MessageFns<OutputChange> = {
   encode(message: OutputChange, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.to.length !== 0) {
+      writer.uint32(10).bytes(message.to);
     }
     if (message.amount !== 0) {
-      writer.uint32(24).int64(message.amount);
+      writer.uint32(16).int64(message.amount);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(34).bytes(message.assetId);
-    }
-    if (message.toAddress.length !== 0) {
-      writer.uint32(42).bytes(message.toAddress);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(50).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(58).fork()).join();
+      writer.uint32(26).bytes(message.assetId);
     }
     return writer;
   },
@@ -953,55 +616,23 @@ export const OutputChange: MessageFns<OutputChange> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.to = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
+          if (tag !== 16) {
             break;
           }
 
           message.amount = longToNumber(reader.int64());
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
           message.assetId = reader.bytes();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.toAddress = reader.bytes();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1015,38 +646,22 @@ export const OutputChange: MessageFns<OutputChange> = {
 
   fromJSON(object: any): OutputChange {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
-      toAddress: isSet(object.toAddress) ? bytesFromBase64(object.toAddress) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: OutputChange): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
     if (message.assetId.length !== 0) {
       obj.assetId = base64FromBytes(message.assetId);
-    }
-    if (message.toAddress.length !== 0) {
-      obj.toAddress = base64FromBytes(message.toAddress);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -1056,51 +671,27 @@ export const OutputChange: MessageFns<OutputChange> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputChange>, I>>(object: I): OutputChange {
     const message = createBaseOutputChange();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.to = object.to ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
-    message.toAddress = object.toAddress ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
 
 function createBaseOutputVariable(): OutputVariable {
-  return {
-    subject: "",
-    txId: new Uint8Array(0),
-    amount: 0,
-    assetId: new Uint8Array(0),
-    toAddress: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-  };
+  return { to: new Uint8Array(0), amount: 0, assetId: new Uint8Array(0) };
 }
 
 export const OutputVariable: MessageFns<OutputVariable> = {
   encode(message: OutputVariable, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.subject !== "") {
-      writer.uint32(10).string(message.subject);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(18).bytes(message.txId);
+    if (message.to.length !== 0) {
+      writer.uint32(10).bytes(message.to);
     }
     if (message.amount !== 0) {
-      writer.uint32(24).int64(message.amount);
+      writer.uint32(16).int64(message.amount);
     }
     if (message.assetId.length !== 0) {
-      writer.uint32(34).bytes(message.assetId);
-    }
-    if (message.toAddress.length !== 0) {
-      writer.uint32(42).bytes(message.toAddress);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(50).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(58).fork()).join();
+      writer.uint32(26).bytes(message.assetId);
     }
     return writer;
   },
@@ -1117,55 +708,23 @@ export const OutputVariable: MessageFns<OutputVariable> = {
             break;
           }
 
-          message.subject = reader.string();
+          message.to = reader.bytes();
           continue;
         }
         case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.txId = reader.bytes();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
+          if (tag !== 16) {
             break;
           }
 
           message.amount = longToNumber(reader.int64());
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
+        case 3: {
+          if (tag !== 26) {
             break;
           }
 
           message.assetId = reader.bytes();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.toAddress = reader.bytes();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -1179,38 +738,22 @@ export const OutputVariable: MessageFns<OutputVariable> = {
 
   fromJSON(object: any): OutputVariable {
     return {
-      subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
+      to: isSet(object.to) ? bytesFromBase64(object.to) : new Uint8Array(0),
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       assetId: isSet(object.assetId) ? bytesFromBase64(object.assetId) : new Uint8Array(0),
-      toAddress: isSet(object.toAddress) ? bytesFromBase64(object.toAddress) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
     };
   },
 
   toJSON(message: OutputVariable): unknown {
     const obj: any = {};
-    if (message.subject !== "") {
-      obj.subject = message.subject;
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
+    if (message.to.length !== 0) {
+      obj.to = base64FromBytes(message.to);
     }
     if (message.amount !== 0) {
       obj.amount = Math.round(message.amount);
     }
     if (message.assetId.length !== 0) {
       obj.assetId = base64FromBytes(message.assetId);
-    }
-    if (message.toAddress.length !== 0) {
-      obj.toAddress = base64FromBytes(message.toAddress);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
     }
     return obj;
   },
@@ -1220,13 +763,9 @@ export const OutputVariable: MessageFns<OutputVariable> = {
   },
   fromPartial<I extends Exact<DeepPartial<OutputVariable>, I>>(object: I): OutputVariable {
     const message = createBaseOutputVariable();
-    message.subject = object.subject ?? "";
-    message.txId = object.txId ?? new Uint8Array(0);
+    message.to = object.to ?? new Uint8Array(0);
     message.amount = object.amount ?? 0;
     message.assetId = object.assetId ?? new Uint8Array(0);
-    message.toAddress = object.toAddress ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
     return message;
   },
 };
@@ -1267,28 +806,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());

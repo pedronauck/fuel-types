@@ -4,80 +4,63 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { BlockPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file blocks.proto.
  */
 export const file_blocks: GenFile = /*@__PURE__*/
-  fileDesc("CgxibG9ja3MucHJvdG8SBmJsb2NrcyLfAgoFQmxvY2sSDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSGAoQcHJvZHVjZXJfYWRkcmVzcxgDIAEoDBIQCghibG9ja19pZBgEIAEoBRIPCgd2ZXJzaW9uGAUgASgJEiMKBmhlYWRlchgGIAEoCzITLmJsb2Nrcy5CbG9ja0hlYWRlchIpCgljb25zZW5zdXMYByABKAsyFi5ibG9ja3MuQmxvY2tDb25zZW5zdXMSFwoPdHJhbnNhY3Rpb25faWRzGAggAygMEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDHB1Ymxpc2hlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASJwoHcG9pbnRlchgLIAEoCzIWLnBvaW50ZXJzLkJsb2NrUG9pbnRlciLTAwoLQmxvY2tIZWFkZXISDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSGAoQYXBwbGljYXRpb25faGFzaBgDIAEoDBIkChxjb25zZW5zdXNfcGFyYW1ldGVyc192ZXJzaW9uGAQgASgFEhEKCWRhX2hlaWdodBgFIAEoAxIYChBldmVudF9pbmJveF9yb290GAYgASgMEhsKE21lc3NhZ2Vfb3V0Ym94X3Jvb3QYByABKAwSHQoVbWVzc2FnZV9yZWNlaXB0X2NvdW50GAggASgFEhEKCXByZXZfcm9vdBgJIAEoDBIpCiFzdGF0ZV90cmFuc2l0aW9uX2J5dGVjb2RlX3ZlcnNpb24YCiABKAUSDAoEdGltZRgLIAEoAxIaChJ0cmFuc2FjdGlvbnNfY291bnQYDCABKAUSGQoRdHJhbnNhY3Rpb25zX3Jvb3QYDSABKAwSDwoHdmVyc2lvbhgOIAEoBRIuCgpjcmVhdGVkX2F0GA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYECABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wItQCCg5CbG9ja0NvbnNlbnN1cxIPCgdzdWJqZWN0GAEgASgJEhQKDGJsb2NrX2hlaWdodBgCIAEoAxItCg5jb25zZW5zdXNfdHlwZRgDIAEoDjIVLmJsb2Nrcy5Db25zZW5zdXNUeXBlEhkKEWNoYWluX2NvbmZpZ19oYXNoGAQgASgMEhIKCmNvaW5zX3Jvb3QYBSABKAwSFgoOY29udHJhY3RzX3Jvb3QYBiABKAwSFQoNbWVzc2FnZXNfcm9vdBgHIAEoDBIZChF0cmFuc2FjdGlvbnNfcm9vdBgIIAEoDBIRCglzaWduYXR1cmUYCSABKAwSLgoKY3JlYXRlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMcHVibGlzaGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCovCg1Db25zZW5zdXNUeXBlEgsKB0dFTkVTSVMQABIRCg1QT0FfQ09OU0VOU1VTEAFiBnByb3RvMw", [file_google_protobuf_timestamp, file_pointers]);
+  fileDesc("CgxibG9ja3MucHJvdG8SBmJsb2NrcyL2AQoFQmxvY2sSFAoMYmxvY2tfaGVpZ2h0GAEgASgDEhAKCGJsb2NrX2lkGAIgASgFEg8KB3ZlcnNpb24YAyABKAkSIwoGaGVhZGVyGAQgASgLMhMuYmxvY2tzLkJsb2NrSGVhZGVyEikKCWNvbnNlbnN1cxgFIAEoCzIWLmJsb2Nrcy5CbG9ja0NvbnNlbnN1cxIXCg90cmFuc2FjdGlvbl9pZHMYBiADKAwSIgoIbWV0YWRhdGEYByABKAsyEC5jb21tb24uTWV0YWRhdGESJwoHcG9pbnRlchgIIAEoCzIWLnBvaW50ZXJzLkJsb2NrUG9pbnRlciLgAgoLQmxvY2tIZWFkZXISFAoMYmxvY2tfaGVpZ2h0GAEgASgDEhgKEGFwcGxpY2F0aW9uX2hhc2gYAiABKAwSJAocY29uc2Vuc3VzX3BhcmFtZXRlcnNfdmVyc2lvbhgDIAEoBRIRCglkYV9oZWlnaHQYBCABKAMSGAoQZXZlbnRfaW5ib3hfcm9vdBgFIAEoDBIbChNtZXNzYWdlX291dGJveF9yb290GAYgASgMEh0KFW1lc3NhZ2VfcmVjZWlwdF9jb3VudBgHIAEoBRIRCglwcmV2X3Jvb3QYCCABKAwSKQohc3RhdGVfdHJhbnNpdGlvbl9ieXRlY29kZV92ZXJzaW9uGAkgASgFEgwKBHRpbWUYCiABKAMSGgoSdHJhbnNhY3Rpb25zX2NvdW50GAsgASgFEhkKEXRyYW5zYWN0aW9uc19yb290GAwgASgMEg8KB3ZlcnNpb24YDSABKAUihQIKDkJsb2NrQ29uc2Vuc3VzEhAKCGNoYWluX2lkGAEgASgDEhAKCHByb2R1Y2VyGAIgASgMEhQKDGJsb2NrX2hlaWdodBgDIAEoAxItCg5jb25zZW5zdXNfdHlwZRgEIAEoDjIVLmJsb2Nrcy5Db25zZW5zdXNUeXBlEhkKEWNoYWluX2NvbmZpZ19oYXNoGAUgASgMEhIKCmNvaW5zX3Jvb3QYBiABKAwSFgoOY29udHJhY3RzX3Jvb3QYByABKAwSFQoNbWVzc2FnZXNfcm9vdBgIIAEoDBIZChF0cmFuc2FjdGlvbnNfcm9vdBgJIAEoDBIRCglzaWduYXR1cmUYCiABKAwqSwoNQ29uc2Vuc3VzVHlwZRIaChZVTktOT1dOX0NPTlNFTlNVU19UWVBFEAASCwoHR0VORVNJUxABEhEKDVBPQV9DT05TRU5TVVMQAmIGcHJvdG8z", [file_pointers, file_common]);
 
 /**
  * @generated from message blocks.Block
  */
 export type Block = Message<"blocks.Block"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: int64 block_height = 2;
+   * @generated from field: int64 block_height = 1;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: bytes producer_address = 3;
-   */
-  producerAddress: Uint8Array;
-
-  /**
-   * @generated from field: int32 block_id = 4;
+   * @generated from field: int32 block_id = 2;
    */
   blockId: number;
 
   /**
-   * @generated from field: string version = 5;
+   * @generated from field: string version = 3;
    */
   version: string;
 
   /**
    * Relationship fields
    *
-   * @generated from field: blocks.BlockHeader header = 6;
+   * @generated from field: blocks.BlockHeader header = 4;
    */
   header?: BlockHeader;
 
   /**
-   * @generated from field: blocks.BlockConsensus consensus = 7;
+   * @generated from field: blocks.BlockConsensus consensus = 5;
    */
   consensus?: BlockConsensus;
 
   /**
-   * Array of tx_ids in this block
-   *
-   * @generated from field: repeated bytes transaction_ids = 8;
+   * @generated from field: repeated bytes transaction_ids = 6;
    */
   transactionIds: Uint8Array[];
 
   /**
    * Metadata
    *
-   * @generated from field: google.protobuf.Timestamp created_at = 9;
+   * @generated from field: common.Metadata metadata = 7;
    */
-  createdAt?: Timestamp;
+  metadata?: Metadata;
 
   /**
-   * @generated from field: google.protobuf.Timestamp published_at = 10;
-   */
-  publishedAt?: Timestamp;
-
-  /**
-   * @generated from field: pointers.BlockPointer pointer = 11;
+   * @generated from field: pointers.BlockPointer pointer = 8;
    */
   pointer?: BlockPointer;
 };
@@ -94,84 +77,69 @@ export const BlockSchema: GenMessage<Block> = /*@__PURE__*/
  */
 export type BlockHeader = Message<"blocks.BlockHeader"> & {
   /**
-   * @generated from field: string subject = 1;
-   */
-  subject: string;
-
-  /**
-   * @generated from field: int64 block_height = 2;
+   * @generated from field: int64 block_height = 1;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: bytes application_hash = 3;
+   * @generated from field: bytes application_hash = 2;
    */
   applicationHash: Uint8Array;
 
   /**
-   * @generated from field: int32 consensus_parameters_version = 4;
+   * @generated from field: int32 consensus_parameters_version = 3;
    */
   consensusParametersVersion: number;
 
   /**
-   * @generated from field: int64 da_height = 5;
+   * @generated from field: int64 da_height = 4;
    */
   daHeight: bigint;
 
   /**
-   * @generated from field: bytes event_inbox_root = 6;
+   * @generated from field: bytes event_inbox_root = 5;
    */
   eventInboxRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes message_outbox_root = 7;
+   * @generated from field: bytes message_outbox_root = 6;
    */
   messageOutboxRoot: Uint8Array;
 
   /**
-   * @generated from field: int32 message_receipt_count = 8;
+   * @generated from field: int32 message_receipt_count = 7;
    */
   messageReceiptCount: number;
 
   /**
-   * @generated from field: bytes prev_root = 9;
+   * @generated from field: bytes prev_root = 8;
    */
   prevRoot: Uint8Array;
 
   /**
-   * @generated from field: int32 state_transition_bytecode_version = 10;
+   * @generated from field: int32 state_transition_bytecode_version = 9;
    */
   stateTransitionBytecodeVersion: number;
 
   /**
-   * @generated from field: int64 time = 11;
+   * @generated from field: int64 time = 10;
    */
   time: bigint;
 
   /**
-   * @generated from field: int32 transactions_count = 12;
+   * @generated from field: int32 transactions_count = 11;
    */
   transactionsCount: number;
 
   /**
-   * @generated from field: bytes transactions_root = 13;
+   * @generated from field: bytes transactions_root = 12;
    */
   transactionsRoot: Uint8Array;
 
   /**
-   * @generated from field: int32 version = 14;
+   * @generated from field: int32 version = 13;
    */
   version: number;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 15;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 16;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -186,59 +154,54 @@ export const BlockHeaderSchema: GenMessage<BlockHeader> = /*@__PURE__*/
  */
 export type BlockConsensus = Message<"blocks.BlockConsensus"> & {
   /**
-   * @generated from field: string subject = 1;
+   * @generated from field: int64 chain_id = 1;
    */
-  subject: string;
+  chainId: bigint;
 
   /**
-   * @generated from field: int64 block_height = 2;
+   * @generated from field: bytes producer = 2;
+   */
+  producer: Uint8Array;
+
+  /**
+   * @generated from field: int64 block_height = 3;
    */
   blockHeight: bigint;
 
   /**
-   * @generated from field: blocks.ConsensusType consensus_type = 3;
+   * @generated from field: blocks.ConsensusType consensus_type = 4;
    */
   consensusType: ConsensusType;
 
   /**
-   * @generated from field: bytes chain_config_hash = 4;
+   * @generated from field: bytes chain_config_hash = 5;
    */
   chainConfigHash: Uint8Array;
 
   /**
-   * @generated from field: bytes coins_root = 5;
+   * @generated from field: bytes coins_root = 6;
    */
   coinsRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes contracts_root = 6;
+   * @generated from field: bytes contracts_root = 7;
    */
   contractsRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes messages_root = 7;
+   * @generated from field: bytes messages_root = 8;
    */
   messagesRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes transactions_root = 8;
+   * @generated from field: bytes transactions_root = 9;
    */
   transactionsRoot: Uint8Array;
 
   /**
-   * @generated from field: bytes signature = 9;
+   * @generated from field: bytes signature = 10;
    */
   signature: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 10;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 11;
-   */
-  publishedAt?: Timestamp;
 };
 
 /**
@@ -253,14 +216,19 @@ export const BlockConsensusSchema: GenMessage<BlockConsensus> = /*@__PURE__*/
  */
 export enum ConsensusType {
   /**
-   * @generated from enum value: GENESIS = 0;
+   * @generated from enum value: UNKNOWN_CONSENSUS_TYPE = 0;
    */
-  GENESIS = 0,
+  UNKNOWN_CONSENSUS_TYPE = 0,
 
   /**
-   * @generated from enum value: POA_CONSENSUS = 1;
+   * @generated from enum value: GENESIS = 1;
    */
-  POA_CONSENSUS = 1,
+  GENESIS = 1,
+
+  /**
+   * @generated from enum value: POA_CONSENSUS = 2;
+   */
+  POA_CONSENSUS = 2,
 }
 
 /**

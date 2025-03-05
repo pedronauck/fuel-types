@@ -21,8 +21,8 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
-var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-goog.object.extend(proto, google_protobuf_timestamp_pb);
+var common_pb = require('./common_pb.js');
+goog.object.extend(proto, common_pb);
 var pointers_pb = require('./pointers_pb.js');
 goog.object.extend(proto, pointers_pb);
 var inputs_pb = require('./inputs_pb.js');
@@ -150,7 +150,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.transactions.Transaction.repeatedFields_ = [10,38,39,41,42,43,44,45];
+proto.transactions.Transaction.repeatedFields_ = [5,6,8,15,22,27,32];
 
 
 
@@ -184,57 +184,52 @@ proto.transactions.Transaction.prototype.toObject = function(opt_includeInstance
 proto.transactions.Transaction.toObject = function(includeInstance, msg) {
   var f, obj = {
     subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    blockHeight: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    txId: msg.getTxId_asB64(),
-    txIndex: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    type: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    root: msg.getRoot_asB64(),
-    witnessIndex: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    blobId: msg.getBlobId_asB64(),
+    id: msg.getId_asB64(),
+    scriptGasLimit: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    txPointer: (f = msg.getTxPointer()) && pointers_pb.TxPointer.toObject(includeInstance, f),
     inputAssetIdsList: msg.getInputAssetIdsList_asB64(),
-    isCreate: jspb.Message.getBooleanFieldWithDefault(msg, 11, false),
-    isMint: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    isScript: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
-    isUpgrade: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
-    isUpload: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
-    maturity: jspb.Message.getFieldWithDefault(msg, 16, 0),
+    inputContractsList: msg.getInputContractsList_asB64(),
+    inputContract: (f = msg.getInputContract()) && inputs_pb.InputContract.toObject(includeInstance, f),
+    inputsList: jspb.Message.toObjectList(msg.getInputsList(),
+    inputs_pb.Input.toObject, includeInstance),
+    isScript: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
+    isCreate: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
+    isMint: jspb.Message.getBooleanFieldWithDefault(msg, 11, false),
+    isUpgrade: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
+    isUpload: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
+    isBlob: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    outputsList: jspb.Message.toObjectList(msg.getOutputsList(),
+    outputs_pb.Output.toObject, includeInstance),
+    outputContract: (f = msg.getOutputContract()) && outputs_pb.OutputContract.toObject(includeInstance, f),
     mintAmount: jspb.Message.getFieldWithDefault(msg, 17, 0),
     mintAssetId: msg.getMintAssetId_asB64(),
     mintGasPrice: jspb.Message.getFieldWithDefault(msg, 19, 0),
-    policyType: jspb.Message.getFieldWithDefault(msg, 20, 0),
-    rawPayload: msg.getRawPayload_asB64(),
     receiptsRoot: msg.getReceiptsRoot_asB64(),
-    salt: msg.getSalt_asB64(),
-    script: msg.getScript_asB64(),
-    scriptLength: jspb.Message.getFieldWithDefault(msg, 25, 0),
-    scriptData: msg.getScriptData_asB64(),
-    scriptDataLength: jspb.Message.getFieldWithDefault(msg, 27, 0),
-    scriptGasLimit: jspb.Message.getFieldWithDefault(msg, 28, 0),
-    subsectionIndex: jspb.Message.getFieldWithDefault(msg, 29, 0),
-    subsectionsNumber: jspb.Message.getFieldWithDefault(msg, 30, 0),
-    upgradePurpose: jspb.Message.getFieldWithDefault(msg, 31, 0),
-    storageSlotsCount: jspb.Message.getFieldWithDefault(msg, 32, 0),
-    proofSetCount: jspb.Message.getFieldWithDefault(msg, 33, 0),
-    witnessesCount: jspb.Message.getFieldWithDefault(msg, 34, 0),
-    inputsCount: jspb.Message.getFieldWithDefault(msg, 35, 0),
-    outputsCount: jspb.Message.getFieldWithDefault(msg, 36, 0),
-    inputContract: (f = msg.getInputContract()) && inputs_pb.InputContract.toObject(includeInstance, f),
-    inputContractsList: msg.getInputContractsList_asB64(),
-    inputsList: jspb.Message.toObjectList(msg.getInputsList(),
-    inputs_pb.Input.toObject, includeInstance),
-    outputContract: (f = msg.getOutputContract()) && outputs_pb.OutputContract.toObject(includeInstance, f),
-    outputsList: jspb.Message.toObjectList(msg.getOutputsList(),
-    outputs_pb.Output.toObject, includeInstance),
-    proofSetList: msg.getProofSetList_asB64(),
-    receiptsList: jspb.Message.toObjectList(msg.getReceiptsList(),
-    receipts_pb.Receipt.toObject, includeInstance),
-    storageSlotsList: jspb.Message.toObjectList(msg.getStorageSlotsList(),
-    proto.transactions.StorageSlot.toObject, includeInstance),
+    status: jspb.Message.getFieldWithDefault(msg, 21, 0),
     witnessesList: msg.getWitnessesList_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    pointer: (f = msg.getPointer()) && pointers_pb.TransactionPointer.toObject(includeInstance, f)
+    script: msg.getScript_asB64(),
+    scriptData: msg.getScriptData_asB64(),
+    policies: (f = msg.getPolicies()) && proto.transactions.Policy.toObject(includeInstance, f),
+    salt: msg.getSalt_asB64(),
+    storageSlotsList: msg.getStorageSlotsList_asB64(),
+    bytecodeWitnessIndex: jspb.Message.getFieldWithDefault(msg, 28, 0),
+    bytecodeRoot: msg.getBytecodeRoot_asB64(),
+    subsectionIndex: jspb.Message.getFieldWithDefault(msg, 30, 0),
+    subsectionsNumber: jspb.Message.getFieldWithDefault(msg, 31, 0),
+    proofSetList: msg.getProofSetList_asB64(),
+    upgradePurpose: jspb.Message.getFieldWithDefault(msg, 33, 0),
+    blobId: msg.getBlobId_asB64(),
+    maturity: jspb.Message.getFieldWithDefault(msg, 35, 0),
+    policyType: jspb.Message.getFieldWithDefault(msg, 36, 0),
+    rawPayload: msg.getRawPayload_asB64(),
+    scriptLength: jspb.Message.getFieldWithDefault(msg, 38, 0),
+    scriptDataLength: jspb.Message.getFieldWithDefault(msg, 39, 0),
+    storageSlotsCount: jspb.Message.getFieldWithDefault(msg, 40, 0),
+    proofSetCount: jspb.Message.getFieldWithDefault(msg, 41, 0),
+    witnessesCount: jspb.Message.getFieldWithDefault(msg, 42, 0),
+    inputsCount: jspb.Message.getFieldWithDefault(msg, 43, 0),
+    outputsCount: jspb.Message.getFieldWithDefault(msg, 44, 0),
+    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -276,64 +271,69 @@ proto.transactions.Transaction.deserializeBinaryFromReader = function(msg, reade
       msg.setSubject(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setBlockHeight(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setId(value);
       break;
     case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setTxId(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setScriptGasLimit(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setTxIndex(value);
+      var value = new pointers_pb.TxPointer;
+      reader.readMessage(value,pointers_pb.TxPointer.deserializeBinaryFromReader);
+      msg.setTxPointer(value);
       break;
     case 5:
-      var value = /** @type {!proto.transactions.TransactionType} */ (reader.readEnum());
-      msg.setType(value);
-      break;
-    case 6:
-      var value = /** @type {!proto.transactions.TransactionStatus} */ (reader.readEnum());
-      msg.setStatus(value);
-      break;
-    case 7:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setRoot(value);
-      break;
-    case 8:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setWitnessIndex(value);
-      break;
-    case 9:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setBlobId(value);
-      break;
-    case 10:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addInputAssetIds(value);
       break;
-    case 11:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsCreate(value);
+    case 6:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.addInputContracts(value);
       break;
-    case 12:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsMint(value);
+    case 7:
+      var value = new inputs_pb.InputContract;
+      reader.readMessage(value,inputs_pb.InputContract.deserializeBinaryFromReader);
+      msg.setInputContract(value);
       break;
-    case 13:
+    case 8:
+      var value = new inputs_pb.Input;
+      reader.readMessage(value,inputs_pb.Input.deserializeBinaryFromReader);
+      msg.addInputs(value);
+      break;
+    case 9:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsScript(value);
       break;
-    case 14:
+    case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsCreate(value);
+      break;
+    case 11:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsMint(value);
+      break;
+    case 12:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsUpgrade(value);
       break;
-    case 15:
+    case 13:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsUpload(value);
       break;
+    case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsBlob(value);
+      break;
+    case 15:
+      var value = new outputs_pb.Output;
+      reader.readMessage(value,outputs_pb.Output.deserializeBinaryFromReader);
+      msg.addOutputs(value);
+      break;
     case 16:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setMaturity(value);
+      var value = new outputs_pb.OutputContract;
+      reader.readMessage(value,outputs_pb.OutputContract.deserializeBinaryFromReader);
+      msg.setOutputContract(value);
       break;
     case 17:
       var value = /** @type {number} */ (reader.readInt64());
@@ -348,129 +348,110 @@ proto.transactions.Transaction.deserializeBinaryFromReader = function(msg, reade
       msg.setMintGasPrice(value);
       break;
     case 20:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setPolicyType(value);
-      break;
-    case 21:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setRawPayload(value);
-      break;
-    case 22:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setReceiptsRoot(value);
       break;
-    case 23:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setSalt(value);
+    case 21:
+      var value = /** @type {!proto.transactions.TransactionStatus} */ (reader.readEnum());
+      msg.setStatus(value);
       break;
-    case 24:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setScript(value);
-      break;
-    case 25:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setScriptLength(value);
-      break;
-    case 26:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setScriptData(value);
-      break;
-    case 27:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setScriptDataLength(value);
-      break;
-    case 28:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setScriptGasLimit(value);
-      break;
-    case 29:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setSubsectionIndex(value);
-      break;
-    case 30:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setSubsectionsNumber(value);
-      break;
-    case 31:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setUpgradePurpose(value);
-      break;
-    case 32:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setStorageSlotsCount(value);
-      break;
-    case 33:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setProofSetCount(value);
-      break;
-    case 34:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setWitnessesCount(value);
-      break;
-    case 35:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setInputsCount(value);
-      break;
-    case 36:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setOutputsCount(value);
-      break;
-    case 37:
-      var value = new inputs_pb.InputContract;
-      reader.readMessage(value,inputs_pb.InputContract.deserializeBinaryFromReader);
-      msg.setInputContract(value);
-      break;
-    case 38:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.addInputContracts(value);
-      break;
-    case 39:
-      var value = new inputs_pb.Input;
-      reader.readMessage(value,inputs_pb.Input.deserializeBinaryFromReader);
-      msg.addInputs(value);
-      break;
-    case 40:
-      var value = new outputs_pb.OutputContract;
-      reader.readMessage(value,outputs_pb.OutputContract.deserializeBinaryFromReader);
-      msg.setOutputContract(value);
-      break;
-    case 41:
-      var value = new outputs_pb.Output;
-      reader.readMessage(value,outputs_pb.Output.deserializeBinaryFromReader);
-      msg.addOutputs(value);
-      break;
-    case 42:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.addProofSet(value);
-      break;
-    case 43:
-      var value = new receipts_pb.Receipt;
-      reader.readMessage(value,receipts_pb.Receipt.deserializeBinaryFromReader);
-      msg.addReceipts(value);
-      break;
-    case 44:
-      var value = new proto.transactions.StorageSlot;
-      reader.readMessage(value,proto.transactions.StorageSlot.deserializeBinaryFromReader);
-      msg.addStorageSlots(value);
-      break;
-    case 45:
+    case 22:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addWitnesses(value);
       break;
-    case 46:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
+    case 23:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setScript(value);
       break;
-    case 47:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
+    case 24:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setScriptData(value);
       break;
-    case 48:
-      var value = new pointers_pb.TransactionPointer;
-      reader.readMessage(value,pointers_pb.TransactionPointer.deserializeBinaryFromReader);
-      msg.setPointer(value);
+    case 25:
+      var value = new proto.transactions.Policy;
+      reader.readMessage(value,proto.transactions.Policy.deserializeBinaryFromReader);
+      msg.setPolicies(value);
+      break;
+    case 26:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setSalt(value);
+      break;
+    case 27:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.addStorageSlots(value);
+      break;
+    case 28:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setBytecodeWitnessIndex(value);
+      break;
+    case 29:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBytecodeRoot(value);
+      break;
+    case 30:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setSubsectionIndex(value);
+      break;
+    case 31:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setSubsectionsNumber(value);
+      break;
+    case 32:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.addProofSet(value);
+      break;
+    case 33:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setUpgradePurpose(value);
+      break;
+    case 34:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBlobId(value);
+      break;
+    case 35:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setMaturity(value);
+      break;
+    case 36:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setPolicyType(value);
+      break;
+    case 37:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setRawPayload(value);
+      break;
+    case 38:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setScriptLength(value);
+      break;
+    case 39:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setScriptDataLength(value);
+      break;
+    case 40:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setStorageSlotsCount(value);
+      break;
+    case 41:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setProofSetCount(value);
+      break;
+    case 42:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setWitnessesCount(value);
+      break;
+    case 43:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setInputsCount(value);
+      break;
+    case 44:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setOutputsCount(value);
+      break;
+    case 45:
+      var value = new common_pb.Metadata;
+      reader.readMessage(value,common_pb.Metadata.deserializeBinaryFromReader);
+      msg.setMetadata(value);
       break;
     default:
       reader.skipField();
@@ -508,109 +489,114 @@ proto.transactions.Transaction.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getBlockHeight();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getId_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       2,
       f
     );
   }
-  f = message.getTxId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getScriptGasLimit();
+  if (f !== 0) {
+    writer.writeInt64(
       3,
       f
     );
   }
-  f = message.getTxIndex();
-  if (f !== 0) {
-    writer.writeInt32(
+  f = message.getTxPointer();
+  if (f != null) {
+    writer.writeMessage(
       4,
-      f
-    );
-  }
-  f = message.getType();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      5,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      6,
-      f
-    );
-  }
-  f = message.getRoot_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      7,
-      f
-    );
-  }
-  f = message.getWitnessIndex();
-  if (f !== 0) {
-    writer.writeInt32(
-      8,
-      f
-    );
-  }
-  f = message.getBlobId_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      9,
-      f
+      f,
+      pointers_pb.TxPointer.serializeBinaryToWriter
     );
   }
   f = message.getInputAssetIdsList_asU8();
   if (f.length > 0) {
     writer.writeRepeatedBytes(
-      10,
+      5,
+      f
+    );
+  }
+  f = message.getInputContractsList_asU8();
+  if (f.length > 0) {
+    writer.writeRepeatedBytes(
+      6,
+      f
+    );
+  }
+  f = message.getInputContract();
+  if (f != null) {
+    writer.writeMessage(
+      7,
+      f,
+      inputs_pb.InputContract.serializeBinaryToWriter
+    );
+  }
+  f = message.getInputsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      8,
+      f,
+      inputs_pb.Input.serializeBinaryToWriter
+    );
+  }
+  f = message.getIsScript();
+  if (f) {
+    writer.writeBool(
+      9,
       f
     );
   }
   f = message.getIsCreate();
   if (f) {
     writer.writeBool(
-      11,
+      10,
       f
     );
   }
   f = message.getIsMint();
   if (f) {
     writer.writeBool(
-      12,
-      f
-    );
-  }
-  f = message.getIsScript();
-  if (f) {
-    writer.writeBool(
-      13,
+      11,
       f
     );
   }
   f = message.getIsUpgrade();
   if (f) {
     writer.writeBool(
-      14,
+      12,
       f
     );
   }
   f = message.getIsUpload();
   if (f) {
     writer.writeBool(
-      15,
+      13,
       f
     );
   }
-  f = message.getMaturity();
-  if (f !== 0) {
-    writer.writeInt32(
-      16,
+  f = message.getIsBlob();
+  if (f) {
+    writer.writeBool(
+      14,
       f
+    );
+  }
+  f = message.getOutputsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      15,
+      f,
+      outputs_pb.Output.serializeBinaryToWriter
+    );
+  }
+  f = message.getOutputContract();
+  if (f != null) {
+    writer.writeMessage(
+      16,
+      f,
+      outputs_pb.OutputContract.serializeBinaryToWriter
     );
   }
   f = message.getMintAmount();
@@ -634,216 +620,188 @@ proto.transactions.Transaction.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getPolicyType();
-  if (f !== 0) {
-    writer.writeInt32(
+  f = message.getReceiptsRoot_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       20,
       f
     );
   }
-  f = message.getRawPayload_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
       21,
       f
     );
   }
-  f = message.getReceiptsRoot_asU8();
+  f = message.getWitnessesList_asU8();
   if (f.length > 0) {
-    writer.writeBytes(
+    writer.writeRepeatedBytes(
       22,
-      f
-    );
-  }
-  f = message.getSalt_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      23,
       f
     );
   }
   f = message.getScript_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      24,
-      f
-    );
-  }
-  f = message.getScriptLength();
-  if (f !== 0) {
-    writer.writeInt64(
-      25,
+      23,
       f
     );
   }
   f = message.getScriptData_asU8();
   if (f.length > 0) {
     writer.writeBytes(
+      24,
+      f
+    );
+  }
+  f = message.getPolicies();
+  if (f != null) {
+    writer.writeMessage(
+      25,
+      f,
+      proto.transactions.Policy.serializeBinaryToWriter
+    );
+  }
+  f = message.getSalt_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       26,
       f
     );
   }
-  f = message.getScriptDataLength();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getStorageSlotsList_asU8();
+  if (f.length > 0) {
+    writer.writeRepeatedBytes(
       27,
       f
     );
   }
-  f = message.getScriptGasLimit();
+  f = message.getBytecodeWitnessIndex();
   if (f !== 0) {
-    writer.writeInt64(
+    writer.writeInt32(
       28,
+      f
+    );
+  }
+  f = message.getBytecodeRoot_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      29,
       f
     );
   }
   f = message.getSubsectionIndex();
   if (f !== 0) {
     writer.writeInt32(
-      29,
+      30,
       f
     );
   }
   f = message.getSubsectionsNumber();
   if (f !== 0) {
     writer.writeInt32(
-      30,
+      31,
+      f
+    );
+  }
+  f = message.getProofSetList_asU8();
+  if (f.length > 0) {
+    writer.writeRepeatedBytes(
+      32,
       f
     );
   }
   f = message.getUpgradePurpose();
   if (f !== 0) {
     writer.writeInt32(
-      31,
-      f
-    );
-  }
-  f = message.getStorageSlotsCount();
-  if (f !== 0) {
-    writer.writeInt64(
-      32,
-      f
-    );
-  }
-  f = message.getProofSetCount();
-  if (f !== 0) {
-    writer.writeInt32(
       33,
       f
     );
   }
-  f = message.getWitnessesCount();
-  if (f !== 0) {
-    writer.writeInt32(
+  f = message.getBlobId_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       34,
       f
     );
   }
-  f = message.getInputsCount();
+  f = message.getMaturity();
   if (f !== 0) {
     writer.writeInt32(
       35,
       f
     );
   }
-  f = message.getOutputsCount();
+  f = message.getPolicyType();
   if (f !== 0) {
     writer.writeInt32(
       36,
       f
     );
   }
-  f = message.getInputContract();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getRawPayload_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
       37,
-      f,
-      inputs_pb.InputContract.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getInputContractsList_asU8();
-  if (f.length > 0) {
-    writer.writeRepeatedBytes(
+  f = message.getScriptLength();
+  if (f !== 0) {
+    writer.writeInt64(
       38,
       f
     );
   }
-  f = message.getInputsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
+  f = message.getScriptDataLength();
+  if (f !== 0) {
+    writer.writeInt64(
       39,
-      f,
-      inputs_pb.Input.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getOutputContract();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getStorageSlotsCount();
+  if (f !== 0) {
+    writer.writeInt64(
       40,
-      f,
-      outputs_pb.OutputContract.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getOutputsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
+  f = message.getProofSetCount();
+  if (f !== 0) {
+    writer.writeInt32(
       41,
-      f,
-      outputs_pb.Output.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getProofSetList_asU8();
-  if (f.length > 0) {
-    writer.writeRepeatedBytes(
+  f = message.getWitnessesCount();
+  if (f !== 0) {
+    writer.writeInt32(
       42,
       f
     );
   }
-  f = message.getReceiptsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
+  f = message.getInputsCount();
+  if (f !== 0) {
+    writer.writeInt32(
       43,
-      f,
-      receipts_pb.Receipt.serializeBinaryToWriter
-    );
-  }
-  f = message.getStorageSlotsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      44,
-      f,
-      proto.transactions.StorageSlot.serializeBinaryToWriter
-    );
-  }
-  f = message.getWitnessesList_asU8();
-  if (f.length > 0) {
-    writer.writeRepeatedBytes(
-      45,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      46,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+  f = message.getOutputsCount();
+  if (f !== 0) {
+    writer.writeInt32(
+      44,
+      f
     );
   }
-  f = message.getPublishedAt();
+  f = message.getMetadata();
   if (f != null) {
     writer.writeMessage(
-      47,
+      45,
       f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPointer();
-  if (f != null) {
-    writer.writeMessage(
-      48,
-      f,
-      pointers_pb.TransactionPointer.serializeBinaryToWriter
+      common_pb.Metadata.serializeBinaryToWriter
     );
   }
 };
@@ -868,53 +826,35 @@ proto.transactions.Transaction.prototype.setSubject = function(value) {
 
 
 /**
- * optional int64 block_height = 2;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getBlockHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setBlockHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
-};
-
-
-/**
- * optional bytes tx_id = 3;
+ * optional bytes id = 2;
  * @return {!(string|Uint8Array)}
  */
-proto.transactions.Transaction.prototype.getTxId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.transactions.Transaction.prototype.getId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes tx_id = 3;
- * This is a type-conversion wrapper around `getTxId()`
+ * optional bytes id = 2;
+ * This is a type-conversion wrapper around `getId()`
  * @return {string}
  */
-proto.transactions.Transaction.prototype.getTxId_asB64 = function() {
+proto.transactions.Transaction.prototype.getId_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getTxId()));
+      this.getId()));
 };
 
 
 /**
- * optional bytes tx_id = 3;
+ * optional bytes id = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getTxId()`
+ * This is a type-conversion wrapper around `getId()`
  * @return {!Uint8Array}
  */
-proto.transactions.Transaction.prototype.getTxId_asU8 = function() {
+proto.transactions.Transaction.prototype.getId_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getTxId()));
+      this.getId()));
 };
 
 
@@ -922,17 +862,17 @@ proto.transactions.Transaction.prototype.getTxId_asU8 = function() {
  * @param {!(string|Uint8Array)} value
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setTxId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+proto.transactions.Transaction.prototype.setId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional int32 tx_index = 4;
+ * optional int64 script_gas_limit = 3;
  * @return {number}
  */
-proto.transactions.Transaction.prototype.getTxIndex = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+proto.transactions.Transaction.prototype.getScriptGasLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -940,160 +880,59 @@ proto.transactions.Transaction.prototype.getTxIndex = function() {
  * @param {number} value
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setTxIndex = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+proto.transactions.Transaction.prototype.setScriptGasLimit = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional TransactionType type = 5;
- * @return {!proto.transactions.TransactionType}
+ * optional pointers.TxPointer tx_pointer = 4;
+ * @return {?proto.pointers.TxPointer}
  */
-proto.transactions.Transaction.prototype.getType = function() {
-  return /** @type {!proto.transactions.TransactionType} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+proto.transactions.Transaction.prototype.getTxPointer = function() {
+  return /** @type{?proto.pointers.TxPointer} */ (
+    jspb.Message.getWrapperField(this, pointers_pb.TxPointer, 4));
 };
 
 
 /**
- * @param {!proto.transactions.TransactionType} value
+ * @param {?proto.pointers.TxPointer|undefined} value
+ * @return {!proto.transactions.Transaction} returns this
+*/
+proto.transactions.Transaction.prototype.setTxPointer = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setType = function(value) {
-  return jspb.Message.setProto3EnumField(this, 5, value);
+proto.transactions.Transaction.prototype.clearTxPointer = function() {
+  return this.setTxPointer(undefined);
 };
 
 
 /**
- * optional TransactionStatus status = 6;
- * @return {!proto.transactions.TransactionStatus}
+ * Returns whether this field is set.
+ * @return {boolean}
  */
-proto.transactions.Transaction.prototype.getStatus = function() {
-  return /** @type {!proto.transactions.TransactionStatus} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+proto.transactions.Transaction.prototype.hasTxPointer = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
- * @param {!proto.transactions.TransactionStatus} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3EnumField(this, 6, value);
-};
-
-
-/**
- * optional bytes root = 7;
- * @return {!(string|Uint8Array)}
- */
-proto.transactions.Transaction.prototype.getRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * optional bytes root = 7;
- * This is a type-conversion wrapper around `getRoot()`
- * @return {string}
- */
-proto.transactions.Transaction.prototype.getRoot_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getRoot()));
-};
-
-
-/**
- * optional bytes root = 7;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getRoot()`
- * @return {!Uint8Array}
- */
-proto.transactions.Transaction.prototype.getRoot_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getRoot()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 7, value);
-};
-
-
-/**
- * optional int32 witness_index = 8;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getWitnessIndex = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setWitnessIndex = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional bytes blob_id = 9;
- * @return {!(string|Uint8Array)}
- */
-proto.transactions.Transaction.prototype.getBlobId = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
-};
-
-
-/**
- * optional bytes blob_id = 9;
- * This is a type-conversion wrapper around `getBlobId()`
- * @return {string}
- */
-proto.transactions.Transaction.prototype.getBlobId_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getBlobId()));
-};
-
-
-/**
- * optional bytes blob_id = 9;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getBlobId()`
- * @return {!Uint8Array}
- */
-proto.transactions.Transaction.prototype.getBlobId_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getBlobId()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setBlobId = function(value) {
-  return jspb.Message.setProto3BytesField(this, 9, value);
-};
-
-
-/**
- * repeated bytes input_asset_ids = 10;
+ * repeated bytes input_asset_ids = 5;
  * @return {!(Array<!Uint8Array>|Array<string>)}
  */
 proto.transactions.Transaction.prototype.getInputAssetIdsList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 10));
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 5));
 };
 
 
 /**
- * repeated bytes input_asset_ids = 10;
+ * repeated bytes input_asset_ids = 5;
  * This is a type-conversion wrapper around `getInputAssetIdsList()`
  * @return {!Array<string>}
  */
@@ -1104,7 +943,7 @@ proto.transactions.Transaction.prototype.getInputAssetIdsList_asB64 = function()
 
 
 /**
- * repeated bytes input_asset_ids = 10;
+ * repeated bytes input_asset_ids = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getInputAssetIdsList()`
@@ -1121,7 +960,7 @@ proto.transactions.Transaction.prototype.getInputAssetIdsList_asU8 = function() 
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.setInputAssetIdsList = function(value) {
-  return jspb.Message.setField(this, 10, value || []);
+  return jspb.Message.setField(this, 5, value || []);
 };
 
 
@@ -1131,7 +970,7 @@ proto.transactions.Transaction.prototype.setInputAssetIdsList = function(value) 
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.addInputAssetIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 10, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 5, value, opt_index);
 };
 
 
@@ -1145,47 +984,147 @@ proto.transactions.Transaction.prototype.clearInputAssetIdsList = function() {
 
 
 /**
- * optional bool is_create = 11;
- * @return {boolean}
+ * repeated bytes input_contracts = 6;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
  */
-proto.transactions.Transaction.prototype.getIsCreate = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 11, false));
+proto.transactions.Transaction.prototype.getInputContractsList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 6));
 };
 
 
 /**
- * @param {boolean} value
+ * repeated bytes input_contracts = 6;
+ * This is a type-conversion wrapper around `getInputContractsList()`
+ * @return {!Array<string>}
+ */
+proto.transactions.Transaction.prototype.getInputContractsList_asB64 = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
+      this.getInputContractsList()));
+};
+
+
+/**
+ * repeated bytes input_contracts = 6;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getInputContractsList()`
+ * @return {!Array<!Uint8Array>}
+ */
+proto.transactions.Transaction.prototype.getInputContractsList_asU8 = function() {
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+      this.getInputContractsList()));
+};
+
+
+/**
+ * @param {!(Array<!Uint8Array>|Array<string>)} value
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setIsCreate = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 11, value);
+proto.transactions.Transaction.prototype.setInputContractsList = function(value) {
+  return jspb.Message.setField(this, 6, value || []);
 };
 
 
 /**
- * optional bool is_mint = 12;
- * @return {boolean}
- */
-proto.transactions.Transaction.prototype.getIsMint = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
-};
-
-
-/**
- * @param {boolean} value
+ * @param {!(string|Uint8Array)} value
+ * @param {number=} opt_index
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setIsMint = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 12, value);
+proto.transactions.Transaction.prototype.addInputContracts = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
 };
 
 
 /**
- * optional bool is_script = 13;
+ * Clears the list making it empty but non-null.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearInputContractsList = function() {
+  return this.setInputContractsList([]);
+};
+
+
+/**
+ * optional inputs.InputContract input_contract = 7;
+ * @return {?proto.inputs.InputContract}
+ */
+proto.transactions.Transaction.prototype.getInputContract = function() {
+  return /** @type{?proto.inputs.InputContract} */ (
+    jspb.Message.getWrapperField(this, inputs_pb.InputContract, 7));
+};
+
+
+/**
+ * @param {?proto.inputs.InputContract|undefined} value
+ * @return {!proto.transactions.Transaction} returns this
+*/
+proto.transactions.Transaction.prototype.setInputContract = function(value) {
+  return jspb.Message.setWrapperField(this, 7, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearInputContract = function() {
+  return this.setInputContract(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.transactions.Transaction.prototype.hasInputContract = function() {
+  return jspb.Message.getField(this, 7) != null;
+};
+
+
+/**
+ * repeated inputs.Input inputs = 8;
+ * @return {!Array<!proto.inputs.Input>}
+ */
+proto.transactions.Transaction.prototype.getInputsList = function() {
+  return /** @type{!Array<!proto.inputs.Input>} */ (
+    jspb.Message.getRepeatedWrapperField(this, inputs_pb.Input, 8));
+};
+
+
+/**
+ * @param {!Array<!proto.inputs.Input>} value
+ * @return {!proto.transactions.Transaction} returns this
+*/
+proto.transactions.Transaction.prototype.setInputsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 8, value);
+};
+
+
+/**
+ * @param {!proto.inputs.Input=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.inputs.Input}
+ */
+proto.transactions.Transaction.prototype.addInputs = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.inputs.Input, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearInputsList = function() {
+  return this.setInputsList([]);
+};
+
+
+/**
+ * optional bool is_script = 9;
  * @return {boolean}
  */
 proto.transactions.Transaction.prototype.getIsScript = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
 };
 
 
@@ -1194,16 +1133,52 @@ proto.transactions.Transaction.prototype.getIsScript = function() {
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.setIsScript = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 13, value);
+  return jspb.Message.setProto3BooleanField(this, 9, value);
 };
 
 
 /**
- * optional bool is_upgrade = 14;
+ * optional bool is_create = 10;
+ * @return {boolean}
+ */
+proto.transactions.Transaction.prototype.getIsCreate = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setIsCreate = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 10, value);
+};
+
+
+/**
+ * optional bool is_mint = 11;
+ * @return {boolean}
+ */
+proto.transactions.Transaction.prototype.getIsMint = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 11, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setIsMint = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 11, value);
+};
+
+
+/**
+ * optional bool is_upgrade = 12;
  * @return {boolean}
  */
 proto.transactions.Transaction.prototype.getIsUpgrade = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
 };
 
 
@@ -1212,16 +1187,16 @@ proto.transactions.Transaction.prototype.getIsUpgrade = function() {
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.setIsUpgrade = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 14, value);
+  return jspb.Message.setProto3BooleanField(this, 12, value);
 };
 
 
 /**
- * optional bool is_upload = 15;
+ * optional bool is_upload = 13;
  * @return {boolean}
  */
 proto.transactions.Transaction.prototype.getIsUpload = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
 };
 
 
@@ -1230,25 +1205,100 @@ proto.transactions.Transaction.prototype.getIsUpload = function() {
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.setIsUpload = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 15, value);
+  return jspb.Message.setProto3BooleanField(this, 13, value);
 };
 
 
 /**
- * optional int32 maturity = 16;
- * @return {number}
+ * optional bool is_blob = 14;
+ * @return {boolean}
  */
-proto.transactions.Transaction.prototype.getMaturity = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
+proto.transactions.Transaction.prototype.getIsBlob = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
 };
 
 
 /**
- * @param {number} value
+ * @param {boolean} value
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setMaturity = function(value) {
-  return jspb.Message.setProto3IntField(this, 16, value);
+proto.transactions.Transaction.prototype.setIsBlob = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 14, value);
+};
+
+
+/**
+ * repeated outputs.Output outputs = 15;
+ * @return {!Array<!proto.outputs.Output>}
+ */
+proto.transactions.Transaction.prototype.getOutputsList = function() {
+  return /** @type{!Array<!proto.outputs.Output>} */ (
+    jspb.Message.getRepeatedWrapperField(this, outputs_pb.Output, 15));
+};
+
+
+/**
+ * @param {!Array<!proto.outputs.Output>} value
+ * @return {!proto.transactions.Transaction} returns this
+*/
+proto.transactions.Transaction.prototype.setOutputsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 15, value);
+};
+
+
+/**
+ * @param {!proto.outputs.Output=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.outputs.Output}
+ */
+proto.transactions.Transaction.prototype.addOutputs = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 15, opt_value, proto.outputs.Output, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearOutputsList = function() {
+  return this.setOutputsList([]);
+};
+
+
+/**
+ * optional outputs.OutputContract output_contract = 16;
+ * @return {?proto.outputs.OutputContract}
+ */
+proto.transactions.Transaction.prototype.getOutputContract = function() {
+  return /** @type{?proto.outputs.OutputContract} */ (
+    jspb.Message.getWrapperField(this, outputs_pb.OutputContract, 16));
+};
+
+
+/**
+ * @param {?proto.outputs.OutputContract|undefined} value
+ * @return {!proto.transactions.Transaction} returns this
+*/
+proto.transactions.Transaction.prototype.setOutputContract = function(value) {
+  return jspb.Message.setWrapperField(this, 16, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearOutputContract = function() {
+  return this.setOutputContract(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.transactions.Transaction.prototype.hasOutputContract = function() {
+  return jspb.Message.getField(this, 16) != null;
 };
 
 
@@ -1331,76 +1381,16 @@ proto.transactions.Transaction.prototype.setMintGasPrice = function(value) {
 
 
 /**
- * optional int32 policy_type = 20;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getPolicyType = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 20, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setPolicyType = function(value) {
-  return jspb.Message.setProto3IntField(this, 20, value);
-};
-
-
-/**
- * optional bytes raw_payload = 21;
- * @return {!(string|Uint8Array)}
- */
-proto.transactions.Transaction.prototype.getRawPayload = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 21, ""));
-};
-
-
-/**
- * optional bytes raw_payload = 21;
- * This is a type-conversion wrapper around `getRawPayload()`
- * @return {string}
- */
-proto.transactions.Transaction.prototype.getRawPayload_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getRawPayload()));
-};
-
-
-/**
- * optional bytes raw_payload = 21;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getRawPayload()`
- * @return {!Uint8Array}
- */
-proto.transactions.Transaction.prototype.getRawPayload_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getRawPayload()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setRawPayload = function(value) {
-  return jspb.Message.setProto3BytesField(this, 21, value);
-};
-
-
-/**
- * optional bytes receipts_root = 22;
+ * optional bytes receipts_root = 20;
  * @return {!(string|Uint8Array)}
  */
 proto.transactions.Transaction.prototype.getReceiptsRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 20, ""));
 };
 
 
 /**
- * optional bytes receipts_root = 22;
+ * optional bytes receipts_root = 20;
  * This is a type-conversion wrapper around `getReceiptsRoot()`
  * @return {string}
  */
@@ -1411,7 +1401,7 @@ proto.transactions.Transaction.prototype.getReceiptsRoot_asB64 = function() {
 
 
 /**
- * optional bytes receipts_root = 22;
+ * optional bytes receipts_root = 20;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getReceiptsRoot()`
@@ -1428,693 +1418,39 @@ proto.transactions.Transaction.prototype.getReceiptsRoot_asU8 = function() {
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.setReceiptsRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 22, value);
+  return jspb.Message.setProto3BytesField(this, 20, value);
 };
 
 
 /**
- * optional bytes salt = 23;
- * @return {!(string|Uint8Array)}
+ * optional TransactionStatus status = 21;
+ * @return {!proto.transactions.TransactionStatus}
  */
-proto.transactions.Transaction.prototype.getSalt = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
+proto.transactions.Transaction.prototype.getStatus = function() {
+  return /** @type {!proto.transactions.TransactionStatus} */ (jspb.Message.getFieldWithDefault(this, 21, 0));
 };
 
 
 /**
- * optional bytes salt = 23;
- * This is a type-conversion wrapper around `getSalt()`
- * @return {string}
- */
-proto.transactions.Transaction.prototype.getSalt_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getSalt()));
-};
-
-
-/**
- * optional bytes salt = 23;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getSalt()`
- * @return {!Uint8Array}
- */
-proto.transactions.Transaction.prototype.getSalt_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getSalt()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
+ * @param {!proto.transactions.TransactionStatus} value
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.setSalt = function(value) {
-  return jspb.Message.setProto3BytesField(this, 23, value);
+proto.transactions.Transaction.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 21, value);
 };
 
 
 /**
- * optional bytes script = 24;
- * @return {!(string|Uint8Array)}
- */
-proto.transactions.Transaction.prototype.getScript = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 24, ""));
-};
-
-
-/**
- * optional bytes script = 24;
- * This is a type-conversion wrapper around `getScript()`
- * @return {string}
- */
-proto.transactions.Transaction.prototype.getScript_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getScript()));
-};
-
-
-/**
- * optional bytes script = 24;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getScript()`
- * @return {!Uint8Array}
- */
-proto.transactions.Transaction.prototype.getScript_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getScript()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setScript = function(value) {
-  return jspb.Message.setProto3BytesField(this, 24, value);
-};
-
-
-/**
- * optional int64 script_length = 25;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getScriptLength = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 25, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setScriptLength = function(value) {
-  return jspb.Message.setProto3IntField(this, 25, value);
-};
-
-
-/**
- * optional bytes script_data = 26;
- * @return {!(string|Uint8Array)}
- */
-proto.transactions.Transaction.prototype.getScriptData = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 26, ""));
-};
-
-
-/**
- * optional bytes script_data = 26;
- * This is a type-conversion wrapper around `getScriptData()`
- * @return {string}
- */
-proto.transactions.Transaction.prototype.getScriptData_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getScriptData()));
-};
-
-
-/**
- * optional bytes script_data = 26;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getScriptData()`
- * @return {!Uint8Array}
- */
-proto.transactions.Transaction.prototype.getScriptData_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getScriptData()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setScriptData = function(value) {
-  return jspb.Message.setProto3BytesField(this, 26, value);
-};
-
-
-/**
- * optional int64 script_data_length = 27;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getScriptDataLength = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 27, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setScriptDataLength = function(value) {
-  return jspb.Message.setProto3IntField(this, 27, value);
-};
-
-
-/**
- * optional int64 script_gas_limit = 28;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getScriptGasLimit = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 28, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setScriptGasLimit = function(value) {
-  return jspb.Message.setProto3IntField(this, 28, value);
-};
-
-
-/**
- * optional int32 subsection_index = 29;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getSubsectionIndex = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 29, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setSubsectionIndex = function(value) {
-  return jspb.Message.setProto3IntField(this, 29, value);
-};
-
-
-/**
- * optional int32 subsections_number = 30;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getSubsectionsNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 30, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setSubsectionsNumber = function(value) {
-  return jspb.Message.setProto3IntField(this, 30, value);
-};
-
-
-/**
- * optional int32 upgrade_purpose = 31;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getUpgradePurpose = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 31, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setUpgradePurpose = function(value) {
-  return jspb.Message.setProto3IntField(this, 31, value);
-};
-
-
-/**
- * optional int64 storage_slots_count = 32;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getStorageSlotsCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 32, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setStorageSlotsCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 32, value);
-};
-
-
-/**
- * optional int32 proof_set_count = 33;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getProofSetCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setProofSetCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 33, value);
-};
-
-
-/**
- * optional int32 witnesses_count = 34;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getWitnessesCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 34, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setWitnessesCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 34, value);
-};
-
-
-/**
- * optional int32 inputs_count = 35;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getInputsCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 35, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setInputsCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 35, value);
-};
-
-
-/**
- * optional int32 outputs_count = 36;
- * @return {number}
- */
-proto.transactions.Transaction.prototype.getOutputsCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 36, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setOutputsCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 36, value);
-};
-
-
-/**
- * optional inputs.InputContract input_contract = 37;
- * @return {?proto.inputs.InputContract}
- */
-proto.transactions.Transaction.prototype.getInputContract = function() {
-  return /** @type{?proto.inputs.InputContract} */ (
-    jspb.Message.getWrapperField(this, inputs_pb.InputContract, 37));
-};
-
-
-/**
- * @param {?proto.inputs.InputContract|undefined} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setInputContract = function(value) {
-  return jspb.Message.setWrapperField(this, 37, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearInputContract = function() {
-  return this.setInputContract(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Transaction.prototype.hasInputContract = function() {
-  return jspb.Message.getField(this, 37) != null;
-};
-
-
-/**
- * repeated bytes input_contracts = 38;
- * @return {!(Array<!Uint8Array>|Array<string>)}
- */
-proto.transactions.Transaction.prototype.getInputContractsList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 38));
-};
-
-
-/**
- * repeated bytes input_contracts = 38;
- * This is a type-conversion wrapper around `getInputContractsList()`
- * @return {!Array<string>}
- */
-proto.transactions.Transaction.prototype.getInputContractsList_asB64 = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
-      this.getInputContractsList()));
-};
-
-
-/**
- * repeated bytes input_contracts = 38;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getInputContractsList()`
- * @return {!Array<!Uint8Array>}
- */
-proto.transactions.Transaction.prototype.getInputContractsList_asU8 = function() {
-  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
-      this.getInputContractsList()));
-};
-
-
-/**
- * @param {!(Array<!Uint8Array>|Array<string>)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setInputContractsList = function(value) {
-  return jspb.Message.setField(this, 38, value || []);
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @param {number=} opt_index
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.addInputContracts = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 38, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearInputContractsList = function() {
-  return this.setInputContractsList([]);
-};
-
-
-/**
- * repeated inputs.Input inputs = 39;
- * @return {!Array<!proto.inputs.Input>}
- */
-proto.transactions.Transaction.prototype.getInputsList = function() {
-  return /** @type{!Array<!proto.inputs.Input>} */ (
-    jspb.Message.getRepeatedWrapperField(this, inputs_pb.Input, 39));
-};
-
-
-/**
- * @param {!Array<!proto.inputs.Input>} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setInputsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 39, value);
-};
-
-
-/**
- * @param {!proto.inputs.Input=} opt_value
- * @param {number=} opt_index
- * @return {!proto.inputs.Input}
- */
-proto.transactions.Transaction.prototype.addInputs = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 39, opt_value, proto.inputs.Input, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearInputsList = function() {
-  return this.setInputsList([]);
-};
-
-
-/**
- * optional outputs.OutputContract output_contract = 40;
- * @return {?proto.outputs.OutputContract}
- */
-proto.transactions.Transaction.prototype.getOutputContract = function() {
-  return /** @type{?proto.outputs.OutputContract} */ (
-    jspb.Message.getWrapperField(this, outputs_pb.OutputContract, 40));
-};
-
-
-/**
- * @param {?proto.outputs.OutputContract|undefined} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setOutputContract = function(value) {
-  return jspb.Message.setWrapperField(this, 40, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearOutputContract = function() {
-  return this.setOutputContract(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Transaction.prototype.hasOutputContract = function() {
-  return jspb.Message.getField(this, 40) != null;
-};
-
-
-/**
- * repeated outputs.Output outputs = 41;
- * @return {!Array<!proto.outputs.Output>}
- */
-proto.transactions.Transaction.prototype.getOutputsList = function() {
-  return /** @type{!Array<!proto.outputs.Output>} */ (
-    jspb.Message.getRepeatedWrapperField(this, outputs_pb.Output, 41));
-};
-
-
-/**
- * @param {!Array<!proto.outputs.Output>} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setOutputsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 41, value);
-};
-
-
-/**
- * @param {!proto.outputs.Output=} opt_value
- * @param {number=} opt_index
- * @return {!proto.outputs.Output}
- */
-proto.transactions.Transaction.prototype.addOutputs = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 41, opt_value, proto.outputs.Output, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearOutputsList = function() {
-  return this.setOutputsList([]);
-};
-
-
-/**
- * repeated bytes proof_set = 42;
- * @return {!(Array<!Uint8Array>|Array<string>)}
- */
-proto.transactions.Transaction.prototype.getProofSetList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 42));
-};
-
-
-/**
- * repeated bytes proof_set = 42;
- * This is a type-conversion wrapper around `getProofSetList()`
- * @return {!Array<string>}
- */
-proto.transactions.Transaction.prototype.getProofSetList_asB64 = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
-      this.getProofSetList()));
-};
-
-
-/**
- * repeated bytes proof_set = 42;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getProofSetList()`
- * @return {!Array<!Uint8Array>}
- */
-proto.transactions.Transaction.prototype.getProofSetList_asU8 = function() {
-  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
-      this.getProofSetList()));
-};
-
-
-/**
- * @param {!(Array<!Uint8Array>|Array<string>)} value
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.setProofSetList = function(value) {
-  return jspb.Message.setField(this, 42, value || []);
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @param {number=} opt_index
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.addProofSet = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 42, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearProofSetList = function() {
-  return this.setProofSetList([]);
-};
-
-
-/**
- * repeated receipts.Receipt receipts = 43;
- * @return {!Array<!proto.receipts.Receipt>}
- */
-proto.transactions.Transaction.prototype.getReceiptsList = function() {
-  return /** @type{!Array<!proto.receipts.Receipt>} */ (
-    jspb.Message.getRepeatedWrapperField(this, receipts_pb.Receipt, 43));
-};
-
-
-/**
- * @param {!Array<!proto.receipts.Receipt>} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setReceiptsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 43, value);
-};
-
-
-/**
- * @param {!proto.receipts.Receipt=} opt_value
- * @param {number=} opt_index
- * @return {!proto.receipts.Receipt}
- */
-proto.transactions.Transaction.prototype.addReceipts = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 43, opt_value, proto.receipts.Receipt, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearReceiptsList = function() {
-  return this.setReceiptsList([]);
-};
-
-
-/**
- * repeated StorageSlot storage_slots = 44;
- * @return {!Array<!proto.transactions.StorageSlot>}
- */
-proto.transactions.Transaction.prototype.getStorageSlotsList = function() {
-  return /** @type{!Array<!proto.transactions.StorageSlot>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.transactions.StorageSlot, 44));
-};
-
-
-/**
- * @param {!Array<!proto.transactions.StorageSlot>} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setStorageSlotsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 44, value);
-};
-
-
-/**
- * @param {!proto.transactions.StorageSlot=} opt_value
- * @param {number=} opt_index
- * @return {!proto.transactions.StorageSlot}
- */
-proto.transactions.Transaction.prototype.addStorageSlots = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 44, opt_value, proto.transactions.StorageSlot, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearStorageSlotsList = function() {
-  return this.setStorageSlotsList([]);
-};
-
-
-/**
- * repeated bytes witnesses = 45;
+ * repeated bytes witnesses = 22;
  * @return {!(Array<!Uint8Array>|Array<string>)}
  */
 proto.transactions.Transaction.prototype.getWitnessesList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 45));
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 22));
 };
 
 
 /**
- * repeated bytes witnesses = 45;
+ * repeated bytes witnesses = 22;
  * This is a type-conversion wrapper around `getWitnessesList()`
  * @return {!Array<string>}
  */
@@ -2125,7 +1461,7 @@ proto.transactions.Transaction.prototype.getWitnessesList_asB64 = function() {
 
 
 /**
- * repeated bytes witnesses = 45;
+ * repeated bytes witnesses = 22;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getWitnessesList()`
@@ -2142,7 +1478,7 @@ proto.transactions.Transaction.prototype.getWitnessesList_asU8 = function() {
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.setWitnessesList = function(value) {
-  return jspb.Message.setField(this, 45, value || []);
+  return jspb.Message.setField(this, 22, value || []);
 };
 
 
@@ -2152,7 +1488,7 @@ proto.transactions.Transaction.prototype.setWitnessesList = function(value) {
  * @return {!proto.transactions.Transaction} returns this
  */
 proto.transactions.Transaction.prototype.addWitnesses = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 45, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 22, value, opt_index);
 };
 
 
@@ -2166,21 +1502,105 @@ proto.transactions.Transaction.prototype.clearWitnessesList = function() {
 
 
 /**
- * optional google.protobuf.Timestamp created_at = 46;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional bytes script = 23;
+ * @return {!(string|Uint8Array)}
  */
-proto.transactions.Transaction.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 46));
+proto.transactions.Transaction.prototype.getScript = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * optional bytes script = 23;
+ * This is a type-conversion wrapper around `getScript()`
+ * @return {string}
+ */
+proto.transactions.Transaction.prototype.getScript_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getScript()));
+};
+
+
+/**
+ * optional bytes script = 23;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getScript()`
+ * @return {!Uint8Array}
+ */
+proto.transactions.Transaction.prototype.getScript_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getScript()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setScript = function(value) {
+  return jspb.Message.setProto3BytesField(this, 23, value);
+};
+
+
+/**
+ * optional bytes script_data = 24;
+ * @return {!(string|Uint8Array)}
+ */
+proto.transactions.Transaction.prototype.getScriptData = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 24, ""));
+};
+
+
+/**
+ * optional bytes script_data = 24;
+ * This is a type-conversion wrapper around `getScriptData()`
+ * @return {string}
+ */
+proto.transactions.Transaction.prototype.getScriptData_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getScriptData()));
+};
+
+
+/**
+ * optional bytes script_data = 24;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getScriptData()`
+ * @return {!Uint8Array}
+ */
+proto.transactions.Transaction.prototype.getScriptData_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getScriptData()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setScriptData = function(value) {
+  return jspb.Message.setProto3BytesField(this, 24, value);
+};
+
+
+/**
+ * optional Policy policies = 25;
+ * @return {?proto.transactions.Policy}
+ */
+proto.transactions.Transaction.prototype.getPolicies = function() {
+  return /** @type{?proto.transactions.Policy} */ (
+    jspb.Message.getWrapperField(this, proto.transactions.Policy, 25));
+};
+
+
+/**
+ * @param {?proto.transactions.Policy|undefined} value
  * @return {!proto.transactions.Transaction} returns this
 */
-proto.transactions.Transaction.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 46, value);
+proto.transactions.Transaction.prototype.setPolicies = function(value) {
+  return jspb.Message.setWrapperField(this, 25, value);
 };
 
 
@@ -2188,8 +1608,8 @@ proto.transactions.Transaction.prototype.setCreatedAt = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
+proto.transactions.Transaction.prototype.clearPolicies = function() {
+  return this.setPolicies(undefined);
 };
 
 
@@ -2197,27 +1617,551 @@ proto.transactions.Transaction.prototype.clearCreatedAt = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.transactions.Transaction.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 46) != null;
+proto.transactions.Transaction.prototype.hasPolicies = function() {
+  return jspb.Message.getField(this, 25) != null;
 };
 
 
 /**
- * optional google.protobuf.Timestamp published_at = 47;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional bytes salt = 26;
+ * @return {!(string|Uint8Array)}
  */
-proto.transactions.Transaction.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 47));
+proto.transactions.Transaction.prototype.getSalt = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 26, ""));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * optional bytes salt = 26;
+ * This is a type-conversion wrapper around `getSalt()`
+ * @return {string}
+ */
+proto.transactions.Transaction.prototype.getSalt_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getSalt()));
+};
+
+
+/**
+ * optional bytes salt = 26;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getSalt()`
+ * @return {!Uint8Array}
+ */
+proto.transactions.Transaction.prototype.getSalt_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getSalt()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setSalt = function(value) {
+  return jspb.Message.setProto3BytesField(this, 26, value);
+};
+
+
+/**
+ * repeated bytes storage_slots = 27;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
+ */
+proto.transactions.Transaction.prototype.getStorageSlotsList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 27));
+};
+
+
+/**
+ * repeated bytes storage_slots = 27;
+ * This is a type-conversion wrapper around `getStorageSlotsList()`
+ * @return {!Array<string>}
+ */
+proto.transactions.Transaction.prototype.getStorageSlotsList_asB64 = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
+      this.getStorageSlotsList()));
+};
+
+
+/**
+ * repeated bytes storage_slots = 27;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getStorageSlotsList()`
+ * @return {!Array<!Uint8Array>}
+ */
+proto.transactions.Transaction.prototype.getStorageSlotsList_asU8 = function() {
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+      this.getStorageSlotsList()));
+};
+
+
+/**
+ * @param {!(Array<!Uint8Array>|Array<string>)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setStorageSlotsList = function(value) {
+  return jspb.Message.setField(this, 27, value || []);
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @param {number=} opt_index
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.addStorageSlots = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 27, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearStorageSlotsList = function() {
+  return this.setStorageSlotsList([]);
+};
+
+
+/**
+ * optional int32 bytecode_witness_index = 28;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getBytecodeWitnessIndex = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 28, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setBytecodeWitnessIndex = function(value) {
+  return jspb.Message.setProto3IntField(this, 28, value);
+};
+
+
+/**
+ * optional bytes bytecode_root = 29;
+ * @return {!(string|Uint8Array)}
+ */
+proto.transactions.Transaction.prototype.getBytecodeRoot = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 29, ""));
+};
+
+
+/**
+ * optional bytes bytecode_root = 29;
+ * This is a type-conversion wrapper around `getBytecodeRoot()`
+ * @return {string}
+ */
+proto.transactions.Transaction.prototype.getBytecodeRoot_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBytecodeRoot()));
+};
+
+
+/**
+ * optional bytes bytecode_root = 29;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBytecodeRoot()`
+ * @return {!Uint8Array}
+ */
+proto.transactions.Transaction.prototype.getBytecodeRoot_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBytecodeRoot()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setBytecodeRoot = function(value) {
+  return jspb.Message.setProto3BytesField(this, 29, value);
+};
+
+
+/**
+ * optional int32 subsection_index = 30;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getSubsectionIndex = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 30, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setSubsectionIndex = function(value) {
+  return jspb.Message.setProto3IntField(this, 30, value);
+};
+
+
+/**
+ * optional int32 subsections_number = 31;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getSubsectionsNumber = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 31, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setSubsectionsNumber = function(value) {
+  return jspb.Message.setProto3IntField(this, 31, value);
+};
+
+
+/**
+ * repeated bytes proof_set = 32;
+ * @return {!(Array<!Uint8Array>|Array<string>)}
+ */
+proto.transactions.Transaction.prototype.getProofSetList = function() {
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 32));
+};
+
+
+/**
+ * repeated bytes proof_set = 32;
+ * This is a type-conversion wrapper around `getProofSetList()`
+ * @return {!Array<string>}
+ */
+proto.transactions.Transaction.prototype.getProofSetList_asB64 = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.bytesListAsB64(
+      this.getProofSetList()));
+};
+
+
+/**
+ * repeated bytes proof_set = 32;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getProofSetList()`
+ * @return {!Array<!Uint8Array>}
+ */
+proto.transactions.Transaction.prototype.getProofSetList_asU8 = function() {
+  return /** @type {!Array<!Uint8Array>} */ (jspb.Message.bytesListAsU8(
+      this.getProofSetList()));
+};
+
+
+/**
+ * @param {!(Array<!Uint8Array>|Array<string>)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setProofSetList = function(value) {
+  return jspb.Message.setField(this, 32, value || []);
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @param {number=} opt_index
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.addProofSet = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 32, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.clearProofSetList = function() {
+  return this.setProofSetList([]);
+};
+
+
+/**
+ * optional int32 upgrade_purpose = 33;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getUpgradePurpose = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setUpgradePurpose = function(value) {
+  return jspb.Message.setProto3IntField(this, 33, value);
+};
+
+
+/**
+ * optional bytes blob_id = 34;
+ * @return {!(string|Uint8Array)}
+ */
+proto.transactions.Transaction.prototype.getBlobId = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 34, ""));
+};
+
+
+/**
+ * optional bytes blob_id = 34;
+ * This is a type-conversion wrapper around `getBlobId()`
+ * @return {string}
+ */
+proto.transactions.Transaction.prototype.getBlobId_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBlobId()));
+};
+
+
+/**
+ * optional bytes blob_id = 34;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBlobId()`
+ * @return {!Uint8Array}
+ */
+proto.transactions.Transaction.prototype.getBlobId_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBlobId()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setBlobId = function(value) {
+  return jspb.Message.setProto3BytesField(this, 34, value);
+};
+
+
+/**
+ * optional int32 maturity = 35;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getMaturity = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 35, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setMaturity = function(value) {
+  return jspb.Message.setProto3IntField(this, 35, value);
+};
+
+
+/**
+ * optional int32 policy_type = 36;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getPolicyType = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 36, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setPolicyType = function(value) {
+  return jspb.Message.setProto3IntField(this, 36, value);
+};
+
+
+/**
+ * optional bytes raw_payload = 37;
+ * @return {!(string|Uint8Array)}
+ */
+proto.transactions.Transaction.prototype.getRawPayload = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 37, ""));
+};
+
+
+/**
+ * optional bytes raw_payload = 37;
+ * This is a type-conversion wrapper around `getRawPayload()`
+ * @return {string}
+ */
+proto.transactions.Transaction.prototype.getRawPayload_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getRawPayload()));
+};
+
+
+/**
+ * optional bytes raw_payload = 37;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getRawPayload()`
+ * @return {!Uint8Array}
+ */
+proto.transactions.Transaction.prototype.getRawPayload_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getRawPayload()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setRawPayload = function(value) {
+  return jspb.Message.setProto3BytesField(this, 37, value);
+};
+
+
+/**
+ * optional int64 script_length = 38;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getScriptLength = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 38, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setScriptLength = function(value) {
+  return jspb.Message.setProto3IntField(this, 38, value);
+};
+
+
+/**
+ * optional int64 script_data_length = 39;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getScriptDataLength = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 39, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setScriptDataLength = function(value) {
+  return jspb.Message.setProto3IntField(this, 39, value);
+};
+
+
+/**
+ * optional int64 storage_slots_count = 40;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getStorageSlotsCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 40, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setStorageSlotsCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 40, value);
+};
+
+
+/**
+ * optional int32 proof_set_count = 41;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getProofSetCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 41, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setProofSetCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 41, value);
+};
+
+
+/**
+ * optional int32 witnesses_count = 42;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getWitnessesCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 42, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setWitnessesCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 42, value);
+};
+
+
+/**
+ * optional int32 inputs_count = 43;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getInputsCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 43, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setInputsCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 43, value);
+};
+
+
+/**
+ * optional int32 outputs_count = 44;
+ * @return {number}
+ */
+proto.transactions.Transaction.prototype.getOutputsCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 44, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.transactions.Transaction} returns this
+ */
+proto.transactions.Transaction.prototype.setOutputsCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 44, value);
+};
+
+
+/**
+ * optional common.Metadata metadata = 45;
+ * @return {?proto.common.Metadata}
+ */
+proto.transactions.Transaction.prototype.getMetadata = function() {
+  return /** @type{?proto.common.Metadata} */ (
+    jspb.Message.getWrapperField(this, common_pb.Metadata, 45));
+};
+
+
+/**
+ * @param {?proto.common.Metadata|undefined} value
  * @return {!proto.transactions.Transaction} returns this
 */
-proto.transactions.Transaction.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 47, value);
+proto.transactions.Transaction.prototype.setMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 45, value);
 };
 
 
@@ -2225,8 +2169,8 @@ proto.transactions.Transaction.prototype.setPublishedAt = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.transactions.Transaction} returns this
  */
-proto.transactions.Transaction.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
+proto.transactions.Transaction.prototype.clearMetadata = function() {
+  return this.setMetadata(undefined);
 };
 
 
@@ -2234,45 +2178,8 @@ proto.transactions.Transaction.prototype.clearPublishedAt = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.transactions.Transaction.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 47) != null;
-};
-
-
-/**
- * optional pointers.TransactionPointer pointer = 48;
- * @return {?proto.pointers.TransactionPointer}
- */
-proto.transactions.Transaction.prototype.getPointer = function() {
-  return /** @type{?proto.pointers.TransactionPointer} */ (
-    jspb.Message.getWrapperField(this, pointers_pb.TransactionPointer, 48));
-};
-
-
-/**
- * @param {?proto.pointers.TransactionPointer|undefined} value
- * @return {!proto.transactions.Transaction} returns this
-*/
-proto.transactions.Transaction.prototype.setPointer = function(value) {
-  return jspb.Message.setWrapperField(this, 48, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Transaction} returns this
- */
-proto.transactions.Transaction.prototype.clearPointer = function() {
-  return this.setPointer(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Transaction.prototype.hasPointer = function() {
-  return jspb.Message.getField(this, 48) != null;
+proto.transactions.Transaction.prototype.hasMetadata = function() {
+  return jspb.Message.getField(this, 45) != null;
 };
 
 
@@ -2311,9 +2218,7 @@ proto.transactions.StorageSlot.toObject = function(includeInstance, msg) {
     subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
     txId: msg.getTxId_asB64(),
     key: msg.getKey_asB64(),
-    value: msg.getValue_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    value: msg.getValue_asB64()
   };
 
   if (includeInstance) {
@@ -2365,16 +2270,6 @@ proto.transactions.StorageSlot.deserializeBinaryFromReader = function(msg, reade
     case 4:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setValue(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 6:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -2431,22 +2326,6 @@ proto.transactions.StorageSlot.serializeBinaryToWriter = function(message, write
     writer.writeBytes(
       4,
       f
-    );
-  }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      6,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -2596,80 +2475,6 @@ proto.transactions.StorageSlot.prototype.setValue = function(value) {
 };
 
 
-/**
- * optional google.protobuf.Timestamp created_at = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.StorageSlot.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.StorageSlot} returns this
-*/
-proto.transactions.StorageSlot.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.StorageSlot} returns this
- */
-proto.transactions.StorageSlot.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.StorageSlot.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 6;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.StorageSlot.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 6));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.StorageSlot} returns this
-*/
-proto.transactions.StorageSlot.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.StorageSlot} returns this
- */
-proto.transactions.StorageSlot.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.StorageSlot.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
 
 
 
@@ -2705,9 +2510,7 @@ proto.transactions.Witness.toObject = function(includeInstance, msg) {
     subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
     txId: msg.getTxId_asB64(),
     witnessData: msg.getWitnessData_asB64(),
-    witnessDataLength: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    witnessDataLength: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -2759,16 +2562,6 @@ proto.transactions.Witness.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setWitnessDataLength(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 6:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -2825,22 +2618,6 @@ proto.transactions.Witness.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt32(
       4,
       f
-    );
-  }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      6,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -2966,80 +2743,6 @@ proto.transactions.Witness.prototype.setWitnessDataLength = function(value) {
 };
 
 
-/**
- * optional google.protobuf.Timestamp created_at = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.Witness.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.Witness} returns this
-*/
-proto.transactions.Witness.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Witness} returns this
- */
-proto.transactions.Witness.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Witness.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 6;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.Witness.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 6));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.Witness} returns this
-*/
-proto.transactions.Witness.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Witness} returns this
- */
-proto.transactions.Witness.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Witness.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
 
 
 
@@ -3074,9 +2777,7 @@ proto.transactions.ProofSet.toObject = function(includeInstance, msg) {
   var f, obj = {
     subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
     txId: msg.getTxId_asB64(),
-    proofHash: msg.getProofHash_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    proofHash: msg.getProofHash_asB64()
   };
 
   if (includeInstance) {
@@ -3124,16 +2825,6 @@ proto.transactions.ProofSet.deserializeBinaryFromReader = function(msg, reader) 
     case 3:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setProofHash(value);
-      break;
-    case 4:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -3183,22 +2874,6 @@ proto.transactions.ProofSet.serializeBinaryToWriter = function(message, writer) 
     writer.writeBytes(
       3,
       f
-    );
-  }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -3306,80 +2981,6 @@ proto.transactions.ProofSet.prototype.setProofHash = function(value) {
 };
 
 
-/**
- * optional google.protobuf.Timestamp created_at = 4;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.ProofSet.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 4));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.ProofSet} returns this
-*/
-proto.transactions.ProofSet.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 4, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.ProofSet} returns this
- */
-proto.transactions.ProofSet.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.ProofSet.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.ProofSet.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.ProofSet} returns this
-*/
-proto.transactions.ProofSet.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.ProofSet} returns this
- */
-proto.transactions.ProofSet.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.ProofSet.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
 
 
 
@@ -3415,9 +3016,7 @@ proto.transactions.Policy.toObject = function(includeInstance, msg) {
     subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
     txId: msg.getTxId_asB64(),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    data: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    data: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -3469,16 +3068,6 @@ proto.transactions.Policy.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setData(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 6:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -3535,22 +3124,6 @@ proto.transactions.Policy.serializeBinaryToWriter = function(message, writer) {
     writer.writeInt64(
       4,
       f
-    );
-  }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      6,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -3653,108 +3226,39 @@ proto.transactions.Policy.prototype.setData = function(value) {
 
 
 /**
- * optional google.protobuf.Timestamp created_at = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.Policy.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.Policy} returns this
-*/
-proto.transactions.Policy.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Policy} returns this
- */
-proto.transactions.Policy.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Policy.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 6;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.transactions.Policy.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 6));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.transactions.Policy} returns this
-*/
-proto.transactions.Policy.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.transactions.Policy} returns this
- */
-proto.transactions.Policy.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.transactions.Policy.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 6) != null;
-};
-
-
-/**
  * @enum {number}
  */
 proto.transactions.TransactionType = {
-  SCRIPT: 0,
-  CREATE: 1,
-  MINT: 2,
-  UPGRADE: 3,
-  UPLOAD: 4,
-  BLOB: 5
+  UNKNOWN_TRANSACTION_TYPE: 0,
+  SCRIPT: 1,
+  CREATE: 2,
+  MINT: 3,
+  UPGRADE: 4,
+  UPLOAD: 5,
+  BLOB: 6
 };
 
 /**
  * @enum {number}
  */
 proto.transactions.TransactionStatus = {
-  SUCCESS: 0,
-  FAILURE: 1,
-  SUBMITTED: 2
+  UNKNOWN_TRANSACTION_STATUS: 0,
+  FAILED: 1,
+  SUBMITTED: 2,
+  SQUEEZED_OUT: 3,
+  SUCCESS: 4,
+  NONE: 5
 };
 
 /**
  * @enum {number}
  */
 proto.transactions.PolicyType = {
-  TIP: 0,
-  WITNESS_LIMIT: 1,
-  MATURITY: 2,
-  MAX_FEE: 3
+  UNKNOWN_POLICY_TYPE: 0,
+  TIP: 1,
+  WITNESS_LIMIT: 2,
+  MATURITY: 3,
+  MAX_FEE: 4
 };
 
 goog.object.extend(exports, proto.transactions);

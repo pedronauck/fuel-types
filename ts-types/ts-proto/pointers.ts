@@ -13,7 +13,7 @@ export interface BlockPointer {
   blockHeight: number;
 }
 
-export interface TransactionPointer {
+export interface TxPointer {
   blockHeight: number;
   txId: number;
   txIndex: number;
@@ -45,6 +45,8 @@ export interface UtxoPointer {
   txId: number;
   txIndex: number;
   utxoId: number;
+  inputIndex: number;
+  outputIndex: number;
 }
 
 function createBaseBlockPointer(): BlockPointer {
@@ -105,12 +107,12 @@ export const BlockPointer: MessageFns<BlockPointer> = {
   },
 };
 
-function createBaseTransactionPointer(): TransactionPointer {
+function createBaseTxPointer(): TxPointer {
   return { blockHeight: 0, txId: 0, txIndex: 0 };
 }
 
-export const TransactionPointer: MessageFns<TransactionPointer> = {
-  encode(message: TransactionPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const TxPointer: MessageFns<TxPointer> = {
+  encode(message: TxPointer, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.blockHeight !== 0) {
       writer.uint32(8).int64(message.blockHeight);
     }
@@ -123,10 +125,10 @@ export const TransactionPointer: MessageFns<TransactionPointer> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): TransactionPointer {
+  decode(input: BinaryReader | Uint8Array, length?: number): TxPointer {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseTransactionPointer();
+    const message = createBaseTxPointer();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -163,7 +165,7 @@ export const TransactionPointer: MessageFns<TransactionPointer> = {
     return message;
   },
 
-  fromJSON(object: any): TransactionPointer {
+  fromJSON(object: any): TxPointer {
     return {
       blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
       txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
@@ -171,7 +173,7 @@ export const TransactionPointer: MessageFns<TransactionPointer> = {
     };
   },
 
-  toJSON(message: TransactionPointer): unknown {
+  toJSON(message: TxPointer): unknown {
     const obj: any = {};
     if (message.blockHeight !== 0) {
       obj.blockHeight = Math.round(message.blockHeight);
@@ -185,11 +187,11 @@ export const TransactionPointer: MessageFns<TransactionPointer> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<TransactionPointer>, I>>(base?: I): TransactionPointer {
-    return TransactionPointer.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<TxPointer>, I>>(base?: I): TxPointer {
+    return TxPointer.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<TransactionPointer>, I>>(object: I): TransactionPointer {
-    const message = createBaseTransactionPointer();
+  fromPartial<I extends Exact<DeepPartial<TxPointer>, I>>(object: I): TxPointer {
+    const message = createBaseTxPointer();
     message.blockHeight = object.blockHeight ?? 0;
     message.txId = object.txId ?? 0;
     message.txIndex = object.txIndex ?? 0;
@@ -522,7 +524,7 @@ export const ReceiptPointer: MessageFns<ReceiptPointer> = {
 };
 
 function createBaseUtxoPointer(): UtxoPointer {
-  return { blockHeight: 0, txId: 0, txIndex: 0, utxoId: 0 };
+  return { blockHeight: 0, txId: 0, txIndex: 0, utxoId: 0, inputIndex: 0, outputIndex: 0 };
 }
 
 export const UtxoPointer: MessageFns<UtxoPointer> = {
@@ -538,6 +540,12 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
     }
     if (message.utxoId !== 0) {
       writer.uint32(32).int32(message.utxoId);
+    }
+    if (message.inputIndex !== 0) {
+      writer.uint32(40).int32(message.inputIndex);
+    }
+    if (message.outputIndex !== 0) {
+      writer.uint32(48).int32(message.outputIndex);
     }
     return writer;
   },
@@ -581,6 +589,22 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
           message.utxoId = reader.int32();
           continue;
         }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.inputIndex = reader.int32();
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.outputIndex = reader.int32();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -596,6 +620,8 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
       txId: isSet(object.txId) ? globalThis.Number(object.txId) : 0,
       txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
       utxoId: isSet(object.utxoId) ? globalThis.Number(object.utxoId) : 0,
+      inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
+      outputIndex: isSet(object.outputIndex) ? globalThis.Number(object.outputIndex) : 0,
     };
   },
 
@@ -613,6 +639,12 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
     if (message.utxoId !== 0) {
       obj.utxoId = Math.round(message.utxoId);
     }
+    if (message.inputIndex !== 0) {
+      obj.inputIndex = Math.round(message.inputIndex);
+    }
+    if (message.outputIndex !== 0) {
+      obj.outputIndex = Math.round(message.outputIndex);
+    }
     return obj;
   },
 
@@ -625,6 +657,8 @@ export const UtxoPointer: MessageFns<UtxoPointer> = {
     message.txId = object.txId ?? 0;
     message.txIndex = object.txIndex ?? 0;
     message.utxoId = object.utxoId ?? 0;
+    message.inputIndex = object.inputIndex ?? 0;
+    message.outputIndex = object.outputIndex ?? 0;
     return message;
   },
 };

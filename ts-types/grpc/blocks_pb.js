@@ -21,10 +21,10 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
-var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-goog.object.extend(proto, google_protobuf_timestamp_pb);
 var pointers_pb = require('./pointers_pb.js');
 goog.object.extend(proto, pointers_pb);
+var common_pb = require('./common_pb.js');
+goog.object.extend(proto, common_pb);
 goog.exportSymbol('proto.blocks.Block', null, global);
 goog.exportSymbol('proto.blocks.BlockConsensus', null, global);
 goog.exportSymbol('proto.blocks.BlockHeader', null, global);
@@ -98,7 +98,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.blocks.Block.repeatedFields_ = [8];
+proto.blocks.Block.repeatedFields_ = [6];
 
 
 
@@ -131,16 +131,13 @@ proto.blocks.Block.prototype.toObject = function(opt_includeInstance) {
  */
 proto.blocks.Block.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    blockHeight: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    producerAddress: msg.getProducerAddress_asB64(),
-    blockId: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    version: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    blockHeight: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    blockId: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    version: jspb.Message.getFieldWithDefault(msg, 3, ""),
     header: (f = msg.getHeader()) && proto.blocks.BlockHeader.toObject(includeInstance, f),
     consensus: (f = msg.getConsensus()) && proto.blocks.BlockConsensus.toObject(includeInstance, f),
     transactionIdsList: msg.getTransactionIdsList_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
+    metadata: (f = msg.getMetadata()) && common_pb.Metadata.toObject(includeInstance, f),
     pointer: (f = msg.getPointer()) && pointers_pb.BlockPointer.toObject(includeInstance, f)
   };
 
@@ -179,50 +176,37 @@ proto.blocks.Block.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setBlockHeight(value);
       break;
-    case 3:
-      var value = /** @type {!Uint8Array} */ (reader.readBytes());
-      msg.setProducerAddress(value);
-      break;
-    case 4:
+    case 2:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setBlockId(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setVersion(value);
       break;
-    case 6:
+    case 4:
       var value = new proto.blocks.BlockHeader;
       reader.readMessage(value,proto.blocks.BlockHeader.deserializeBinaryFromReader);
       msg.setHeader(value);
       break;
-    case 7:
+    case 5:
       var value = new proto.blocks.BlockConsensus;
       reader.readMessage(value,proto.blocks.BlockConsensus.deserializeBinaryFromReader);
       msg.setConsensus(value);
       break;
-    case 8:
+    case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.addTransactionIds(value);
       break;
-    case 9:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
+    case 7:
+      var value = new common_pb.Metadata;
+      reader.readMessage(value,common_pb.Metadata.deserializeBinaryFromReader);
+      msg.setMetadata(value);
       break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
-      break;
-    case 11:
+    case 8:
       var value = new pointers_pb.BlockPointer;
       reader.readMessage(value,pointers_pb.BlockPointer.deserializeBinaryFromReader);
       msg.setPointer(value);
@@ -256,45 +240,31 @@ proto.blocks.Block.prototype.serializeBinary = function() {
  */
 proto.blocks.Block.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getBlockHeight();
   if (f !== 0) {
     writer.writeInt64(
-      2,
-      f
-    );
-  }
-  f = message.getProducerAddress_asU8();
-  if (f.length > 0) {
-    writer.writeBytes(
-      3,
+      1,
       f
     );
   }
   f = message.getBlockId();
   if (f !== 0) {
     writer.writeInt32(
-      4,
+      2,
       f
     );
   }
   f = message.getVersion();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      3,
       f
     );
   }
   f = message.getHeader();
   if (f != null) {
     writer.writeMessage(
-      6,
+      4,
       f,
       proto.blocks.BlockHeader.serializeBinaryToWriter
     );
@@ -302,7 +272,7 @@ proto.blocks.Block.serializeBinaryToWriter = function(message, writer) {
   f = message.getConsensus();
   if (f != null) {
     writer.writeMessage(
-      7,
+      5,
       f,
       proto.blocks.BlockConsensus.serializeBinaryToWriter
     );
@@ -310,30 +280,22 @@ proto.blocks.Block.serializeBinaryToWriter = function(message, writer) {
   f = message.getTransactionIdsList_asU8();
   if (f.length > 0) {
     writer.writeRepeatedBytes(
-      8,
+      6,
       f
     );
   }
-  f = message.getCreatedAt();
+  f = message.getMetadata();
   if (f != null) {
     writer.writeMessage(
-      9,
+      7,
       f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+      common_pb.Metadata.serializeBinaryToWriter
     );
   }
   f = message.getPointer();
   if (f != null) {
     writer.writeMessage(
-      11,
+      8,
       f,
       pointers_pb.BlockPointer.serializeBinaryToWriter
     );
@@ -342,29 +304,11 @@ proto.blocks.Block.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.blocks.Block.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.blocks.Block} returns this
- */
-proto.blocks.Block.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional int64 block_height = 2;
+ * optional int64 block_height = 1;
  * @return {number}
  */
 proto.blocks.Block.prototype.getBlockHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -373,58 +317,16 @@ proto.blocks.Block.prototype.getBlockHeight = function() {
  * @return {!proto.blocks.Block} returns this
  */
 proto.blocks.Block.prototype.setBlockHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional bytes producer_address = 3;
- * @return {!(string|Uint8Array)}
- */
-proto.blocks.Block.prototype.getProducerAddress = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * optional bytes producer_address = 3;
- * This is a type-conversion wrapper around `getProducerAddress()`
- * @return {string}
- */
-proto.blocks.Block.prototype.getProducerAddress_asB64 = function() {
-  return /** @type {string} */ (jspb.Message.bytesAsB64(
-      this.getProducerAddress()));
-};
-
-
-/**
- * optional bytes producer_address = 3;
- * Note that Uint8Array is not supported on all browsers.
- * @see http://caniuse.com/Uint8Array
- * This is a type-conversion wrapper around `getProducerAddress()`
- * @return {!Uint8Array}
- */
-proto.blocks.Block.prototype.getProducerAddress_asU8 = function() {
-  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
-      this.getProducerAddress()));
-};
-
-
-/**
- * @param {!(string|Uint8Array)} value
- * @return {!proto.blocks.Block} returns this
- */
-proto.blocks.Block.prototype.setProducerAddress = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
-};
-
-
-/**
- * optional int32 block_id = 4;
+ * optional int32 block_id = 2;
  * @return {number}
  */
 proto.blocks.Block.prototype.getBlockId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -433,16 +335,16 @@ proto.blocks.Block.prototype.getBlockId = function() {
  * @return {!proto.blocks.Block} returns this
  */
 proto.blocks.Block.prototype.setBlockId = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional string version = 5;
+ * optional string version = 3;
  * @return {string}
  */
 proto.blocks.Block.prototype.getVersion = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
@@ -451,17 +353,17 @@ proto.blocks.Block.prototype.getVersion = function() {
  * @return {!proto.blocks.Block} returns this
  */
 proto.blocks.Block.prototype.setVersion = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional BlockHeader header = 6;
+ * optional BlockHeader header = 4;
  * @return {?proto.blocks.BlockHeader}
  */
 proto.blocks.Block.prototype.getHeader = function() {
   return /** @type{?proto.blocks.BlockHeader} */ (
-    jspb.Message.getWrapperField(this, proto.blocks.BlockHeader, 6));
+    jspb.Message.getWrapperField(this, proto.blocks.BlockHeader, 4));
 };
 
 
@@ -470,7 +372,7 @@ proto.blocks.Block.prototype.getHeader = function() {
  * @return {!proto.blocks.Block} returns this
 */
 proto.blocks.Block.prototype.setHeader = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
+  return jspb.Message.setWrapperField(this, 4, value);
 };
 
 
@@ -488,17 +390,17 @@ proto.blocks.Block.prototype.clearHeader = function() {
  * @return {boolean}
  */
 proto.blocks.Block.prototype.hasHeader = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
- * optional BlockConsensus consensus = 7;
+ * optional BlockConsensus consensus = 5;
  * @return {?proto.blocks.BlockConsensus}
  */
 proto.blocks.Block.prototype.getConsensus = function() {
   return /** @type{?proto.blocks.BlockConsensus} */ (
-    jspb.Message.getWrapperField(this, proto.blocks.BlockConsensus, 7));
+    jspb.Message.getWrapperField(this, proto.blocks.BlockConsensus, 5));
 };
 
 
@@ -507,7 +409,7 @@ proto.blocks.Block.prototype.getConsensus = function() {
  * @return {!proto.blocks.Block} returns this
 */
 proto.blocks.Block.prototype.setConsensus = function(value) {
-  return jspb.Message.setWrapperField(this, 7, value);
+  return jspb.Message.setWrapperField(this, 5, value);
 };
 
 
@@ -525,21 +427,21 @@ proto.blocks.Block.prototype.clearConsensus = function() {
  * @return {boolean}
  */
 proto.blocks.Block.prototype.hasConsensus = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
- * repeated bytes transaction_ids = 8;
+ * repeated bytes transaction_ids = 6;
  * @return {!(Array<!Uint8Array>|Array<string>)}
  */
 proto.blocks.Block.prototype.getTransactionIdsList = function() {
-  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 8));
+  return /** @type {!(Array<!Uint8Array>|Array<string>)} */ (jspb.Message.getRepeatedField(this, 6));
 };
 
 
 /**
- * repeated bytes transaction_ids = 8;
+ * repeated bytes transaction_ids = 6;
  * This is a type-conversion wrapper around `getTransactionIdsList()`
  * @return {!Array<string>}
  */
@@ -550,7 +452,7 @@ proto.blocks.Block.prototype.getTransactionIdsList_asB64 = function() {
 
 
 /**
- * repeated bytes transaction_ids = 8;
+ * repeated bytes transaction_ids = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getTransactionIdsList()`
@@ -567,7 +469,7 @@ proto.blocks.Block.prototype.getTransactionIdsList_asU8 = function() {
  * @return {!proto.blocks.Block} returns this
  */
 proto.blocks.Block.prototype.setTransactionIdsList = function(value) {
-  return jspb.Message.setField(this, 8, value || []);
+  return jspb.Message.setField(this, 6, value || []);
 };
 
 
@@ -577,7 +479,7 @@ proto.blocks.Block.prototype.setTransactionIdsList = function(value) {
  * @return {!proto.blocks.Block} returns this
  */
 proto.blocks.Block.prototype.addTransactionIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 8, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
 };
 
 
@@ -591,21 +493,21 @@ proto.blocks.Block.prototype.clearTransactionIdsList = function() {
 
 
 /**
- * optional google.protobuf.Timestamp created_at = 9;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional common.Metadata metadata = 7;
+ * @return {?proto.common.Metadata}
  */
-proto.blocks.Block.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 9));
+proto.blocks.Block.prototype.getMetadata = function() {
+  return /** @type{?proto.common.Metadata} */ (
+    jspb.Message.getWrapperField(this, common_pb.Metadata, 7));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @param {?proto.common.Metadata|undefined} value
  * @return {!proto.blocks.Block} returns this
 */
-proto.blocks.Block.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+proto.blocks.Block.prototype.setMetadata = function(value) {
+  return jspb.Message.setWrapperField(this, 7, value);
 };
 
 
@@ -613,8 +515,8 @@ proto.blocks.Block.prototype.setCreatedAt = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.blocks.Block} returns this
  */
-proto.blocks.Block.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
+proto.blocks.Block.prototype.clearMetadata = function() {
+  return this.setMetadata(undefined);
 };
 
 
@@ -622,55 +524,18 @@ proto.blocks.Block.prototype.clearCreatedAt = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.blocks.Block.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 9) != null;
+proto.blocks.Block.prototype.hasMetadata = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
 /**
- * optional google.protobuf.Timestamp published_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.blocks.Block.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.blocks.Block} returns this
-*/
-proto.blocks.Block.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.blocks.Block} returns this
- */
-proto.blocks.Block.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.blocks.Block.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
-};
-
-
-/**
- * optional pointers.BlockPointer pointer = 11;
+ * optional pointers.BlockPointer pointer = 8;
  * @return {?proto.pointers.BlockPointer}
  */
 proto.blocks.Block.prototype.getPointer = function() {
   return /** @type{?proto.pointers.BlockPointer} */ (
-    jspb.Message.getWrapperField(this, pointers_pb.BlockPointer, 11));
+    jspb.Message.getWrapperField(this, pointers_pb.BlockPointer, 8));
 };
 
 
@@ -679,7 +544,7 @@ proto.blocks.Block.prototype.getPointer = function() {
  * @return {!proto.blocks.Block} returns this
 */
 proto.blocks.Block.prototype.setPointer = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
+  return jspb.Message.setWrapperField(this, 8, value);
 };
 
 
@@ -697,7 +562,7 @@ proto.blocks.Block.prototype.clearPointer = function() {
  * @return {boolean}
  */
 proto.blocks.Block.prototype.hasPointer = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
@@ -733,22 +598,19 @@ proto.blocks.BlockHeader.prototype.toObject = function(opt_includeInstance) {
  */
 proto.blocks.BlockHeader.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    blockHeight: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    blockHeight: jspb.Message.getFieldWithDefault(msg, 1, 0),
     applicationHash: msg.getApplicationHash_asB64(),
-    consensusParametersVersion: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    daHeight: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    consensusParametersVersion: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    daHeight: jspb.Message.getFieldWithDefault(msg, 4, 0),
     eventInboxRoot: msg.getEventInboxRoot_asB64(),
     messageOutboxRoot: msg.getMessageOutboxRoot_asB64(),
-    messageReceiptCount: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    messageReceiptCount: jspb.Message.getFieldWithDefault(msg, 7, 0),
     prevRoot: msg.getPrevRoot_asB64(),
-    stateTransitionBytecodeVersion: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    time: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    transactionsCount: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    stateTransitionBytecodeVersion: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    time: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    transactionsCount: jspb.Message.getFieldWithDefault(msg, 11, 0),
     transactionsRoot: msg.getTransactionsRoot_asB64(),
-    version: jspb.Message.getFieldWithDefault(msg, 14, 0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    version: jspb.Message.getFieldWithDefault(msg, 13, 0)
   };
 
   if (includeInstance) {
@@ -786,70 +648,56 @@ proto.blocks.BlockHeader.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
-      break;
-    case 2:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setBlockHeight(value);
       break;
-    case 3:
+    case 2:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setApplicationHash(value);
       break;
-    case 4:
+    case 3:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setConsensusParametersVersion(value);
       break;
-    case 5:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setDaHeight(value);
       break;
-    case 6:
+    case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setEventInboxRoot(value);
       break;
-    case 7:
+    case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setMessageOutboxRoot(value);
       break;
-    case 8:
+    case 7:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setMessageReceiptCount(value);
       break;
-    case 9:
+    case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setPrevRoot(value);
       break;
-    case 10:
+    case 9:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setStateTransitionBytecodeVersion(value);
       break;
-    case 11:
+    case 10:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setTime(value);
       break;
-    case 12:
+    case 11:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setTransactionsCount(value);
       break;
-    case 13:
+    case 12:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setTransactionsRoot(value);
       break;
-    case 14:
+    case 13:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setVersion(value);
-      break;
-    case 15:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 16:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -880,147 +728,106 @@ proto.blocks.BlockHeader.prototype.serializeBinary = function() {
  */
 proto.blocks.BlockHeader.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getBlockHeight();
   if (f !== 0) {
     writer.writeInt64(
-      2,
+      1,
       f
     );
   }
   f = message.getApplicationHash_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      3,
+      2,
       f
     );
   }
   f = message.getConsensusParametersVersion();
   if (f !== 0) {
     writer.writeInt32(
-      4,
+      3,
       f
     );
   }
   f = message.getDaHeight();
   if (f !== 0) {
     writer.writeInt64(
-      5,
+      4,
       f
     );
   }
   f = message.getEventInboxRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      5,
       f
     );
   }
   f = message.getMessageOutboxRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      7,
+      6,
       f
     );
   }
   f = message.getMessageReceiptCount();
   if (f !== 0) {
     writer.writeInt32(
-      8,
+      7,
       f
     );
   }
   f = message.getPrevRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      9,
+      8,
       f
     );
   }
   f = message.getStateTransitionBytecodeVersion();
   if (f !== 0) {
     writer.writeInt32(
-      10,
+      9,
       f
     );
   }
   f = message.getTime();
   if (f !== 0) {
     writer.writeInt64(
-      11,
+      10,
       f
     );
   }
   f = message.getTransactionsCount();
   if (f !== 0) {
     writer.writeInt32(
-      12,
+      11,
       f
     );
   }
   f = message.getTransactionsRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      13,
+      12,
       f
     );
   }
   f = message.getVersion();
   if (f !== 0) {
     writer.writeInt32(
-      14,
+      13,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      15,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      16,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
- */
-proto.blocks.BlockHeader.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.blocks.BlockHeader} returns this
- */
-proto.blocks.BlockHeader.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional int64 block_height = 2;
+ * optional int64 block_height = 1;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getBlockHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -1029,21 +836,21 @@ proto.blocks.BlockHeader.prototype.getBlockHeight = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setBlockHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional bytes application_hash = 3;
+ * optional bytes application_hash = 2;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockHeader.prototype.getApplicationHash = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional bytes application_hash = 3;
+ * optional bytes application_hash = 2;
  * This is a type-conversion wrapper around `getApplicationHash()`
  * @return {string}
  */
@@ -1054,7 +861,7 @@ proto.blocks.BlockHeader.prototype.getApplicationHash_asB64 = function() {
 
 
 /**
- * optional bytes application_hash = 3;
+ * optional bytes application_hash = 2;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getApplicationHash()`
@@ -1071,16 +878,16 @@ proto.blocks.BlockHeader.prototype.getApplicationHash_asU8 = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setApplicationHash = function(value) {
-  return jspb.Message.setProto3BytesField(this, 3, value);
+  return jspb.Message.setProto3BytesField(this, 2, value);
 };
 
 
 /**
- * optional int32 consensus_parameters_version = 4;
+ * optional int32 consensus_parameters_version = 3;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getConsensusParametersVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -1089,16 +896,16 @@ proto.blocks.BlockHeader.prototype.getConsensusParametersVersion = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setConsensusParametersVersion = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional int64 da_height = 5;
+ * optional int64 da_height = 4;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getDaHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -1107,21 +914,21 @@ proto.blocks.BlockHeader.prototype.getDaHeight = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setDaHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional bytes event_inbox_root = 6;
+ * optional bytes event_inbox_root = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockHeader.prototype.getEventInboxRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes event_inbox_root = 6;
+ * optional bytes event_inbox_root = 5;
  * This is a type-conversion wrapper around `getEventInboxRoot()`
  * @return {string}
  */
@@ -1132,7 +939,7 @@ proto.blocks.BlockHeader.prototype.getEventInboxRoot_asB64 = function() {
 
 
 /**
- * optional bytes event_inbox_root = 6;
+ * optional bytes event_inbox_root = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getEventInboxRoot()`
@@ -1149,21 +956,21 @@ proto.blocks.BlockHeader.prototype.getEventInboxRoot_asU8 = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setEventInboxRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
 /**
- * optional bytes message_outbox_root = 7;
+ * optional bytes message_outbox_root = 6;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockHeader.prototype.getMessageOutboxRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * optional bytes message_outbox_root = 7;
+ * optional bytes message_outbox_root = 6;
  * This is a type-conversion wrapper around `getMessageOutboxRoot()`
  * @return {string}
  */
@@ -1174,7 +981,7 @@ proto.blocks.BlockHeader.prototype.getMessageOutboxRoot_asB64 = function() {
 
 
 /**
- * optional bytes message_outbox_root = 7;
+ * optional bytes message_outbox_root = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getMessageOutboxRoot()`
@@ -1191,16 +998,16 @@ proto.blocks.BlockHeader.prototype.getMessageOutboxRoot_asU8 = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setMessageOutboxRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 7, value);
+  return jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
 /**
- * optional int32 message_receipt_count = 8;
+ * optional int32 message_receipt_count = 7;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getMessageReceiptCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
@@ -1209,21 +1016,21 @@ proto.blocks.BlockHeader.prototype.getMessageReceiptCount = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setMessageReceiptCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * optional bytes prev_root = 9;
+ * optional bytes prev_root = 8;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockHeader.prototype.getPrevRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /**
- * optional bytes prev_root = 9;
+ * optional bytes prev_root = 8;
  * This is a type-conversion wrapper around `getPrevRoot()`
  * @return {string}
  */
@@ -1234,7 +1041,7 @@ proto.blocks.BlockHeader.prototype.getPrevRoot_asB64 = function() {
 
 
 /**
- * optional bytes prev_root = 9;
+ * optional bytes prev_root = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getPrevRoot()`
@@ -1251,16 +1058,16 @@ proto.blocks.BlockHeader.prototype.getPrevRoot_asU8 = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setPrevRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 9, value);
+  return jspb.Message.setProto3BytesField(this, 8, value);
 };
 
 
 /**
- * optional int32 state_transition_bytecode_version = 10;
+ * optional int32 state_transition_bytecode_version = 9;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getStateTransitionBytecodeVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
 
@@ -1269,16 +1076,16 @@ proto.blocks.BlockHeader.prototype.getStateTransitionBytecodeVersion = function(
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setStateTransitionBytecodeVersion = function(value) {
-  return jspb.Message.setProto3IntField(this, 10, value);
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * optional int64 time = 11;
+ * optional int64 time = 10;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getTime = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
 
@@ -1287,16 +1094,16 @@ proto.blocks.BlockHeader.prototype.getTime = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setTime = function(value) {
-  return jspb.Message.setProto3IntField(this, 11, value);
+  return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
 /**
- * optional int32 transactions_count = 12;
+ * optional int32 transactions_count = 11;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getTransactionsCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
 };
 
 
@@ -1305,21 +1112,21 @@ proto.blocks.BlockHeader.prototype.getTransactionsCount = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setTransactionsCount = function(value) {
-  return jspb.Message.setProto3IntField(this, 12, value);
+  return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
 /**
- * optional bytes transactions_root = 13;
+ * optional bytes transactions_root = 12;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockHeader.prototype.getTransactionsRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
 
 /**
- * optional bytes transactions_root = 13;
+ * optional bytes transactions_root = 12;
  * This is a type-conversion wrapper around `getTransactionsRoot()`
  * @return {string}
  */
@@ -1330,7 +1137,7 @@ proto.blocks.BlockHeader.prototype.getTransactionsRoot_asB64 = function() {
 
 
 /**
- * optional bytes transactions_root = 13;
+ * optional bytes transactions_root = 12;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getTransactionsRoot()`
@@ -1347,16 +1154,16 @@ proto.blocks.BlockHeader.prototype.getTransactionsRoot_asU8 = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setTransactionsRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 13, value);
+  return jspb.Message.setProto3BytesField(this, 12, value);
 };
 
 
 /**
- * optional int32 version = 14;
+ * optional int32 version = 13;
  * @return {number}
  */
 proto.blocks.BlockHeader.prototype.getVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 14, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
 };
 
 
@@ -1365,81 +1172,7 @@ proto.blocks.BlockHeader.prototype.getVersion = function() {
  * @return {!proto.blocks.BlockHeader} returns this
  */
 proto.blocks.BlockHeader.prototype.setVersion = function(value) {
-  return jspb.Message.setProto3IntField(this, 14, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 15;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.blocks.BlockHeader.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 15));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.blocks.BlockHeader} returns this
-*/
-proto.blocks.BlockHeader.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 15, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.blocks.BlockHeader} returns this
- */
-proto.blocks.BlockHeader.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.blocks.BlockHeader.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 15) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 16;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.blocks.BlockHeader.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 16));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.blocks.BlockHeader} returns this
-*/
-proto.blocks.BlockHeader.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 16, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.blocks.BlockHeader} returns this
- */
-proto.blocks.BlockHeader.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.blocks.BlockHeader.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 16) != null;
+  return jspb.Message.setProto3IntField(this, 13, value);
 };
 
 
@@ -1475,17 +1208,16 @@ proto.blocks.BlockConsensus.prototype.toObject = function(opt_includeInstance) {
  */
 proto.blocks.BlockConsensus.toObject = function(includeInstance, msg) {
   var f, obj = {
-    subject: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    blockHeight: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    consensusType: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    chainId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    producer: msg.getProducer_asB64(),
+    blockHeight: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    consensusType: jspb.Message.getFieldWithDefault(msg, 4, 0),
     chainConfigHash: msg.getChainConfigHash_asB64(),
     coinsRoot: msg.getCoinsRoot_asB64(),
     contractsRoot: msg.getContractsRoot_asB64(),
     messagesRoot: msg.getMessagesRoot_asB64(),
     transactionsRoot: msg.getTransactionsRoot_asB64(),
-    signature: msg.getSignature_asB64(),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    publishedAt: (f = msg.getPublishedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    signature: msg.getSignature_asB64()
   };
 
   if (includeInstance) {
@@ -1523,50 +1255,44 @@ proto.blocks.BlockConsensus.deserializeBinaryFromReader = function(msg, reader) 
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSubject(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setChainId(value);
       break;
     case 2:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setProducer(value);
+      break;
+    case 3:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setBlockHeight(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {!proto.blocks.ConsensusType} */ (reader.readEnum());
       msg.setConsensusType(value);
       break;
-    case 4:
+    case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setChainConfigHash(value);
       break;
-    case 5:
+    case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setCoinsRoot(value);
       break;
-    case 6:
+    case 7:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setContractsRoot(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setMessagesRoot(value);
       break;
-    case 8:
+    case 9:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setTransactionsRoot(value);
       break;
-    case 9:
+    case 10:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setSignature(value);
-      break;
-    case 10:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 11:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setPublishedAt(value);
       break;
     default:
       reader.skipField();
@@ -1597,112 +1323,145 @@ proto.blocks.BlockConsensus.prototype.serializeBinary = function() {
  */
 proto.blocks.BlockConsensus.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getSubject();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getChainId();
+  if (f !== 0) {
+    writer.writeInt64(
       1,
+      f
+    );
+  }
+  f = message.getProducer_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      2,
       f
     );
   }
   f = message.getBlockHeight();
   if (f !== 0) {
     writer.writeInt64(
-      2,
+      3,
       f
     );
   }
   f = message.getConsensusType();
   if (f !== 0.0) {
     writer.writeEnum(
-      3,
+      4,
       f
     );
   }
   f = message.getChainConfigHash_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      4,
+      5,
       f
     );
   }
   f = message.getCoinsRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      5,
+      6,
       f
     );
   }
   f = message.getContractsRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      6,
+      7,
       f
     );
   }
   f = message.getMessagesRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      7,
+      8,
       f
     );
   }
   f = message.getTransactionsRoot_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      8,
+      9,
       f
     );
   }
   f = message.getSignature_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      9,
+      10,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      10,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getPublishedAt();
-  if (f != null) {
-    writer.writeMessage(
-      11,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string subject = 1;
- * @return {string}
+ * optional int64 chain_id = 1;
+ * @return {number}
  */
-proto.blocks.BlockConsensus.prototype.getSubject = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.blocks.BlockConsensus.prototype.getChainId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.blocks.BlockConsensus} returns this
  */
-proto.blocks.BlockConsensus.prototype.setSubject = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
+proto.blocks.BlockConsensus.prototype.setChainId = function(value) {
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional int64 block_height = 2;
+ * optional bytes producer = 2;
+ * @return {!(string|Uint8Array)}
+ */
+proto.blocks.BlockConsensus.prototype.getProducer = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * optional bytes producer = 2;
+ * This is a type-conversion wrapper around `getProducer()`
+ * @return {string}
+ */
+proto.blocks.BlockConsensus.prototype.getProducer_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getProducer()));
+};
+
+
+/**
+ * optional bytes producer = 2;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getProducer()`
+ * @return {!Uint8Array}
+ */
+proto.blocks.BlockConsensus.prototype.getProducer_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getProducer()));
+};
+
+
+/**
+ * @param {!(string|Uint8Array)} value
+ * @return {!proto.blocks.BlockConsensus} returns this
+ */
+proto.blocks.BlockConsensus.prototype.setProducer = function(value) {
+  return jspb.Message.setProto3BytesField(this, 2, value);
+};
+
+
+/**
+ * optional int64 block_height = 3;
  * @return {number}
  */
 proto.blocks.BlockConsensus.prototype.getBlockHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -1711,16 +1470,16 @@ proto.blocks.BlockConsensus.prototype.getBlockHeight = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setBlockHeight = function(value) {
-  return jspb.Message.setProto3IntField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional ConsensusType consensus_type = 3;
+ * optional ConsensusType consensus_type = 4;
  * @return {!proto.blocks.ConsensusType}
  */
 proto.blocks.BlockConsensus.prototype.getConsensusType = function() {
-  return /** @type {!proto.blocks.ConsensusType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+  return /** @type {!proto.blocks.ConsensusType} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -1729,21 +1488,21 @@ proto.blocks.BlockConsensus.prototype.getConsensusType = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setConsensusType = function(value) {
-  return jspb.Message.setProto3EnumField(this, 3, value);
+  return jspb.Message.setProto3EnumField(this, 4, value);
 };
 
 
 /**
- * optional bytes chain_config_hash = 4;
+ * optional bytes chain_config_hash = 5;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockConsensus.prototype.getChainConfigHash = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * optional bytes chain_config_hash = 4;
+ * optional bytes chain_config_hash = 5;
  * This is a type-conversion wrapper around `getChainConfigHash()`
  * @return {string}
  */
@@ -1754,7 +1513,7 @@ proto.blocks.BlockConsensus.prototype.getChainConfigHash_asB64 = function() {
 
 
 /**
- * optional bytes chain_config_hash = 4;
+ * optional bytes chain_config_hash = 5;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getChainConfigHash()`
@@ -1771,21 +1530,21 @@ proto.blocks.BlockConsensus.prototype.getChainConfigHash_asU8 = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setChainConfigHash = function(value) {
-  return jspb.Message.setProto3BytesField(this, 4, value);
+  return jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
 /**
- * optional bytes coins_root = 5;
+ * optional bytes coins_root = 6;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockConsensus.prototype.getCoinsRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /**
- * optional bytes coins_root = 5;
+ * optional bytes coins_root = 6;
  * This is a type-conversion wrapper around `getCoinsRoot()`
  * @return {string}
  */
@@ -1796,7 +1555,7 @@ proto.blocks.BlockConsensus.prototype.getCoinsRoot_asB64 = function() {
 
 
 /**
- * optional bytes coins_root = 5;
+ * optional bytes coins_root = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getCoinsRoot()`
@@ -1813,21 +1572,21 @@ proto.blocks.BlockConsensus.prototype.getCoinsRoot_asU8 = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setCoinsRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 5, value);
+  return jspb.Message.setProto3BytesField(this, 6, value);
 };
 
 
 /**
- * optional bytes contracts_root = 6;
+ * optional bytes contracts_root = 7;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockConsensus.prototype.getContractsRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
 /**
- * optional bytes contracts_root = 6;
+ * optional bytes contracts_root = 7;
  * This is a type-conversion wrapper around `getContractsRoot()`
  * @return {string}
  */
@@ -1838,7 +1597,7 @@ proto.blocks.BlockConsensus.prototype.getContractsRoot_asB64 = function() {
 
 
 /**
- * optional bytes contracts_root = 6;
+ * optional bytes contracts_root = 7;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getContractsRoot()`
@@ -1855,21 +1614,21 @@ proto.blocks.BlockConsensus.prototype.getContractsRoot_asU8 = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setContractsRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 6, value);
+  return jspb.Message.setProto3BytesField(this, 7, value);
 };
 
 
 /**
- * optional bytes messages_root = 7;
+ * optional bytes messages_root = 8;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockConsensus.prototype.getMessagesRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /**
- * optional bytes messages_root = 7;
+ * optional bytes messages_root = 8;
  * This is a type-conversion wrapper around `getMessagesRoot()`
  * @return {string}
  */
@@ -1880,7 +1639,7 @@ proto.blocks.BlockConsensus.prototype.getMessagesRoot_asB64 = function() {
 
 
 /**
- * optional bytes messages_root = 7;
+ * optional bytes messages_root = 8;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getMessagesRoot()`
@@ -1897,21 +1656,21 @@ proto.blocks.BlockConsensus.prototype.getMessagesRoot_asU8 = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setMessagesRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 7, value);
+  return jspb.Message.setProto3BytesField(this, 8, value);
 };
 
 
 /**
- * optional bytes transactions_root = 8;
+ * optional bytes transactions_root = 9;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockConsensus.prototype.getTransactionsRoot = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
 /**
- * optional bytes transactions_root = 8;
+ * optional bytes transactions_root = 9;
  * This is a type-conversion wrapper around `getTransactionsRoot()`
  * @return {string}
  */
@@ -1922,7 +1681,7 @@ proto.blocks.BlockConsensus.prototype.getTransactionsRoot_asB64 = function() {
 
 
 /**
- * optional bytes transactions_root = 8;
+ * optional bytes transactions_root = 9;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getTransactionsRoot()`
@@ -1939,21 +1698,21 @@ proto.blocks.BlockConsensus.prototype.getTransactionsRoot_asU8 = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setTransactionsRoot = function(value) {
-  return jspb.Message.setProto3BytesField(this, 8, value);
+  return jspb.Message.setProto3BytesField(this, 9, value);
 };
 
 
 /**
- * optional bytes signature = 9;
+ * optional bytes signature = 10;
  * @return {!(string|Uint8Array)}
  */
 proto.blocks.BlockConsensus.prototype.getSignature = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
 };
 
 
 /**
- * optional bytes signature = 9;
+ * optional bytes signature = 10;
  * This is a type-conversion wrapper around `getSignature()`
  * @return {string}
  */
@@ -1964,7 +1723,7 @@ proto.blocks.BlockConsensus.prototype.getSignature_asB64 = function() {
 
 
 /**
- * optional bytes signature = 9;
+ * optional bytes signature = 10;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getSignature()`
@@ -1981,81 +1740,7 @@ proto.blocks.BlockConsensus.prototype.getSignature_asU8 = function() {
  * @return {!proto.blocks.BlockConsensus} returns this
  */
 proto.blocks.BlockConsensus.prototype.setSignature = function(value) {
-  return jspb.Message.setProto3BytesField(this, 9, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 10;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.blocks.BlockConsensus.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 10));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.blocks.BlockConsensus} returns this
-*/
-proto.blocks.BlockConsensus.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.blocks.BlockConsensus} returns this
- */
-proto.blocks.BlockConsensus.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.blocks.BlockConsensus.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 10) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp published_at = 11;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.blocks.BlockConsensus.prototype.getPublishedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 11));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.blocks.BlockConsensus} returns this
-*/
-proto.blocks.BlockConsensus.prototype.setPublishedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.blocks.BlockConsensus} returns this
- */
-proto.blocks.BlockConsensus.prototype.clearPublishedAt = function() {
-  return this.setPublishedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.blocks.BlockConsensus.prototype.hasPublishedAt = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.setProto3BytesField(this, 10, value);
 };
 
 
@@ -2063,8 +1748,9 @@ proto.blocks.BlockConsensus.prototype.hasPublishedAt = function() {
  * @enum {number}
  */
 proto.blocks.ConsensusType = {
-  GENESIS: 0,
-  POA_CONSENSUS: 1
+  UNKNOWN_CONSENSUS_TYPE: 0,
+  GENESIS: 1,
+  POA_CONSENSUS: 2
 };
 
 goog.object.extend(exports, proto.blocks);

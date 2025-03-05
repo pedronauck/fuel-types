@@ -6,27 +6,64 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "./google/protobuf/timestamp";
+import { Metadata } from "./common";
 import { UtxoPointer } from "./pointers";
 
 export const protobufPackage = "utxos";
 
+export enum UtxoStatus {
+  UNSPENT = 0,
+  SPENT = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function utxoStatusFromJSON(object: any): UtxoStatus {
+  switch (object) {
+    case 0:
+    case "UNSPENT":
+      return UtxoStatus.UNSPENT;
+    case 2:
+    case "SPENT":
+      return UtxoStatus.SPENT;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return UtxoStatus.UNRECOGNIZED;
+  }
+}
+
+export function utxoStatusToJSON(object: UtxoStatus): string {
+  switch (object) {
+    case UtxoStatus.UNSPENT:
+      return "UNSPENT";
+    case UtxoStatus.SPENT:
+      return "SPENT";
+    case UtxoStatus.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export enum UtxoType {
-  CONTRACT = 0,
-  COIN = 1,
-  MESSAGE = 2,
+  UNKNOWN = 0,
+  CONTRACT = 1,
+  COIN = 2,
+  MESSAGE = 3,
   UNRECOGNIZED = -1,
 }
 
 export function utxoTypeFromJSON(object: any): UtxoType {
   switch (object) {
     case 0:
+    case "UNKNOWN":
+      return UtxoType.UNKNOWN;
+    case 1:
     case "CONTRACT":
       return UtxoType.CONTRACT;
-    case 1:
+    case 2:
     case "COIN":
       return UtxoType.COIN;
-    case 2:
+    case 3:
     case "MESSAGE":
       return UtxoType.MESSAGE;
     case -1:
@@ -38,6 +75,8 @@ export function utxoTypeFromJSON(object: any): UtxoType {
 
 export function utxoTypeToJSON(object: UtxoType): string {
   switch (object) {
+    case UtxoType.UNKNOWN:
+      return "UNKNOWN";
     case UtxoType.CONTRACT:
       return "CONTRACT";
     case UtxoType.COIN:
@@ -52,42 +91,42 @@ export function utxoTypeToJSON(object: UtxoType): string {
 
 export interface Utxo {
   subject: string;
-  blockHeight: number;
-  txId: Uint8Array;
-  txIndex: number;
-  inputIndex: number;
-  utxoType: UtxoType;
   utxoId: Uint8Array;
-  value: Uint8Array;
-  senderAddress: Uint8Array;
-  recipientAddress: Uint8Array;
-  nonce: Uint8Array;
-  amount: number;
-  data: Uint8Array;
-  createdAt: Date | undefined;
-  publishedAt: Date | undefined;
-  updatedAt: Date | undefined;
+  type: UtxoType;
+  status: UtxoStatus;
+  coin?: UtxoCoin | undefined;
+  contract?: UtxoContract | undefined;
+  message?: UtxoMessage | undefined;
+  metadata: Metadata | undefined;
   pointer: UtxoPointer | undefined;
+}
+
+export interface UtxoCoin {
+  amount: number;
+}
+
+export interface UtxoContract {
+  contractId: Uint8Array;
+  value: Uint8Array;
+}
+
+export interface UtxoMessage {
+  sender: Uint8Array;
+  recipient: Uint8Array;
+  nonce: Uint8Array;
+  data: Uint8Array;
 }
 
 function createBaseUtxo(): Utxo {
   return {
     subject: "",
-    blockHeight: 0,
-    txId: new Uint8Array(0),
-    txIndex: 0,
-    inputIndex: 0,
-    utxoType: 0,
     utxoId: new Uint8Array(0),
-    value: new Uint8Array(0),
-    senderAddress: new Uint8Array(0),
-    recipientAddress: new Uint8Array(0),
-    nonce: new Uint8Array(0),
-    amount: 0,
-    data: new Uint8Array(0),
-    createdAt: undefined,
-    publishedAt: undefined,
-    updatedAt: undefined,
+    type: 0,
+    status: 0,
+    coin: undefined,
+    contract: undefined,
+    message: undefined,
+    metadata: undefined,
     pointer: undefined,
   };
 }
@@ -97,53 +136,29 @@ export const Utxo: MessageFns<Utxo> = {
     if (message.subject !== "") {
       writer.uint32(10).string(message.subject);
     }
-    if (message.blockHeight !== 0) {
-      writer.uint32(16).int64(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      writer.uint32(26).bytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      writer.uint32(32).int32(message.txIndex);
-    }
-    if (message.inputIndex !== 0) {
-      writer.uint32(40).int32(message.inputIndex);
-    }
-    if (message.utxoType !== 0) {
-      writer.uint32(48).int32(message.utxoType);
-    }
     if (message.utxoId.length !== 0) {
-      writer.uint32(58).bytes(message.utxoId);
+      writer.uint32(18).bytes(message.utxoId);
     }
-    if (message.value.length !== 0) {
-      writer.uint32(66).bytes(message.value);
+    if (message.type !== 0) {
+      writer.uint32(24).int32(message.type);
     }
-    if (message.senderAddress.length !== 0) {
-      writer.uint32(74).bytes(message.senderAddress);
+    if (message.status !== 0) {
+      writer.uint32(32).int32(message.status);
     }
-    if (message.recipientAddress.length !== 0) {
-      writer.uint32(82).bytes(message.recipientAddress);
+    if (message.coin !== undefined) {
+      UtxoCoin.encode(message.coin, writer.uint32(42).fork()).join();
     }
-    if (message.nonce.length !== 0) {
-      writer.uint32(90).bytes(message.nonce);
+    if (message.contract !== undefined) {
+      UtxoContract.encode(message.contract, writer.uint32(50).fork()).join();
     }
-    if (message.amount !== 0) {
-      writer.uint32(96).int64(message.amount);
+    if (message.message !== undefined) {
+      UtxoMessage.encode(message.message, writer.uint32(58).fork()).join();
     }
-    if (message.data.length !== 0) {
-      writer.uint32(106).bytes(message.data);
-    }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(114).fork()).join();
-    }
-    if (message.publishedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.publishedAt), writer.uint32(122).fork()).join();
-    }
-    if (message.updatedAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.updatedAt), writer.uint32(130).fork()).join();
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(66).fork()).join();
     }
     if (message.pointer !== undefined) {
-      UtxoPointer.encode(message.pointer, writer.uint32(138).fork()).join();
+      UtxoPointer.encode(message.pointer, writer.uint32(74).fork()).join();
     }
     return writer;
   },
@@ -164,19 +179,19 @@ export const Utxo: MessageFns<Utxo> = {
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.blockHeight = longToNumber(reader.int64());
+          message.utxoId = reader.bytes();
           continue;
         }
         case 3: {
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.txId = reader.bytes();
+          message.type = reader.int32() as any;
           continue;
         }
         case 4: {
@@ -184,23 +199,23 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.txIndex = reader.int32();
+          message.status = reader.int32() as any;
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.inputIndex = reader.int32();
+          message.coin = UtxoCoin.decode(reader, reader.uint32());
           continue;
         }
         case 6: {
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.utxoType = reader.int32() as any;
+          message.contract = UtxoContract.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -208,7 +223,7 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.utxoId = reader.bytes();
+          message.message = UtxoMessage.decode(reader, reader.uint32());
           continue;
         }
         case 8: {
@@ -216,75 +231,11 @@ export const Utxo: MessageFns<Utxo> = {
             break;
           }
 
-          message.value = reader.bytes();
+          message.metadata = Metadata.decode(reader, reader.uint32());
           continue;
         }
         case 9: {
           if (tag !== 74) {
-            break;
-          }
-
-          message.senderAddress = reader.bytes();
-          continue;
-        }
-        case 10: {
-          if (tag !== 82) {
-            break;
-          }
-
-          message.recipientAddress = reader.bytes();
-          continue;
-        }
-        case 11: {
-          if (tag !== 90) {
-            break;
-          }
-
-          message.nonce = reader.bytes();
-          continue;
-        }
-        case 12: {
-          if (tag !== 96) {
-            break;
-          }
-
-          message.amount = longToNumber(reader.int64());
-          continue;
-        }
-        case 13: {
-          if (tag !== 106) {
-            break;
-          }
-
-          message.data = reader.bytes();
-          continue;
-        }
-        case 14: {
-          if (tag !== 114) {
-            break;
-          }
-
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 15: {
-          if (tag !== 122) {
-            break;
-          }
-
-          message.publishedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 16: {
-          if (tag !== 130) {
-            break;
-          }
-
-          message.updatedAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 17: {
-          if (tag !== 138) {
             break;
           }
 
@@ -303,21 +254,13 @@ export const Utxo: MessageFns<Utxo> = {
   fromJSON(object: any): Utxo {
     return {
       subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
-      blockHeight: isSet(object.blockHeight) ? globalThis.Number(object.blockHeight) : 0,
-      txId: isSet(object.txId) ? bytesFromBase64(object.txId) : new Uint8Array(0),
-      txIndex: isSet(object.txIndex) ? globalThis.Number(object.txIndex) : 0,
-      inputIndex: isSet(object.inputIndex) ? globalThis.Number(object.inputIndex) : 0,
-      utxoType: isSet(object.utxoType) ? utxoTypeFromJSON(object.utxoType) : 0,
       utxoId: isSet(object.utxoId) ? bytesFromBase64(object.utxoId) : new Uint8Array(0),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
-      senderAddress: isSet(object.senderAddress) ? bytesFromBase64(object.senderAddress) : new Uint8Array(0),
-      recipientAddress: isSet(object.recipientAddress) ? bytesFromBase64(object.recipientAddress) : new Uint8Array(0),
-      nonce: isSet(object.nonce) ? bytesFromBase64(object.nonce) : new Uint8Array(0),
-      amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
-      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
-      publishedAt: isSet(object.publishedAt) ? fromJsonTimestamp(object.publishedAt) : undefined,
-      updatedAt: isSet(object.updatedAt) ? fromJsonTimestamp(object.updatedAt) : undefined,
+      type: isSet(object.type) ? utxoTypeFromJSON(object.type) : 0,
+      status: isSet(object.status) ? utxoStatusFromJSON(object.status) : 0,
+      coin: isSet(object.coin) ? UtxoCoin.fromJSON(object.coin) : undefined,
+      contract: isSet(object.contract) ? UtxoContract.fromJSON(object.contract) : undefined,
+      message: isSet(object.message) ? UtxoMessage.fromJSON(object.message) : undefined,
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
       pointer: isSet(object.pointer) ? UtxoPointer.fromJSON(object.pointer) : undefined,
     };
   },
@@ -327,50 +270,26 @@ export const Utxo: MessageFns<Utxo> = {
     if (message.subject !== "") {
       obj.subject = message.subject;
     }
-    if (message.blockHeight !== 0) {
-      obj.blockHeight = Math.round(message.blockHeight);
-    }
-    if (message.txId.length !== 0) {
-      obj.txId = base64FromBytes(message.txId);
-    }
-    if (message.txIndex !== 0) {
-      obj.txIndex = Math.round(message.txIndex);
-    }
-    if (message.inputIndex !== 0) {
-      obj.inputIndex = Math.round(message.inputIndex);
-    }
-    if (message.utxoType !== 0) {
-      obj.utxoType = utxoTypeToJSON(message.utxoType);
-    }
     if (message.utxoId.length !== 0) {
       obj.utxoId = base64FromBytes(message.utxoId);
     }
-    if (message.value.length !== 0) {
-      obj.value = base64FromBytes(message.value);
+    if (message.type !== 0) {
+      obj.type = utxoTypeToJSON(message.type);
     }
-    if (message.senderAddress.length !== 0) {
-      obj.senderAddress = base64FromBytes(message.senderAddress);
+    if (message.status !== 0) {
+      obj.status = utxoStatusToJSON(message.status);
     }
-    if (message.recipientAddress.length !== 0) {
-      obj.recipientAddress = base64FromBytes(message.recipientAddress);
+    if (message.coin !== undefined) {
+      obj.coin = UtxoCoin.toJSON(message.coin);
     }
-    if (message.nonce.length !== 0) {
-      obj.nonce = base64FromBytes(message.nonce);
+    if (message.contract !== undefined) {
+      obj.contract = UtxoContract.toJSON(message.contract);
     }
-    if (message.amount !== 0) {
-      obj.amount = Math.round(message.amount);
+    if (message.message !== undefined) {
+      obj.message = UtxoMessage.toJSON(message.message);
     }
-    if (message.data.length !== 0) {
-      obj.data = base64FromBytes(message.data);
-    }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
-    }
-    if (message.publishedAt !== undefined) {
-      obj.publishedAt = message.publishedAt.toISOString();
-    }
-    if (message.updatedAt !== undefined) {
-      obj.updatedAt = message.updatedAt.toISOString();
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.pointer !== undefined) {
       obj.pointer = UtxoPointer.toJSON(message.pointer);
@@ -384,24 +303,264 @@ export const Utxo: MessageFns<Utxo> = {
   fromPartial<I extends Exact<DeepPartial<Utxo>, I>>(object: I): Utxo {
     const message = createBaseUtxo();
     message.subject = object.subject ?? "";
-    message.blockHeight = object.blockHeight ?? 0;
-    message.txId = object.txId ?? new Uint8Array(0);
-    message.txIndex = object.txIndex ?? 0;
-    message.inputIndex = object.inputIndex ?? 0;
-    message.utxoType = object.utxoType ?? 0;
     message.utxoId = object.utxoId ?? new Uint8Array(0);
-    message.value = object.value ?? new Uint8Array(0);
-    message.senderAddress = object.senderAddress ?? new Uint8Array(0);
-    message.recipientAddress = object.recipientAddress ?? new Uint8Array(0);
-    message.nonce = object.nonce ?? new Uint8Array(0);
-    message.amount = object.amount ?? 0;
-    message.data = object.data ?? new Uint8Array(0);
-    message.createdAt = object.createdAt ?? undefined;
-    message.publishedAt = object.publishedAt ?? undefined;
-    message.updatedAt = object.updatedAt ?? undefined;
+    message.type = object.type ?? 0;
+    message.status = object.status ?? 0;
+    message.coin = (object.coin !== undefined && object.coin !== null) ? UtxoCoin.fromPartial(object.coin) : undefined;
+    message.contract = (object.contract !== undefined && object.contract !== null)
+      ? UtxoContract.fromPartial(object.contract)
+      : undefined;
+    message.message = (object.message !== undefined && object.message !== null)
+      ? UtxoMessage.fromPartial(object.message)
+      : undefined;
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
     message.pointer = (object.pointer !== undefined && object.pointer !== null)
       ? UtxoPointer.fromPartial(object.pointer)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseUtxoCoin(): UtxoCoin {
+  return { amount: 0 };
+}
+
+export const UtxoCoin: MessageFns<UtxoCoin> = {
+  encode(message: UtxoCoin, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.amount !== 0) {
+      writer.uint32(8).int64(message.amount);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UtxoCoin {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUtxoCoin();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.amount = longToNumber(reader.int64());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UtxoCoin {
+    return { amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0 };
+  },
+
+  toJSON(message: UtxoCoin): unknown {
+    const obj: any = {};
+    if (message.amount !== 0) {
+      obj.amount = Math.round(message.amount);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UtxoCoin>, I>>(base?: I): UtxoCoin {
+    return UtxoCoin.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UtxoCoin>, I>>(object: I): UtxoCoin {
+    const message = createBaseUtxoCoin();
+    message.amount = object.amount ?? 0;
+    return message;
+  },
+};
+
+function createBaseUtxoContract(): UtxoContract {
+  return { contractId: new Uint8Array(0), value: new Uint8Array(0) };
+}
+
+export const UtxoContract: MessageFns<UtxoContract> = {
+  encode(message: UtxoContract, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.contractId.length !== 0) {
+      writer.uint32(10).bytes(message.contractId);
+    }
+    if (message.value.length !== 0) {
+      writer.uint32(18).bytes(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UtxoContract {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUtxoContract();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.contractId = reader.bytes();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.bytes();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UtxoContract {
+    return {
+      contractId: isSet(object.contractId) ? bytesFromBase64(object.contractId) : new Uint8Array(0),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: UtxoContract): unknown {
+    const obj: any = {};
+    if (message.contractId.length !== 0) {
+      obj.contractId = base64FromBytes(message.contractId);
+    }
+    if (message.value.length !== 0) {
+      obj.value = base64FromBytes(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UtxoContract>, I>>(base?: I): UtxoContract {
+    return UtxoContract.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UtxoContract>, I>>(object: I): UtxoContract {
+    const message = createBaseUtxoContract();
+    message.contractId = object.contractId ?? new Uint8Array(0);
+    message.value = object.value ?? new Uint8Array(0);
+    return message;
+  },
+};
+
+function createBaseUtxoMessage(): UtxoMessage {
+  return { sender: new Uint8Array(0), recipient: new Uint8Array(0), nonce: new Uint8Array(0), data: new Uint8Array(0) };
+}
+
+export const UtxoMessage: MessageFns<UtxoMessage> = {
+  encode(message: UtxoMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.sender.length !== 0) {
+      writer.uint32(10).bytes(message.sender);
+    }
+    if (message.recipient.length !== 0) {
+      writer.uint32(18).bytes(message.recipient);
+    }
+    if (message.nonce.length !== 0) {
+      writer.uint32(26).bytes(message.nonce);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(34).bytes(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UtxoMessage {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUtxoMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sender = reader.bytes();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.recipient = reader.bytes();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.nonce = reader.bytes();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.data = reader.bytes();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UtxoMessage {
+    return {
+      sender: isSet(object.sender) ? bytesFromBase64(object.sender) : new Uint8Array(0),
+      recipient: isSet(object.recipient) ? bytesFromBase64(object.recipient) : new Uint8Array(0),
+      nonce: isSet(object.nonce) ? bytesFromBase64(object.nonce) : new Uint8Array(0),
+      data: isSet(object.data) ? bytesFromBase64(object.data) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: UtxoMessage): unknown {
+    const obj: any = {};
+    if (message.sender.length !== 0) {
+      obj.sender = base64FromBytes(message.sender);
+    }
+    if (message.recipient.length !== 0) {
+      obj.recipient = base64FromBytes(message.recipient);
+    }
+    if (message.nonce.length !== 0) {
+      obj.nonce = base64FromBytes(message.nonce);
+    }
+    if (message.data.length !== 0) {
+      obj.data = base64FromBytes(message.data);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UtxoMessage>, I>>(base?: I): UtxoMessage {
+    return UtxoMessage.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UtxoMessage>, I>>(object: I): UtxoMessage {
+    const message = createBaseUtxoMessage();
+    message.sender = object.sender ?? new Uint8Array(0);
+    message.recipient = object.recipient ?? new Uint8Array(0);
+    message.nonce = object.nonce ?? new Uint8Array(0);
+    message.data = object.data ?? new Uint8Array(0);
     return message;
   },
 };
@@ -442,28 +601,6 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function toTimestamp(date: Date): Timestamp {
-  const seconds = Math.trunc(date.getTime() / 1_000);
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
-  }
-}
 
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());

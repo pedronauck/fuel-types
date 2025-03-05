@@ -4,17 +4,17 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { UtxoPointer } from "./pointers_pb";
 import { file_pointers } from "./pointers_pb";
+import type { Metadata } from "./common_pb";
+import { file_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file utxos.proto.
  */
 export const file_utxos: GenFile = /*@__PURE__*/
-  fileDesc("Cgt1dHhvcy5wcm90bxIFdXR4b3MiwQMKBFV0eG8SDwoHc3ViamVjdBgBIAEoCRIUCgxibG9ja19oZWlnaHQYAiABKAMSDQoFdHhfaWQYAyABKAwSEAoIdHhfaW5kZXgYBCABKAUSEwoLaW5wdXRfaW5kZXgYBSABKAUSIgoJdXR4b190eXBlGAYgASgOMg8udXR4b3MuVXR4b1R5cGUSDwoHdXR4b19pZBgHIAEoDBINCgV2YWx1ZRgIIAEoDBIWCg5zZW5kZXJfYWRkcmVzcxgJIAEoDBIZChFyZWNpcGllbnRfYWRkcmVzcxgKIAEoDBINCgVub25jZRgLIAEoDBIOCgZhbW91bnQYDCABKAMSDAoEZGF0YRgNIAEoDBIuCgpjcmVhdGVkX2F0GA4gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxwdWJsaXNoZWRfYXQYDyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYECABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiYKB3BvaW50ZXIYESABKAsyFS5wb2ludGVycy5VdHhvUG9pbnRlciovCghVdHhvVHlwZRIMCghDT05UUkFDVBAAEggKBENPSU4QARILCgdNRVNTQUdFEAJiBnByb3RvMw", [file_google_protobuf_timestamp, file_pointers]);
+  fileDesc("Cgt1dHhvcy5wcm90bxIFdXR4b3MitAIKBFV0eG8SDwoHc3ViamVjdBgBIAEoCRIPCgd1dHhvX2lkGAIgASgMEh0KBHR5cGUYAyABKA4yDy51dHhvcy5VdHhvVHlwZRIhCgZzdGF0dXMYBCABKA4yES51dHhvcy5VdHhvU3RhdHVzEh8KBGNvaW4YBSABKAsyDy51dHhvcy5VdHhvQ29pbkgAEicKCGNvbnRyYWN0GAYgASgLMhMudXR4b3MuVXR4b0NvbnRyYWN0SAASJQoHbWVzc2FnZRgHIAEoCzISLnV0eG9zLlV0eG9NZXNzYWdlSAASIgoIbWV0YWRhdGEYCCABKAsyEC5jb21tb24uTWV0YWRhdGESJgoHcG9pbnRlchgJIAEoCzIVLnBvaW50ZXJzLlV0eG9Qb2ludGVyQgsKCXV0eG9fZGF0YSIaCghVdHhvQ29pbhIOCgZhbW91bnQYASABKAMiMgoMVXR4b0NvbnRyYWN0EhMKC2NvbnRyYWN0X2lkGAEgASgMEg0KBXZhbHVlGAIgASgMIk0KC1V0eG9NZXNzYWdlEg4KBnNlbmRlchgBIAEoDBIRCglyZWNpcGllbnQYAiABKAwSDQoFbm9uY2UYAyABKAwSDAoEZGF0YRgEIAEoDCokCgpVdHhvU3RhdHVzEgsKB1VOU1BFTlQQABIJCgVTUEVOVBACKjwKCFV0eG9UeXBlEgsKB1VOS05PV04QABIMCghDT05UUkFDVBABEggKBENPSU4QAhILCgdNRVNTQUdFEANiBnByb3RvMw", [file_pointers, file_common]);
 
 /**
  * @generated from message utxos.Utxo
@@ -26,82 +26,50 @@ export type Utxo = Message<"utxos.Utxo"> & {
   subject: string;
 
   /**
-   * @generated from field: int64 block_height = 2;
-   */
-  blockHeight: bigint;
-
-  /**
-   * @generated from field: bytes tx_id = 3;
-   */
-  txId: Uint8Array;
-
-  /**
-   * @generated from field: int32 tx_index = 4;
-   */
-  txIndex: number;
-
-  /**
-   * @generated from field: int32 input_index = 5;
-   */
-  inputIndex: number;
-
-  /**
-   * @generated from field: utxos.UtxoType utxo_type = 6;
-   */
-  utxoType: UtxoType;
-
-  /**
-   * @generated from field: bytes utxo_id = 7;
+   * @generated from field: bytes utxo_id = 2;
    */
   utxoId: Uint8Array;
 
   /**
-   * @generated from field: bytes value = 8;
+   * @generated from field: utxos.UtxoType type = 3;
    */
-  value: Uint8Array;
+  type: UtxoType;
 
   /**
-   * @generated from field: bytes sender_address = 9;
+   * @generated from field: utxos.UtxoStatus status = 4;
    */
-  senderAddress: Uint8Array;
+  status: UtxoStatus;
 
   /**
-   * @generated from field: bytes recipient_address = 10;
+   * @generated from oneof utxos.Utxo.utxo_data
    */
-  recipientAddress: Uint8Array;
+  utxoData: {
+    /**
+     * @generated from field: utxos.UtxoCoin coin = 5;
+     */
+    value: UtxoCoin;
+    case: "coin";
+  } | {
+    /**
+     * @generated from field: utxos.UtxoContract contract = 6;
+     */
+    value: UtxoContract;
+    case: "contract";
+  } | {
+    /**
+     * @generated from field: utxos.UtxoMessage message = 7;
+     */
+    value: UtxoMessage;
+    case: "message";
+  } | { case: undefined; value?: undefined };
 
   /**
-   * @generated from field: bytes nonce = 11;
+   * @generated from field: common.Metadata metadata = 8;
    */
-  nonce: Uint8Array;
+  metadata?: Metadata;
 
   /**
-   * @generated from field: int64 amount = 12;
-   */
-  amount: bigint;
-
-  /**
-   * @generated from field: bytes data = 13;
-   */
-  data: Uint8Array;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 14;
-   */
-  createdAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp published_at = 15;
-   */
-  publishedAt?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 16;
-   */
-  updatedAt?: Timestamp;
-
-  /**
-   * @generated from field: pointers.UtxoPointer pointer = 17;
+   * @generated from field: pointers.UtxoPointer pointer = 9;
    */
   pointer?: UtxoPointer;
 };
@@ -114,28 +82,125 @@ export const UtxoSchema: GenMessage<Utxo> = /*@__PURE__*/
   messageDesc(file_utxos, 0);
 
 /**
+ * @generated from message utxos.UtxoCoin
+ */
+export type UtxoCoin = Message<"utxos.UtxoCoin"> & {
+  /**
+   * @generated from field: int64 amount = 1;
+   */
+  amount: bigint;
+};
+
+/**
+ * Describes the message utxos.UtxoCoin.
+ * Use `create(UtxoCoinSchema)` to create a new message.
+ */
+export const UtxoCoinSchema: GenMessage<UtxoCoin> = /*@__PURE__*/
+  messageDesc(file_utxos, 1);
+
+/**
+ * @generated from message utxos.UtxoContract
+ */
+export type UtxoContract = Message<"utxos.UtxoContract"> & {
+  /**
+   * @generated from field: bytes contract_id = 1;
+   */
+  contractId: Uint8Array;
+
+  /**
+   * @generated from field: bytes value = 2;
+   */
+  value: Uint8Array;
+};
+
+/**
+ * Describes the message utxos.UtxoContract.
+ * Use `create(UtxoContractSchema)` to create a new message.
+ */
+export const UtxoContractSchema: GenMessage<UtxoContract> = /*@__PURE__*/
+  messageDesc(file_utxos, 2);
+
+/**
+ * @generated from message utxos.UtxoMessage
+ */
+export type UtxoMessage = Message<"utxos.UtxoMessage"> & {
+  /**
+   * @generated from field: bytes sender = 1;
+   */
+  sender: Uint8Array;
+
+  /**
+   * @generated from field: bytes recipient = 2;
+   */
+  recipient: Uint8Array;
+
+  /**
+   * @generated from field: bytes nonce = 3;
+   */
+  nonce: Uint8Array;
+
+  /**
+   * @generated from field: bytes data = 4;
+   */
+  data: Uint8Array;
+};
+
+/**
+ * Describes the message utxos.UtxoMessage.
+ * Use `create(UtxoMessageSchema)` to create a new message.
+ */
+export const UtxoMessageSchema: GenMessage<UtxoMessage> = /*@__PURE__*/
+  messageDesc(file_utxos, 3);
+
+/**
+ * @generated from enum utxos.UtxoStatus
+ */
+export enum UtxoStatus {
+  /**
+   * @generated from enum value: UNSPENT = 0;
+   */
+  UNSPENT = 0,
+
+  /**
+   * @generated from enum value: SPENT = 2;
+   */
+  SPENT = 2,
+}
+
+/**
+ * Describes the enum utxos.UtxoStatus.
+ */
+export const UtxoStatusSchema: GenEnum<UtxoStatus> = /*@__PURE__*/
+  enumDesc(file_utxos, 0);
+
+/**
  * @generated from enum utxos.UtxoType
  */
 export enum UtxoType {
   /**
-   * @generated from enum value: CONTRACT = 0;
+   * @generated from enum value: UNKNOWN = 0;
    */
-  CONTRACT = 0,
+  UNKNOWN = 0,
 
   /**
-   * @generated from enum value: COIN = 1;
+   * @generated from enum value: CONTRACT = 1;
    */
-  COIN = 1,
+  CONTRACT = 1,
 
   /**
-   * @generated from enum value: MESSAGE = 2;
+   * @generated from enum value: COIN = 2;
    */
-  MESSAGE = 2,
+  COIN = 2,
+
+  /**
+   * @generated from enum value: MESSAGE = 3;
+   */
+  MESSAGE = 3,
 }
 
 /**
  * Describes the enum utxos.UtxoType.
  */
 export const UtxoTypeSchema: GenEnum<UtxoType> = /*@__PURE__*/
-  enumDesc(file_utxos, 0);
+  enumDesc(file_utxos, 1);
 

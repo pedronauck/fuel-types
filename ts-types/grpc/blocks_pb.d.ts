@@ -5,18 +5,12 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 import * as pointers_pb from "./pointers_pb";
+import * as common_pb from "./common_pb";
 
 export class Block extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): Block;
     getBlockHeight(): number;
     setBlockHeight(value: number): Block;
-    getProducerAddress(): Uint8Array | string;
-    getProducerAddress_asU8(): Uint8Array;
-    getProducerAddress_asB64(): string;
-    setProducerAddress(value: Uint8Array | string): Block;
     getBlockId(): number;
     setBlockId(value: number): Block;
     getVersion(): string;
@@ -38,15 +32,10 @@ export class Block extends jspb.Message {
     setTransactionIdsList(value: Array<Uint8Array | string>): Block;
     addTransactionIds(value: Uint8Array | string, index?: number): Uint8Array | string;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): Block;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): Block;
+    hasMetadata(): boolean;
+    clearMetadata(): void;
+    getMetadata(): common_pb.Metadata | undefined;
+    setMetadata(value?: common_pb.Metadata): Block;
 
     hasPointer(): boolean;
     clearPointer(): void;
@@ -65,23 +54,18 @@ export class Block extends jspb.Message {
 
 export namespace Block {
     export type AsObject = {
-        subject: string,
         blockHeight: number,
-        producerAddress: Uint8Array | string,
         blockId: number,
         version: string,
         header?: BlockHeader.AsObject,
         consensus?: BlockConsensus.AsObject,
         transactionIdsList: Array<Uint8Array | string>,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
+        metadata?: common_pb.Metadata.AsObject,
         pointer?: pointers_pb.BlockPointer.AsObject,
     }
 }
 
 export class BlockHeader extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): BlockHeader;
     getBlockHeight(): number;
     setBlockHeight(value: number): BlockHeader;
     getApplicationHash(): Uint8Array | string;
@@ -119,16 +103,6 @@ export class BlockHeader extends jspb.Message {
     getVersion(): number;
     setVersion(value: number): BlockHeader;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): BlockHeader;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): BlockHeader;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): BlockHeader.AsObject;
     static toObject(includeInstance: boolean, msg: BlockHeader): BlockHeader.AsObject;
@@ -141,7 +115,6 @@ export class BlockHeader extends jspb.Message {
 
 export namespace BlockHeader {
     export type AsObject = {
-        subject: string,
         blockHeight: number,
         applicationHash: Uint8Array | string,
         consensusParametersVersion: number,
@@ -155,14 +128,16 @@ export namespace BlockHeader {
         transactionsCount: number,
         transactionsRoot: Uint8Array | string,
         version: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export class BlockConsensus extends jspb.Message { 
-    getSubject(): string;
-    setSubject(value: string): BlockConsensus;
+    getChainId(): number;
+    setChainId(value: number): BlockConsensus;
+    getProducer(): Uint8Array | string;
+    getProducer_asU8(): Uint8Array;
+    getProducer_asB64(): string;
+    setProducer(value: Uint8Array | string): BlockConsensus;
     getBlockHeight(): number;
     setBlockHeight(value: number): BlockConsensus;
     getConsensusType(): ConsensusType;
@@ -192,16 +167,6 @@ export class BlockConsensus extends jspb.Message {
     getSignature_asB64(): string;
     setSignature(value: Uint8Array | string): BlockConsensus;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): BlockConsensus;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): BlockConsensus;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): BlockConsensus.AsObject;
     static toObject(includeInstance: boolean, msg: BlockConsensus): BlockConsensus.AsObject;
@@ -214,7 +179,8 @@ export class BlockConsensus extends jspb.Message {
 
 export namespace BlockConsensus {
     export type AsObject = {
-        subject: string,
+        chainId: number,
+        producer: Uint8Array | string,
         blockHeight: number,
         consensusType: ConsensusType,
         chainConfigHash: Uint8Array | string,
@@ -223,12 +189,11 @@ export namespace BlockConsensus {
         messagesRoot: Uint8Array | string,
         transactionsRoot: Uint8Array | string,
         signature: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export enum ConsensusType {
-    GENESIS = 0,
-    POA_CONSENSUS = 1,
+    UNKNOWN_CONSENSUS_TYPE = 0,
+    GENESIS = 1,
+    POA_CONSENSUS = 2,
 }

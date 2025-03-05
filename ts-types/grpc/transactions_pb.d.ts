@@ -5,7 +5,7 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
-import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
+import * as common_pb from "./common_pb";
 import * as pointers_pb from "./pointers_pb";
 import * as inputs_pb from "./inputs_pb";
 import * as outputs_pb from "./outputs_pb";
@@ -14,46 +14,59 @@ import * as receipts_pb from "./receipts_pb";
 export class Transaction extends jspb.Message { 
     getSubject(): string;
     setSubject(value: string): Transaction;
-    getBlockHeight(): number;
-    setBlockHeight(value: number): Transaction;
-    getTxId(): Uint8Array | string;
-    getTxId_asU8(): Uint8Array;
-    getTxId_asB64(): string;
-    setTxId(value: Uint8Array | string): Transaction;
-    getTxIndex(): number;
-    setTxIndex(value: number): Transaction;
-    getType(): TransactionType;
-    setType(value: TransactionType): Transaction;
-    getStatus(): TransactionStatus;
-    setStatus(value: TransactionStatus): Transaction;
-    getRoot(): Uint8Array | string;
-    getRoot_asU8(): Uint8Array;
-    getRoot_asB64(): string;
-    setRoot(value: Uint8Array | string): Transaction;
-    getWitnessIndex(): number;
-    setWitnessIndex(value: number): Transaction;
-    getBlobId(): Uint8Array | string;
-    getBlobId_asU8(): Uint8Array;
-    getBlobId_asB64(): string;
-    setBlobId(value: Uint8Array | string): Transaction;
+    getId(): Uint8Array | string;
+    getId_asU8(): Uint8Array;
+    getId_asB64(): string;
+    setId(value: Uint8Array | string): Transaction;
+    getScriptGasLimit(): number;
+    setScriptGasLimit(value: number): Transaction;
+
+    hasTxPointer(): boolean;
+    clearTxPointer(): void;
+    getTxPointer(): pointers_pb.TxPointer | undefined;
+    setTxPointer(value?: pointers_pb.TxPointer): Transaction;
     clearInputAssetIdsList(): void;
     getInputAssetIdsList(): Array<Uint8Array | string>;
     getInputAssetIdsList_asU8(): Array<Uint8Array>;
     getInputAssetIdsList_asB64(): Array<string>;
     setInputAssetIdsList(value: Array<Uint8Array | string>): Transaction;
     addInputAssetIds(value: Uint8Array | string, index?: number): Uint8Array | string;
+    clearInputContractsList(): void;
+    getInputContractsList(): Array<Uint8Array | string>;
+    getInputContractsList_asU8(): Array<Uint8Array>;
+    getInputContractsList_asB64(): Array<string>;
+    setInputContractsList(value: Array<Uint8Array | string>): Transaction;
+    addInputContracts(value: Uint8Array | string, index?: number): Uint8Array | string;
+
+    hasInputContract(): boolean;
+    clearInputContract(): void;
+    getInputContract(): inputs_pb.InputContract | undefined;
+    setInputContract(value?: inputs_pb.InputContract): Transaction;
+    clearInputsList(): void;
+    getInputsList(): Array<inputs_pb.Input>;
+    setInputsList(value: Array<inputs_pb.Input>): Transaction;
+    addInputs(value?: inputs_pb.Input, index?: number): inputs_pb.Input;
+    getIsScript(): boolean;
+    setIsScript(value: boolean): Transaction;
     getIsCreate(): boolean;
     setIsCreate(value: boolean): Transaction;
     getIsMint(): boolean;
     setIsMint(value: boolean): Transaction;
-    getIsScript(): boolean;
-    setIsScript(value: boolean): Transaction;
     getIsUpgrade(): boolean;
     setIsUpgrade(value: boolean): Transaction;
     getIsUpload(): boolean;
     setIsUpload(value: boolean): Transaction;
-    getMaturity(): number;
-    setMaturity(value: number): Transaction;
+    getIsBlob(): boolean;
+    setIsBlob(value: boolean): Transaction;
+    clearOutputsList(): void;
+    getOutputsList(): Array<outputs_pb.Output>;
+    setOutputsList(value: Array<outputs_pb.Output>): Transaction;
+    addOutputs(value?: outputs_pb.Output, index?: number): outputs_pb.Output;
+
+    hasOutputContract(): boolean;
+    clearOutputContract(): void;
+    getOutputContract(): outputs_pb.OutputContract | undefined;
+    setOutputContract(value?: outputs_pb.OutputContract): Transaction;
     getMintAmount(): number;
     setMintAmount(value: number): Transaction;
     getMintAssetId(): Uint8Array | string;
@@ -62,40 +75,75 @@ export class Transaction extends jspb.Message {
     setMintAssetId(value: Uint8Array | string): Transaction;
     getMintGasPrice(): number;
     setMintGasPrice(value: number): Transaction;
+    getReceiptsRoot(): Uint8Array | string;
+    getReceiptsRoot_asU8(): Uint8Array;
+    getReceiptsRoot_asB64(): string;
+    setReceiptsRoot(value: Uint8Array | string): Transaction;
+    getStatus(): TransactionStatus;
+    setStatus(value: TransactionStatus): Transaction;
+    clearWitnessesList(): void;
+    getWitnessesList(): Array<Uint8Array | string>;
+    getWitnessesList_asU8(): Array<Uint8Array>;
+    getWitnessesList_asB64(): Array<string>;
+    setWitnessesList(value: Array<Uint8Array | string>): Transaction;
+    addWitnesses(value: Uint8Array | string, index?: number): Uint8Array | string;
+    getScript(): Uint8Array | string;
+    getScript_asU8(): Uint8Array;
+    getScript_asB64(): string;
+    setScript(value: Uint8Array | string): Transaction;
+    getScriptData(): Uint8Array | string;
+    getScriptData_asU8(): Uint8Array;
+    getScriptData_asB64(): string;
+    setScriptData(value: Uint8Array | string): Transaction;
+
+    hasPolicies(): boolean;
+    clearPolicies(): void;
+    getPolicies(): Policy | undefined;
+    setPolicies(value?: Policy): Transaction;
+    getSalt(): Uint8Array | string;
+    getSalt_asU8(): Uint8Array;
+    getSalt_asB64(): string;
+    setSalt(value: Uint8Array | string): Transaction;
+    clearStorageSlotsList(): void;
+    getStorageSlotsList(): Array<Uint8Array | string>;
+    getStorageSlotsList_asU8(): Array<Uint8Array>;
+    getStorageSlotsList_asB64(): Array<string>;
+    setStorageSlotsList(value: Array<Uint8Array | string>): Transaction;
+    addStorageSlots(value: Uint8Array | string, index?: number): Uint8Array | string;
+    getBytecodeWitnessIndex(): number;
+    setBytecodeWitnessIndex(value: number): Transaction;
+    getBytecodeRoot(): Uint8Array | string;
+    getBytecodeRoot_asU8(): Uint8Array;
+    getBytecodeRoot_asB64(): string;
+    setBytecodeRoot(value: Uint8Array | string): Transaction;
+    getSubsectionIndex(): number;
+    setSubsectionIndex(value: number): Transaction;
+    getSubsectionsNumber(): number;
+    setSubsectionsNumber(value: number): Transaction;
+    clearProofSetList(): void;
+    getProofSetList(): Array<Uint8Array | string>;
+    getProofSetList_asU8(): Array<Uint8Array>;
+    getProofSetList_asB64(): Array<string>;
+    setProofSetList(value: Array<Uint8Array | string>): Transaction;
+    addProofSet(value: Uint8Array | string, index?: number): Uint8Array | string;
+    getUpgradePurpose(): number;
+    setUpgradePurpose(value: number): Transaction;
+    getBlobId(): Uint8Array | string;
+    getBlobId_asU8(): Uint8Array;
+    getBlobId_asB64(): string;
+    setBlobId(value: Uint8Array | string): Transaction;
+    getMaturity(): number;
+    setMaturity(value: number): Transaction;
     getPolicyType(): number;
     setPolicyType(value: number): Transaction;
     getRawPayload(): Uint8Array | string;
     getRawPayload_asU8(): Uint8Array;
     getRawPayload_asB64(): string;
     setRawPayload(value: Uint8Array | string): Transaction;
-    getReceiptsRoot(): Uint8Array | string;
-    getReceiptsRoot_asU8(): Uint8Array;
-    getReceiptsRoot_asB64(): string;
-    setReceiptsRoot(value: Uint8Array | string): Transaction;
-    getSalt(): Uint8Array | string;
-    getSalt_asU8(): Uint8Array;
-    getSalt_asB64(): string;
-    setSalt(value: Uint8Array | string): Transaction;
-    getScript(): Uint8Array | string;
-    getScript_asU8(): Uint8Array;
-    getScript_asB64(): string;
-    setScript(value: Uint8Array | string): Transaction;
     getScriptLength(): number;
     setScriptLength(value: number): Transaction;
-    getScriptData(): Uint8Array | string;
-    getScriptData_asU8(): Uint8Array;
-    getScriptData_asB64(): string;
-    setScriptData(value: Uint8Array | string): Transaction;
     getScriptDataLength(): number;
     setScriptDataLength(value: number): Transaction;
-    getScriptGasLimit(): number;
-    setScriptGasLimit(value: number): Transaction;
-    getSubsectionIndex(): number;
-    setSubsectionIndex(value: number): Transaction;
-    getSubsectionsNumber(): number;
-    setSubsectionsNumber(value: number): Transaction;
-    getUpgradePurpose(): number;
-    setUpgradePurpose(value: number): Transaction;
     getStorageSlotsCount(): number;
     setStorageSlotsCount(value: number): Transaction;
     getProofSetCount(): number;
@@ -107,64 +155,10 @@ export class Transaction extends jspb.Message {
     getOutputsCount(): number;
     setOutputsCount(value: number): Transaction;
 
-    hasInputContract(): boolean;
-    clearInputContract(): void;
-    getInputContract(): inputs_pb.InputContract | undefined;
-    setInputContract(value?: inputs_pb.InputContract): Transaction;
-    clearInputContractsList(): void;
-    getInputContractsList(): Array<Uint8Array | string>;
-    getInputContractsList_asU8(): Array<Uint8Array>;
-    getInputContractsList_asB64(): Array<string>;
-    setInputContractsList(value: Array<Uint8Array | string>): Transaction;
-    addInputContracts(value: Uint8Array | string, index?: number): Uint8Array | string;
-    clearInputsList(): void;
-    getInputsList(): Array<inputs_pb.Input>;
-    setInputsList(value: Array<inputs_pb.Input>): Transaction;
-    addInputs(value?: inputs_pb.Input, index?: number): inputs_pb.Input;
-
-    hasOutputContract(): boolean;
-    clearOutputContract(): void;
-    getOutputContract(): outputs_pb.OutputContract | undefined;
-    setOutputContract(value?: outputs_pb.OutputContract): Transaction;
-    clearOutputsList(): void;
-    getOutputsList(): Array<outputs_pb.Output>;
-    setOutputsList(value: Array<outputs_pb.Output>): Transaction;
-    addOutputs(value?: outputs_pb.Output, index?: number): outputs_pb.Output;
-    clearProofSetList(): void;
-    getProofSetList(): Array<Uint8Array | string>;
-    getProofSetList_asU8(): Array<Uint8Array>;
-    getProofSetList_asB64(): Array<string>;
-    setProofSetList(value: Array<Uint8Array | string>): Transaction;
-    addProofSet(value: Uint8Array | string, index?: number): Uint8Array | string;
-    clearReceiptsList(): void;
-    getReceiptsList(): Array<receipts_pb.Receipt>;
-    setReceiptsList(value: Array<receipts_pb.Receipt>): Transaction;
-    addReceipts(value?: receipts_pb.Receipt, index?: number): receipts_pb.Receipt;
-    clearStorageSlotsList(): void;
-    getStorageSlotsList(): Array<StorageSlot>;
-    setStorageSlotsList(value: Array<StorageSlot>): Transaction;
-    addStorageSlots(value?: StorageSlot, index?: number): StorageSlot;
-    clearWitnessesList(): void;
-    getWitnessesList(): Array<Uint8Array | string>;
-    getWitnessesList_asU8(): Array<Uint8Array>;
-    getWitnessesList_asB64(): Array<string>;
-    setWitnessesList(value: Array<Uint8Array | string>): Transaction;
-    addWitnesses(value: Uint8Array | string, index?: number): Uint8Array | string;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): Transaction;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): Transaction;
-
-    hasPointer(): boolean;
-    clearPointer(): void;
-    getPointer(): pointers_pb.TransactionPointer | undefined;
-    setPointer(value?: pointers_pb.TransactionPointer): Transaction;
+    hasMetadata(): boolean;
+    clearMetadata(): void;
+    getMetadata(): common_pb.Metadata | undefined;
+    setMetadata(value?: common_pb.Metadata): Transaction;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Transaction.AsObject;
@@ -179,53 +173,50 @@ export class Transaction extends jspb.Message {
 export namespace Transaction {
     export type AsObject = {
         subject: string,
-        blockHeight: number,
-        txId: Uint8Array | string,
-        txIndex: number,
-        type: TransactionType,
-        status: TransactionStatus,
-        root: Uint8Array | string,
-        witnessIndex: number,
-        blobId: Uint8Array | string,
+        id: Uint8Array | string,
+        scriptGasLimit: number,
+        txPointer?: pointers_pb.TxPointer.AsObject,
         inputAssetIdsList: Array<Uint8Array | string>,
+        inputContractsList: Array<Uint8Array | string>,
+        inputContract?: inputs_pb.InputContract.AsObject,
+        inputsList: Array<inputs_pb.Input.AsObject>,
+        isScript: boolean,
         isCreate: boolean,
         isMint: boolean,
-        isScript: boolean,
         isUpgrade: boolean,
         isUpload: boolean,
-        maturity: number,
+        isBlob: boolean,
+        outputsList: Array<outputs_pb.Output.AsObject>,
+        outputContract?: outputs_pb.OutputContract.AsObject,
         mintAmount: number,
         mintAssetId: Uint8Array | string,
         mintGasPrice: number,
-        policyType: number,
-        rawPayload: Uint8Array | string,
         receiptsRoot: Uint8Array | string,
-        salt: Uint8Array | string,
+        status: TransactionStatus,
+        witnessesList: Array<Uint8Array | string>,
         script: Uint8Array | string,
-        scriptLength: number,
         scriptData: Uint8Array | string,
-        scriptDataLength: number,
-        scriptGasLimit: number,
+        policies?: Policy.AsObject,
+        salt: Uint8Array | string,
+        storageSlotsList: Array<Uint8Array | string>,
+        bytecodeWitnessIndex: number,
+        bytecodeRoot: Uint8Array | string,
         subsectionIndex: number,
         subsectionsNumber: number,
+        proofSetList: Array<Uint8Array | string>,
         upgradePurpose: number,
+        blobId: Uint8Array | string,
+        maturity: number,
+        policyType: number,
+        rawPayload: Uint8Array | string,
+        scriptLength: number,
+        scriptDataLength: number,
         storageSlotsCount: number,
         proofSetCount: number,
         witnessesCount: number,
         inputsCount: number,
         outputsCount: number,
-        inputContract?: inputs_pb.InputContract.AsObject,
-        inputContractsList: Array<Uint8Array | string>,
-        inputsList: Array<inputs_pb.Input.AsObject>,
-        outputContract?: outputs_pb.OutputContract.AsObject,
-        outputsList: Array<outputs_pb.Output.AsObject>,
-        proofSetList: Array<Uint8Array | string>,
-        receiptsList: Array<receipts_pb.Receipt.AsObject>,
-        storageSlotsList: Array<StorageSlot.AsObject>,
-        witnessesList: Array<Uint8Array | string>,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        pointer?: pointers_pb.TransactionPointer.AsObject,
+        metadata?: common_pb.Metadata.AsObject,
     }
 }
 
@@ -245,16 +236,6 @@ export class StorageSlot extends jspb.Message {
     getValue_asB64(): string;
     setValue(value: Uint8Array | string): StorageSlot;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): StorageSlot;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): StorageSlot;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): StorageSlot.AsObject;
     static toObject(includeInstance: boolean, msg: StorageSlot): StorageSlot.AsObject;
@@ -271,8 +252,6 @@ export namespace StorageSlot {
         txId: Uint8Array | string,
         key: Uint8Array | string,
         value: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
@@ -290,16 +269,6 @@ export class Witness extends jspb.Message {
     getWitnessDataLength(): number;
     setWitnessDataLength(value: number): Witness;
 
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): Witness;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): Witness;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Witness.AsObject;
     static toObject(includeInstance: boolean, msg: Witness): Witness.AsObject;
@@ -316,8 +285,6 @@ export namespace Witness {
         txId: Uint8Array | string,
         witnessData: Uint8Array | string,
         witnessDataLength: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
@@ -332,16 +299,6 @@ export class ProofSet extends jspb.Message {
     getProofHash_asU8(): Uint8Array;
     getProofHash_asB64(): string;
     setProofHash(value: Uint8Array | string): ProofSet;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): ProofSet;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): ProofSet;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ProofSet.AsObject;
@@ -358,8 +315,6 @@ export namespace ProofSet {
         subject: string,
         txId: Uint8Array | string,
         proofHash: Uint8Array | string,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
@@ -374,16 +329,6 @@ export class Policy extends jspb.Message {
     setType(value: PolicyType): Policy;
     getData(): number;
     setData(value: number): Policy;
-
-    hasCreatedAt(): boolean;
-    clearCreatedAt(): void;
-    getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): Policy;
-
-    hasPublishedAt(): boolean;
-    clearPublishedAt(): void;
-    getPublishedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setPublishedAt(value?: google_protobuf_timestamp_pb.Timestamp): Policy;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Policy.AsObject;
@@ -401,29 +346,32 @@ export namespace Policy {
         txId: Uint8Array | string,
         type: PolicyType,
         data: number,
-        createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-        publishedAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
 export enum TransactionType {
-    SCRIPT = 0,
-    CREATE = 1,
-    MINT = 2,
-    UPGRADE = 3,
-    UPLOAD = 4,
-    BLOB = 5,
+    UNKNOWN_TRANSACTION_TYPE = 0,
+    SCRIPT = 1,
+    CREATE = 2,
+    MINT = 3,
+    UPGRADE = 4,
+    UPLOAD = 5,
+    BLOB = 6,
 }
 
 export enum TransactionStatus {
-    SUCCESS = 0,
-    FAILURE = 1,
+    UNKNOWN_TRANSACTION_STATUS = 0,
+    FAILED = 1,
     SUBMITTED = 2,
+    SQUEEZED_OUT = 3,
+    SUCCESS = 4,
+    NONE = 5,
 }
 
 export enum PolicyType {
-    TIP = 0,
-    WITNESS_LIMIT = 1,
-    MATURITY = 2,
-    MAX_FEE = 3,
+    UNKNOWN_POLICY_TYPE = 0,
+    TIP = 1,
+    WITNESS_LIMIT = 2,
+    MATURITY = 3,
+    MAX_FEE = 4,
 }
