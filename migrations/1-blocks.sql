@@ -1,6 +1,7 @@
-CREATE SCHEMA "blocks";
-
-CREATE TYPE "ConsensusType" AS ENUM ('Genesis', 'PoAConsensus');
+CREATE TYPE "ConsensusType" AS ENUM (
+  'GENESIS',
+  'POA_CONSENSUS'
+);
 
 -- ------------------------------------------------------------------------------
 -- Blocks table (renamed from data)
@@ -11,33 +12,38 @@ CREATE TABLE "blocks" (
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "block_height" BIGINT UNIQUE NOT NULL,
+
   -- props
-  "producer_address" BYTEA NOT NULL,
   "block_id" INTEGER NOT NULL,
-  "version" VARCHAR(10) NOT NULL,
-  "header_id" INTEGER,
   "consensus_id" INTEGER,
+  "header_id" INTEGER,
+  "version" VARCHAR(10) NOT NULL,
+
   -- timestamps
   "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
   "published_at" TIMESTAMP NOT NULL
+  
+  -- constraints
+  FOREIGN KEY ("header_id") REFERENCES "headers" ("_id"),
+  FOREIGN KEY ("consensus_id") REFERENCES "consensus" ("_id")
 );
 
-CREATE INDEX ON "blocks" ("subject");
 CREATE INDEX ON "blocks" ("block_height");
-CREATE INDEX ON "blocks" ("producer_address");
 CREATE INDEX ON "blocks" ("block_id");
-CREATE INDEX ON "blocks" ("header_id");
 CREATE INDEX ON "blocks" ("consensus_id");
+CREATE INDEX ON "blocks" ("header_id");
+CREATE INDEX ON "blocks" ("subject");
 
 -- ------------------------------------------------------------------------------
 -- Headers table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "blocks"."headers" (
+CREATE TABLE "headers" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "block_height" BIGINT UNIQUE NOT NULL,
+
   -- props
   "application_hash" BYTEA NOT NULL,
   "consensus_parameters_version" INTEGER NOT NULL,
@@ -51,43 +57,50 @@ CREATE TABLE "blocks"."headers" (
   "transactions_count" SMALLINT NOT NULL,
   "transactions_root" BYTEA NOT NULL,
   "version" INTEGER NOT NULL,
+
   -- timestamps
   "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
   "published_at" TIMESTAMP NOT NULL
+  
+  -- constraints
+  FOREIGN KEY ("subject") REFERENCES "blocks" ("subject"),
+  FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height")
 );
 
-CREATE INDEX ON "blocks"."headers" ("subject");
-CREATE INDEX ON "blocks"."headers" ("block_height");
-CREATE INDEX ON "blocks"."headers" ("da_height");
-
-ALTER TABLE "blocks"."headers" ADD FOREIGN KEY ("subject") REFERENCES "blocks" ("subject");
-ALTER TABLE "blocks"."headers" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
+CREATE INDEX ON "headers" ("block_height");
+CREATE INDEX ON "headers" ("da_height");
+CREATE INDEX ON "headers" ("subject");
 
 -- ------------------------------------------------------------------------------
 -- Consensus table
 -- ------------------------------------------------------------------------------
 
-CREATE TABLE "blocks"."consensus" (
+CREATE TABLE "consensus" (
   -- uniques
   "_id" SERIAL PRIMARY KEY,
   "subject" TEXT UNIQUE NOT NULL,
   "block_height" BIGINT UNIQUE NOT NULL,
+
   -- props
-  "consensus_type" ConsensusType NOT NULL,
   "chain_config_hash" BYTEA,
+  "chain_id" BIGINT NOT NULL,
   "coins_root" BYTEA,
+  "consensus_type" ConsensusType NOT NULL,
   "contracts_root" BYTEA,
   "messages_root" BYTEA,
-  "transactions_root" BYTEA,
+  "producer" BYTEA NOT NULL,
   "signature" BYTEA,
+  "transactions_root" BYTEA,
+
   -- timestamps
   "created_at" TIMESTAMP NOT NULL, -- From block header timestamp
   "published_at" TIMESTAMP NOT NULL
+  
+  -- constraints
+  FOREIGN KEY ("subject") REFERENCES "blocks" ("subject"),
+  FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height")
 );
 
-CREATE INDEX ON "blocks"."consensus" ("subject");
-CREATE INDEX ON "blocks"."consensus" ("block_height");
-CREATE INDEX ON "blocks"."consensus" ("producer_address");
-
-ALTER TABLE "blocks"."consensus" ADD FOREIGN KEY ("subject") REFERENCES "blocks" ("subject");
-ALTER TABLE "blocks"."consensus" ADD FOREIGN KEY ("block_height") REFERENCES "blocks" ("block_height");
+CREATE INDEX ON "consensus" ("block_height");
+CREATE INDEX ON "consensus" ("producer");
+CREATE INDEX ON "consensus" ("subject");
