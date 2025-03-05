@@ -27,15 +27,31 @@ fn main() -> Result<()> {
         .out_dir(rust_out_dir)
         .compile_protos(&proto_files, &["proto/"])?;
 
-    // Generate TypeScript types using protobufjs
-    let ts_out_dir = Path::new("ts-types");
-    std::fs::create_dir_all(ts_out_dir)?;
+    // Generate TypeScript types using multiple generators
+    let ts_base_dir = Path::new("ts-types");
+    let generators = ["pbjs", "ts-proto", "buf", "grpc"];
 
-    // Run the TypeScript generation script
-    let status = Command::new("bun").args(["run", "build:proto"]).status()?;
+    // Create base directory and all subdirectories
+    std::fs::create_dir_all(ts_base_dir)?;
+    for generator in generators.iter() {
+        std::fs::create_dir_all(ts_base_dir.join(generator))?;
+    }
 
-    if !status.success() {
-        panic!("Failed to generate TypeScript types");
+    // Run each TypeScript generation script separately to better handle errors
+    for script in [
+        "build:proto-pbjs",
+        "build:proto-tsproto",
+        "build:proto-buf",
+        "build:proto-grpc",
+    ] {
+        let status = Command::new("bun").args(["run", script]).status()?;
+
+        if !status.success() {
+            panic!(
+                "Failed to generate TypeScript types with script: {}",
+                script
+            );
+        }
     }
 
     Ok(())

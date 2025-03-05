@@ -4,14 +4,25 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build:proto": "pbjs -t static-module -w es6 -o ts-types/proto.js --path proto proto/*.proto && pbts -o ts-types/proto.d.ts ts-types/proto.js"
+    "build:proto-pbjs": "pbjs -t static-module -w es6 -o ts-types/pbjs/proto.js --path proto proto/*.proto && pbts -o ts-types/pbjs/proto.d.ts ts-types/pbjs/proto.js",
+    "build:proto-tsproto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=ts-types/ts-proto --ts_proto_opt=esModuleInterop=true --proto_path=proto proto/*.proto",
+    "build:proto-buf": "protoc --es_out=ts-types/buf --es_opt=target=ts --proto_path=proto proto/*.proto",
+    "build:proto-grpc": "grpc_tools_node_protoc --js_out=import_style=commonjs,binary:ts-types/grpc --ts_out=ts-types/grpc --proto_path=proto proto/*.proto",
+    "build:proto": "bun run build:proto-pbjs && bun run build:proto-tsproto && bun run build:proto-buf && bun run build:proto-grpc"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "protobufjs": "^7.2.5",
-    "protobufjs-cli": "^1.1.2"
+    "@types/bun": "1.2.4",
+    "protobufjs": "7.4.0",
+    "protobufjs-cli": "1.1.3",
+    "ts-proto": "2.6.1",
+    "@bufbuild/protoc-gen-es": "2.2.3",
+    "@bufbuild/protobuf": "2.2.3",
+    "grpc-tools": "1.13.0",
+    "@grpc/proto-loader": "0.7.13",
+    "@types/google-protobuf": "3.15.12",
+    "grpc_tools_node_protoc_ts": "5.3.3"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "5.8.2"
   }
 }
