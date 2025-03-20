@@ -17,6 +17,7 @@ CREATE TABLE "predicates" (
     "tx_index" INTEGER NOT NULL,
     "input_id" INTEGER NOT NULL,
     "address" TEXT UNIQUE NOT NULL,
+    "blob_id" TEXT UNIQUE NOT NULL,
     "cursor" TEXT UNIQUE NOT NULL, -- {block_height}-{tx_index}-{input_index}
     
     --props
@@ -37,6 +38,7 @@ CREATE INDEX ON "predicates" ("cursor");
 CREATE INDEX ON "predicates" ("subject");
 CREATE INDEX ON "predicates" ("block_height");
 CREATE INDEX ON "predicates" ("tx_id");
+CREATE INDEX ON "predicates" ("blob_id");
 CREATE INDEX ON "predicates" ("type");
 CREATE INDEX ON "predicates" ("address");
 CREATE INDEX ON "predicates" ("input_id");
