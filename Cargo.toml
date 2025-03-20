@@ -18,6 +18,8 @@ derive_builder = "0.20.2"
 sqlx = { version = "0.8.3", features = ["runtime-tokio", "postgres", "json", "derive"] }
 proto-mapper = {version = "0.1.2", features = ["prost"] } 
 derive_more = { version = "2.0.1", features = ["full"] }
+diesel-derive-newtype = "2.1.2"
+diesel = "2.2.8"
 
 [build-dependencies]
 prost-build = "0.13.5"
